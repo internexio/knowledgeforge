@@ -1,0 +1,29 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Runtime state
+.kf/state/
+.kf/transcripts/
+
+# Secrets
+.env
+*.env.local
+
+# Editor
+.idea/
+.vscode/
+*.swp
+
+# Build outputs
+compiler/dist/
+compiler/__pycache__/

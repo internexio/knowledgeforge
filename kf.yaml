@@ -1,0 +1,48 @@
+name: KnowledgeForge
+version: 7.0.0-alpha
+description: >
+  Multi-platform, multi-model reasoning framework.
+  Single source of truth for all KF variants.
+
+status: active
+phase: 0  # Repo setup and sync
+
+variants:
+  knowledgeforge-cp:
+    role: Claude Projects variant
+    status: current-source-of-truth
+    repo: git@github.com:internexio/knowledgeforge-cp.git
+    note: Will become compilation target once compiler is built (Phase 6)
+  knowledgeforge-cc:
+    role: Claude Code variant
+    status: drifting
+    repo: git@github.com:internexio/knowledgeforge-cc.git
+  knowledgeforge-cw:
+    role: Cowork variant
+    status: drifting
+    repo: git@github.com:internexio/knowledgeforge-cw.git
+  knowledgeforge-web:
+    role: Web agents variant
+    status: future
+    note: Does not exist yet — Phase 8
+
+modules:
+  count: 26
+  range: "00–25"
+  source: knowledgeforge-cp (as of 2026-04-14)
+
+changelog:
+  - version: 7.0.0-alpha
+    date: 2026-04-14
+    changes:
+      - Established knowledgeforge-core as single source of truth
+      - Copied all 26 canonical modules from knowledgeforge-cp
+      - Organized plan documents from architecture sessions
+      - Created CLAUDE.md with Calibrator configuration
+      - Initial directory structure established
+  - version: 6.6.1
+    date: 2026-04-13
+    changes:
+      - KF 6.x final state — CP as source of truth
+      - 25 modules (00–24) plus ERA (25)
+      - Architecture sessions produced 9 integration plans

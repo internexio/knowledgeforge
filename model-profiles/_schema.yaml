@@ -1,0 +1,66 @@
+# Model Profile Schema
+# Version: 1.0.0
+# Used by: compiler (Phase 6), routing hook (Phase 1), web agents (Phase 8)
+#
+# All model profiles in model-profiles/{model_id}.yaml must conform to this schema.
+
+schema_version: "1.0.0"
+
+required_fields:
+  - id              # canonical model identifier (e.g. claude-sonnet-4)
+  - provider        # anthropic | openai | google | mistral | meta | ollama
+  - context_window  # integer, tokens
+  - cost            # object: input_per_mtok, output_per_mtok (USD)
+  - role            # primary_agent | frontier | cross_provider_judge | router_only
+  - strengths       # list of capability strings
+  - weaknesses      # list of failure mode strings (these drive KF scaffolding)
+  - calibration_overrides  # map of decision_type -> overhead_level
+
+optional_fields:
+  - notes           # free-form notes
+  - training_cutoff # YYYY-MM-DD
+  - capability_flags  # list of special capabilities (e.g. tool_use, vision, code_execution)
+  - role_restrictions  # if role == router_only, what it CANNOT do
+
+# Valid values for calibration_overrides keys:
+decision_types:
+  - reckoning     # verifiable correct answer, no overhead
+  - evaluative    # historical data exists, standard overhead
+  - predictive    # future state, medium overhead
+  - novel         # no precedent, maximum overhead
+
+# Valid values for calibration_overrides values:
+overhead_levels:
+  - none          # skip all KF scaffolding for this decision type
+  - minimal       # decision classification only
+  - standard      # classification + mode activation
+  - full          # classification + mode + all cross-cutting modules
+  - maximum       # full + adversarial verification
+
+# Example profile structure:
+example:
+  id: claude-sonnet-4
+  provider: anthropic
+  context_window: 200000
+  cost:
+    input_per_mtok: 3.00
+    output_per_mtok: 15.00
+  role: primary_agent
+  training_cutoff: "2024-04"
+  strengths:
+    - intent decomposition
+    - structured output
+    - long context recall
+    - tool use
+  weaknesses:
+    - hypothesis skipping (jumps to first plausible answer)
+    - trade-off hiding (buries alternatives)
+    - gap blindness (misses unstated assumptions)
+    - self-preference bias (favors Anthropic outputs in evaluation)
+    - premature stopping (stops before quality gate)
+  calibration_overrides:
+    reckoning: none
+    evaluative: standard
+    predictive: full
+    novel: maximum
+  notes: "Primary CC model. Calibration overrides are the baseline for KF 7.0."

@@ -1,0 +1,527 @@
+# Memory Architecture
+
+## Module Metadata
+
+```yaml
+module:
+  title: Memory Architecture
+  version: 6.6.1
+  purpose: Four-tier memory system — persistent domain knowledge (Tier 0), routing index (Tier 1), mode state (Tier 2), and archived history (Tier 3) — that maintains routing accuracy across long sessions and knowledge continuity across sessions
+  topics: [memory, context-management, session-persistence, consolidation, skeptical-verification, persistent-knowledge]
+  contexts: [long-sessions, mode-transitions, context-pressure, state-management, cross-session-knowledge]
+  difficulty: advanced
+  related: [03_Coordination_Patterns, 04_Specification_Templates, 14_Metacognitive_Monitor, 16_Operational_Bounds, 17_Temporal_Knowledge, 20_Permission_Model, 21_Knowledge_Accretion]
+  added_in: "6.1"
+  implements: "Directive 2 (Three-Tier Memory Architecture), extended to four tiers in 6.2"
+  changelog:
+    6.6.1: |
+      - Added routing_index_schema section with field-level contract and schema version (ERA finding F6)
+      - Each module's read/write fields declared in contract
+      - Schema version field enables detection of cross-module misalignment
+      - Drift detection rule: absent fields log to Tier 2, surface at session end
+    6.5.0: |
+      - Tier 3 rewritten from "grep-only" to semantic vector search via MemPalace sidecar (Module 24)
+      - Tier 3 now carries recall benchmarks: 96.6% R@5 (verbatim+semantic) vs ~60% (grep)
+      - Added Module 22, 23, 24 cross-references to Related Modules
+    6.2.0: |
+      - Added Tier 0 (persistent domain knowledge) — accretion target layer (Module 21 integration)
+      - Three-tier → four-tier model
+      - Updated tier overview and core approach to reflect Tier 0
+```
+
+---
+
+## Core Approach
+
+Long sessions degrade routing accuracy because accumulated context competes with active task state for context window space. The fix is not summarization (which loses structure) but tiered memory with a compact index that preserves routing-critical information at all times. Cross-session knowledge continuity is handled by a persistent layer (Tier 0) that survives session boundaries.
+
+**Primary function:** Maintain accurate mode routing and decision context across 20+ turn sessions without linear context growth, and preserve valuable knowledge across sessions via persistent domain storage.
+
+**Key insight:** An always-loaded index of ~150 characters per entry provides sufficient signal for correct routing decisions. Detailed state only needs to load when that mode is active. Persistent knowledge only needs to load when relevant to the current query.
+
+**Design principle:** Treat accumulated context as hints, not facts. Verify before acting on any recalled state.
+
+---
+
+## Four Tiers
+
+### Tier 0: Persistent Domain Knowledge (Cross-Session — 6.2)
+
+The persistent knowledge layer survives across sessions. It is the accretion target — where compiled knowledge lives so that queries "add up" over time. Managed by Module 21 (Knowledge Accretion).
+
+```yaml
+persistent_knowledge:
+  location:
+    claude_code: wiki/ directory on filesystem
+    claude_project: Project knowledge files (manually updated by user from accretion candidates)
+  scope: Cross-session — persists indefinitely until archived or superseded
+  
+  contents:
+    - Compiled knowledge articles (patterns, diagnostics, frameworks, analyses)
+    - Pattern catalogs from Synthesizer
+    - Reusable diagnostic libraries from Debugger
+    - Decision framework templates from Strategist
+    - Configuration templates from Calibrator
+    
+  update_mechanism: Module 21 accretion system (auto-file in Claude Code, surface to user in Claude Projects)
+  
+  quality_gates:
+    - Grounding score ≥ 0.6 (Module 15)
+    - Permission tier appropriate (MEDIUM base, HIGH for customer-facing — Module 20)
+    - Temporal metadata present (Module 17)
+    - Novelty confirmed (not duplicate of existing entry)
+    
+  access_pattern:
+    - Not always loaded (unlike Tier 1)
+    - Loaded when relevant to current query
+    - Searched during accretion checks (is this novel?)
+    - Scanned during linter health checks (Critic variant)
+    
+  relationship_to_tier_1:
+    - Tier 1 (routing index) may reference Tier 0 entries by path
+    - Tier 0 entries do not reference Tier 1 (session-scoped state is transient)
+```
+
+### Tier 1: Routing Index (Always Loaded)
+
+The routing index stays in every prompt. It is the orchestrator's working memory — compact enough to never cause context pressure, detailed enough to route correctly.
+
+```yaml
+routing_index:
+  location: Always in context (static zone of prompt)
+  size_budget: ~150 characters per entry, max 30 entries (~4,500 chars total)
+  
+  entry_format: "[mode] [action] [outcome] [decision_type] [open/closed]"
+  
+  contents:
+    - Modes engaged this session (with sequence)
+    - Decisions made (with type classification and reversibility)
+    - Active task state (objective, current step, blockers)
+    - Artifacts produced (id, type, status)
+    - User expertise level and stated goals
+    - Open questions or deferred items
+    
+  example:
+    ```
+    SESSION INDEX (turn 14)
+    user: advanced | goal: build ODS profiling pipeline
+    task: ODS Module 03 spec | step: Builder active | blocker: none
+    [1] Strategist: chose event-driven over polling (evaluative, reversible) ✓
+    [2] Builder: Module 01 spec complete (draft, grounding 0.8) ✓
+    [3] Critic: Module 01 reviewed — 2 high findings, revised ✓
+    [4] Builder: Module 02 spec complete (draft, grounding 0.7) ✓
+    [5] Builder: Module 03 in progress...
+    open: COS bridging approach undecided (predictive, deferred to Module 07)
+    ```
+    
+  update_rules:
+    - Update after every mode completion or decision
+    - Closed items compressed to single line
+    - Open items retain full context
+    - When entries exceed 30: consolidate oldest closed items into summary line
+```
+
+### Routing Index Schema Contract (6.6.1)
+
+Field-level contract for all modules that read or write the routing index. Bump `schema_version` when any required field is added, renamed, or removed.
+
+```yaml
+routing_index_schema:
+  schema_version: "1.0"
+
+  required_fields:
+    session_header:
+      format: "SESSION INDEX (turn N)"
+      fields:
+        - name: user_expertise
+          key: "user"
+          type: string  # beginner | intermediate | advanced
+          written_by: [orchestrator]
+          read_by: [all modes]
+        - name: primary_goal
+          key: "goal"
+          type: string
+          written_by: [orchestrator, navigator]
+          read_by: [all modes]
+        - name: active_task
+          key: "task"
+          type: string
+          written_by: [orchestrator, active mode]
+          read_by: [all modes]
+        - name: current_step
+          key: "step"
+          type: string
+          written_by: [active mode]
+          read_by: [orchestrator]
+        - name: blocker
+          key: "blocker"
+          type: string | "none"
+          written_by: [active mode]
+          read_by: [orchestrator, navigator]
+
+    entry_fields:
+      format: "[N] [mode]: [action] ([decision_type], [reversible?]) [status]"
+      fields:
+        - name: sequence_number
+          type: integer
+          written_by: [orchestrator]
+          read_by: [all modes]
+        - name: mode
+          type: string
+          written_by: [orchestrator]
+          read_by: [all modes]
+        - name: action
+          type: string  # free text, past tense
+          written_by: [completing mode]
+          read_by: [all modes]
+        - name: decision_type
+          type: string  # reckoning | evaluative | predictive | novel
+          written_by: [completing mode]
+          read_by: [orchestrator, strategist, calibrator]
+        - name: reversible
+          type: boolean
+          written_by: [completing mode]
+          read_by: [orchestrator, strategist]
+        - name: status
+          type: string  # ✓ | ... | ✗
+          written_by: [orchestrator]
+          read_by: [all modes]
+
+    open_items:
+      format: "open: [description] ([decision_type], [resolution_target])"
+      written_by: [any mode that defers a decision]
+      read_by: [orchestrator, navigator]
+
+  optional_fields:
+    - name: artifact_reference
+      description: ID + type + grounding_score for artifacts produced this session
+      written_by: [builder, expert, synthesizer, calibrator]
+      read_by: [critic, strategist]
+
+  drift_detection:
+    rule: |
+      If a mode reads a field that is absent from the routing index, log the gap
+      to Tier 2 state and surface it at session end rather than silently defaulting.
+      Field absence is a schema drift signal, not a missing data signal.
+    version_check: |
+      When routing index schema_version does not match a module's expected version,
+      flag SCHEMA_DRIFT in Tier 2 state. Continue with best-effort field mapping
+      and surface drift at session end.
+```
+
+### Tier 2: Mode-Specific State (Loaded On Demand)
+
+Detailed working state for the currently active mode. Only one mode's state is loaded at a time. Swapped on mode transitions.
+
+```yaml
+mode_state:
+  location: Dynamic zone of prompt — loaded when mode activates, unloaded when mode completes
+  size_budget: No hard limit, but subject to context utilization monitoring (Module 14)
+  
+  contents_by_mode:
+    builder:
+      - In-progress specification sections
+      - Design decisions pending
+      - Integration points identified
+      - Pattern being applied (if any)
+      
+    critic:
+      - Artifact under review
+      - Findings accumulated so far
+      - Severity assessments with confidence
+      - Adversarial hypotheses being tested
+      
+    debugger:
+      - Hypothesis tree (active, eliminated, untested)
+      - Evidence collected
+      - Diagnostic path so far
+      - Elimination reasoning
+      
+    strategist:
+      - Options under evaluation
+      - Trade-off matrix in progress
+      - Criteria and weights
+      - Stakeholder considerations
+      
+    synthesizer:
+      - Examples being analyzed
+      - Patterns extracted so far
+      - Anti-patterns identified
+      - Applicability boundaries
+      
+    expert:
+      - First-order findings
+      - Adversarial depth state (which checks completed)
+      - Compound failure combinations tested
+      - Assumption inversions documented
+      
+    calibrator:
+      - Complexity assessment result
+      - Interview responses collected
+      - Stack decisions made
+      - Compliance requirements identified
+      
+  swap_protocol:
+    on_mode_entry:
+      1. Save current mode state to Tier 2 storage
+      2. Load new mode's state (if resuming) or initialize fresh
+      3. Update routing index with mode transition
+    on_mode_exit:
+      1. Capture mode output and key decisions
+      2. Update routing index with results
+      3. Mode state persists in Tier 2 for potential re-entry
+```
+
+### Tier 3: Verbatim History (Semantic Retrieval via MemPalace)
+
+Full verbatim conversation turns stored with importance metadata. Accessed via semantic vector search with metadata pre-filtering — not grep. Importance-weighted exponential decay governs effective availability over time. See Module 24 for full implementation spec.
+
+```yaml
+conversation_history:
+  location: MemPalace sidecar (github.com/Drlordbasil/MemPalace) — persists across sessions
+  access_pattern: Semantic vector search with metadata pre-filter (domain, topic, date_range, importance_min)
+  fallback: Grep-searchable when MemPalace is unavailable — log fallback; expect reduced recall
+  
+  recall_benchmarks:
+    verbatim_semantic: "96.6% R@5 — target operating mode"
+    presummarized_semantic: "84.2% R@5 — 12.4-point permanent loss from pre-compression"
+    verbatim_grep: "~55–65% R@5 — phrasing-dependent fallback"
+    
+  when_to_search:
+    - Routing index references a decision but detail is needed
+    - User asks "why did we decide X" and index entry is insufficient
+    - Mode state references prior output that was compressed
+    - Cross-session pattern detection requires prior examples
+    
+  search_protocol:
+    1. Extract domain/topic/tag signals and date range from current query
+    2. Apply metadata pre-filter via MemPalace search_memories
+    3. Semantic re-rank filtered candidates
+    4. Apply importance-weighted decay adjustment
+    5. Return top-K verbatim turns; verify before using
+    
+  storage_principle: "Store verbatim. Compress at delivery if requested. Never compress before storage."
+    
+  never_do:
+    - Re-read full conversation history wholesale
+    - Summarize before storing (permanent 12.4-point recall loss)
+    - Use history fragments without verification against current state
+```
+
+---
+
+## Skeptical Verification Rule
+
+Before acting on any information from the routing index or recalled state, verify it still holds.
+
+```yaml
+skeptical_verification:
+  principle: "Accumulated context is a hint, not a fact."
+  
+  verification_triggers:
+    - About to make a decision based on a prior turn's conclusion
+    - About to reference an artifact that may have been revised
+    - Index entry is more than 10 turns old
+    - Mode state was loaded from a previous session segment
+    
+  verification_actions:
+    - Check: Does the current request contradict the stored state?
+    - Check: Has the user corrected or updated this information?
+    - Check: Is the stored decision still relevant to the current task?
+    - If any check fails: flag the discrepancy and resolve before proceeding
+    
+  example:
+    index_says: "Strategist: chose PostgreSQL (reckoning, locked)"
+    user_now_says: "Actually, we're going with SQLite for the prototype"
+    action: Update index, flag downstream decisions that assumed PostgreSQL, surface affected artifacts
+```
+
+---
+
+## Consolidation Cycle
+
+When context pressure builds or a natural breakpoint occurs, consolidate rather than summarize.
+
+```yaml
+consolidation:
+  triggers:
+    - Context utilization exceeds 75% (Module 14 alert threshold)
+    - Mode chain completes (natural breakpoint)
+    - 10+ turns since last consolidation
+    - User explicitly requests session checkpoint
+    
+  phases:
+    orient:
+      action: Scan routing index for staleness markers
+      output: List of entries that need attention (old, potentially outdated, superseded)
+      
+    gather:
+      action: Identify completed items, closed decisions, and finalized artifacts
+      output: Set of items eligible for compression
+      
+    consolidate:
+      action: |
+        - Merge related closed items into single summary entries
+        - Convert verbose decision records into index-format entries
+        - Flag contradictions between historical entries and current state
+        - Promote key learnings to index (things that affect future routing)
+      output: Updated routing index with reduced entry count
+      
+    prune:
+      action: |
+        - Remove entries for completed subtasks with no forward reference
+        - Archive mode-specific state for completed modes
+        - Cap total index at 30 entries
+      output: Pruned index within size budget
+      
+  output_format: diff
+  rule: Show what changed and why. Never silently rewrite the index.
+  
+  example_diff:
+    ```
+    CONSOLIDATION (turn 22 → turn 22)
+    MERGED: [2,3,4] → "Modules 01-02 built and reviewed (approved, grounding 0.8+)"
+    PRUNED: [1] Strategic context assessment (complete, no forward refs)
+    KEPT: [5] Builder Module 03 in progress
+    KEPT: open item — COS bridging undecided
+    NET: 6 entries → 3 entries
+    ```
+```
+
+---
+
+## Context Pressure Response
+
+When the Metacognitive Monitor (Module 14) signals context pressure, use the consolidation cycle rather than generic summarization.
+
+```yaml
+context_pressure_response:
+  at_75_percent:
+    action: Run consolidation cycle (orient + gather + consolidate + prune)
+    target: Reduce index to essential entries, archive completed mode state
+    
+  at_80_percent:
+    action: Aggressive consolidation — compress all closed items to single-line entries
+    additionally: Unload inactive mode state from Tier 2
+    
+  at_85_percent:
+    action: Emergency compression — retain only current mode state + routing index
+    warning: "Context compressed. Decisions from turns 1-N are in index form only. Ask me to verify any specific detail before relying on it."
+    
+  never_do:
+    - Summarize conversation as a narrative paragraph (loses structure)
+    - Discard the routing index (loses routing accuracy)
+    - Silently compress without flagging what was lost
+```
+
+---
+
+## Integration Points
+
+### With Orchestrator (Agent Instructions)
+
+The routing index lives in the orchestrator's static prompt zone. Every routing decision reads the index first.
+
+```yaml
+orchestrator_integration:
+  - Routing index is part of the static prompt zone
+  - Mode selection reads index to understand session history
+  - Decision classification checks index for prior decisions on same topic
+  - Mode chaining reads index to determine what has already been done
+```
+
+### With Metacognitive Monitor (14_Metacognitive_Monitor)
+
+Monitor triggers consolidation and provides context utilization data.
+
+```yaml
+monitor_integration:
+  - Monitor's context_overflow thresholds trigger consolidation phases
+  - Monitor tracks whether consolidation actually reduced context pressure
+  - If consolidation fails to reduce pressure → ESCALATE (hand off to fresh agent)
+  - Skeptical verification integrates with monitor's confidence tracking
+```
+
+### With Coordination Patterns (03_Coordination_Patterns)
+
+Mode chains use the routing index to maintain handoff context across transitions.
+
+```yaml
+coordination_integration:
+  - Handoff protocol reads from routing index for session state
+  - Mode transitions update the index before swapping Tier 2 state
+  - Dependency graph state persists in index, not in individual mode state
+```
+
+### With Temporal Knowledge (17_Temporal_Knowledge)
+
+The routing index acts as a lightweight temporal record of the session.
+
+```yaml
+temporal_integration:
+  - Index entries carry implicit temporal ordering (entry number = sequence)
+  - Consolidation preserves temporal relationships (supersedes, extends)
+  - History search (Tier 3) uses temporal knowledge query patterns
+```
+
+### With Operational Bounds (16_Operational_Bounds)
+
+Consolidation efficiency is an operational metric.
+
+```yaml
+bounds_integration:
+  - Track consolidation frequency (too frequent = tasks too large or context too small)
+  - Track post-consolidation context utilization (should drop meaningfully)
+  - Track routing accuracy pre/post consolidation (should not degrade)
+```
+
+---
+
+## Constraints
+
+- Routing index must never exceed the size budget (~4,500 chars). If it does, consolidation is mandatory.
+- Only one mode's Tier 2 state is loaded at a time. Loading a second mode's state requires saving the first.
+- Tier 3 (history) is never loaded in bulk. Only targeted search for specific identifiers.
+- Skeptical verification adds minimal overhead during normal operation but is mandatory before acting on stale data.
+- Consolidation produces a diff, not a rewrite. Silent changes to the index are forbidden.
+- The index format is terse by design. Readability matters less than density and routing accuracy.
+
+---
+
+## Success Criteria
+
+- After 20+ turns, the orchestrator routes correctly using only the routing index (no re-reading early turns)
+- Context utilization plateaus rather than growing linearly with conversation length
+- Consolidation reduces context pressure by at least 20% when triggered
+- Skeptical verification catches at least one stale-state error per 50-turn session
+- Mode transitions complete without losing decision history
+- Emergency compression (85%) preserves enough state to continue or hand off gracefully
+
+---
+
+## Attribution
+
+| Element | Source |
+|---------|--------|
+| Three-tier memory pattern | Claude Code source architecture (MEMORY.md + topic files + transcripts) |
+| Skeptical verification rule | Claude Code "treat memory as hint, not fact" pattern |
+| Consolidation cycle (Orient → Gather → Consolidate → Prune) | Claude Code autoDream system, adapted for session-scoped use |
+| Size budgets (~150 chars/entry, 30 entry cap) | Claude Code MEMORY.md constraints, adapted |
+| Diff-based consolidation output | Our design |
+| Context pressure integration | Our design (bridges to Module 14) |
+
+---
+
+## Related Modules
+
+- `Agent Instructions (orchestrator)` — Routing index lives in static prompt zone
+- `03_Coordination_Patterns.md` — Mode chains use index for handoff context
+- `04_Specification_Templates.md` — Context object template extended with memory tier references
+- `14_Metacognitive_Monitor.md` — Context pressure triggers consolidation
+- `16_Operational_Bounds.md` — Consolidation efficiency as operational metric
+- `17_Temporal_Knowledge.md` — Index provides session-scoped temporal record
+- `20_Permission_Model.md` — (6.1) Index updates are LOW-risk; consolidation is MEDIUM-risk (modifies session state, requires logging)
+- `21_Knowledge_Accretion.md` — (6.2) Tier 0 persistent domain knowledge; accretion system writes to this layer
+- `22_Semantic_Wiki_Search.md` — (6.5) Tier 0 retrieval implementation; metadata-gated semantic search over wiki/
+- `23_Taxonomy_Enforcement.md` — (6.5) Controlled vocabulary shared across Tier 0 and Tier 3 entries
+- `24_Verbatim_History_Mining.md` — (6.5) Tier 3 retrieval implementation; MemPalace sidecar + semantic search
