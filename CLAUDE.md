@@ -231,6 +231,9 @@ docs(plans): Add cc-drift-audit from Phase 0 analysis
 ## Active Work
 
 See `IMPLEMENTATION_PLAN.md` for the full Phase 0–10 roadmap.
-Current: Phase 0 — establishing canonical repo structure and syncing from CP.
 
-Next: Phase 1 — `UserPromptSubmit` hook + Gemma 3 4B routing classifier.
+**Completed:** Phase 0 (repo setup), Phase 1 (routing hook — Gemini Flash Lite, not Gemma 3 4B), Phase 2 (skill files + cross-cutting docs + slash commands in knowledgeforge-cc).
+
+**Current:** Phase 3 — Stop gate + state survival hooks.
+
+**Next:** Phase 4 — 15 module spec updates (13 original + ENH-006 Coordinator + ENH-007 Calibrator).
