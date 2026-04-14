@@ -617,8 +617,9 @@ Build `kf-compile` that can regenerate the CC variant from `knowledgeforge-core`
 - [x] `kf-compile.py` that generates all three variants
 - [x] Compilation manifest format defined and generated
 - [x] Compiled CC matches hand-crafted CC (or is intentionally improved)
-- [ ] Upgrade `sync-modules-cp.yml` to invoke compiler instead of direct file copy (see `docs/planning/cross-repo-sync.md`)
-- [ ] Add `CORE_SYNC_TOKEN` secret to knowledgeforge-core and activate both sync workflows
+- [x] Upgrade `sync-modules-cp.yml` to invoke compiler instead of direct file copy
+- [x] Add `compile-cc.yml` workflow for CC skill/doc/agent compilation on module changes
+- [ ] Add `CORE_SYNC_TOKEN` secret to knowledgeforge-core to activate all three sync workflows
 - [x] Compiled CP matches current CP
 
 ### Validation Gate

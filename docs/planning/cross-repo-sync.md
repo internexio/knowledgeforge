@@ -6,22 +6,22 @@
 
 ---
 
-## What Exists Now
+## What Exists Now (Phase 6 complete)
 
-Two GitHub Actions workflows are committed to `knowledgeforge-core`:
+Three GitHub Actions workflows are committed to `knowledgeforge-core`:
 
 | Workflow | Trigger | Action |
 |----------|---------|--------|
-| `sync-hooks-cc.yml` | push to `main` touching `hooks/**` | Opens PR in `knowledgeforge-cc` with updated `.claude/hooks/` |
-| `sync-modules-cp.yml` | push to `main` touching `modules/**` | Opens PR in `knowledgeforge-cp` with updated module files |
+| `sync-hooks-cc.yml` | push to `main` touching `hooks/**` | Direct copy: opens PR in `knowledgeforge-cc` with updated `.claude/hooks/` |
+| `compile-cc.yml` | push to `main` touching `modules/**` | Compiler: opens PR in `knowledgeforge-cc` with compiled skill/doc/agent files |
+| `sync-modules-cp.yml` | push to `main` touching `modules/**` | Compiler: opens PR in `knowledgeforge-cp` with compiled module files |
 
-Both support `workflow_dispatch` for manual catch-up syncs.
-
-A sync script `scripts/sync-cp-modules.py` handles the CP file matching — core uses `NN_snake_case.md`, CP uses `NN_PascalCase.md`. Matching is by two-digit prefix. Tested: 26/26 modules matched, 0 errors.
+All three support `workflow_dispatch` for manual catch-up syncs.
+Both compile workflows use `kf-compile.py` (Phase 6). No direct file copy stopgap.
 
 ---
 
-## What's Missing (Deferred)
+## What's Missing
 
 **One setup step remaining:** Add `CORE_SYNC_TOKEN` secret to `knowledgeforge-core` → Settings → Secrets → Actions.
 
@@ -29,27 +29,6 @@ Token requirements:
 - Fine-grained PAT, resource owner: `internexio`
 - Repositories: `knowledgeforge-cc`, `knowledgeforge-cp`
 - Permissions: Contents (read/write) + Pull requests (read/write)
-
-**Do not activate until after Phase 6.** The current sync does a verbatim file copy, which is a stopgap. The real implementation should invoke the compiler.
-
----
-
-## Phase 6 Upgrade Path
-
-Once `kf-compile.py` exists, replace the file-copy steps in both workflows:
-
-**sync-hooks-cc.yml** — hooks don't need compilation, keep as-is (direct copy is correct for hooks).
-
-**sync-modules-cp.yml** — replace `sync-cp-modules.py` call with:
-```yaml
-- name: Compile CP variant
-  run: |
-    python3 compiler/kf-compile.py \
-      --target claude-projects \
-      --output cp-repo/
-```
-
-The compiler reads canonical modules → generates CP-formatted knowledge files → writes to CP repo. This replaces the current direct-copy approach and handles any format differences between core modules and CP files.
 
 ---
 
