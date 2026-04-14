@@ -263,19 +263,20 @@ Target: >85% mode accuracy, >80% cross-cutting module recall.
    - Adjust cross-cutting module conditions
 
 ### Deliverables
-- [ ] Ollama + Gemma 3 4B running locally
-- [ ] `kf-route.py` hook script with graceful degradation
-- [ ] Compact module index (`kf_module_index.txt`)
-- [ ] 30-prompt routing test suite with expected values
-- [ ] Test results showing >85% routing accuracy
-- [ ] Hook registered in `.claude/settings.json`
+- [x] ~~Ollama + Gemma 3 4B running locally~~ → **Substituted: Gemini Flash Lite API** (free tier, ~300ms, no local install; `GEMINI_API_KEY` required in env)
+- [x] `kf-route.py` hook script with graceful degradation — deployed to `~/.claude/hooks/`
+- [x] Compact module index (`kf_module_index.txt`) — co-located with hook script
+- [x] 30-prompt routing test suite with expected values — `tests/routing_test_suite.yaml`
+- [ ] Test results showing >85% routing accuracy — pending `tests/run_routing_tests.py` run
+- [x] Hook registered globally in `~/.claude/settings.json` pointing to `~/.claude/hooks/kf-route.py`
+- [x] `scripts/deploy-hooks.sh` — source in `knowledgeforge-core/hooks/`, deploy to `~/.claude/hooks/`; all non-CP variants benefit from one global deploy
 
 ### Validation Gate
 Run 10 real prompts in a live Claude Code session with the hook active. Verify:
-- Routing directives appear in the prompt
-- Claude responds to routing directives (loads indicated skills/docs)
-- Reckonings get no routing overhead
-- Novel judgments get full module set
+- Routing directives appear in the prompt ✓ (smoke tested: debugger route, reckoning passthrough)
+- Claude responds to routing directives (loads indicated skills/docs) — pending Phase 2 (skills don't exist yet)
+- Reckonings get no routing overhead ✓ (smoke tested: silent exit 0)
+- Novel judgments get full module set — pending Phase 2
 
 ---
 
