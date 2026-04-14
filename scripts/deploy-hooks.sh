@@ -24,6 +24,11 @@ fi
 HOOKS=(
   "kf-route.py"
   "kf_module_index.txt"
+  "kf-stop-validator.py"
+  "kf-precompact.py"
+  "kf-postcompact.py"
+  "kf-edit-nudge.py"
+  "kf-session-start.py"
 )
 
 echo "KF Hook Deploy"

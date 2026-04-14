@@ -11,9 +11,8 @@ __pycache__/
 venv/
 *.egg-info/
 
-# Runtime state
-.kf/state/
-.kf/transcripts/
+# Runtime state (all .kf/ subdirs)
+.kf/
 
 # Secrets
 .env
