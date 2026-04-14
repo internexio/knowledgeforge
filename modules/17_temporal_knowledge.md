@@ -5,13 +5,17 @@
 ```yaml
 module:
   title: Temporal Knowledge Accumulation
-  version: 6.5.0
+  version: 7.0.0
   purpose: Add temporal structure to KF's knowledge base — every entry gets versioning, relationships, and lifecycle management
   topics: [temporal-reasoning, knowledge-versioning, knowledge-lifecycle, temporal-relationships, accretion-temporality]
   contexts: [knowledge-management, version-tracking, historical-queries, knowledge-hygiene]
   difficulty: advanced
   related: [15_Grounding_Scores, 09_Debugger_Agent, 08_Synthesizer_Agent, 12_Calibration_Layer, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 18_Salience_Allocation]
   changelog:
+    7.0.0:
+      date: 2026-04-14
+      changes:
+        - Add research staleness gate with domain half-life table; flags stale research before building on it
     6.3.1: |
       - Added importance-weighted exponential decay model, pinning, domain half-life table
       - Added decay-staleness_risk consistency check (linter finding if they conflict)
@@ -296,6 +300,28 @@ calibration_integration:
     - Diff queries reveal calibration drift: "Are we more or less biased than last month?"
     - Trend analysis: is evaluation quality improving or degrading?
 ```
+
+---
+
+## Research Staleness Gate
+
+Before building on externally researched material (web searches, retrieved documents, cited sources), check the research age against domain half-life:
+
+| Domain | Half-life (approximate) |
+|--------|------------------------|
+| AI/ML models and APIs | 3 months |
+| Cloud infrastructure pricing/features | 6 months |
+| Framework versions and APIs | 6 months |
+| Security advisories | 1 month |
+| General software architecture | 2 years |
+| Academic/theoretical foundations | 5+ years |
+
+**Gate behavior:**
+- Research age < half-life: proceed normally
+- Research age ≥ half-life: flag to user — "This research is [N] months old. Domain half-life is [M] months. Findings may be outdated."
+- If user proceeds with stale research: tag all outputs built on it with `[STALE SOURCE — verify before acting]`
+
+Research age is computed from the `retrieved_at` field if present, or estimated from content signals (model version numbers, API syntax, date references in text).
 
 ---
 

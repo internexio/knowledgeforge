@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Knowledge Accretion
-  version: 6.6.1
+  version: 7.0.0
   purpose: Cross-cutting detection-and-routing behavior that recognizes when mode outputs contain knowledge worth persisting and either auto-files it (Claude Code) or surfaces it as a compilation candidate (Claude Projects)
   topics: [knowledge-persistence, compile-query-enhance, wiki-generation, accretion-signals, knowledge-base-maintenance]
   contexts: [all-mode-execution, knowledge-management, session-outputs, persistent-storage]
@@ -13,6 +13,11 @@ module:
   related: [07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 02_Builder_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model]
   added_in: "6.2"
   changelog:
+    7.0.0:
+      date: 2026-04-14
+      changes:
+        - Add source_fingerprint deduplication — check before accreting, embed in frontmatter
+        - Add terminal state requirement — only self-contained, complete, closed-loop artifacts accrete to Tier 0
     6.6.1: |
       - Added accretion_calibration section with yield tracking, novelty threshold, and reuse threshold (ERA finding F7)
       - Novelty and reuse value heuristics now have calibrated definitions and thresholds
@@ -89,6 +94,52 @@ Accretion does NOT fire on:
 - Routine mode outputs that apply existing knowledge without extending it
 - Outputs with grounding score below 0.6 without explicit caveat handling
 - Session-specific context with no transferable value (e.g., "user prefers tabs")
+
+---
+
+## Source Fingerprint Deduplication
+
+Every wiki entry MUST include a `source_fingerprint` in its frontmatter:
+
+```yaml
+---
+source_fingerprint: [SHA-256 hash or stable identifier of the source artifact]
+---
+```
+
+**Before accreting any artifact:**
+1. Compute or extract the `source_fingerprint` of the candidate artifact
+2. Grep existing wiki entries for that fingerprint
+3. If a matching fingerprint is found → **skip accretion** (duplicate source, already captured)
+4. If no match → proceed with accretion, embed fingerprint in new entry
+
+**Fingerprint construction:**
+- For conversation turns: hash of (session_id + turn_index)
+- For documents: hash of content (first 500 chars + length)
+- For URLs: the URL itself (canonical form)
+- For tool outputs: hash of (tool_name + input_hash + output_hash)
+
+This prevents the same source artifact from generating multiple wiki entries across sessions.
+
+---
+
+## Terminal State Requirement
+
+Only **terminal artifacts** accrete to Tier 0 (wiki). Intermediate artifacts stay in Tier 2 (working state).
+
+**Terminal state criteria** — an artifact is terminal when:
+1. Findings are self-contained (no unresolved dependencies on other in-progress work)
+2. Complete (no critical open questions marked TODO or TBD)
+3. No active revision loop (Critic ↔ Builder cycle has closed)
+4. Grounding score ≥ 0.6 (Module 15)
+
+**Intermediate artifacts** (stay in Tier 2):
+- Draft specs mid-revision
+- Partial debugging hypotheses
+- Research notes with open questions
+- Any artifact with `reproduction_status: failed` (Module 09)
+
+**Rationale:** Tier 0 is a trust layer. Accreting intermediate work pollutes it with uncertain or incomplete knowledge that later sessions treat as authoritative.
 
 ---
 

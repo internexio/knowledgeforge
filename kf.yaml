@@ -1,11 +1,11 @@
 name: KnowledgeForge
-version: 7.0.0-alpha
+version: 7.0.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
 
 status: active
-phase: 0  # Repo setup and sync
+phase: 4  # Module spec updates
 
 variants:
   knowledgeforge-cp:
@@ -32,6 +32,13 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.0.0
+    date: 2026-04-14
+    changes:
+      - Phase 1 complete — UserPromptSubmit hook with Gemini Flash Lite
+      - Phase 2 complete — skill files, cross-cutting docs, slash commands in knowledgeforge-cc
+      - Phase 3 complete — Stop gate, PreCompact/PostCompact, PostToolUse, SessionStart hooks
+      - Phase 4 complete — 15 module spec updates (items 1-13 from research + ENH-006/007)
   - version: 7.0.0-alpha
     date: 2026-04-14
     changes:

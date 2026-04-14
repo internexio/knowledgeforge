@@ -5,13 +5,17 @@
 ```yaml
 module:
   title: Operational Bounds
-  version: 6.5.0
+  version: 7.0.0
   purpose: Maintain key agent operational metrics within defined ranges and trigger corrective behavior when metrics drift
   topics: [operational-safety, metric-monitoring, bounds-checking, corrective-action, chronic-drift, cache-efficiency, circuit-breakers]
   contexts: [agent-operations, quality-assurance, cost-management, reliability]
   difficulty: advanced
   related: [03_Coordination_Patterns, 10_Strategist_Agent, 14_Metacognitive_Monitor, 15_Grounding_Scores, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]
   changelog:
+    7.0.0:
+      date: 2026-04-14
+      changes:
+        - Add pure decision functions requirement for circuit breakers — input/output only, truth-table expressible
     6.4.0: |
       - Added metric #9: Token Cost Per Mode — per-mode token tracking, 40% chain budget ceiling
     6.2.0: |
@@ -459,6 +463,31 @@ default_bounds:
 - Corrective actions resolve bound violations within the next 5 tasks
 - Cost stays within budget without sacrificing critical-path quality
 - Two-layer safety (Monitor + Bounds) catches both acute and chronic failures
+
+---
+
+## Pure Decision Functions
+
+Circuit breaker logic and operational threshold checks MUST be expressed as pure functions:
+
+- **Input → Output only** — no side effects, no state mutations inside the function
+- **Expressible as a truth table** — every input combination maps to a deterministic output
+- **Testable in isolation** — the function can be evaluated without running the full mode
+
+**Circuit breaker as pure function:**
+```
+inputs:  consecutive_failures (int), threshold (int), stop_hook_active (bool)
+outputs: decision (block | allow | escalate)
+
+truth table:
+  consecutive_failures < threshold  → allow
+  consecutive_failures >= threshold AND stop_hook_active = false → block
+  consecutive_failures >= threshold AND stop_hook_active = true  → escalate (log, allow)
+```
+
+**Why pure functions:** Circuit breakers that mix state management with decision logic are untestable and produce unexpected behavior under compaction (state is lost, decisions become inconsistent). Pure functions with explicit inputs always produce the same output regardless of session history.
+
+Side effects (logging, state writes) happen AFTER the pure decision is made, not inside it.
 
 ---
 

@@ -5,13 +5,17 @@
 ```yaml
 module:
   title: Calibrator Agent Specification
-  version: 6.5.0
+  version: 7.0.0
   purpose: Generate complexity-aware AI coder configuration that scales from hobby projects to regulated-industry deployments
   topics: [configuration, guardrails, best-practices, version-pinning, ai-coder-optimization, compliance, complexity-assessment, config-accretion]
   contexts: [project-setup, stack-selection, instruction-generation, regulated-industry]
   difficulty: intermediate
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 07_Critic_Agent, 08_Synthesizer_Agent, 10_Strategist_Agent, 12_Calibration_Layer, 13_Decision_Classification, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.0.0:
+      date: 2026-04-14
+      changes:
+        - Add context hygiene audit — five-dimension checklist for instruction conflicts, staleness, verbosity, wiki, memory
     6.2.0: |
       - Added accretion check — novel configuration patterns flagged as ACCRETION_CANDIDATE (Module 21 integration)
       - Added Module 21 to related modules
@@ -622,6 +626,56 @@ strategist_triggers:
     instruction: "Make this stack/architecture decision before I generate configuration"
     return_to: calibrator-001 (with decision to encode in config)
 ```
+
+---
+
+## Context Hygiene Audit
+
+A named step in Calibrator setup and periodic review. Surfaces context pollution before it degrades agent performance.
+
+**When it fires:**
+- New project setup (always)
+- Explicit request: "audit my context", "review my CLAUDE.md", "context hygiene"
+- Performance degradation signal: user reports repeated mistakes or wrong patterns
+
+**Five-dimension checklist:**
+
+**1. Instruction Conflict Scan**
+- Multiple CLAUDE.md files at different levels? Do any rules contradict?
+- Duplicate instructions (same rule stated twice = noise)?
+- Surface conflicts: [rule A] vs [rule B] — which wins?
+
+**2. Staleness Check**
+- Rules referencing past system states ("we use X" — do we still?)
+- Skill references valid? (names, paths, commands still exist?)
+- Server/URL references current?
+
+**3. Verbosity Assessment**
+- Estimate context load from CLAUDE.md at session start
+- Flag if > 4K tokens (high load, crowds signal)
+- Identify compression candidates: verbose explanations that could be one line
+
+**4. Wiki Hygiene**
+- Entries with grounding score < 0.6 being surfaced as high-confidence?
+- Topics superseded by newer work?
+- Near-duplicate entries?
+
+**5. Memory Decay Check**
+- Tier 3 history entries being treated as current fact?
+- Remembered patterns the user has since explicitly changed?
+
+**Output format:**
+```
+Context Hygiene Audit
+Instruction Conflicts: [N found / none]
+Stale Rules: [N candidates]
+Verbosity: [LOW / MEDIUM / HIGH]
+Wiki Hygiene: [N issues / clean]
+Memory: [N stale entries / clean]
+Recommended actions: [ordered by impact]
+```
+
+**Surface only — never auto-modify.** User decides on all recommendations.
 
 ---
 

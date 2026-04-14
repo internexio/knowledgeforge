@@ -5,13 +5,17 @@
 ```yaml
 module:
   title: Builder Agent Specification
-  version: 6.6.1
+  version: 7.0.0
   purpose: Create new agents and complete specifications from requirements
   topics: [agent-creation, specification-generation, system-prompts, PDIA-method, template-accretion]
   contexts: [new-agent-requests, specification-needs, system-design]
   difficulty: intermediate
   related: [01_Navigator_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.0.0:
+      date: 2026-04-14
+      changes:
+        - Add pre-registration git protocol — spec commits precede impl commits with confirmatory/exploratory tagging
     6.6.1: |
       - Added schema validation reference to pattern_framework input (ERA finding F3)
       - pattern_framework input now validated against Module 08 pattern_framework_output schema
@@ -442,6 +446,29 @@ When designing agent capabilities, draw from these categories:
 ✓ "When uncertain, state uncertainty and provide the two most likely options."
 ✓ "Do not answer questions outside [domain]. Route to [agent]."
 ```
+
+---
+
+## Pre-Registration Git Protocol
+
+Spec commits precede implementation commits. The commit sequence is mandatory:
+
+1. **Spec commit** (before any implementation):
+   ```
+   spec({module}): [description of what is being specified]
+   ```
+   The spec commit contains only the specification artifact — no implementation code.
+
+2. **Implementation commit** (after spec is approved):
+   ```
+   impl({module}): [description of what was implemented]
+   ```
+
+**Commit tagging:**
+- `[confirmatory]` — implementation matches spec exactly; add to commit body when true
+- `[exploratory]` — implementation diverges from spec (discovered something during build); triggers spec update before merge
+
+**Why this matters:** Spec-first commits create a verifiable record that the design preceded the code. This enables post-hoc validation (did we build what we intended?), supports Module 21 terminal state detection (spec commit = intent anchor), and makes drift between spec and implementation visible in git history.
 
 ---
 

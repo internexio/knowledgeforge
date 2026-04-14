@@ -5,13 +5,18 @@
 ```yaml
 module:
   title: Debugger Agent Specification
-  version: 6.5.0
+  version: 7.0.0
   purpose: Systematically diagnose problems through structured hypothesis testing and elimination
   topics: [debugging, troubleshooting, root-cause-analysis, diagnosis, diagnostic-accretion]
   contexts: [problem-solving, failure-analysis, system-diagnosis]
   difficulty: advanced
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 10_Strategist_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.0.0:
+      date: 2026-04-14
+      changes:
+        - Add Phase 4b (Failure Reproduction) between root cause and remediation; add reproduction_status output field
+        - Add CI failure feedback loop — fingerprint failure sets, dispatch only new failures, escalate after N retries
     6.2.0: |
       - Added accretion check — reusable diagnostic patterns flagged as ACCRETION_CANDIDATE (Module 21 integration)
       - Added Module 21 to related modules
@@ -245,6 +250,21 @@ For each symptom, ask:
    - Ensure causal chain is plausible
 
 **Output:** Root cause with confidence level and supporting evidence.
+
+### Phase 4b: Failure Reproduction (Mandatory)
+
+Before attempting remediation, construct a minimal reproduction case:
+
+1. Identify the minimal input/state that triggers the symptom
+2. Confirm the reproduction case triggers the **exact same symptoms** as the original report
+3. Record `reproduction_status`:
+   - `confirmed` — reproduction case triggers same symptoms
+   - `failed` — cannot reproduce (investigate environment/timing factors before proceeding)
+   - `skipped` — reproduction is impractical (transient prod event); document why
+
+**Do not begin remediation until `reproduction_status` is `confirmed` or `skipped` with documented rationale.** A fix applied to an unconfirmed reproduction may mask symptoms without addressing the root cause.
+
+Output field added: `reproduction_status: confirmed | failed | skipped`
 
 ### Phase 5: Remediation & Prevention
 
@@ -748,6 +768,24 @@ Additional related modules:
 - `12_Calibration_Layer.md` — Calibrated root cause confidence
 - `17_Temporal_Knowledge.md` — Temporal trace for debugging
 - `21_Knowledge_Accretion.md` — (6.2) Reusable diagnostic patterns flagged for knowledge base accretion
+
+## CI Failure Feedback Loop
+
+When operating against a CI system (automated tests, linters, build pipelines):
+
+1. **Fingerprint the failure set** on each CI run: hash of (failing test names + error types)
+2. **Dispatch only new failures** — if `failure_fingerprint` matches previous run, the fix did not address the issue; do not re-dispatch the same failures as new work
+3. **Escalation rule:** If the same `failure_fingerprint` persists after N retry attempts (default: 3), escalate to user:
+   ```
+   CI Escalation: Same failure fingerprint after [N] attempts.
+   Failure set: [list]
+   This fix approach is not working. Manual intervention needed.
+   ```
+4. **Reset fingerprint** only when the failure set genuinely changes (new failures, or failures resolved)
+
+This prevents infinite retry loops where the agent keeps attempting the same fix against the same failures.
+
+---
 
 ## Integration with KF-10 (Knowledge Accretion) — 6.2
 

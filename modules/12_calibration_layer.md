@@ -5,13 +5,18 @@
 ```yaml
 module:
   title: Calibration Layer
-  version: 6.5.0
+  version: 7.0.0
   purpose: Provide multi-run stability scoring and bias detection for all KF evaluative outputs
   topics: [calibration, evaluation-quality, bias-detection, confidence-intervals, LLM-as-judge]
   contexts: [evaluation, review, scoring, quality-assurance, agent-assessment]
   difficulty: advanced
   related: [02_Builder_Agent, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.0.0:
+      date: 2026-04-14
+      changes:
+        - Add cross-provider judge isolation rule — judge must be different family from agent
+        - Add SAP-inspired structured output parsing cascade with grounding score integration
     6.2.0: |
       - Added knowledge base accretion to always_calibrate triggers (Module 21 integration)
     6.1.0: |
@@ -337,6 +342,42 @@ calibration_triggers:
     - Reckonings (deterministic answers don't need multi-run)
     - Time-critical responses where latency matters
 ```
+
+---
+
+## Judge Isolation Rule
+
+The judge model MUST be from a different provider family than the agent being evaluated:
+
+- Claude agent → OpenAI/GPT judge
+- OpenAI/GPT agent → Claude judge
+- Same-family judging introduces self-preference bias that inflates calibration scores
+
+**Rationale:** LLMs show measurable preference for outputs from models in the same training lineage. Cross-provider judging eliminates this systematic bias from calibration scores.
+
+This rule applies to all multi-pass evaluation runs in Critic, Expert, and Strategist modes.
+
+---
+
+## Structured Output Parsing Cascade
+
+When a mode produces structured output (specs, checklists, JSON schemas), apply a multi-strategy parsing cascade in order:
+
+| Strategy | Cost (lower = better) | When |
+|----------|----------------------|------|
+| Direct parse | 0 | Output matches expected schema exactly |
+| Lenient parse (extra keys tolerated) | +1 per extra key | Output has extra fields |
+| Default-fill (missing optional keys) | +1 per defaulted key | Output missing non-required fields |
+| Coercion (type mismatch, auto-convert) | +10 per coercion | Field type wrong but coercible |
+| Fallback (missing required key) | +100 per field | Required field absent |
+
+**Integration with Module 15 (Grounding Scores):** Parse level maps to grounding score penalty:
+- Cost 0: no penalty
+- Cost 1–5: grounding score × 0.95
+- Cost 6–20: grounding score × 0.85
+- Cost 21+: grounding score × 0.70, flag output as LOW confidence
+
+Report parse cost alongside output. If total cost > 20, surface to user.
 
 ---
 

@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Permission Model
-  version: 6.5.0
+  version: 7.0.0
   purpose: Layered permission system that classifies action risk, enforces capability restrictions per sub-agent, and gates autonomous behavior with human checkpoints
   topics: [permissions, risk-classification, capability-restriction, autonomous-governance, sub-agent-safety, accretion-permissions]
   contexts: [autonomous-deployment, sub-agent-architecture, mode-chains, production-safety]
@@ -14,6 +14,10 @@ module:
   added_in: "6.1"
   implements: "Directive 5 (Layered Permission Model), Directive 6 (Fork-Join Capabilities)"
   changelog:
+    7.0.0:
+      date: 2026-04-14
+      changes:
+        - Add allow-with-mutation permission tier — path normalization, safety flags, cost annotation policies
     6.2.0: |
       - Added accretion permission rules — MEDIUM base, HIGH for customer-facing knowledge bases (Module 21 integration)
       - Added accretion_permissions yaml block
@@ -114,6 +118,25 @@ risk_escalation:
     trigger: Accretion candidate targets a knowledge base that feeds customer-facing products (Science Advisor evidence tiers, COS claims, ODS scoring)
     action: Set to HIGH — bad knowledge in production bases propagates to customer output
 ```
+
+---
+
+## Allow-With-Mutation (Third Permission Tier)
+
+Extend the binary allow/deny model with a mutation tier. Some operations should be allowed but with their inputs sanitized or annotated before execution:
+
+**Mutation policies:**
+
+| Policy | Trigger | Mutation |
+|--------|---------|----------|
+| Path normalization | Absolute paths outside project root | Rewrite to relative path within project |
+| Safety flag injection | Destructive shell commands (rm, drop, truncate) | Inject `--dry-run` or `--interactive` flag |
+| Cost annotation | LLM API calls with large context | Prepend token estimate to tool input |
+| Scope restriction | File writes to sensitive directories | Redirect to sandbox path |
+
+**Implementation note:** Mutations are applied via `PermissionRequest` hook (pre-execution). The hook receives the proposed tool call, applies the mutation policy, and returns the modified input. Claude sees the mutated version — the original is logged for audit.
+
+**Mutation is always logged.** If a mutation changes the semantic meaning of the operation (not just format), surface the change to the user before execution.
 
 ---
 

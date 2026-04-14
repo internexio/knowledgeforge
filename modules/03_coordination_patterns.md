@@ -5,13 +5,18 @@
 ```yaml
 module:
   title: Agent Coordination Patterns
-  version: 6.6.1
+  version: 7.0.0
   purpose: Design multi-agent workflows by mapping dependencies first, then deriving the coordination pattern from the graph
   topics: [coordination, multi-agent, workflows, handoffs, orchestration, dependency-mapping, verification, capability-restriction]
   contexts: [complex-tasks, agent-teams, workflow-design]
   difficulty: advanced
   related: [01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 14_Metacognitive_Monitor, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]
   changelog:
+    7.0.0:
+      date: 2026-04-14
+      changes:
+        - Add dual fingerprinting (state + dispatch) for Critic ↔ Builder loop to prevent redundant re-review
+        - Add spec drift checkpoint for 3+ mode chains — re-validates intent between mode 2 and mode 3
     6.6.1: |
       - Added coordination_handoff_schema output contract for Coordinator → Builder transfer (ERA finding F8)
       - Defines required fields: dependency_graph, pattern_name, critical_path, parallel_clusters, handoff_protocol
@@ -435,6 +440,23 @@ handoff:
 
 ---
 
+## Dual Fingerprinting for Critic ↔ Builder Loop
+
+Track two fingerprints separately throughout the revision cycle:
+
+- **`state_fingerprint`**: hash of the artifact being reviewed (the spec/code/plan). Changes when Builder revises.
+- **`dispatch_fingerprint`**: hash of the finding set dispatched to Builder. Changes when Critic finds new issues.
+
+**Dispatch rules:**
+- On each Critic pass, compute `dispatch_fingerprint` of current findings
+- If `dispatch_fingerprint` matches previous pass → no new findings → terminate the loop
+- Dispatch only **new/changed findings** to Builder, not the full finding set
+- Builder only revises sections touched by dispatched findings
+
+**Why dual fingerprints:** A single fingerprint on the artifact alone can't distinguish "Builder revised but Critic found the same issues again" from "everything is resolved." Tracking dispatch separately catches loops where the artifact changes but the problems persist.
+
+---
+
 ## Automatic Adversarial Verification (6.1)
 
 Mode chains that produce evaluative or higher output automatically include an adversarial Critic pass. This is not optional for qualifying chains.
@@ -563,6 +585,33 @@ mode_transition_cost:
     low_value_switch: "Expert → Strategist for a single trivial prioritization. Handle inline."
     skip_switch: "Builder output is a simple template fill. Auto-verification would yield only low-severity findings. Skip."
 ```
+
+---
+
+## Spec Drift Checkpoint (3+ Mode Chains)
+
+For chains of 3 or more modes, insert a spec re-validation step between mode 2 and mode 3:
+
+**Checkpoint protocol:**
+1. Extract original goal from the first substantive user message in the chain (the intent anchor)
+2. Summarize what modes 1 and 2 have produced (trajectory)
+3. Compare trajectory against original goal:
+   - **Aligned** → proceed silently (no output, invisible)
+   - **Drifted** → surface before launching mode 3:
+
+```
+Spec Checkpoint:
+Original goal: [verbatim from chain start]
+Current trajectory: [what modes 1-2 produced]
+Drift detected: [describe the divergence]
+Proposed correction: [what to adjust before mode 3]
+```
+
+**User-initiated pivots vs. model drift:**
+- If the user explicitly changed scope mid-chain → update the locked intent anchor (this is intentional)
+- If the trajectory diverged without user input → this is model drift → surface and correct
+
+**Why between mode 2 and mode 3:** Mode 3 is typically the output-producing mode (Builder, Strategist). Catching drift before mode 3 prevents generating a complete artifact for the wrong goal. Catching it after mode 1 adds overhead before any meaningful output exists.
 
 ---
 

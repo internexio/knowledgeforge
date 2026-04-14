@@ -515,9 +515,9 @@ Apply changes in dependency order:
     - Surface only — never auto-modify files; user decides on all recommendations
 
 ### Deliverables
-- [ ] 15 module spec updates applied to `knowledgeforge-core/modules/` (13 original + ENH-006 Coordinator + ENH-007 Calibrator)
-- [ ] Version bumped to 7.0.0 in `kf.yaml` and all module headers
-- [ ] Changelog entries added to each modified module
+- [x] 15 module spec updates applied to `knowledgeforge-core/modules/` (13 original + ENH-006 Coordinator + ENH-007 Calibrator)
+- [x] Version bumped to 7.0.0 in `kf.yaml` and all module headers
+- [x] Changelog entries added to each modified module
 
 ### Validation Gate
 Run Critic (linter variant) across all updated modules. Check for internal consistency, cross-reference validity, and no orphan references.
