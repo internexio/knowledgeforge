@@ -1,0 +1,220 @@
+# KF Routing Test Suite — Phase 1 Validation
+# Target: >85% mode accuracy, >80% cross-cutting module recall
+# Run: python3 tests/run_routing_tests.py
+
+tests:
+
+  # ── Reckonings (should NOT activate a mode) ────────────────────────────────
+
+  - id: r01
+    prompt: "What port does PostgreSQL use?"
+    expected_mode: null
+    expected_decision: reckoning
+    expected_cross_cutting: []
+
+  - id: r02
+    prompt: "What's the default branch name in git?"
+    expected_mode: null
+    expected_decision: reckoning
+    expected_cross_cutting: []
+
+  - id: r03
+    prompt: "What's today's date?"
+    expected_mode: null
+    expected_decision: reckoning
+    expected_cross_cutting: []
+
+  - id: r04
+    prompt: "What does HTTP 429 mean?"
+    expected_mode: null
+    expected_decision: reckoning
+    expected_cross_cutting: []
+
+  # ── Builder ────────────────────────────────────────────────────────────────
+
+  - id: b01
+    prompt: "Create a spec for a new monitoring agent"
+    expected_mode: builder
+    expected_decision: evaluative
+    expected_cross_cutting: []
+
+  - id: b02
+    prompt: "Build me a CLAUDE.md for this project"
+    expected_mode: calibrator
+    expected_decision: evaluative
+    expected_cross_cutting: []
+    note: "CLAUDE.md setup → calibrator, not builder"
+
+  - id: b03
+    prompt: "Scaffold a FastAPI endpoint for the auth service"
+    expected_mode: builder
+    expected_decision: evaluative
+    expected_cross_cutting: []
+
+  - id: b04
+    prompt: "Write a spec for the pre-prompt routing hook"
+    expected_mode: builder
+    expected_decision: evaluative
+    expected_cross_cutting: []
+
+  - id: b05
+    prompt: "Generate a test suite for the routing hook"
+    expected_mode: builder
+    expected_decision: evaluative
+    expected_cross_cutting: []
+
+  # ── Critic ────────────────────────────────────────────────────────────────
+
+  - id: c01
+    prompt: "Review this spec and tell me what's missing"
+    expected_mode: critic
+    expected_decision: evaluative
+    expected_cross_cutting: [M12, M15]
+
+  - id: c02
+    prompt: "Health check the knowledge base"
+    expected_mode: critic
+    expected_decision: evaluative
+    expected_cross_cutting: [M21]
+    note: "critic linter variant"
+
+  - id: c03
+    prompt: "Audit my hosting setup and find single points of failure"
+    expected_mode: critic
+    expected_decision: evaluative
+    expected_cross_cutting: [M15]
+    note: "critic audit variant"
+
+  - id: c04
+    prompt: "Sanity check this before we ship it"
+    expected_mode: critic
+    expected_decision: evaluative
+    expected_cross_cutting: [M12, M15]
+
+  - id: c05
+    prompt: "Poke holes in this architecture"
+    expected_mode: critic
+    expected_decision: evaluative
+    expected_cross_cutting: [M12, M15]
+
+  # ── Debugger ──────────────────────────────────────────────────────────────
+
+  - id: d01
+    prompt: "The API is returning 500 errors on the auth endpoint"
+    expected_mode: debugger
+    expected_decision: evaluative
+    expected_cross_cutting: []
+
+  - id: d02
+    prompt: "Why is the hook not firing?"
+    expected_mode: debugger
+    expected_decision: evaluative
+    expected_cross_cutting: []
+
+  - id: d03
+    prompt: "Tests are failing after the last deploy"
+    expected_mode: debugger
+    expected_decision: evaluative
+    expected_cross_cutting: []
+
+  # ── Strategist ────────────────────────────────────────────────────────────
+
+  - id: s01
+    prompt: "Should we use PostgreSQL or MongoDB for this project?"
+    expected_mode: strategist
+    expected_decision: evaluative
+    expected_cross_cutting: [M15]
+
+  - id: s02
+    prompt: "Should we open-source the framework?"
+    expected_mode: strategist
+    expected_decision: novel
+    expected_cross_cutting: [M12, M15, M21]
+
+  - id: s03
+    prompt: "What should we prioritize this sprint — the hook or the decomposition?"
+    expected_mode: strategist
+    expected_decision: evaluative
+    expected_cross_cutting: []
+
+  - id: s04
+    prompt: "Is it worth building the compiler now or wait until Phase 4 is done?"
+    expected_mode: strategist
+    expected_decision: predictive
+    expected_cross_cutting: [M15]
+
+  # ── Expert ────────────────────────────────────────────────────────────────
+
+  - id: e01
+    prompt: "How does Claude Code's compaction mechanism work?"
+    expected_mode: expert
+    expected_decision: evaluative
+    expected_cross_cutting: [M15]
+
+  - id: e02
+    prompt: "Do a deep dive on the security implications of this hook architecture"
+    expected_mode: expert
+    expected_decision: evaluative
+    expected_cross_cutting: [M12, M15]
+
+  - id: e03
+    prompt: "Map the entity relationships between the KF modules"
+    expected_mode: expert
+    expected_decision: evaluative
+    expected_cross_cutting: [M21]
+    note: "ERA domain"
+
+  # ── Synthesizer ───────────────────────────────────────────────────────────
+
+  - id: y01
+    prompt: "What patterns do these three repos have in common?"
+    expected_mode: synthesizer
+    expected_decision: evaluative
+    expected_cross_cutting: [M21]
+
+  - id: y02
+    prompt: "Extract a reusable pattern from these examples"
+    expected_mode: synthesizer
+    expected_decision: evaluative
+    expected_cross_cutting: [M21]
+
+  # ── Coordinator ───────────────────────────────────────────────────────────
+
+  - id: o01
+    prompt: "Decompose this task into parallel sub-agents"
+    expected_mode: coordinator
+    expected_decision: evaluative
+    expected_cross_cutting: []
+
+  # ── Calibrator ────────────────────────────────────────────────────────────
+
+  - id: k01
+    prompt: "Set up a CLAUDE.md with coding standards for this repo"
+    expected_mode: calibrator
+    expected_decision: evaluative
+    expected_cross_cutting: []
+
+  # ── Navigator (ambiguous) ─────────────────────────────────────────────────
+
+  - id: n01
+    prompt: "Help me with my agent"
+    expected_mode: navigator
+    expected_decision: evaluative
+    expected_cross_cutting: []
+    note: "genuinely ambiguous — could be builder or debugger"
+
+  # ── Chains (first mode in chain) ──────────────────────────────────────────
+
+  - id: ch01
+    prompt: "Review the API security and tell me what to fix first"
+    expected_mode: [critic, expert]  # either is acceptable
+    expected_decision: evaluative
+    expected_cross_cutting: [M12, M15]
+    note: "chain: critic/expert → strategist; first mode is critic or expert"
+
+  - id: ch02
+    prompt: "Debug this and tell me if we should fix it or rebuild"
+    expected_mode: debugger
+    expected_decision: evaluative
+    expected_cross_cutting: []
+    note: "chain: debugger → strategist; first mode is debugger"

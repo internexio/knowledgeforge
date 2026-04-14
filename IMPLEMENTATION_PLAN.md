@@ -300,6 +300,7 @@ Content: See `kf-hook-driven-routing.md` → "CLAUDE.md: The Thin Orchestrator" 
 - Mode chaining behavior
 - Auto-verification rule
 - Circuit breakers
+- **ENH-004:** Token economics pre-flight gate in chain dispatch logic — LOW tier invisible, MEDIUM tier log note, HIGH tier surface options before launching. Fire on 3+ mode chains or Expert + adversarial Critic. (See `enhancements/enh-004-token-economics-preflight.md`)
 
 2. **Extract each mode into a skill file:**
 ```
@@ -310,6 +311,10 @@ For each mode (builder, critic, debugger, strategist, expert, synthesizer, navig
 - Include: purpose, protocol steps, output format, quality gates, variants, integration notes
 - Do NOT include cross-cutting module content (that's in docs)
 - Each skill should be self-contained: an agent loading only CLAUDE.md + this skill should be able to execute the mode
+- **ENH-001** (Builder + Expert skills): Add assumption surface step — before building, identify load-bearing factual premises from user input and surface them with consequence statements. One pass, not a gate. (See `enhancements/enh-001-sycophantic-guard.md`)
+- **ENH-002** (Critic skill): Add functional correctness check after gap-finding pass. Update adversarial framing to lead with "does this do what the user actually needs, or does it correctly solve the wrong problem?" before semantic review. (See `enhancements/enh-002-functional-correctness.md`)
+- **ENH-003** (Coordinator skill): Add harness sizing pre-check before dependency mapping — infer harness type, classify task scope, surface mismatch if found. Matched cases are invisible. (See `enhancements/enh-003-harness-sizing.md`)
+- **ENH-005** (Expert skill): Add structured blast radius checklist (blast radius / reversibility / frequency / verifiability) as required template on HIGH-risk Expert outputs. Checklist verdict feeds permission framing. (See `enhancements/enh-005-blast-radius-checklist.md`)
 
 3. **Extract cross-cutting modules into doc files:**
 ```
@@ -339,8 +344,8 @@ Run the same 10 prompts on:
 Score each output on: mode correctness, cross-cutting module application, output completeness, decision type depth.
 
 ### Deliverables
-- [ ] Thin CLAUDE.md (~5-8K tokens)
-- [ ] 9 skill files (one per mode)
+- [ ] Thin CLAUDE.md (~5-8K tokens) with ENH-004 token economics pre-flight baked in
+- [ ] 9 skill files (one per mode) with ENH-001/002/003/005 baked in during extraction
 - [ ] 13 doc files (cross-cutting modules 12-24)
 - [ ] 9 slash commands (one per mode)
 - [ ] A/B test results comparing decomposed CC vs. monolithic CC vs. CP
@@ -371,6 +376,7 @@ Add the remaining hooks that transform quality gates from advisory to mandatory 
    - Write session summary
    - Back up transcript to `.kf/transcripts/`
    - Reference: `orchestra-integration.md` → item 2
+   - **ENH-006 (compaction anchor):** Preserve verbatim in compaction output — the user's original stated intent for the current task, any explicit constraints/out-of-scope declarations, and the current mode chain + step. Never summarize these. This is the anchor the next session resumes from. (See `enhancements/enh-006-spec-drift-checkpoint.md`)
 
 3. **PostCompact hook** (`kf-postcompact.py`):
    - Inject routing index paths (NOT full contents)
@@ -418,7 +424,7 @@ Add the remaining hooks that transform quality gates from advisory to mandatory 
 
 ### Deliverables
 - [ ] Stop hook with per-mode completion checklists
-- [ ] PreCompact + PostCompact hook pair with asymmetric injection
+- [ ] PreCompact + PostCompact hook pair with asymmetric injection with ENH-006 spec anchor
 - [ ] PostToolUse edit-count nudge
 - [ ] SessionStart context injection
 - [ ] `.kf/state/` directory structure created at runtime
@@ -494,8 +500,21 @@ Apply changes in dependency order:
 13. **Add new meta-principle to orchestrator:**
     - "Deterministic first. Before invoking LLM judgment, exhaust deterministic checks. Before fixing, reproduce. Before acting, triage."
 
+14. **Module 03 (Coordination) — Spec drift mid-chain checkpoint** (from `enhancements/enh-006-spec-drift-checkpoint.md`):
+    - For chains of 3+ modes, insert a spec re-validation step between mode 2 and mode 3
+    - Extract original goal from chain start; compare against modes 1-2 trajectory
+    - Aligned: invisible, proceed. Drifted: surface drift + proposed correction before launching next mode
+    - User-initiated pivots update the locked spec; silent model drift does not
+    - Note: the compaction spec anchor piece is handled in Phase 3 PreCompact hook
+
+15. **Module 11 (Calibrator) — Context hygiene audit** (from `enhancements/enh-007-context-hygiene.md`):
+    - Add context hygiene audit as a named step in Calibrator setup and periodic review
+    - Fires on: new project setup, explicit "audit my context" request, or performance degradation signal
+    - Five-dimension checklist: instruction conflicts, staleness, verbosity, wiki hygiene, memory decay
+    - Surface only — never auto-modify files; user decides on all recommendations
+
 ### Deliverables
-- [ ] 13 module spec updates applied to `knowledgeforge-core/modules/`
+- [ ] 15 module spec updates applied to `knowledgeforge-core/modules/` (13 original + ENH-006 Coordinator + ENH-007 Calibrator)
 - [ ] Version bumped to 7.0.0 in `kf.yaml` and all module headers
 - [ ] Changelog entries added to each modified module
 
