@@ -617,6 +617,8 @@ Build `kf-compile` that can regenerate the CC variant from `knowledgeforge-core`
 - [ ] `kf-compile.py` that generates all three variants
 - [ ] Compilation manifest format defined and generated
 - [ ] Compiled CC matches hand-crafted CC (or is intentionally improved)
+- [ ] Upgrade `sync-modules-cp.yml` to invoke compiler instead of direct file copy (see `docs/planning/cross-repo-sync.md`)
+- [ ] Add `CORE_SYNC_TOKEN` secret to knowledgeforge-core and activate both sync workflows
 - [ ] Compiled CP matches current CP
 
 ### Validation Gate
