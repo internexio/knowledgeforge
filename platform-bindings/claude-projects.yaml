@@ -1,0 +1,70 @@
+platform: claude-projects
+platform_version: "7.0"
+description: >
+  Claude Projects (CP) — no filesystem, no hooks, no skills.
+  Context is loaded from Project Knowledge files at session start.
+  All 26 modules are copied verbatim as knowledge files.
+  Filenames follow CP naming convention (NN_PascalCase.md).
+
+# --------------------------------------------------------------------------
+# Platform capabilities
+# --------------------------------------------------------------------------
+capabilities:
+  filesystem: false
+  hooks: false
+  multi_model: false
+  sub_agents: false
+  skills: false
+  docs: false
+  commands: false
+  project_knowledge: true    # CP-specific: files loaded as project knowledge
+
+constraints:
+  project_knowledge_limit: 200000   # Total token budget across all knowledge files
+  no_hooks: true
+  no_compilation: true              # CP receives full module content — no extraction
+
+# --------------------------------------------------------------------------
+# Output structure — relative to target CP repo root
+# --------------------------------------------------------------------------
+output_structure:
+  knowledge_files_dir: "/"    # Flat root — all knowledge files at repo root
+
+# --------------------------------------------------------------------------
+# Module → output mapping
+# All modules are copied verbatim. Filenames follow CP naming convention.
+# Matching is by two-digit prefix (handled by sync-cp-modules.py / compiler).
+# --------------------------------------------------------------------------
+module_outputs:
+  strategy: copy_verbatim    # No section extraction — full module content
+  name_convention: cp_prefix_match  # Match core NN_*.md → CP NN_*.md by prefix
+
+# CP-specific filename map (for compiler reference)
+# Core filename → CP filename
+filename_map:
+  "00_orchestrator.md":          "00_Project_Instructions-Claude.md"
+  "01_navigator.md":             "01_Navigator_Agent.md"
+  "02_builder.md":               "02_Builder_Agent.md"
+  "03_coordination_patterns.md": "03_Coordination_Patterns.md"
+  "04_specification_templates.md": "04_Specification_Templates.md"
+  "05_expert_agent.md":          "05_Expert_Agent_Example.md"
+  "06_quick_reference.md":       "06_Quick_Reference.md"
+  "07_critic_agent.md":          "07_Critic_Agent.md"
+  "08_synthesizer_agent.md":     "08_Synthesizer_Agent.md"
+  "09_debugger_agent.md":        "09_Debugger_Agent.md"
+  "10_strategist_agent.md":      "10_Strategist_Agent.md"
+  "11_calibrator_agent.md":      "11_Calibrator_Agent.md"
+  "12_calibration_layer.md":     "12_Calibration_Layer.md"
+  "13_decision_classification.md": "13_Decision_Classification.md"
+  "14_metacognitive_monitor.md": "14_Metacognitive_Monitor.md"
+  "15_grounding_scores.md":      "15_Grounding_Scores.md"
+  "16_operational_bounds.md":    "16_Operational_Bounds.md"
+  "17_temporal_knowledge.md":    "17_Temporal_Knowledge.md"
+  "18_salience_allocation.md":   "18_Salience_Allocation.md"
+  "19_memory_architecture.md":   "19_Memory_Architecture.md"
+  "20_permission_model.md":      "20_Permission_Model.md"
+  "21_knowledge_accretion.md":   "21_Knowledge_Accretion.md"
+  "22_semantic_wiki_search.md":  "22_Semantic_Wiki_Search.md"
+  "23_taxonomy_enforcement.md":  "23_Taxonomy_Enforcement.md"
+  "24_verbatim_history_mining.md": "24_Verbatim_History_Mining.md"
+  "25_entity_relationship_analysis.md": "25_Entity_Relationship_Analysis.md"

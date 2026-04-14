@@ -257,3 +257,70 @@ Half-life values in the importance-weighted decay formula are informed by Module
 - `23_Taxonomy_Enforcement.md` — shared vocabulary across Tier 0 and Tier 3
 - `21_Knowledge_Accretion.md` — high-importance Tier 3 entries promote to Tier 0
 - `17_Temporal_Knowledge.md` — half-life values inform decay formula
+
+## CC Doc
+
+# Module 24: Verbatim History Mining — Execution Protocol
+**Apply when:** [KF-ROUTE] load list includes M24, or cross-session recall, pattern detection across sessions, or decision archaeology
+
+Tier 3 semantic retrieval via MemPalace sidecar. Store verbatim, retrieve semantically.
+
+| Strategy | R@5 |
+|---|---|
+| Verbatim + semantic retrieval | **96.6%** — target |
+| Pre-summarized + semantic | **84.2%** — 12.4-point permanent loss |
+| Verbatim + grep | ~55–65% — fallback only |
+
+Compression before storage is irreversible. Never pre-summarize.
+
+## When to Store
+
+| Trigger | Action |
+|---|---|
+| Importance = 5 | Store immediately during session |
+| Evaluative or novel judgment produced | Store; importance ≥ 4 |
+| Decision committed to | Store; importance = 5 |
+| Session end | Store all turns with importance ≥ 3 |
+
+Do not store: greetings, clarification pings, single-line reckonings, importance ≤ 2.
+
+A "turn" = one user message + one assistant response. Do not split or merge.
+
+## Importance-Weighted Decay
+
+```
+effective_importance = importance × 2^(-days_since_access / half_life_days)
+
+half_life by importance:
+  5 → 90 days (committed decisions, architectural choices)
+  4 → 60 days (novel judgments, evaluative outputs)
+  3 → 30 days (evaluative judgments, mode activations)
+  2 → 14 days (reckonings, simple requests)
+  1 →  7 days (greetings, off-topic)
+```
+
+Accessing a turn resets its access date. Decay does not delete.
+
+## Retrieval Protocol
+
+1. Extract domain/topic/tags and date range from current context
+2. Metadata pre-filter: `search_memories(filters={domain, topic, date_range, importance_min≥3})`
+3. Semantic re-rank filtered candidates
+4. Decay adjustment: multiply semantic score by `effective_importance / raw_importance`
+5. Return top-K verbatim turns; summarize at delivery if requested — never before storage
+
+## Metadata Schema (M23 vocabulary)
+
+```yaml
+domain: "architecture"
+topic: "memory-systems"
+tags: ["decay", "retrieval"]
+importance: 4
+session_date: "2026-04-05"
+speaker: "user"  # or "assistant"
+turn_index: 14
+```
+
+## Fallback
+
+When MemPalace unavailable: grep-only retrieval. Always log: `[Module 24 FALLBACK] MemPalace unavailable — using grep. Expect reduced recall.`

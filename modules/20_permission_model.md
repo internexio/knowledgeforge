@@ -419,3 +419,49 @@ circuit_breakers:
 - `16_Operational_Bounds.md` — Circuit breakers complement bounds-based corrective actions
 - `19_Memory_Architecture.md` — (6.1) Index updates are LOW-risk; consolidation is MEDIUM-risk
 - `21_Knowledge_Accretion.md` — (6.2) Accretion is MEDIUM base; customer-facing knowledge bases escalate to HIGH
+
+## CC Doc
+
+# Module 20: Permission Model — Execution Protocol
+**Apply when:** [KF-ROUTE] load list includes M20, or mode is about to produce output with significant downstream consequence
+
+Classify every action by risk tier and frame outputs accordingly.
+
+## Three-Tier Risk Classification
+
+**LOW:** Auto-approve. Reckonings, routing decisions, formatting, reading artifacts, routing index updates. No framing overhead — answer directly.
+
+**MEDIUM:** Auto-approve with full logging. Evaluative judgments (single mode), 2-mode chains, context compression, artifact creation (drafts), predictive judgments with explicit assumptions, knowledge base accretion. Include confidence and reasoning. Flag assumptions explicitly.
+
+**HIGH:** Human confirmation required. Novel judgments, strategy recommendations affecting product decisions, 3+ mode chains, adversarial findings at severity 2+, artifact promotion from draft to approved, customer-facing knowledge base accretion. Flag explicitly: *"This is a high-stakes decision. My recommendation is X because Y. This warrants review before acting."*
+
+## Risk Escalation Rules
+
+```
+Single mode, reckoning: LOW
+Single mode, evaluative: MEDIUM
+Single mode, novel: HIGH
+Two-mode chain: max(terminal_tier, MEDIUM)
+Three+ mode chain: max(terminal_tier, MEDIUM) → review for HIGH
+Confidence < 0.5: escalate tier by one level
+Adversarial finding severity 2+: escalate to HIGH regardless
+```
+
+## Capability Profile (Mode Restrictions)
+
+| Mode | Cannot Do |
+|------|-----------|
+| Navigator | Create artifacts, make decisions |
+| Builder | Modify others' outputs, approve own output |
+| Critic | Modify source artifact (annotate only) |
+| Expert | Modify analyzed artifacts |
+| Debugger | Implement fixes |
+| Strategist | Implement recommendations |
+| Synthesizer | Modify source examples |
+| Calibrator | Deploy configurations |
+
+Sub-agents cannot escalate their own permissions beyond what the orchestrator assigns. No sub-agent modifies another sub-agent's output.
+
+## Circuit Breakers
+
+3 consecutive failures → halt that mode, surface diagnostics, do NOT auto-retry. 2 consecutive failures at same chain step → abort chain, surface partial results. Adversarial overload (> 80% sections flagged) → flag for rebuild, not incremental revision.

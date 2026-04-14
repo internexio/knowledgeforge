@@ -203,3 +203,62 @@ Module 24 applies the same metadata-filter-first pattern to Tier 3 (verbatim con
 - `23_Taxonomy_Enforcement.md` — controls vocabulary used in metadata filters
 - `24_Verbatim_History_Mining.md` — same filter-first pattern applied to Tier 3
 - `17_Temporal_Knowledge.md` — staleness signals used in recency boost
+
+## CC Doc
+
+# Module 22: Semantic Wiki Search — Execution Protocol
+**Apply when:** [KF-ROUTE] load list includes M22, or retrieving from wiki (accretion checks, linter runs, cross-session queries)
+
+Two-phase retrieval over the Tier 0 wiki. Keyword-only search achieves ~60% R@10. Hierarchical metadata pre-filtering raises this to ~95% R@10. Phase order is not interchangeable.
+
+## Retrieval Pipeline
+
+```
+query
+  → extract domain / topic / tag signals from query text
+  → Phase 1 (metadata pre-filter):
+      candidates = entries where domain matches ∩ topic matches
+                   UNION entries with ≥ 2 tag overlaps
+  → embed query (cached for session)
+  → Phase 2 (semantic re-rank):
+      cosine_sim(query_embedding, entry_embedding) per candidate
+  → fuse scores → return top-K
+```
+
+## Score Fusion
+
+```
+final_score =
+  0.65 × cosine_similarity(query_emb, entry_emb)
+  + 0.20 × normalize(entry.importance, range=[1,5])
+  + 0.15 × recency_boost(last_accessed, staleness_risk)
+```
+
+`recency_boost` decay rates: λ = 0.01 (stable), 0.05 (slow_decay), 0.15 (volatile).
+
+## Required Wiki Entry Fields
+
+```yaml
+domain: "architecture"        # M23 controlled vocabulary
+topic: "memory-systems"       # M23 controlled vocabulary
+tags: ["retrieval", "decay"]  # M23 vocabulary, 1–5 tags
+importance: 4                 # integer 1–5
+created_at: "2026-04-05"
+last_accessed: "2026-04-05"
+grounding_score: 0.85
+staleness_risk: "stable"
+```
+
+Entries missing `domain` fall back to full-corpus search — log warning. Entries with `grounding_score < 0.6` excluded from index.
+
+## Fallback
+
+When vector DB is unavailable: grep `wiki/` files. Log: `[Module 22 FALLBACK] Vector DB unavailable — using grep. Expect reduced recall.` Never fail silently.
+
+## Anti-Patterns
+
+Never pure semantic search without metadata pre-filter. Never post-hoc tag filtering (filter before scoring, not after). Never re-embed all entries at query time (pre-compute at write). Domain mismatch is a hard exclude, not a soft penalty.
+
+## Success Criteria
+
+R@10 with hierarchical filter ≥ 95%. Query latency < 200ms P95. Fallback rate < 1% of queries.

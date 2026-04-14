@@ -342,3 +342,64 @@ Tier 3 entries (verbatim conversation turns stored in MemPalace) also use Module
 - `19_Memory_Architecture.md` — vocabulary file is a Tier 0 artifact
 - `24_Verbatim_History_Mining.md` — Tier 3 entries also use this vocabulary for cross-tier filtering
 - `17_Temporal_Knowledge.md` — `staleness_risk` values are also a controlled vocabulary (same principle)
+
+## CC Doc
+
+# Module 23: Taxonomy Enforcement — Execution Protocol
+**Apply when:** [KF-ROUTE] load list includes M23, or a wiki entry is being filed (Gate 4a in M21 pipeline)
+
+Fixed controlled vocabulary for wiki entry domain/topic/tags, enforced at write time. Free-form tagging produces synonym fragmentation that degrades M22 filter reliability.
+
+## Three-Tier Hierarchy
+
+```
+domain (required, single value)
+  └── topic (required, single value)
+        └── tags (required, 1–5 values, all from approved list)
+```
+
+All three levels required. Missing any → rejection.
+
+## Controlled Vocabulary
+
+### Domains and Topics
+
+| Domain | Topics |
+|--------|--------|
+| `architecture` | memory-systems, routing, mode-design, chain-design, knowledge-accretion, decision-classification |
+| `patterns` | retrieval, decay, classification, synthesis, validation, orchestration |
+| `anti-patterns` | over-routing, context-bloat, compression-loss, hallucination, mode-collapse |
+| `performance` | latency, throughput, token-cost, cache, index-efficiency |
+| `integration` | mcp-protocol, vector-db, llm-api, external-tools, sidecar-services |
+| `research` | benchmarks, neuro-symbolic, memory-systems, agent-coordination, retrieval-augmented-generation |
+| `strategy` | prioritization, trade-off-analysis, risk-assessment, scope-management |
+| `infrastructure` | deployment, ops, ci-cd, observability, server-configuration |
+| `debugging` | root-cause-analysis, regression-detection, hypothesis-testing, error-classification |
+| `security` | threat-model, access-control, data-isolation, attack-surface |
+
+### Approved Tags (55 total)
+
+```
+retrieval, recall, decay, importance-weighting, temporal, verbatim, semantic-search,
+metadata-filter, embedding, vector-index,
+routing, classification, mode-activation, chain, delegation,
+grounding, confidence, adversarial, quality-gate, hallucination-risk,
+tier-0, tier-1, tier-2, tier-3, accretion, taxonomy,
+latency, token-cost, throughput, benchmark,
+mcp, api, sidecar, vector-db,
+deployment, gpu, compute, infrastructure,
+empirical, theoretical, experimental, peer-reviewed,
+stable, volatile, pinned, archived, superseded
+```
+
+## Validation Protocol (Gate 4a)
+
+**Gate 1 — Domain:** `entry.domain` must be in taxonomy keys. On fail: reject with nearest-match.
+**Gate 2 — Topic:** `entry.topic` must be in `taxonomy[domain].topics`. On fail: reject with nearest-match for that domain.
+**Gate 3 — Tags:** Each tag must be in `approved_tags`. Count must be 1–5. On fail: reject with nearest-match. **Never auto-assign.** `suggest_nearest` is advisory only.
+
+Nearest-match uses Levenshtein distance, returns top-2 candidates.
+
+## Vocabulary Extension
+
+New terms require: justification, scope, 2+ sample entries, update to this file, version bump, and M22 index rebuild. Tag count cap: 60. Before adding, verify no existing term covers it.

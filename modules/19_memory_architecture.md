@@ -525,3 +525,56 @@ bounds_integration:
 - `22_Semantic_Wiki_Search.md` — (6.5) Tier 0 retrieval implementation; metadata-gated semantic search over wiki/
 - `23_Taxonomy_Enforcement.md` — (6.5) Controlled vocabulary shared across Tier 0 and Tier 3 entries
 - `24_Verbatim_History_Mining.md` — (6.5) Tier 3 retrieval implementation; MemPalace sidecar + semantic search
+
+## CC Doc
+
+# Module 19: Memory Architecture — Execution Protocol
+**Apply when:** [KF-ROUTE] load list includes M19, or session has extended beyond 10 turns or context pressure builds
+
+Maintain routing accuracy across long sessions using a four-tier memory model. Treat accumulated context as hints, not facts.
+
+## Four-Tier Model
+
+**Tier 0 — Persistent Domain Knowledge (Cross-Session)**
+Location: `wiki/` directory. Contents: compiled knowledge articles, pattern catalogs, diagnostic libraries, decision frameworks. Not always loaded — loaded when relevant. Searched during accretion checks and linter runs.
+
+**Tier 1 — Routing Index (Always Loaded)**
+Orchestrator's working memory. Budget: ~150 chars per entry, max 30 entries (~4,500 chars total).
+
+Format:
+```
+SESSION INDEX (turn N)
+user: [expertise_level] | goal: [primary_goal]
+task: [current_task] | step: [current_step] | blocker: [if_any]
+[1] [mode]: [action] ([decision_type], [reversible?]) [status]
+open: [unresolved items]
+```
+
+Update after every mode completion or decision. Closed items compressed to single line. When entries exceed 30: consolidate oldest closed items into summary.
+
+**Tier 2 — Mode-Specific State (Loaded On Demand)**
+Detailed working state for currently active mode only. One mode's state at a time. On mode exit: capture output and key decisions, update routing index.
+
+**Tier 3 — Verbatim History (Semantic Retrieval via MemPalace)**
+Full verbatim conversation turns with importance metadata. Accessed via semantic vector search with metadata pre-filtering. Store verbatim, retrieve semantically. 96.6% R@5 with verbatim + semantic; 84.2% with pre-summarized (12.4-point permanent loss). Never compress before storage.
+
+## Skeptical Verification Rule
+
+Before acting on recalled state: (1) Does current request contradict stored state? (2) Has user corrected this? (3) Is the stored decision still relevant? If any check fails → flag and resolve before proceeding.
+
+## Consolidation Cycle
+
+Trigger when: context > 75%, mode chain completes, or 10+ turns since last consolidation.
+
+Four phases: Orient (scan for stale entries) → Gather (identify closed decisions) → Consolidate (merge closed items, flag contradictions) → Prune (cap at 30 entries).
+
+Rule: Output a diff showing what changed and why. Silent index rewrites are forbidden.
+
+## Context Pressure Response
+
+```
+75%: Run consolidation cycle
+80%: Aggressive consolidation — compress all closed items to single-line
+85%: Emergency compression — retain only current mode state + routing index
+     Warn: "Context compressed. Decisions from turns 1-N are in index form only."
+```

@@ -1,0 +1,239 @@
+platform: claude-code
+platform_version: "7.0"
+description: >
+  Claude Code (CC) — filesystem-capable, hook-driven, multi-file context.
+  Modules are compiled into skill files, doc files, and hook scripts.
+  The orchestrator (kf.md) loads skill files on demand via [KF-ROUTE] directives.
+
+# --------------------------------------------------------------------------
+# Platform capabilities
+# --------------------------------------------------------------------------
+capabilities:
+  filesystem: true        # Can read/write files
+  hooks: true             # UserPromptSubmit, Stop, PostToolUse, etc.
+  multi_model: false      # Single model per session
+  sub_agents: true        # Agent() tool available
+  skills: true            # .claude/skills/ loaded on demand
+  docs: true              # .claude/docs/ loaded on demand
+  commands: true          # .claude/commands/ slash commands
+  mcp: true               # MCP servers available
+
+constraints:
+  claude_md_token_budget: 8000   # Max tokens for CLAUDE.md (keep thin)
+  skill_token_budget: 2000       # Target token budget per skill file
+  doc_token_budget: 500          # Target token budget per doc file
+  no_project_knowledge: true     # CC has no project knowledge files like CP
+
+# --------------------------------------------------------------------------
+# Output structure — relative to target CC repo root
+# --------------------------------------------------------------------------
+output_structure:
+  claude_md: "CLAUDE.md"
+  agents_dir: ".claude/agents/"
+  skills_dir: ".claude/skills/kf/"
+  docs_dir: ".claude/docs/knowledgeforge/"
+  hooks_dir: ".claude/hooks/"
+  rules_dir: ".claude/rules/"
+  commands_dir: ".claude/commands/"
+  settings: ".claude/settings.json"   # Not compiled — platform config only
+
+# --------------------------------------------------------------------------
+# Module → output mapping
+# --------------------------------------------------------------------------
+module_outputs:
+
+  # Orchestrator
+  "00":
+    outputs:
+      - type: agent
+        path: ".claude/agents/kf.md"
+        section: "CC Agent"         # ## CC Agent section in module
+      - type: rules
+        path: ".claude/rules/kf-meta.md"
+        section: "CC Rules"
+
+  # Mode modules → skill files + agent files
+  "01":  # Navigator
+    mode: navigator
+    outputs:
+      - type: skill
+        path: ".claude/skills/kf/navigator.md"
+        section: "CC Skill"
+      - type: agent
+        path: ".claude/agents/navigator.md"
+        section: "CC Agent"
+
+  "02":  # Builder
+    mode: builder
+    outputs:
+      - type: skill
+        path: ".claude/skills/kf/builder.md"
+        section: "CC Skill"
+      - type: agent
+        path: ".claude/agents/builder.md"
+        section: "CC Agent"
+
+  "05":  # Expert
+    mode: expert
+    outputs:
+      - type: skill
+        path: ".claude/skills/kf/expert.md"
+        section: "CC Skill"
+      - type: agent
+        path: ".claude/agents/expert.md"
+        section: "CC Agent"
+
+  "07":  # Critic
+    mode: critic
+    outputs:
+      - type: skill
+        path: ".claude/skills/kf/critic.md"
+        section: "CC Skill"
+      - type: agent
+        path: ".claude/agents/critic.md"
+        section: "CC Agent"
+
+  "08":  # Synthesizer
+    mode: synthesizer
+    outputs:
+      - type: skill
+        path: ".claude/skills/kf/synthesizer.md"
+        section: "CC Skill"
+      - type: agent
+        path: ".claude/agents/synthesizer.md"
+        section: "CC Agent"
+
+  "09":  # Debugger
+    mode: debugger
+    outputs:
+      - type: skill
+        path: ".claude/skills/kf/debugger.md"
+        section: "CC Skill"
+      - type: agent
+        path: ".claude/agents/debugger.md"
+        section: "CC Agent"
+
+  "10":  # Strategist
+    mode: strategist
+    outputs:
+      - type: skill
+        path: ".claude/skills/kf/strategist.md"
+        section: "CC Skill"
+      - type: agent
+        path: ".claude/agents/strategist.md"
+        section: "CC Agent"
+
+  "11":  # Calibrator
+    mode: calibrator
+    outputs:
+      - type: skill
+        path: ".claude/skills/kf/calibrator.md"
+        section: "CC Skill"
+      - type: agent
+        path: ".claude/agents/calibrator.md"
+        section: "CC Agent"
+
+  # Cross-cutting modules → doc files
+  "12":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/12_calibration_layer.md"
+        section: "CC Doc"
+  "13":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/13_decision_classification.md"
+        section: "CC Doc"
+  "14":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/14_metacognitive_monitor.md"
+        section: "CC Doc"
+  "15":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/15_grounding_scores.md"
+        section: "CC Doc"
+  "16":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/16_operational_bounds.md"
+        section: "CC Doc"
+  "17":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/17_temporal_knowledge.md"
+        section: "CC Doc"
+  "18":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/18_salience_allocation.md"
+        section: "CC Doc"
+  "19":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/19_memory_architecture.md"
+        section: "CC Doc"
+  "20":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/20_permission_model.md"
+        section: "CC Doc"
+  "21":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/21_knowledge_accretion.md"
+        section: "CC Doc"
+  "22":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/22_semantic_wiki_search.md"
+        section: "CC Doc"
+  "23":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/23_taxonomy_enforcement.md"
+        section: "CC Doc"
+  "24":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/24_verbatim_history_mining.md"
+        section: "CC Doc"
+
+# --------------------------------------------------------------------------
+# Special outputs — not derived from module sections
+# --------------------------------------------------------------------------
+special_outputs:
+
+  # Coordinator: ENH-006 — no numbered module yet; compiled from enh spec
+  coordinator:
+    outputs:
+      - type: skill
+        path: ".claude/skills/kf/coordinator.md"
+        source: "enhancements/enh-006-spec-drift-checkpoint.md"
+        section: "CC Skill"
+      - type: agent
+        path: ".claude/agents/coordinator.md"
+        source: "enhancements/enh-006-spec-drift-checkpoint.md"
+        section: "CC Agent"
+
+  # Hooks — copied verbatim from core/hooks/
+  hooks:
+    source_dir: "hooks/"
+    files:
+      - kf-route.py
+      - kf_module_index.txt
+      - kf-stop-validator.py
+      - kf-precompact.py
+      - kf-postcompact.py
+      - kf-edit-nudge.py
+      - kf-session-start.py
+
+  # Static agents — hand-maintained, not compiled from modules
+  static_agents:
+    - ".claude/agents/adversarial-critic.md"
+    - ".claude/agents/knowledge-librarian.md"
+
+  # Commands — hand-maintained templates, not compiled
+  static_commands:
+    - ".claude/commands/"

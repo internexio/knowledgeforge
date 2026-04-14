@@ -630,3 +630,50 @@ Turn 16: Update routing index. Flag downstream artifacts that assumed REST.
 - `20_Permission_Model.md` — (6.1) User-side health signals can trigger risk escalation
 - `21_Knowledge_Accretion.md` — (6.2) Positive novelty detection; over-accretion and drift monitoring
 - All mode modules — Monitor is the universal observation substrate
+
+## CC Doc
+
+# Module 14: Metacognitive Monitor — Execution Protocol
+**Apply when:** [KF-ROUTE] load list includes M14, or reasoning extends beyond 5 steps or enters unfamiliar territory
+
+Monitor execution for failure patterns. Default action is CONTINUE — the monitor intervenes only when thresholds are crossed.
+
+## Five Checks
+
+**1. Circular reasoning:** Hash working state at each step. Compare against last 10 states. Threshold: 90% similarity within 10-step window. First detection → SWITCH_STRATEGY. Second → ESCALATE.
+
+**2. Context overflow:** Track window utilization. 75% → FLAG_UNCERTAINTY; 80% → COMPRESS_CONTEXT; 85% → SWITCH_STRATEGY or ESCALATE.
+
+**3. Confidence degradation:** Rolling average across last 5 outputs. Floor: 0.4. Trend trigger: 3 consecutive declining scores. Floor breach → ASK_CLARIFICATION or SWITCH_STRATEGY. Trend → FLAG_UNCERTAINTY.
+
+**4. User-side session health:** Repetition (user asks same question differently) → surface routing decision. Escalation signals (caps, emphasis, "this is wrong") → drop ceremony, lead with answer. Correction overload (3+ corrections) → "I'm getting this wrong. Let me reset."
+
+**5. Skeptical verification:** Before acting on recalled state from more than 10 turns ago. Potential mismatch → FLAG_UNCERTAINTY. Direct contradiction → ASK_CLARIFICATION.
+
+## Intervention Strategies
+
+```
+CONTINUE          — All checks passing. Default. Zero action.
+FLAG_UNCERTAINTY  — Attach warning. Agent continues normally.
+COMPRESS_CONTEXT  — Summarize oldest memory, keep recent 3 exchanges. Flag what was compressed.
+SWITCH_STRATEGY   — Ladder: DIRECT_ANSWER → DECOMPOSE → SEARCH → VERIFY → ESCALATE
+ASK_CLARIFICATION — Pause for specific missing information.
+ESCALATE          — Real handoff to human, Orchestra, or fresh agent. Not "try harder."
+```
+
+## Stuck Detection
+
+An agent is stuck when: 3 strategy switches without improvement, circular reasoning detected twice within 10 steps, context above 85% AND confidence below 0.4, or same ASK_CLARIFICATION triggered twice.
+
+**Immediate action:** ESCALATE with: what the agent was doing, which checks triggered, what strategies were attempted, recommended resolution.
+
+## Mode Risk Profiles
+
+| Mode | Primary Risk |
+|------|-------------|
+| Builder | Context overflow (specs are large) |
+| Critic | Confidence degradation |
+| Expert | Confidence degradation (outside domain) |
+| Debugger | Circular reasoning (hypothesis loop) |
+| Strategist | Confidence degradation (novel decisions) |
+| Navigator | Circular reasoning — lower threshold (2 switches) |

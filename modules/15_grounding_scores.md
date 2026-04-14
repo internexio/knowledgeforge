@@ -331,3 +331,53 @@ accretion_grounding_rules:
       description: Speculative or based on pattern matching
       accretion_note: Do not accrete — too speculative for persistent storage
 ```
+
+## CC Doc
+
+# Module 15: Grounding Scores — Execution Protocol
+**Apply when:** [KF-ROUTE] load list includes M15, or reasoning builds on uncertain premises
+
+Tag every piece of knowledge with a trust score based on how it was acquired and verified.
+
+## Score Scale
+
+| Score | Label | Description |
+|-------|-------|-------------|
+| 1.0 | Directly Observed | API response, file read, verified external data |
+| 0.8 | Computed from Grounded Data | Deterministic transformation of grounded data |
+| 0.6 | High-Confidence Inference | Inferred from grounded observations, strong evidence |
+| 0.4 | Partial Verification | Some supporting evidence, includes interpretation |
+| 0.2 | LLM Output with Some Support | LLM-generated, not verified |
+| 0.1 | Pure LLM Output | LLM-generated, no verification |
+
+## Decision Thresholds
+
+```
+≥ 0.8  → Proceed confidently.
+0.6–0.8 → Proceed with caveat. Note grounding level.
+0.4–0.6 → Flag for verification. Proceed with explicit uncertainty.
+< 0.4  → Do not use as basis for further reasoning without verification.
+```
+
+## Propagation Rule
+
+```
+conclusion_grounding = min(premise_groundings) × inference_confidence
+```
+
+A chain is only as strong as its weakest link. Chains longer than 3 steps with no re-grounding trigger FLAG_UNCERTAINTY.
+
+## Accretion Grounding Gate
+
+```
+grounding ≥ 0.6 → Normal accretion — file without caveat
+grounding < 0.6 → Surface with caveat; do not auto-file
+```
+
+## Grounding Decay
+
+Knowledge not re-verified decays toward 0.5 over time. Domain half-lives: API docs 30 days, user preferences 60 days, software architecture 90 days, regulatory 180 days, math proofs ~10 years. Re-verification resets the score and the decay clock.
+
+## Flagging Low Grounding
+
+When grounding is low, say so explicitly: "I have 0.5 grounding on this — noting as uncertain." Grounding scores are estimates, not guarantees — a 0.8 score can still be wrong.

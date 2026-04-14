@@ -5,18 +5,19 @@ description: >
   Single source of truth for all KF variants.
 
 status: active
-phase: 4  # Module spec updates
+phase: 6  # Compiler MVP
 
 variants:
   knowledgeforge-cp:
     role: Claude Projects variant
-    status: current-source-of-truth
+    status: compiled
     repo: git@github.com:internexio/knowledgeforge-cp.git
-    note: Will become compilation target once compiler is built (Phase 6)
+    note: Compiled from core via kf-compile --target claude-projects
   knowledgeforge-cc:
     role: Claude Code variant
-    status: drifting
+    status: compiled
     repo: git@github.com:internexio/knowledgeforge-cc.git
+    note: Compiled from core via kf-compile --target claude-code
   knowledgeforge-cw:
     role: Cowork variant
     status: drifting
@@ -39,6 +40,8 @@ changelog:
       - Phase 2 complete — skill files, cross-cutting docs, slash commands in knowledgeforge-cc
       - Phase 3 complete — Stop gate, PreCompact/PostCompact, PostToolUse, SessionStart hooks
       - Phase 4 complete — 15 module spec updates (items 1-13 from research + ENH-006/007)
+      - Phase 5 complete — 5 model profiles (Sonnet, Opus, GPT-5, OLMo, Gemini Flash Lite)
+      - Phase 6 complete — compiler MVP; CC and CP variants now compiled from core
   - version: 7.0.0-alpha
     date: 2026-04-14
     changes:

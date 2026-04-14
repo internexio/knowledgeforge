@@ -232,8 +232,17 @@ docs(plans): Add cc-drift-audit from Phase 0 analysis
 
 See `IMPLEMENTATION_PLAN.md` for the full Phase 0–10 roadmap.
 
-**Completed:** Phase 0 (repo setup), Phase 1 (routing hook — Gemini Flash Lite, not Gemma 3 4B), Phase 2 (skill files + cross-cutting docs + slash commands in knowledgeforge-cc).
+**Completed:** Phases 0–6. Compiler MVP live — CC and CP variants now compiled from core via `kf-compile.py`.
 
-**Current:** Phase 3 — Stop gate + state survival hooks.
+**Current:** Phase 7 — Architectural changes (reaction engine, two-loop research, lazy dispatch).
 
-**Next:** Phase 4 — 15 module spec updates (13 original + ENH-006 Coordinator + ENH-007 Calibrator).
+**How to update CC after editing a module:**
+```bash
+# 1. Edit modules/{NN}_*.md — update ## CC Skill / ## CC Doc / ## CC Agent sections
+# 2. Compile
+python3 compiler/kf-compile.py --target claude-code --output ~/Scripts/knowledgeforge-cc
+# 3. Commit CC
+cd ~/Scripts/knowledgeforge-cc && git add -A && git commit -m "chore: compiled from core" && git push
+# 4. Deploy hooks (if hooks changed)
+cd ~/Scripts/knowledgeforge-core && ./scripts/deploy-hooks.sh
+```

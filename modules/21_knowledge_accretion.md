@@ -891,3 +891,67 @@ Before filing any accretion candidate:
 - `22_Semantic_Wiki_Search.md` — reads the Tier 0 vector index this module writes
 - `23_Taxonomy_Enforcement.md` — taxonomy validation is Gate 4a of the filing protocol
 - `24_Verbatim_History_Mining.md` — high-importance Tier 3 entries may be promoted to Tier 0 via this module
+
+## CC Doc
+
+# Module 21: Knowledge Accretion — Execution Protocol
+**Apply when:** [KF-ROUTE] load list includes M21, or mode produces evaluative+ output and accretion check is needed
+
+Detect when a mode's output contains knowledge worth persisting to the knowledge base.
+
+## Two-Condition Test
+
+Flag as `ACCRETION_CANDIDATE` when BOTH are met:
+1. **Novelty:** Knowledge not already present in the existing knowledge base.
+2. **Reuse value:** Would benefit future queries beyond the current session.
+
+Novelty alone is not enough. A unique observation with no transferable value is not a candidate.
+
+## Triggers by Source Mode
+
+| Source Mode | Novelty Type |
+|-------------|--------------|
+| Synthesizer | `new_pattern` |
+| Critic (linter) | `contradiction` |
+| Expert | `reusable_analysis` |
+| Debugger | `reusable_diagnostic` |
+| Strategist | `transferable_framework` |
+| Builder | `template_candidate` |
+| Calibrator | `template_candidate` |
+
+## Non-Triggers
+
+Reckonings, routine outputs applying existing knowledge, grounding < 0.6 (surface with caveat instead), session-specific context.
+
+## Candidate Metadata
+
+```yaml
+accretion_candidate:
+  source_mode: [mode]
+  grounding_score: [0.0–1.0]
+  novelty_type: [see table above]
+  knowledge_target: [specific wiki section]
+  staleness_risk: stable | slow_decay | fast_decay
+  created: [ISO date]
+```
+
+## Grounding Gate
+
+```
+grounding ≥ 0.6 → Normal accretion flow
+grounding < 0.6 → Surface with caveat; do not auto-file
+```
+
+## Filing Protocol Gates
+
+Before disk write, two gates must pass:
+
+**Gate 4a (Taxonomy, M23):** Validate `domain`, `topic`, and `tags` against controlled vocabulary. On fail: reject with nearest-match suggestion. Never auto-assign.
+
+**Gate 4b (Embedding, M22):** After taxonomy passes, embed entry content and upsert into Tier 0 vector index. First new domain/topic combination → trigger index rebuild.
+
+Filing to disk is Step 5, after both gates pass.
+
+## Over-Accretion Warning
+
+More than 3 candidates in a single standard session → "High accretion rate. Review for genuine novelty before filing." Exception: compilation/bulk-analysis sessions.
