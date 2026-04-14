@@ -558,14 +558,14 @@ Create per-model weakness/strength maps that inform prompt compilation and the r
    - Weaknesses: reasoning depth (breaks at 3-4 steps), hallucination rate, instruction adherence
    - Role restriction: `intent_router_only`
 
-6. **Build Gemma 3 4B profile** — the hook routing model:
+6. **Build Gemini 2.5 Flash Lite profile** — the actual hook routing model (Phase 1 substituted Gemma 3 4B → Gemini Flash Lite due to hardware constraints):
    - Document classification accuracy from Phase 1 test suite results
    - Calibrate: which decision types can this model classify reliably?
 
 ### Deliverables
-- [ ] Profile schema defined
-- [ ] 5 model profiles created (Sonnet, Opus, GPT-5, OLMo, Gemma)
-- [ ] Each profile includes strength/weakness evidence sources
+- [x] Profile schema defined
+- [x] 5 model profiles created (Sonnet, Opus, GPT-5, OLMo, Gemini 2.5 Flash Lite)
+- [x] Each profile includes strength/weakness evidence sources
 
 ### Validation Gate
 For each profiled weakness, verify the corresponding KF module/mode actually patches it. For each profiled strength, verify removing the scaffolding doesn't degrade output.

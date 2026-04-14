@@ -1,0 +1,49 @@
+id: gpt-5
+provider: openai
+context_window: 128000
+cost:
+  input_per_mtok: 2.50
+  output_per_mtok: 10.00
+role: cross_provider_judge
+training_cutoff: "2025-06"
+capability_flags:
+  - tool_use
+  - vision
+  - code_execution
+
+strengths:
+  - structured reasoning — strong performance on formal logic and step-by-step tasks
+  - instruction following — high adherence to explicit output format constraints
+  - math and code — top-tier benchmark performance on quantitative tasks
+  - cross-provider independence — no Anthropic self-preference bias (key for judge role)
+
+weaknesses:
+  - over-hypothesizing — generates excessive alternatives for tasks warranting direct answers
+    kf_patch: When used as judge, constrain output format strictly; no open-ended reasoning
+  - verbosity under uncertainty — outputs hedge-filled prose when a confidence score suffices
+    kf_patch: Judge prompt must specify exact output format (JSON verdict + score)
+  - shallow adversarial — adversarial critique is surface-level without explicit adversarial framing
+    kf_patch: Adversarial judge prompt must include explicit "find the flaw" instruction
+  - lost-in-the-middle — recall degrades for content in the middle of large contexts
+    kf_patch: Place evaluation targets at start or end of judge prompt, not middle
+
+calibration_overrides:
+  reckoning: none
+  evaluative: minimal
+  predictive: standard
+  novel: full
+
+role_restrictions:
+  - judge_only: true
+  - description: >
+      Used exclusively as cross-provider judge for KF behavioral evaluations
+      (Module 12 judge isolation rule). Not used as the primary agent in any
+      KF variant. When Claude is the agent under evaluation, GPT-5 is the judge.
+
+notes: >
+  Cost estimates approximate as of 2026-Q2. The cross-provider judge role exists
+  specifically because Sonnet and Opus have self-preference bias — GPT-5 eliminates
+  that confound. The "shallow adversarial" weakness means judge prompts must be
+  explicitly adversarial ("this output has at least one significant flaw — find it")
+  rather than open-ended ("evaluate this output"). Source: Module 12 judge isolation
+  rule from orchestra-integration.md research.

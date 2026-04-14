@@ -1,0 +1,43 @@
+id: claude-opus-4
+provider: anthropic
+context_window: 200000
+cost:
+  input_per_mtok: 15.00
+  output_per_mtok: 75.00
+role: frontier
+training_cutoff: "2025-04"
+capability_flags:
+  - tool_use
+  - vision
+  - code_execution
+  - extended_thinking
+
+strengths:
+  - novel judgment — stronger reasoning on problems with no precedent
+  - adversarial depth — surfaces compound failure modes without prompting
+  - hypothesis generation — naturally generates multiple alternatives before committing
+  - trade-off articulation — surfaces rejected options unprompted
+  - calibrated uncertainty — expresses confidence ranges more accurately than Sonnet
+  - multi-step reasoning — maintains coherence across longer reasoning chains
+
+weaknesses:
+  - verbosity under uncertainty — over-qualifies answers when confident response is warranted
+    kf_patch: Reckoning fast-path enforced more aggressively (overhead_level: none)
+  - over-caution on novel judgments — asks for human review when it could decide
+    kf_patch: Novel judgment override: flag, but still produce recommendation
+  - cost — 5x Sonnet; unsuitable for high-frequency tasks (routing, nudges)
+    kf_patch: Role restriction — not used for hook routing or PostToolUse hooks
+
+calibration_overrides:
+  reckoning: none       # Opus handles reckonings natively
+  evaluative: minimal   # Decision classification only; Opus surfaces trade-offs unprompted
+  predictive: standard  # Standard overhead; Opus needs less scaffolding than Sonnet
+  novel: full           # Full mode activation; adversarial verification optional (Opus self-adversarializes)
+
+notes: >
+  Frontier model. Use for: novel judgment tasks, architecture reviews, high-stakes
+  Expert mode activations. Do NOT use for: routing hooks, PostToolUse hooks, or
+  any high-frequency callback (cost makes it impractical). KF overhead reduction
+  vs. Sonnet: evaluative drops from standard → minimal; novel drops from maximum → full.
+  The adversarial @critic pass in mode chains is optional for Opus (it performs
+  self-adversarial analysis natively at sufficient depth for most tasks).

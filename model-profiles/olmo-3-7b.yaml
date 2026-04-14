@@ -1,0 +1,52 @@
+id: olmo-3-7b
+provider: ollama
+context_window: 32000
+cost:
+  input_per_mtok: 0.00
+  output_per_mtok: 0.00
+role: router_only
+training_cutoff: "2024-12"
+capability_flags:
+  - local_inference
+
+strengths:
+  - local inference — zero latency overhead from network calls; runs on-device
+  - fast classification — intent classification in <100ms on modern hardware
+  - deterministic tasks — reliable on constrained, well-defined classification problems
+  - zero cost — no per-token API charges; viable for high-frequency hook callbacks
+  - privacy — prompt never leaves the local machine
+
+weaknesses:
+  - reasoning depth — coherence degrades at 3-4 reasoning steps; multi-hop fails
+    kf_patch: Role restricted to single-step classification only
+  - hallucination rate — higher than frontier models on open-ended tasks
+    kf_patch: Output constrained to JSON enum; no open-ended generation
+  - instruction adherence — less reliable on complex multi-constraint prompts
+    kf_patch: Routing prompt must be minimal — mode name + decision type only
+  - hardware requirements — requires sufficient RAM (≥8GB) and CPU for acceptable latency
+    kf_patch: Not viable on machines with <8GB RAM; fall back to Gemini Flash Lite
+
+calibration_overrides:
+  reckoning: none
+  evaluative: none
+  predictive: none
+  novel: none
+
+role_restrictions:
+  - intent_router_only: true
+  - max_output_tokens: 50
+  - description: >
+      OLMo 3 7B is restricted to single-step intent classification for the
+      UserPromptSubmit routing hook. It MUST NOT be used for: mode execution,
+      quality evaluation, knowledge accretion, or any task requiring >1
+      reasoning step. Output must be constrained JSON: {"mode": "...", "decision": "..."}.
+      If classification confidence is low, fall through to Gemini Flash Lite.
+
+notes: >
+  Self-hosted router candidate. Not currently deployed — Gemini Flash Lite
+  (cloud, free tier) is the active routing model. OLMo 3 7B becomes relevant
+  for: air-gapped deployments, high-volume routing where even free API limits
+  matter, or privacy-sensitive contexts. Hardware constraint: insufficient RAM
+  on current dev machine (MacBook) makes local inference impractical per
+  CLAUDE.md hardware note. Profile maintained for future web-agents variant
+  (Phase 8) which targets more capable hardware.

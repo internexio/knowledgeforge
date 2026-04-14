@@ -1,0 +1,55 @@
+id: gemini-2.5-flash-lite
+provider: google
+context_window: 1000000
+cost:
+  input_per_mtok: 0.00
+  output_per_mtok: 0.00
+  notes: "Free tier as of 2026-Q2. Rate limits apply; see Google AI Studio."
+role: router_only
+training_cutoff: "2025-01"
+capability_flags:
+  - multimodal
+  - long_context
+
+strengths:
+  - free tier — zero cost for reasonable request volumes (routing hook frequency)
+  - fast inference — low latency for classification tasks
+  - 1M token context — effectively unlimited for routing payloads
+  - cloud reliability — no local hardware requirements
+  - sufficient classification accuracy — adequate for KF mode + decision type routing
+
+weaknesses:
+  - reasoning depth — not suitable for multi-step reasoning tasks
+    kf_patch: Restricted to classification only (JSON enum output)
+  - network dependency — adds 100-500ms latency per hook invocation
+    kf_patch: Graceful degradation: if API unreachable, hook exits 0 (Claude proceeds unrouted)
+  - rate limits — free tier has per-minute limits; burst usage can hit ceiling
+    kf_patch: kf-route.py has timeout + retry with exponential backoff; falls back gracefully
+  - context contamination — very long prompts may degrade classification accuracy
+    kf_patch: Routing prompt capped at 2K tokens; module index is compact
+
+calibration_overrides:
+  reckoning: none
+  evaluative: none
+  predictive: none
+  novel: none
+
+role_restrictions:
+  - intent_router_only: true
+  - max_output_tokens: 100
+  - description: >
+      Active routing model for KF UserPromptSubmit hook (kf-route.py).
+      Classifies prompt intent → KF mode + decision type, then injects
+      [KF-ROUTE] directive into the conversation before Claude processes it.
+      Output constrained to structured JSON. No reasoning, no open-ended
+      generation. Graceful degradation on failure (exit 0, Claude proceeds).
+
+notes: >
+  This profile documents the model actually deployed in Phase 1. The original
+  plan specified Gemma 3 4B (local via Ollama) but hardware constraints
+  (insufficient RAM on MacBook) made local inference impractical. Gemini 2.5
+  Flash Lite was substituted — free tier eliminates cost concern; cloud
+  deployment eliminates hardware constraint. Accuracy vs. Gemma 3 4B on KF
+  routing task: not formally benchmarked. Phase 1 routing test suite
+  (tests/routing_test_suite.yaml) provides the validation baseline.
+  Env override: KF_ROUTE_MODEL environment variable (see kf-route.py).

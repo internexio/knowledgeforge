@@ -1,0 +1,46 @@
+id: claude-sonnet-4
+provider: anthropic
+context_window: 200000
+cost:
+  input_per_mtok: 3.00
+  output_per_mtok: 15.00
+role: primary_agent
+training_cutoff: "2025-04"
+capability_flags:
+  - tool_use
+  - vision
+  - code_execution
+  - extended_thinking
+
+strengths:
+  - intent decomposition — accurately parses complex multi-part requests
+  - structured output — reliably follows JSON/YAML schemas under instruction
+  - long context recall — strong retrieval from large context windows
+  - tool use — high accuracy on multi-tool chains
+  - instruction following — adheres to explicit behavioral constraints
+
+weaknesses:
+  - hypothesis skipping — jumps to first plausible answer without generating alternatives
+    kf_patch: Debugger Phase 2 forced hypothesis generation; Strategist explicit options mandate
+  - trade-off hiding — presents chosen option without surfacing rejected alternatives
+    kf_patch: Strategist forces explicit trade-off table; Critic checks for hidden alternatives
+  - gap blindness — misses unstated assumptions and edge cases
+    kf_patch: Critic gap-finding pass; Expert adversarial depth requirement
+  - self-preference bias — in evaluation tasks, favors Anthropic-adjacent outputs
+    kf_patch: Module 12 cross-provider judge isolation rule
+  - premature stopping — marks task complete before quality gate passes
+    kf_patch: Stop hook mandatory completion gate; per-mode checklists
+  - sycophantic drift — in long sessions, converges toward user's stated preference
+    kf_patch: ENH-001 sycophantic guard in Builder + Expert skill files
+
+calibration_overrides:
+  reckoning: none       # Sonnet handles reckonings natively; no overhead adds value
+  evaluative: standard  # Classification + mode activation is sufficient
+  predictive: full      # Full scaffolding needed; Sonnet underweights uncertainty
+  novel: maximum        # Adversarial verification required; Sonnet stops too early
+
+notes: >
+  Primary model for knowledgeforge-cc. All calibration_overrides are the KF 7.0
+  baseline. Other model profiles express differences relative to this profile.
+  Weaknesses sourced from accumulated KF operational experience across 6.x
+  releases and the Phase 4 research integration.
