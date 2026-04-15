@@ -1,8 +1,8 @@
-name: Sync hooks → knowledgeforge-cc
+name: Sync hooks -> knowledgeforge-cc
 
 # Fires when hook scripts change on main.
 # Opens a PR in knowledgeforge-cc with the updated hook files.
-# Requires: CORE_SYNC_TOKEN secret — GitHub PAT with repo write access to knowledgeforge-cc.
+# Requires: CORE_SYNC_TOKEN secret -- GitHub PAT with repo write access to knowledgeforge-cc.
 
 on:
   push:
