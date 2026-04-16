@@ -415,8 +415,9 @@ def write_manifest(manifest: list[dict], output_root: Path, platform: str, versi
         f"_JSON manifest (machine-readable) is at `.kf-compile-manifest.json` in the variant repo._",
     ]
 
-    # Write to core root so relative links resolve on GitHub
-    md_path = CORE_ROOT / f".kf-load-map-{platform}.md"
+    # Write to core root so relative links resolve on GitHub.
+    # Named without a dot prefix so it's visible in GitHub's file listing.
+    md_path = CORE_ROOT / f"load-map-{platform}.md"
     md_path.write_text("\n".join(md_lines) + "\n", encoding="utf-8")
     print(f"Manifest written:  {manifest_path}")
     print(f"Load map written:  {md_path}")

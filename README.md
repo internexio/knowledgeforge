@@ -1,6 +1,6 @@
 # KnowledgeForge Core
 
-**Version:** 7.0.0-alpha · **Status:** Active development
+**Version:** 7.0.0 · **Status:** Active development
 
 Single source of truth for the KnowledgeForge reasoning framework. All platform variants compile from here.
 
@@ -95,6 +95,18 @@ See `IMPLEMENTATION_PLAN.md` for full detail.
 | 23 | Taxonomy Enforcement | Controlled vocabulary validation |
 | 24 | Verbatim History Mining | Conversation turn storage and recall |
 | 25 | Entity Relationship Analysis | ERA domain routing |
+
+---
+
+## Compile Maps
+
+Human-navigable maps showing exactly which module section compiled into which output file. Click any source link to jump directly to that section.
+
+| Platform | Map |
+|----------|-----|
+| Claude Code (`knowledgeforge-cc`) | [load-map-claude-code.md](load-map-claude-code.md) |
+
+Maps are regenerated on each compile run (`compiler/kf-compile.py`).
 
 ---
 
