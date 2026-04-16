@@ -91,6 +91,91 @@ def add_compile_header(content: str, source_module: str, output_type: str,
     return header + content
 
 
+def heading_to_anchor(text: str) -> str:
+    """Convert a markdown heading to a GitHub-compatible anchor.
+
+    GitHub's algorithm: lowercase, strip all non-alphanumeric/space/hyphen chars,
+    replace spaces with hyphens, collapse runs of hyphens.
+
+    '## Full PDIA Method'  → '#full-pdia-method'
+    '## Bias Detection'    → '#bias-detection'
+    '## When to Calibrate' → '#when-to-calibrate'
+    """
+    anchor = text.lower()
+    anchor = re.sub(r"[^\w\s-]", "", anchor)   # strip punctuation except hyphens
+    anchor = re.sub(r"\s+", "-", anchor)        # spaces → hyphens
+    anchor = re.sub(r"-{2,}", "-", anchor)      # collapse multiple hyphens
+    return "#" + anchor.strip("-")
+
+
+def generate_section_toc(content: str, min_headings: int = 2) -> str | None:
+    """Generate a compact inline TOC from ## headings in extracted content.
+
+    Returns a markdown line like:
+        **Sections:** [When to Calibrate](#when-to-calibrate) · [Multi-Run Protocol](#multi-run-protocol)
+
+    Returns None when fewer than min_headings ## headings are found (no point
+    generating a TOC for a single-section file).
+
+    Only indexes ## level — # (title) and ### (sub-items) are excluded.
+
+    Headings containing '→' (navigation hints, file path references) have the
+    path part stripped for display: 'Section-Load Map → ~/.claude/...' becomes
+    'Section-Load Map' in the TOC link, anchored to the cleaned text.
+    """
+    headings = []
+    for line in content.split("\n"):
+        if line.startswith("## "):
+            text = line[3:].strip()
+            if not text:
+                continue
+            # Strip ' → path' suffixes — use only the label before the arrow
+            display = text.split("→")[0].strip() if "→" in text else text
+            headings.append((display, heading_to_anchor(display)))
+
+    if len(headings) < min_headings:
+        return None
+
+    links = " · ".join(f"[{display}]({anchor})" for display, anchor in headings)
+    return f"**Sections:** {links}"
+
+
+def inject_toc(compiled_content: str, raw_content: str, out_type: str) -> str:
+    """Inject a section TOC into compiled content after the compile header.
+
+    Only fires for doc/skill/agent types with 2+ ## headings.
+    Rules and verbatim copies are left unchanged.
+
+    Placement:
+    - Doc/Skill: TOC immediately after the compile header comment.
+    - Agent: TOC after the YAML frontmatter block (--- ... ---) so the
+      frontmatter stays machine-parseable at file top.
+    """
+    if out_type not in ("doc", "skill", "agent"):
+        return compiled_content
+
+    toc = generate_section_toc(raw_content)
+    if toc is None:
+        return compiled_content
+
+    # compiled_content = "<!-- header -->\n{body}"
+    header_line, body = compiled_content.split("\n", 1)
+
+    if out_type == "agent":
+        # Agent files have YAML frontmatter: ---\n...\n---\n
+        # Inject TOC after the closing --- so frontmatter stays intact.
+        body_stripped = body.lstrip("\n")
+        if body_stripped.startswith("---\n"):
+            closing = body_stripped.find("\n---\n", 4)
+            if closing != -1:
+                frontmatter = body_stripped[: closing + 5]   # up to and including ---\n
+                rest = body_stripped[closing + 5 :]
+                return f"{header_line}\n{frontmatter}\n{toc}\n\n---\n{rest}"
+        # No frontmatter found — fall through to default placement
+
+    return f"{header_line}\n\n{toc}\n\n---\n{body}"
+
+
 # ---------------------------------------------------------------------------
 # Module loader
 # ---------------------------------------------------------------------------
@@ -184,6 +269,7 @@ def compile_claude_code(binding: dict, output_root: Path, dry_run: bool,
                     })
                     continue
                 content = add_compile_header(extracted, filename, out_type, version)
+                content = inject_toc(content, extracted, out_type)
             else:
                 content = module_content
 
