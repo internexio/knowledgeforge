@@ -222,6 +222,7 @@ special_outputs:
     source_dir: "hooks/"
     files:
       - kf-route.py
+      - kf-stats.py
       - kf_module_index.txt
       - kf-stop-validator.py
       - kf-precompact.py

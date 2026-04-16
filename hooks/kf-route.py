@@ -21,6 +21,7 @@ import json
 import os
 import urllib.request
 import urllib.error
+from datetime import datetime, timezone
 from pathlib import Path
 
 # ─── Configuration ────────────────────────────────────────────────────────────
@@ -54,6 +55,9 @@ MODULE_MAP = {
 # Path to the compact module index (relative to this script)
 INDEX_PATH = Path(__file__).parent / "kf_module_index.txt"
 
+# Usage log — JSONL, one entry per routed request
+LOG_PATH = Path.home() / ".claude" / "kf-usage.jsonl"
+
 # ─── Load module index ────────────────────────────────────────────────────────
 
 def load_index() -> str | None:
@@ -62,6 +66,60 @@ def load_index() -> str | None:
     except Exception as e:
         sys.stderr.write(f"[kf-route] Could not load module index: {e}\n")
         return None
+
+# ─── Session context extraction ───────────────────────────────────────────────
+
+def extract_session_id(hook_input: dict) -> str:
+    """Extract session ID from hook input."""
+    for field in ("session_id", "sessionId", "session"):
+        val = hook_input.get(field, "")
+        if val:
+            return str(val)
+    return ""
+
+
+def extract_model(hook_input: dict) -> str:
+    """Extract active Claude model from the hook input transcript.
+
+    Claude Code stores the model name on each assistant message in the
+    transcript.  We scan from the end to find the most recent one.
+    Falls back to 'unknown' if the transcript is absent or empty.
+    """
+    transcript = hook_input.get("transcript", [])
+    if not isinstance(transcript, list):
+        return "unknown"
+    for entry in reversed(transcript):
+        try:
+            msg = entry.get("message", {})
+            if isinstance(msg, dict):
+                model = msg.get("model", "")
+                if model:
+                    return model
+        except Exception:
+            pass
+    return "unknown"
+
+
+def log_decision(session_id: str, model: str, mode: str, decision_type: str,
+                 cross_cutting: list, prompt_len: int, routed: bool) -> None:
+    """Append one routing decision to the usage log.  Never raises."""
+    try:
+        ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        entry = {
+            "ts":            ts,
+            "session_id":    session_id,
+            "model":         model,
+            "mode":          mode,
+            "decision_type": decision_type,
+            "cross_cutting": [str(m) for m in cross_cutting],
+            "prompt_len":    prompt_len,
+            "routed":        routed,
+        }
+        with open(LOG_PATH, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry) + "\n")
+    except Exception as e:
+        sys.stderr.write(f"[kf-route] Log write failed: {e}\n")
+
 
 # ─── Call Gemini ──────────────────────────────────────────────────────────────
 
@@ -161,9 +219,15 @@ def main():
     if not user_prompt or len(user_prompt) < 8:
         sys.exit(0)
 
+    # Extract session context for logging (before any early-exit)
+    session_id = extract_session_id(hook_input)
+    model      = extract_model(hook_input)
+    prompt_len = len(user_prompt)
+
     # Load module index
     index = load_index()
     if not index:
+        log_decision(session_id, model, "error", "", [], prompt_len, False)
         sys.exit(0)
 
     # Classify
@@ -171,12 +235,36 @@ def main():
         routing = classify(user_prompt, index)
     except urllib.error.HTTPError as e:
         sys.stderr.write(f"[kf-route] Gemini HTTP {e.code}: {e.reason} — passing through\n")
+        log_decision(session_id, model, "gemini_error", "", [], prompt_len, False)
         sys.exit(0)
     except TimeoutError:
         sys.stderr.write(f"[kf-route] Gemini timeout ({GEMINI_TIMEOUT}s) — passing through\n")
+        log_decision(session_id, model, "gemini_timeout", "", [], prompt_len, False)
         sys.exit(0)
     except Exception as e:
         sys.stderr.write(f"[kf-route] Classification failed: {e}\n")
+        log_decision(session_id, model, "gemini_error", "", [], prompt_len, False)
+        sys.exit(0)
+
+    # Extract routing fields
+    raw_mode      = routing.get("mode") or ""
+    decision_type = routing.get("decision_type", "")
+    cross_cutting = routing.get("cross_cutting") or []
+
+    # Determine whether KF activates a mode or passes through
+    is_direct = (
+        not raw_mode
+        or raw_mode.lower() in ("null", "none")
+        or decision_type == "reckoning"
+    )
+    mode_label = "direct" if is_direct else raw_mode.lower()
+
+    # Log every decision — raw and routed alike
+    log_decision(session_id, model, mode_label, decision_type,
+                 cross_cutting, prompt_len, not is_direct)
+
+    # No mode to activate — pass through without directive
+    if is_direct:
         sys.exit(0)
 
     # Build directive
