@@ -948,10 +948,10 @@ If after 5 hypothesis tests no root cause at >0.8:
 - [ ] Prevention measures included
 - [ ] Verification steps executable
 
-## Section-Load Map  →  `~/.claude/docs/knowledgeforge/09_Debugger_Agent.md`
-- **Full diagnostic protocol with examples:** L157–233
-- **Full response pattern / diagnostic report template:** L234–339
-- **Common failure patterns (intermittent, sudden, degradation, dev vs. prod):** L371–425
-- **Hypothesis prioritization matrix:** L428–438
-- **Metacognitive monitor integration (stuck detection):** L638–672
-- **Reusable diagnostic accretion (6.2):** `~/.claude/docs/knowledgeforge/21_Knowledge_Accretion.md` → Debugger accretion section
+## Section-Load Map  →  `~/.claude/skills/kf/debugger.md`
+- **Full diagnostic protocol with examples:** Protocol section
+- **Full response pattern / diagnostic report template:** Output Format section
+- **Common failure patterns (intermittent, sudden, degradation, dev vs. prod):** Variants section
+- **Hypothesis prioritization matrix:** Protocol section
+- **Metacognitive monitor integration (stuck detection):** Variants section
+- **Reusable diagnostic accretion (6.2):** `~/.claude/docs/knowledgeforge/21_knowledge_accretion.md` → Debugger accretion section

@@ -991,10 +991,10 @@ After producing a recommendation: does the decision framework itself have reuse 
 - [ ] No hidden single-objective optimization
 - [ ] Confidence and uncertainties stated
 
-## Section-Load Map  →  `~/.claude/docs/knowledgeforge/10_Strategist_Agent.md`
-- **Full strategic analysis framework (5 phases):** L159–291
-- **Full response pattern and output template:** L293–493
-- **Decision type templates (build/buy/defer, prioritization, architecture, stack):** L534–607
-- **Calibration integration (stable vs. close-call rankings):** L671–698
-- **Salience-aware prioritization (KF-7):** L700–721
-- **Transferable framework accretion (6.2):** `~/.claude/docs/knowledgeforge/21_Knowledge_Accretion.md` → Strategist accretion section
+## Section-Load Map  →  `~/.claude/skills/kf/strategist.md`
+- **Full strategic analysis framework (5 phases):** Protocol section
+- **Full response pattern and output template:** Output Format section
+- **Decision type templates (build/buy/defer, prioritization, architecture, stack):** Variants section
+- **Calibration integration (stable vs. close-call rankings):** Variants section
+- **Salience-aware prioritization:** Quality Gates section
+- **Transferable framework accretion (6.2):** `~/.claude/docs/knowledgeforge/21_knowledge_accretion.md` → Strategist accretion section

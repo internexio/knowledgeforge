@@ -1235,10 +1235,9 @@ For production-bound specs or irreversible decisions, run evaluation 3x independ
 - [ ] Assumptions surfaced with risk assessment
 - [ ] Edge cases cover boundary, timing, state, integration
 
-## Section-Load Map  →  `~/.claude/docs/knowledgeforge/07_Critic_Agent.md`
-- **Full review framework (completeness/consistency/assumptions/edge cases):** L152–186
-- **Full response pattern and output template:** L188–253
-- **Severity calibration guide:** L414–440
-- **Domain adaptation (code, API, business, AI coder):** L448–514
-- **Calibration layer integration (confidence intervals):** L542–570
-- **Knowledge base linter protocol (6.2):** `~/.claude/docs/knowledgeforge/21_Knowledge_Accretion.md` → Linter section
+## Section-Load Map  →  `~/.claude/skills/kf/critic.md`
+- **Full review framework (completeness/consistency/assumptions/edge cases):** Protocol section
+- **Full response pattern and output template:** Output Format section
+- **Severity calibration guide:** Quality Gates section
+- **Domain adaptation (code, API, business, AI coder):** Variants section
+- **Knowledge base linter protocol (6.2):** `~/.claude/docs/knowledgeforge/21_knowledge_accretion.md` → Linter section

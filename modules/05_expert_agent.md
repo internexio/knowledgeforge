@@ -973,11 +973,11 @@ Expert output in a mode chain (e.g., Expert → Strategist) automatically trigge
 - [ ] Assumption inversions documented with conditional severities
 - [ ] Findings classified by decision type
 
-## Section-Load Map  →  `~/.claude/docs/knowledgeforge/05_Expert_Agent_Example.md`
-- **Adversarial depth protocol (full 4-check detail with examples):** L143–276
-- **Domain-specific adversarial checklists (security / code / architecture):** L277–346
-- **Response pattern and output format:** L349–427
-- **Domain adaptation guide (creating new expert domains):** L428–468
-- **Security review worked example:** L471–516
-- **Infrastructure domain adaptations (infra_arch / ml_infra / hosting_audit):** L517–621
-- **Reusable analysis accretion (6.2):** `~/.claude/docs/knowledgeforge/21_Knowledge_Accretion.md` → Expert accretion section
+## Section-Load Map  →  `~/.claude/skills/kf/expert.md`
+- **Adversarial depth protocol (full 4-check detail with examples):** Protocol section
+- **Domain-specific adversarial checklists (security / code / architecture):** Variants section
+- **Response pattern and output format:** Output Format section
+- **Domain adaptation guide (creating new expert domains):** Variants section
+- **Risk assessment framework:** Risk Assessment section
+- **Quality gates:** Quality Gates section
+- **Reusable analysis accretion (6.2):** `~/.claude/docs/knowledgeforge/21_knowledge_accretion.md` → Expert accretion section

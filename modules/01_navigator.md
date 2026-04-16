@@ -513,8 +513,8 @@ After disambiguation, tag decision type: `reckoning | evaluative | predictive | 
 - [ ] Resolved in one question
 - [ ] Decision type tag accompanies routing
 
-## Section-Load Map  →  `~/.claude/docs/knowledgeforge/01_Navigator_Agent.md`
-- **Firing criteria with full examples:** L29–91
-- **Full ambiguity detection protocol (steps 1–3):** L157–208
-- **Decision type / KF-5 enrichment:** L212–241
-- **Anti-patterns to avoid:** L304–316
+## Section-Load Map  →  `~/.claude/skills/kf/navigator.md`
+- **Firing criteria with full examples:** Purpose section
+- **Full ambiguity detection protocol (steps 1–3):** Protocol section
+- **Decision type / KF-5 enrichment:** Variants section
+- **Anti-patterns to avoid:** Quality Gates section

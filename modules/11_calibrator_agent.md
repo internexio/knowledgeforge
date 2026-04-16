@@ -995,11 +995,11 @@ Calibrator produces configuration artifacts only — cannot deploy or activate t
 - [ ] Platform token limits respected
 - [ ] Compliance templates applied (if regulated)
 
-## Section-Load Map  →  `~/.claude/docs/knowledgeforge/11_Calibrator_Agent.md`
-- **Complexity assessment protocol (full signals and approach per tier):** L113–151
-- **Full interview protocol (all 4 phases):** L155–194
-- **Compliance templates (HIPAA / SOC2 / PCI):** L198–319
-- **Universal best practices AI coders skip:** L360–437
-- **Strategist consultation triggers:** L575–599
-- **Quality checklist:** L603–619
-- **Novel config pattern accretion (6.2):** `~/.claude/docs/knowledgeforge/21_Knowledge_Accretion.md` → Calibrator accretion section
+## Section-Load Map  →  `~/.claude/skills/kf/calibrator.md`
+- **Complexity assessment protocol (full signals and approach per tier):** Protocol section
+- **Full interview protocol (all 4 phases):** Protocol section
+- **Compliance templates (HIPAA / SOC2 / PCI):** Output Format section
+- **Universal best practices AI coders skip:** Variants section
+- **Strategist consultation triggers:** Variants section
+- **Quality checklist:** Quality Gates section
+- **Novel config pattern accretion (6.2):** `~/.claude/docs/knowledgeforge/21_knowledge_accretion.md` → Calibrator accretion section

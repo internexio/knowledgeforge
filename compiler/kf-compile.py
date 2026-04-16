@@ -19,6 +19,7 @@ Exit codes:
 
 import argparse
 import json
+import os
 import re
 import shutil
 import sys
@@ -176,6 +177,52 @@ def inject_toc(compiled_content: str, raw_content: str, out_type: str) -> str:
     return f"{header_line}\n\n{toc}\n\n---\n{body}"
 
 
+def linkify_claude_paths(content: str, out_path: Path, output_root: Path) -> str:
+    """Convert `~/.claude/path.md` references in Section-Load Maps to relative links.
+
+    Maps `~/.claude/` → `{output_root}/.claude/` then computes a relative path
+    from out_path's parent directory to the referenced file.
+
+    Pattern forms handled:
+      `~/.claude/X.md`              → [X.md](relative/X.md)
+      `~/.claude/X.md` → Section   → [X.md#section-anchor](relative/X.md#section-anchor)
+
+    The regex only matches backtick-delimited `~/.claude/` paths so false
+    positives outside Section-Load Map blocks are negligible.
+    """
+    claude_root = output_root / ".claude"
+    out_dir = out_path.parent
+
+    def replace_path(match: re.Match) -> str:
+        path_part = match.group(1)      # e.g., "skills/kf/builder.md"
+        section_hint = match.group(2)   # e.g., "Builder accretion section" or None
+
+        # Map ~/.claude/X → absolute target in variant repo
+        abs_target = claude_root / path_part
+
+        # Relative path from output file's directory to the target
+        try:
+            rel = Path(os.path.relpath(abs_target, out_dir)).as_posix()
+        except ValueError:
+            # Different drive on Windows — return original unchanged
+            return match.group(0)
+
+        display = Path(path_part).name
+
+        anchor = ""
+        if section_hint:
+            anchor = heading_to_anchor(section_hint.strip())
+
+        return f"[{display}]({rel}{anchor})"
+
+    # Match: `~/.claude/{path.md}` optionally followed by ` → {section text}`
+    # group 1: path after ~/.claude/
+    # group 2: optional section name after →  (to end of line, non-greedy)
+    pattern = r'`~/\.claude/([^`]+\.md)`(?:\s*→\s*([^\n`]+?))?(?=\s*\n|\s*$)'
+
+    return re.sub(pattern, replace_path, content, flags=re.MULTILINE)
+
+
 # ---------------------------------------------------------------------------
 # Module loader
 # ---------------------------------------------------------------------------
@@ -270,6 +317,7 @@ def compile_claude_code(binding: dict, output_root: Path, dry_run: bool,
                     continue
                 content = add_compile_header(extracted, filename, out_type, version)
                 content = inject_toc(content, extracted, out_type)
+                content = linkify_claude_paths(content, out_path, output_root)
             else:
                 content = module_content
 

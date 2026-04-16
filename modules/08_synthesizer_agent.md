@@ -832,10 +832,10 @@ After extraction is complete: is any pattern novel relative to the existing know
 - [ ] No over-abstraction (concrete examples still recognizable)
 - [ ] Temporal context noted (stability, evolution)
 
-## Section-Load Map  →  `~/.claude/docs/knowledgeforge/08_Synthesizer_Agent.md`
-- **Full synthesis process (4 phases: detection → abstraction → framework → validation):** L157–182
-- **Full response pattern and output template:** L183–303
-- **Pattern extraction techniques (structural / functional / constraint):** L446–503
-- **Abstraction level selection guide:** L505–515
-- **Anti-pattern requirements (KF 6.0 — mandatory failure example format):** L538–561
-- **Accretion check integration (6.2):** `~/.claude/docs/knowledgeforge/21_Knowledge_Accretion.md` → Synthesizer accretion section
+## Section-Load Map  →  `~/.claude/skills/kf/synthesizer.md`
+- **Full synthesis process (4 phases: detection → abstraction → framework → validation):** Protocol section
+- **Full response pattern and output template:** Output Format section
+- **Pattern extraction techniques (structural / functional / constraint):** Protocol section
+- **Abstraction level selection guide:** Variants section
+- **Anti-pattern requirements (KF 6.0 — mandatory failure example format):** Quality Gates section
+- **Accretion check integration (6.2):** `~/.claude/docs/knowledgeforge/21_knowledge_accretion.md` → Synthesizer accretion section

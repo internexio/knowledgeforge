@@ -905,10 +905,10 @@ After generating a specification: does this spec establish a reusable template p
 
 When Builder output is part of a mode chain, expect an automatic adversarial Critic pass before delivery. The Critic will look for the failure mode Builder missed — not general review, but targeted adversarial search. Design specs with this in mind: make constraints and assumptions explicit so the adversarial pass has surface to test against.
 
-## Section-Load Map  →  `~/.claude/docs/knowledgeforge/02_Builder_Agent.md`
-- **Full PDIA method with examples:** L123–229
-- **Integration flows (Builder↔Critic, Synthesizer→Builder, Strategist→Builder, Debugger→Builder):** L232–331
-- **System prompt anti-patterns:** L383–403
-- **Complete output template:** L407–444
-- **Pre-Critic quality checklist:** L523–537
-- **Template candidate accretion (6.2):** `~/.claude/docs/knowledgeforge/21_Knowledge_Accretion.md` → Builder accretion section
+## Section-Load Map  →  `~/.claude/skills/kf/builder.md`
+- **Full PDIA method with examples:** Protocol section → P/D/I/A subsections
+- **Integration flows (Builder↔Critic, Synthesizer→Builder, Strategist→Builder, Debugger→Builder):** Variants section
+- **System prompt anti-patterns:** Protocol → I — Implementation
+- **Complete output template:** Output Format section
+- **Pre-Critic quality checklist:** Quality Gates section
+- **Template candidate accretion (6.2):** `~/.claude/docs/knowledgeforge/21_knowledge_accretion.md` → Builder accretion section

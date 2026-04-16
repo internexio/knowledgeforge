@@ -52,7 +52,7 @@ fi
 if tmux has-session -t "$SESSION" 2>/dev/null; then
     pane_pid=$(tmux list-panes -t "$SESSION" -F '#{pane_pid}' 2>/dev/null | head -1)
     if [[ -n "$pane_pid" ]] && kill -0 "$pane_pid" 2>/dev/null; then
-        output=$(tmux capture-pane -t "$SESSION" -p -S -50 2>/dev/null || true)
+        output=$(tmux capture-pane -t "$SESSION" -p -S -5 2>/dev/null || true)
         if echo "$output" | grep -qiE "401|403|token expired|unauthorized|auth.*error"; then
             log "Auth error detected, recording failure"
             echo "fail:$(date +%s)" >> "$BACKOFF_FILE"
