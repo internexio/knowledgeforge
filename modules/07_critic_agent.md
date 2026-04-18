@@ -12,6 +12,10 @@ module:
   difficulty: advanced
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 15_Grounding_Scores, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.0.1:
+      date: 2026-04-17
+      changes:
+        - Updated module_promotion_thresholds: Module 25 is now standalone (not optional); corrected promote_to filename to 25_Entity_Relationship_Analysis.md; added boundary_violation_check to distinguish pre-routing ERA (Module 25) from deep-analysis ERA (Module 05 domain section)
     7.0.0:
       date: 2026-04-14
       changes:
@@ -641,25 +645,31 @@ linter_protocol:
 
     module_promotion_thresholds:           # NEW 6.6.1 — module size gates (SPEC-7 / ERA finding F4)
       description: |
-        Some modules contain optional domain adaptations designated for promotion to
-        standalone modules once they exceed maintainable size. Check these thresholds
-        during every linter run.
+        Some modules contain domain adaptations that may grow large enough to warrant
+        standalone extraction. Module 25 (Entity Relationship Analysis) has been promoted
+        as a standalone cross-cutting module handling ERA pre-routing. Module 05's ERA
+        domain adaptation section covers deep user-facing ERA analysis and is distinct
+        from Module 25's pre-routing concern. Watch for size drift and logic boundary
+        violations between the two.
       checks:
         - module: "05_Expert_Agent_Example.md"
           section: "ERA domain adaptation"
-          section_identifier: "## ERA Domain Adaptation"
+          section_identifier: "### Domain: Entity Relationship Analysis (ERA)"
           warning_threshold_lines: 150
           promote_threshold_lines: 200
-          promote_to: "25_ERA_Agent.md"
+          promote_to: "25_Entity_Relationship_Analysis.md"  # Already promoted for pre-routing; watch for re-growth
+          boundary_violation_check: |
+            Module 05 ERA section should contain ONLY: adversarial checklists, domain heuristics,
+            and KF-specific ERA application patterns. If it re-embeds pre-routing logic (entity
+            extraction, graph shape → routing escalation), flag as BOUNDARY_VIOLATION.
+            Pre-routing ERA belongs exclusively in 25_Entity_Relationship_Analysis.md.
           on_warning: |
-            Surface: "Module 05 ERA section at [N] lines — approaching 200-line promotion threshold.
-            Consider extracting to 25_ERA_Agent.md before next major ERA chain."
+            Surface: "Module 05 ERA domain section at [N] lines — approaching 200-line threshold.
+            Review whether new content belongs in Module 25 (pre-routing) vs Module 05 (deep analysis)."
           on_promote: |
-            Surface as CRITICAL finding: "Module 05 ERA section at [N] lines — PROMOTE_TO_MODULE_25.
-            Create 25_ERA_Agent.md with current ERA domain adaptation content.
-            Update orchestrator routing: Expert (ERA) trigger → 25_ERA_Agent.md.
-            Update Module 04 ERA Specification Template reference.
-            Add bidirectional related-module reference: 05 ↔ 25."
+            Surface as CRITICAL finding: "Module 05 ERA domain section at [N] lines — exceeds threshold.
+            Evaluate whether content should route to 25_Entity_Relationship_Analysis.md.
+            Check for boundary violations: pre-routing logic creeping into the domain section."
 
   3_classify:
     CRITICAL: Contradictions (knowledge base is self-inconsistent)

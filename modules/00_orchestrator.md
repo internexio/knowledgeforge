@@ -12,6 +12,10 @@ module:
   difficulty: foundational
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 06_Quick_Reference, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 23_Taxonomy_Enforcement, 24_Verbatim_History_Mining, 25_Entity_Relationship_Analysis]
   changelog:
+    7.0.1:
+      date: 2026-04-17
+      changes:
+        - Module Reference table: replaced stale '25_ERA_Agent (optional)' with '25_Entity_Relationship_Analysis' — Module 25 is now standalone, not conditional on Module 05 ERA section size
     7.0.0:
       date: 2026-04-14
       changes:
@@ -534,7 +538,7 @@ Accretion check: Novel relationship patterns or undocumented couplings surfaced
 | `22_Semantic_Wiki_Search` | Cross-cutting — Tier 0 retrieval; metadata-gated semantic search over wiki/ entries |
 | `23_Taxonomy_Enforcement` | Cross-cutting — controlled vocabulary validation shared across Tier 0 and Tier 3 |
 | `24_Verbatim_History_Mining` | Cross-cutting — Tier 3 retrieval; verbatim storage with importance-weighted decay + semantic search via MemPalace sidecar |
-| `25_ERA_Agent` (optional) | ERA domain adaptation — entity graph analysis, dependency auditing, contract modeling. Only created if Module 05 ERA section exceeds ~200 lines. |
+| `25_Entity_Relationship_Analysis` | Cross-cutting — ERA pre-routing pass: entity extraction, relationship mapping, graph shape → routing escalation, entity-scoped memory filters for Tier 0 + Tier 3 retrieval (6.6) |
 
 ---
 

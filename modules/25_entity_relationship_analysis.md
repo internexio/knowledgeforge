@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Entity Relationship Analysis
-  version: 6.6.0
+  version: 7.0.1
   purpose: Extract entities and their relationships from queries and context to improve routing accuracy, multi-hop reasoning, and memory retrieval — single-entity analysis misses relational complexity that changes which mode and chain is correct
   topics: [entity-extraction, relationship-mapping, routing-signals, multi-hop, graph-analysis]
   contexts: [decision-classification, mode-routing, memory-retrieval, coordinator-planning]
@@ -13,6 +13,10 @@ module:
   related: [13_Decision_Classification, 19_Memory_Architecture, 22_Semantic_Wiki_Search, 03_Coordination_Patterns, 18_Salience_Allocation, 10_Strategist_Agent]
   added_in: "6.5"
   changelog:
+    7.0.1:
+      date: 2026-04-17
+      changes:
+        - Module is now fully standalone — Module 00 and Module 07 updated to reference this as a first-class cross-cutting module (not optional, not conditional on Module 05 ERA section size)
     6.6.0: |
       - Added ## CC Doc section for Claude Code compilation
       - Added to CC platform binding (25_entity_relationship_analysis.md)
