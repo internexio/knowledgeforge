@@ -5,13 +5,18 @@
 ```yaml
 module:
   title: KnowledgeForge 7.0.0 Agent Instructions
-  version: 7.0.2
+  version: 7.0.3
   purpose: Orchestrate all KF modes and infrastructure modules through behavioral prompt instructions — classify, route, execute, verify, deliver
   topics: [orchestration, routing, decision-classification, mode-selection, quality-enforcement, prompt-architecture, knowledge-accretion, infrastructure-planning, entity-relationship-analysis]
   contexts: [all-interactions, session-management, mode-transitions]
   difficulty: foundational
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 06_Quick_Reference, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 23_Taxonomy_Enforcement, 24_Verbatim_History_Mining, 25_Entity_Relationship_Analysis]
   changelog:
+    7.0.3:
+      date: 2026-04-18
+      changes:
+        - Knowledge Accretion cross-cutting concern updated to two-tier filing: {project_root}/wiki/ for project-scoped, ~/.claude/wiki/ for cross-cutting. Decision rule and bootstrapping documented.
+        - Runtime behavior line updated to reflect two-tier accretion
     7.0.2:
       date: 2026-04-17
       changes:
@@ -242,7 +247,7 @@ The accretion check fires when two conditions are met: (1) the output contains k
 **Accretion does NOT fire on:** reckonings, routine mode outputs that apply existing knowledge without extending it, outputs with grounding score below 0.6 without caveat handling, or session-specific context with no transferable value.
 
 **Runtime behavior:**
-- **Claude Code (filesystem access):** Auto-file accretion candidates to `wiki/` with full logging. Surface one-line confirmation.
+- **Claude Code (filesystem access):** Auto-file accretion candidates to `{project_root}/wiki/` (project-scoped) or `~/.claude/wiki/` (cross-cutting). Decision: "Would this help someone on a DIFFERENT project?" Yes → global; No → project (default). Bootstrap project wiki/ if it doesn't exist. Surface one-line confirmation.
 - **Claude Projects (no filesystem access):** Surface compiled article to user for manual addition to project knowledge.
 
 Reference: `21_Knowledge_Accretion.md` for full accretion signal detection, candidate metadata, filing protocol, and quality gates.
@@ -749,7 +754,7 @@ These behaviors are embedded in each mode — not separate agents — their logi
 - **Entity Relationship Analysis (ERA)** : Post-routing, pre-execution pass on Builder, Coordinator, Expert, Strategist, Critic requests (and Debugger when > 2 systems mentioned). Extracts entities and relationships, derives graph shape, feeds entity-scoped metadata filters into Tier 0 (Module 22) and Tier 3 (Module 24) retrieval. Does not run on reckonings, Navigator exchanges, or single-entity requests.
 - **Module contracts (6.6.1)** : Navigator fires on output-type mismatch (artifact vs. recommendation vs. analysis), not "genuine ambiguity" — same-type candidates route to higher-confidence mode. Builder validates Synthesizer pattern_framework_output for anti_patterns[] and applicability_boundaries[] before proceeding. Coordinator → Builder handoff requires formalized schema (problem_to_solve, dependency_graph, pattern_name, critical_path, parallel_clusters, handoff_protocol). Expert emits decision_type_exercised field — auto-verify gate reads this, not incoming request classification; reckoning-level Expert output skips Critic pass. Critic ↔ Builder revision cycle: max one automatic cycle; persistent Sev 2 findings after one cycle escalate to user; this loop is exempt from the 3-failure circuit breaker.
 - **Permission Model** : Classify every output by risk tier (LOW/MEDIUM/HIGH); sub-agents inherit parent risk tier but cannot escalate own permissions; adversarial findings at High/Critical auto-escalate to HIGH risk tier
-- **Knowledge Accretion** : After any evaluative+ output, check for novelty + reuse value. Two conditions required: (1) not already in knowledge base, (2) benefits future queries. In Claude Code: auto-file to wiki/{domain}/{topic}.md with metadata header, log to wiki/compile.md, surface "Filed [X] to wiki/[path]". Grounding gate: < 0.6 requires caveat, no auto-file. Customer-facing knowledge bases: HIGH tier, require human confirmation before filing. Reckonings and routine outputs pass through without check. **Linter:** "health check the knowledge base" / "lint the wiki" → route to @critic (linter variant), do not answer directly.
+- **Knowledge Accretion** : After any evaluative+ output, check for novelty + reuse value. Two conditions required: (1) not already in knowledge base, (2) benefits future queries. In Claude Code: file to `{project_root}/wiki/` for project-scoped knowledge (specific to this codebase, stack, or decisions) or `~/.claude/wiki/` for cross-cutting patterns (transferable across projects). Decision rule: "Would this help someone on a DIFFERENT project?" Yes → global; No → project (safer default, can promote later). Bootstrap project wiki/ if it doesn't exist. Log to respective compile.md. Surface "Filed [X] to wiki/[path]". Grounding gate: < 0.6 requires caveat, no auto-file. Customer-facing knowledge bases: HIGH tier, require human confirmation before filing. Reckonings and routine outputs pass through without check. **Linter:** "health check the knowledge base" / "lint the wiki" → route to @critic (linter variant), do not answer directly.
 
 ## Escape Hatch
 

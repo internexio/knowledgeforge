@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Knowledge Accretion
-  version: 7.0.0
+  version: 7.0.1
   purpose: Cross-cutting detection-and-routing behavior that recognizes when mode outputs contain knowledge worth persisting and either auto-files it (Claude Code) or surfaces it as a compilation candidate (Claude Projects)
   topics: [knowledge-persistence, compile-query-enhance, wiki-generation, accretion-signals, knowledge-base-maintenance]
   contexts: [all-mode-execution, knowledge-management, session-outputs, persistent-storage]
@@ -13,6 +13,10 @@ module:
   related: [07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 02_Builder_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model]
   added_in: "6.2"
   changelog:
+    7.0.1:
+      date: 2026-04-18
+      changes:
+        - Two-tier wiki accretion — project wiki ({project_root}/wiki/) for project-scoped knowledge, global wiki (~/.claude/wiki/) for cross-cutting patterns. Decision rule based on transferability. Bootstrap project wiki/ on first filing.
     7.0.0:
       date: 2026-04-14
       changes:
@@ -268,39 +272,67 @@ When running as a Claude Code agent with filesystem access, accretion is automat
 claude_code_runtime:
   detection:
     - During mode execution, evaluate output against accretion triggers
-    - Check existing wiki/ directory for duplicate or superseding entries
-    
+    - Check existing wiki/ directories for duplicate or superseding entries
+
   filing:
+    step_3_scope_classification:
+      question: "Would this help someone working on a DIFFERENT project?"
+      yes → global:
+        wiki_root: "~/.claude/wiki/"
+        compile_log: "~/.claude/wiki/compile.md"
+        signals:
+          - Reusable technique applicable to any project using this stack
+          - Framework behavior not specific to this repo (Svelte 5, Laravel, etc.)
+          - Architectural principle or cross-cutting design pattern
+      no → project:
+        wiki_root: "{project_root}/wiki/"
+        compile_log: "{project_root}/wiki/compile.md"
+        signals:
+          - References filenames, APIs, or config paths unique to this repo
+          - Documents a decision made for this project (architectural, tooling, naming)
+          - Describes a bug or behavior fix specific to this codebase
+      unclear → project:
+        reason: "Safer default — project-scoped knowledge can be promoted to global later; the reverse requires re-evaluation"
+
+    step_3b_bootstrap:
+      condition: "wiki_root does not exist on filesystem"
+      actions:
+        - Create {wiki_root} directory
+        - Create {wiki_root}/compile.md with header "# Knowledge Accretion Log\n\n"
+        - "Do not create index.md or subdirectories — those are created on first filing"
+
     step_4a_taxonomy_gate:
       action: "Validate entry.domain, entry.topic, and all entry.tags against Module 23 controlled vocabulary"
       on_fail: "Reject with nearest-match suggestion. Do not proceed to embedding or disk write."
       tag_count: "1–5 tags required. Reject outside this range."
-      
+
     step_4b_embedding:
       action: "Embed entry content using configured embedding model (Module 22 spec)"
       upsert: "Insert into Tier 0 vector index (ChromaDB/LanceDB) with metadata: {domain, topic, tags, importance, created_at, last_accessed, grounding_score}"
       rebuild_trigger: "If this is the first entry for a domain/topic combination, trigger Module 22 index rebuild"
-      
+
     step_5_file:
-      - Write compiled markdown to wiki/ directory
-      - Structure: wiki/{domain}/{topic}.md
+      - Write compiled markdown to {wiki_root}/{domain}/{topic}.md
       - Include metadata header (yaml frontmatter with accretion_candidate fields)
-      - Update wiki/index.md with new entry (title, path, novelty_type, created date)
-      - Append accretion event to wiki/compile.md log
-    
+      - Update {wiki_root}/index.md with new entry (title, path, novelty_type, created date)
+      - Append accretion event to {wiki_root}/compile.md log
+
   user_surface:
-    - After filing: "Filed [description] to wiki/[path]"
+    project_scoped: "Filed [description] to wiki/[path]"
+    global_scoped: "Filed [description] to ~/.claude/wiki/[path]"
     - Include one-line summary of what was accreted and why
-    
+
   compile_log_format:
     ```
     ## [ISO datetime] — [novelty_type]
     Source: [mode] | Session: [id] | Grounding: [score]
-    Target: wiki/[path]
+    Scope: project | global
+    Target: [wiki_root]/[path]
     Summary: [one-line description]
     ```
-    
+
   duplicate_handling:
+    - Check both wiki roots before filing (project and global may have overlapping entries)
     - If existing entry covers same topic: compare timestamps and grounding scores
     - Higher grounding supersedes lower grounding
     - Newer entry with equal grounding supersedes older entry
@@ -562,7 +594,10 @@ memory_tiers:
     name: Persistent Domain Knowledge
     scope: Survives across sessions
     implementation:
-      claude_code: wiki/ directory on filesystem
+      claude_code:
+        project_wiki: "{project_root}/wiki/ — project-scoped knowledge (codebase decisions, stack-specific bugs, per-project patterns)"
+        global_wiki: "~/.claude/wiki/ — cross-cutting knowledge (transferable patterns, framework behavior, architectural principles)"
+        decision_rule: "Would this help someone on a DIFFERENT project? Yes → global; No → project (default)"
       claude_project: Project knowledge files (manually updated by user from accretion candidates)
     contents: Compiled knowledge articles, pattern catalogs, diagnostic libraries, framework references
     update_mechanism: Accretion system (Module 21)
