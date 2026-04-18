@@ -26,6 +26,7 @@ CROSS-CUTTING (include module codes when conditions match):
 - "M15" → Grounding Scores: ALWAYS include when: reviewing specs/architecture, deep analysis, comparing options, predictive/timing decisions, "poke holes", "is it worth", "trade-offs"; the reasoning depends on incomplete context or uncertain premises
 - "M17" → Temporal Knowledge: request involves time, change, recency, "when did this change"
 - "M21" → Knowledge Accretion: output likely has reuse value — include when: health checking a knowledge base, wiki/KB review, analysis producing structured findings, patterns extraction
+- "M25" → Entity Relationship Analysis: multi-entity/multi-system request, cascading dependencies, routing involves Builder/Coordinator/Expert/Strategist/Critic on complex interconnected systems
 
 SIGNAL COLLISION RULES:
 - "design [X]" → single component=builder, multi-service flow=coordinator, "design review"=critic
@@ -47,7 +48,7 @@ Examples:
 "Audit my hosting setup" → {"mode": "critic", "decision_type": "evaluative", "cross_cutting": ["M15"], "notes": "hosting audit variant"}
 "Should we open-source the framework?" → {"mode": "strategist", "decision_type": "novel", "cross_cutting": ["M12", "M15", "M21"], "notes": "irreversible, high-stakes"}
 "What patterns do these three repos share?" → {"mode": "synthesizer", "decision_type": "evaluative", "cross_cutting": ["M21"], "notes": ""}
-"Map the entity relationships between these modules" → {"mode": "expert", "decision_type": "evaluative", "cross_cutting": ["M21"], "notes": "ERA domain"}
+"Map the entity relationships between these modules" → {"mode": "expert", "decision_type": "evaluative", "cross_cutting": ["M21", "M25"], "notes": "ERA domain — always include M25 for multi-entity relationship analysis"}
 "Create a spec for a new monitoring agent" → {"mode": "builder", "decision_type": "evaluative", "cross_cutting": ["M13"], "notes": ""}
 "Find gaps in this before we deploy" → {"mode": "critic", "decision_type": "evaluative", "cross_cutting": ["M12", "M15"], "notes": "pre-deploy audit"}
 "Poke holes in this architecture" → {"mode": "critic", "decision_type": "evaluative", "cross_cutting": ["M12", "M15"], "notes": "adversarial review — always M12+M15 for architecture critique"}

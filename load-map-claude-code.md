@@ -1,6 +1,6 @@
 # KnowledgeForge Load Map — `claude-code`
 
-**Version:** `7.0.0`  **Compiled:** `2026-04-16T17:11:53.394981+00:00`
+**Version:** `7.0.1`  **Compiled:** `2026-04-18T00:54:30.632877+00:00`
 
 Each row shows one compiled output and the exact source section it was extracted from.
 Click the source link to jump directly to that section in the module file.
@@ -38,6 +38,7 @@ Click the source link to jump directly to that section in the module file.
 | ✓ | `.claude/docs/knowledgeforge/22_semantic_wiki_search.md` | [`22_semantic_wiki_search.md`](modules/22_semantic_wiki_search.md#cc-doc) | `CC Doc` |
 | ✓ | `.claude/docs/knowledgeforge/23_taxonomy_enforcement.md` | [`23_taxonomy_enforcement.md`](modules/23_taxonomy_enforcement.md#cc-doc) | `CC Doc` |
 | ✓ | `.claude/docs/knowledgeforge/24_verbatim_history_mining.md` | [`24_verbatim_history_mining.md`](modules/24_verbatim_history_mining.md#cc-doc) | `CC Doc` |
+| ✓ | `.claude/docs/knowledgeforge/25_entity_relationship_analysis.md` | [`25_entity_relationship_analysis.md`](modules/25_entity_relationship_analysis.md#cc-doc) | `CC Doc` |
 | ✓ | `.claude/hooks/kf-route.py` | `hooks/kf-route.py` | _verbatim_ |
 | ✓ | `.claude/hooks/kf-stats.py` | `hooks/kf-stats.py` | _verbatim_ |
 | ✓ | `.claude/hooks/kf_module_index.txt` | `hooks/kf_module_index.txt` | _verbatim_ |

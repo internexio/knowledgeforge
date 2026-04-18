@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Entity Relationship Analysis
-  version: 6.5.0
+  version: 6.6.0
   purpose: Extract entities and their relationships from queries and context to improve routing accuracy, multi-hop reasoning, and memory retrieval — single-entity analysis misses relational complexity that changes which mode and chain is correct
   topics: [entity-extraction, relationship-mapping, routing-signals, multi-hop, graph-analysis]
   contexts: [decision-classification, mode-routing, memory-retrieval, coordinator-planning]
@@ -13,6 +13,10 @@ module:
   related: [13_Decision_Classification, 19_Memory_Architecture, 22_Semantic_Wiki_Search, 03_Coordination_Patterns, 18_Salience_Allocation, 10_Strategist_Agent]
   added_in: "6.5"
   changelog:
+    6.6.0: |
+      - Added ## CC Doc section for Claude Code compilation
+      - Added to CC platform binding (25_entity_relationship_analysis.md)
+      - Added M25 entry to kf_module_index.txt
     6.5.0: |
       - Initial module
       - Entity extraction + relationship mapping pipeline
@@ -257,3 +261,78 @@ ERA's complexity signal feeds the risk tier. Graph complexity HIGH → escalate 
 - `22_Semantic_Wiki_Search.md` — entity-scoped filter for Tier 0 retrieval
 - `24_Verbatim_History_Mining.md` — entity-scoped filter for Tier 3 retrieval
 - `20_Permission_Model.md` — graph complexity and conflict edges escalate risk tier
+
+---
+
+## CC Doc
+
+# Module 25: Entity Relationship Analysis — Execution Protocol
+**Apply when:** [KF-ROUTE] load list includes M25, or routing involves Builder, Coordinator, Expert, Strategist, or Critic on a multi-entity/multi-system request
+
+ERA is a lightweight internal routing pass that extracts entities and their relationships from the query, derives a graph-shape complexity signal, and adjusts the routing decision. ERA output is never shown to the user.
+
+## When ERA Runs
+
+- **Always:** Requests routed to Builder, Coordinator, Expert, Strategist, or Critic
+- **Conditionally:** Debugger requests with > 2 systems mentioned
+- **Never:** Reckonings, Navigator exchanges, single-entity requests
+
+## Entity Types
+
+Extract only entities the user mentioned — do not infer. Five categories: **System** (service, API, database), **Actor** (user, agent, role), **Concept** (policy, rule, constraint), **State** (session, queue depth, build status), **Artifact** (spec, config, schema).
+
+## Relationship Types
+
+`depends_on` | `produces` | `consumes` | `modifies` | `routes_to` | `monitors` | `conflicts_with` | `co_changes_with`
+
+Map only explicit or clearly implied relationships. Mark uncertain edges.
+
+## Graph Shape → Routing Signal
+
+```
+Linear chain (A → B → C)          LOW      Builder or Debugger sufficient
+Branching fan-out (A → B,C,D)     MEDIUM   consider Coordinator
+Diamond (A→B, A→C, B→D, C→D)     MED-HIGH Coordinator required (merge-point ordering)
+Full mesh (A ↔ B ↔ C ↔ A)         HIGH     Expert review warranted
+Conflict edges present             escalate one tier regardless of shape
+Isolated clusters                  decompose — different modes per cluster
+```
+
+## Routing Adjustments (ERA escalates; it never downgrades M13)
+
+| ERA Finding | Adjustment |
+|-------------|-----------|
+| > 5 entities, > 8 relationships | Escalate to Expert; declare HIGH risk tier |
+| Conflict edge detected | Add Critic pass before Builder; surface conflict explicitly |
+| Diamond or mesh shape | Route to or add Coordinator |
+| `co_changes_with` edge | Add Calibrator pass — configuration drift risk |
+| Cross-system `modifies` | Add adversarial verification step |
+| Isolated clusters | Decompose into separate mode calls per cluster |
+
+## Multi-Hop Path
+
+For queries spanning relationship chains, build the traversal path explicitly before reasoning:
+```
+1. Extract entities
+2. Map relationships
+3. Derive path: entity_A → rel_type → entity_B → rel_type → entity_C
+4. Walk path, evaluating effects at each hop
+```
+Without an explicit path, multi-hop queries collapse into single-hop answers.
+
+## Memory Filter Output
+
+Pass to M22 (Semantic Wiki Search) and M24 (Verbatim History Mining):
+```yaml
+entities: [named entities from query]
+relationships: [relationship types found]
+domain: [M23 vocabulary]
+topic: [M23 vocabulary]
+```
+
+## Anti-Patterns
+
+- **Inferring entities not in query** — hallucinated entities corrupt the routing signal
+- **Surfacing ERA output to user** — ERA is internal; surface only routing decisions
+- **Overriding M13 with ERA alone** — ERA adjusts (escalates), M13 sets base
+- **Skipping ERA on Coordinator requests** — mandatory; Coordinator without entity analysis misses merge-point constraints

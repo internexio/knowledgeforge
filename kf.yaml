@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.0.0
+version: 7.0.1
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -33,6 +33,11 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.0.1
+    date: 2026-04-16
+    changes:
+      - Module 25 (ERA) now compiles to CC — added CC Doc section, CC platform binding entry, M25 in kf_module_index.txt
+      - Module 25 version bumped to 6.6.0
   - version: 7.0.0
     date: 2026-04-14
     changes:
