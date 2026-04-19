@@ -1,0 +1,15 @@
+wing: wiki
+rooms:
+- name: architecture
+  description: Files from architecture/
+  keywords:
+  - architecture
+  - architecture
+- name: compiler
+  description: Files from compiler/
+  keywords:
+  - compiler
+  - compiler
+- name: general
+  description: Files that don't fit other rooms
+  keywords: []
