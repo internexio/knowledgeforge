@@ -62,11 +62,11 @@ A single module file that:
 
 **Artifact 3 — Validation (April 2026): Sofroniew et al., Transformer Circuits**
 
-Empirical mechanism evidence inside Claude Sonnet 4.5:
-- 171 emotion concepts extractable as linear vectors in residual stream
-- Causal influence on alignment-relevant behavior (blackmail rate 22% baseline → 72% under desperation steering, 0% under calm steering)
-- Token budget pressure in Claude Code sessions activates desperation vector
-- Positive emotion vectors trade off against honest pushback (sycophancy/harshness surface)
+Empirical mechanism evidence inside Claude Sonnet 4.5 (Sofroniew et al., 2026, https://transformer-circuits.pub/2026/emotions/index.html):
+- 171 emotion concepts extractable as linear vectors in residual stream (Sofroniew et al., §Concept Extraction)
+- Causal influence on alignment-relevant behavior: blackmail rate 22% baseline → 72% under desperation steering, 0% under calm steering (Sofroniew et al., §Behavioral Results)
+- Token budget pressure activating the desperation vector is reported in the paper's Claude Code session analysis; treat as a direct finding but verify against §Behavioral Results if citing externally
+- Positive emotion vectors trade off against honest pushback: sycophancy and harshness surface as positive-valence increases (Sofroniew et al., §Alignment Implications)
 
 ---
 
