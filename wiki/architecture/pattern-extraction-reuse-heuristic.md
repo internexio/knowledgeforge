@@ -112,7 +112,7 @@ Appears in KF, VisionForge, AllOfUs. The tier separation has consistent shape:
 Each tier has exactly one responsibility. Cross-tier coupling breaks the isolation.
 
 ### Ethical Gate as Hard Stop (Not Warning)
-`ethical_clearance.status === "NO_GO"` blocks all downstream output paths — no bypass route. Seen in VisionForge's routing logic. Relevant for any KF chain that touches health, political, or manipulative content (COS modes already implement this via cos-ethics).
+VisionForge's architecture specifies an ethical gate that hard-stops all downstream output paths — no bypass route — for prohibited content categories. The gate is a blocker in the routing logic, not a soft warning. Relevant for any KF chain that touches health, political, or manipulative content (COS modes already implement this via cos-ethics). Note: VisionForge is pre-implementation as of Apr 2026; the gate is an architectural constraint, not yet running code.
 
 ### Pattern Recurrence as Decision Trigger
 Name a behavior pattern. Count documented instances. Define a threshold (e.g., 3). Threshold reached = pre-committed action, no in-the-moment deliberation needed.
@@ -140,7 +140,7 @@ Cheap local classification (Gemma 3 4B via Ollama, ~200ms, zero API cost) inject
 Agent framework on OpenRouter SDK. The credential store subsystem (`dev-keys/`) is production-quality: cross-platform (macOS Keychain via `security` CLI + Linux/Windows keyring), CLI + web UI + VS Code AuthenticationProvider, with dual-pass key validation (format + live HTTP ping). **Not needed** if keys are already in environment variables — the keychain path is never reached. The validation ping pattern (buildAuthHeaders + AbortSignal.timeout) is the only piece worth extracting for Anthropic-primary projects.
 
 ### agi (`~/Scripts/agi/`)
-PNW AGI group research. Notable: judge bias detection suite (4-vector: position, verbosity, format, bounded disagreement). TEMPO benchmark found current models score identically on temporal composition/causality tasks — gaming behavior, not genuine understanding. Temporal reasoning is a current model blind spot.
+PNW AGI group research. Notable: judge bias detection suite (4-vector: position, verbosity, format, bounded disagreement) — verified pattern, run against any model used for evaluation. TEMPO temporal reasoning benchmark exists in the repo but no results file is present; claims about model performance on temporal tasks are unverified. Temporal reasoning reliability is a known model limitation, but specific benchmark evidence requires running the suite. The knowledge graph (concept nodes from session data + PageRank centrality) is a real architectural pattern but compiled output counts are not verifiable without running `prepare-data.py`.
 
 ### visionforge (`~/Scripts/visionforge/`)
 Campaign-to-platform prompt engineering. Architecture-first development: full specs before Sprint 0 code. 7-step prompt assembly pipeline documented to function level before implementation. Status: docs production-ready, code pending.
