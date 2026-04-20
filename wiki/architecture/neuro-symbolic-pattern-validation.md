@@ -5,16 +5,22 @@ metadata:
   source_mode: expert
   source_session: redacted
   created: "2026-04-07T00:00:00Z"
-  confidence: 0.5
-  grounding_score: 0.3
-  grounding_source: "Citation unverified — no DOI, arXiv ID, or URL present. ICRA 2026 proceedings were not publicly available at session date (2026-04-07). Treat empirical numbers as unconfirmed."
-  verification_status: unconfirmed
+  confidence: 0.85
+  grounding_score: 0.80
+  grounding_source: "Paper verified 2026-04-19 via HRI Lab page and project site. Main findings confirmed: ~2.8x success, ~100x energy, generalization to unseen variants. One claim (50 demos vs 300) could not be verified from public sources — PDF binary, not parsed."
+  verification_status: verified_partial
   novelty_type: reusable_analysis
   staleness_risk: stable
   importance: 4
   pinned: false
   accreted_in: "6.4.0"
-  citation: "Duggan et al., 'The Price Is Not Right,' ICRA 2026. Tufts HRI Lab. [UNVERIFIED — no DOI or URL]"
+  citation: |
+    Duggan et al., "The Price Is Not Right: Neuro-Symbolic Methods Outperform VLAs on
+    Structured Long-Horizon Manipulation Tasks with Significantly Lower Energy Consumption."
+    ICRA 2026. Tufts HRI Lab.
+    https://hrilab.tufts.edu/publications/dugganetal26icra/
+    PDF: https://hrilab.tufts.edu/publications/dugganetal26icra.pdf
+    Project: https://price-is-not-right.github.io
 ```
 
 ---
@@ -27,20 +33,18 @@ KnowledgeForge is this pattern: decision classification, mode triggers, chain pa
 
 ---
 
-## Reported Finding (Unconfirmed)
+## Empirical Evidence
 
-> ⚠️ **Verification required before citing externally.** The paper below could not be verified at accretion time — no DOI, arXiv ID, or public URL was found, and ICRA 2026 proceedings were not yet public on 2026-04-07. The quantitative numbers (~3×, ~100×, 50 demos) are unconfirmed. The core neuro-symbolic *pattern* is independently sound; the empirical support below is unverified.
->
-> To verify: search "The Price Is Not Right" + Tufts HRI Lab on Google Scholar, arXiv, or ICRA 2026 proceedings.
+**Duggan et al., "The Price Is Not Right," ICRA 2026 (Tufts HRI Lab)**
+Full title: *Neuro-Symbolic Methods Outperform VLAs on Structured Long-Horizon Manipulation Tasks with Significantly Lower Energy Consumption*
+Links: [paper page](https://hrilab.tufts.edu/publications/dugganetal26icra/) · [project site](https://price-is-not-right.github.io)
 
-**Duggan et al., "The Price Is Not Right," ICRA 2026 (Tufts HRI Lab) [UNVERIFIED]**
+Head-to-head: neuro-symbolic (PDDL symbolic planner + learned control) vs. fine-tuned Vision-Language-Action models on structured long-horizon manipulation (Towers of Hanoi benchmark):
 
-Reported findings — neuro-symbolic vs. end-to-end on structured long-horizon tasks:
-
-- **~3× success rate** over end-to-end approaches [unverified]
-- **~100× training energy efficiency** [unverified]
-- **Generalizes to unseen task variants** — pure neural models fail completely on these [unverified]
-- **50 structured demos > 300 full-trajectory demos** — composability wins over raw data volume [unverified]
+- **~2.8× success rate**: 95% (neuro-symbolic) vs. 34% (best VLA) on the 3-block task
+- **~100× training energy efficiency**: VLA fine-tuning consumes "nearly two orders of magnitude" more energy
+- **Generalizes to unseen task variants**: neuro-symbolic achieves 78% on unseen 4-block variant; both VLAs fail completely (0%)
+- **50 structured demos > 300 full-trajectory demos** — composability wins over raw data volume [claimed in original accretion; not confirmed from public sources — verify in PDF if citing]
 
 ---
 
