@@ -1,0 +1,139 @@
+platform: vscode
+platform_version: "1.0"
+description: >
+  VS Code extension target. Emits KF mode content as .md resource files
+  loaded at runtime by the extension host via vscode.workspace.fs.readFile().
+  Uses verbatim module copy (no CC section extraction) — mode content is read
+  as complete markdown files, not extracted sections. The extension's
+  mode-router.ts maps user intent to a mode resource and sets it as the
+  AnthropicAgent system prompt.
+
+  Auth: depends on local.dev-keys (AllOfUs) installed globally.
+  KF-VSCode calls vscode.authentication.getSession('dev-api-keys', ['anthropic'])
+  to resolve the Anthropic API key — never prompts directly.
+
+capabilities:
+  filesystem: true        # Extension host has Node.js fs via vscode.workspace.fs
+  hooks: false            # No hook runner in VS Code extension model
+  multi_model: false      # Single Anthropic client per KFSession
+  sub_agents: false       # No sub-agent spawning in MVP
+  skills: false           # No skill files — mode content embedded as resources
+  docs: false             # No .claude/docs equivalent
+  commands: true          # Contributes VS Code commands (palette + keybindings)
+  mcp: false              # MCP not in scope for MVP
+
+constraints:
+  mode_resource_token_budget: 4000   # Per-mode .md file budget (system prompt)
+  orchestrator_token_budget: 2000    # Orchestrator routing instructions budget
+  no_project_knowledge: true         # No project knowledge base in extension model
+
+output_structure:
+  resources_dir: "src/resources/kf-modes"
+  orchestrator_file: "src/resources/kf-orchestrator.md"
+  mode_registry: "src/resources/kf-mode-registry.json"
+
+# Verbatim module copy — mode agent modules (01–11) become resource files.
+# The compiler copies each module's full content to its output path.
+# mode-router.ts loads these at runtime as AnthropicAgent system prompts.
+#
+# Infrastructure modules (12–25) are NOT compiled to VS Code resources —
+# their behaviors are embedded in the KFSession and mode-router TypeScript.
+#
+# Module 00 (orchestrator) provides routing instructions for the extension host,
+# not the model — compiled to orchestrator.md for reference and future use.
+
+module_outputs:
+  "00":
+    outputs:
+      - type: resource
+        path: "src/resources/kf-orchestrator.md"
+        mode: verbatim
+
+  "01":
+    mode: navigator
+    outputs:
+      - type: resource
+        path: "src/resources/kf-modes/navigator.md"
+        mode: verbatim
+
+  "02":
+    mode: builder
+    outputs:
+      - type: resource
+        path: "src/resources/kf-modes/builder.md"
+        mode: verbatim
+
+  "03":
+    mode: coordinator
+    outputs:
+      - type: resource
+        path: "src/resources/kf-modes/coordinator.md"
+        mode: verbatim
+
+  "05":
+    mode: expert
+    outputs:
+      - type: resource
+        path: "src/resources/kf-modes/expert.md"
+        mode: verbatim
+
+  "07":
+    mode: critic
+    outputs:
+      - type: resource
+        path: "src/resources/kf-modes/critic.md"
+        mode: verbatim
+
+  "08":
+    mode: synthesizer
+    outputs:
+      - type: resource
+        path: "src/resources/kf-modes/synthesizer.md"
+        mode: verbatim
+
+  "09":
+    mode: debugger
+    outputs:
+      - type: resource
+        path: "src/resources/kf-modes/debugger.md"
+        mode: verbatim
+
+  "10":
+    mode: strategist
+    outputs:
+      - type: resource
+        path: "src/resources/kf-modes/strategist.md"
+        mode: verbatim
+
+  "11":
+    mode: calibrator
+    outputs:
+      - type: resource
+        path: "src/resources/kf-modes/calibrator.md"
+        mode: verbatim
+
+# Modules 04, 06, 12–25 omitted from MVP:
+#   04 (spec templates) — embedded in builder mode resource
+#   06 (quick reference) — not needed in extension model
+#   12–25 (infrastructure) — implemented in KFSession TypeScript directly
+
+# Mode registry — generated alongside resources.
+# Consumed by mode-router.ts to enumerate available modes without filesystem scan.
+special_outputs:
+  mode_registry:
+    path: "src/resources/kf-mode-registry.json"
+    format: json
+    content: |
+      {
+        "modes": [
+          { "id": "navigator",   "file": "kf-modes/navigator.md",   "module": "01" },
+          { "id": "builder",     "file": "kf-modes/builder.md",     "module": "02" },
+          { "id": "coordinator", "file": "kf-modes/coordinator.md", "module": "03" },
+          { "id": "expert",      "file": "kf-modes/expert.md",      "module": "05" },
+          { "id": "critic",      "file": "kf-modes/critic.md",      "module": "07" },
+          { "id": "synthesizer", "file": "kf-modes/synthesizer.md", "module": "08" },
+          { "id": "debugger",    "file": "kf-modes/debugger.md",    "module": "09" },
+          { "id": "strategist",  "file": "kf-modes/strategist.md",  "module": "10" },
+          { "id": "calibrator",  "file": "kf-modes/calibrator.md",  "module": "11" }
+        ]
+      }
