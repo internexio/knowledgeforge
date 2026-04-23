@@ -79,3 +79,9 @@ The aphantasia → overactive-agent analogy was considered and rejected. If imag
 ## Relationship to `scaffolding-vs-patching-pattern`
 
 `scaffolding-vs-patching-pattern` documents *that* patching outperforms scaffolding through three historical artifacts and empirical mechanism evidence (Sofroniew et al., 2026 — emotion vectors in Claude). This entry provides *why* at a biological level: the mechanism that makes patching optimal is suppression, not construction. The two entries are read together: `scaffolding-vs-patching` answers "when to patch and what the evidence is"; this entry answers "what the mechanism is."
+
+---
+
+## Pending Cross-References
+
+**Leonardo anti-cliché architecture** (KF convergence 3) is documented only as a passing reference in `plans/kf-universal-architecture.md` (lines 421, 783) — no standalone doc exists in this repo as of 2026-04-23. When a Leonardo architecture doc is created, it should add a one-line note pointing back to this entry. The cross-reference is directionally correct; the target file does not yet exist.
