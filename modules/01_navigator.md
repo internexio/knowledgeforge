@@ -5,13 +5,17 @@
 ```yaml
 module:
   title: Navigator Agent Specification
-  version: 6.6.2
+  version: 6.6.3
   purpose: Detect and resolve genuinely ambiguous user requests — fires only when multiple valid interpretations exist
   topics: [ambiguity-detection, disambiguation, intent-interpretation, routing]
   contexts: [ambiguous-requests, multi-interpretation-scenarios]
   difficulty: intermediate
   related: [02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 13_Decision_Classification, 19_Memory_Architecture, 20_Permission_Model]
   changelog:
+    6.6.3:
+      - Add CC Skill — KF Fit Check (user onboarding skill)
+      - Explicit invocation only; not in orchestrator mode trigger table
+      - Compiled output: .claude/skills/kf/fit-check.md
     6.6.2:
       - Add Step 4 Loop Detection to Ambiguity Detection Protocol
       - Confusion detection hint fires on second consecutive ambiguous clarification
@@ -575,3 +579,104 @@ After disambiguation, tag decision type: `reckoning | evaluative | predictive | 
 - **Full ambiguity detection protocol (steps 1–5):** Protocol section
 - **Decision type / KF-5 enrichment:** Variants section
 - **Anti-patterns to avoid:** Quality Gates section
+
+## CC Skill — KF Fit Check
+<!-- Compiled output: .claude/skills/kf/fit-check.md -->
+
+**Version:** 1.0.0
+**Loaded by:** `/kf-fit-check` command or explicit user invocation
+
+## Purpose
+
+Takes a 2-3 sentence description of the user's current work and returns a ranked list of 2-3 KF modes most relevant to that work, giving first-contact users a concrete starting point.
+
+This is a skill, not a mode. It does not appear in the orchestrator mode trigger table. Navigator does not trigger it automatically — the user must invoke it explicitly.
+
+## Trigger Conditions
+
+Activate on any of these phrasings:
+
+- "what KF modes should I use"
+- "KF fit check"
+- "where do I start with KF"
+- `/kf-fit-check`
+- "which modes are relevant for [described work]"
+- Equivalent first-contact orientation phrasings (e.g., "which KF mode fits my project", "help me pick a mode")
+
+Navigator's ambiguity detection does NOT trigger this skill. Fit-check is user-initiated only.
+
+## Input Protocol
+
+1. If the trigger arrives without a work description: respond with exactly "Describe your current work or project in 2-3 sentences."
+2. If the trigger arrives with an inline description (e.g., "KF fit check — I'm building a multi-agent pipeline for X"): proceed directly without re-prompting.
+3. Minimum viable input: one complete sentence describing a concrete work activity. If the user provides only a topic word (e.g., "AI agents"), ask for a sentence.
+
+## Ranking Protocol
+
+Map the description to modes using these primary signals. First matching signal wins the primary slot. Second strongest match takes the secondary slot.
+
+| Signal in description | Primary mode |
+|-----------------------|-------------|
+| "creating", "building", "writing", "designing", "implementing", "adding", "scaffolding" | Builder |
+| "broken", "failing", "not working", "error", "bug", "crash", "why is", "unexpected" | Debugger |
+| "should I", "which option", "trade-off", "decide", "prioritize", "worth it", "torn between" | Strategist |
+| "patterns", "common across", "extract", "generalize", "abstract", "distill", "recurring" | Synthesizer |
+| "review", "check", "validate", "audit", "find gaps", "before we ship", "what am I missing" | Critic |
+| "blast radius", "second-order", "irreversible", "production decision", "complex system" | Expert |
+| "configure", "setup", "CLAUDE.md", "project conventions", "guardrails", "coding standards" | Calibrator |
+| "multiple agents", "workflow", "coordinate", "pipeline", "orchestrate", "handoff" | Coordinator |
+
+**Multi-activity descriptions:** rank by which activity appears first or is most concrete (has specifics, not vague qualifiers).
+
+**No-match fallback:** if the description does not match any signal, ask one clarifying question: "Is this primarily about creating something, diagnosing a problem, making a decision, or something else?"
+
+## Output Format
+
+```
+Based on your description, the most relevant KF modes are:
+
+1. **[Mode]** — [one sentence tied to what user described]
+2. **[Mode]** — [one sentence tied to what user described]
+3. **[Mode]** — [one sentence tied to what user described, if applicable]
+
+Start with [#1 mode]. Ignore the other modes until you have used this one a few times.
+```
+
+Justifications must reference the user's actual description, not generic mode descriptions. "Builder — you said you're writing a Stripe webhook handler" is correct. "Builder — for creating new agents and systems" is not.
+
+## Constraints
+
+- Does NOT rank Navigator (fires automatically; users do not select it)
+- Does NOT rank infrastructure modules
+- Does NOT expose Expert sub-variants (domain, infra, ERA) or Critic sub-variants
+- Maximum 3 ranked modes in output, minimum 2
+- Ranking is deterministic on description content — same description produces same ranking (idempotent)
+- Not a mode — does not appear in the orchestrator mode trigger table
+- Output is terminal — no downstream mode is invoked by this skill
+
+## Test Set
+
+**Test 1 — Pure build:**
+Description: "I'm writing a new Python service that handles webhook events from Stripe. I need to design the data model and write the processing logic."
+Expected #1: Builder (creating, writing)
+Expected excluded: Debugger, Strategist, Expert, Calibrator
+
+**Test 2 — Pure debug:**
+Description: "My API endpoint is returning 500 errors on POST requests but not GET. I've been trying to fix it for two hours and cannot figure out why."
+Expected #1: Debugger (failing, not working, error)
+Expected excluded: Builder, Synthesizer, Calibrator, Coordinator
+
+**Test 3 — Pattern extraction:**
+Description: "I have 12 different AI agent projects from the last year. I want to understand what architectural patterns I keep using so I can standardize them."
+Expected #1: Synthesizer (patterns, recurring, generalize)
+Expected excluded: Debugger, Expert, Calibrator
+
+**Test 4 — Strategy:**
+Description: "We have three ways to approach the authentication system rewrite — session-based, JWT, or OAuth delegation. I need to pick one and justify it to the team."
+Expected #1: Strategist (trade-off, decide, which option)
+Expected excluded: Builder, Debugger, Synthesizer, Calibrator
+
+**Test 5 — Review:**
+Description: "My team just finished a six-week spec for a new data pipeline. I want to find any gaps, unstated assumptions, or edge cases before we start implementing."
+Expected #1: Critic (review, find gaps, what am I missing)
+Expected excluded: Builder, Debugger, Synthesizer, Calibrator
