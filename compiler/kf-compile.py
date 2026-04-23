@@ -70,9 +70,16 @@ def extract_section(content: str, section_name: str) -> str | None:
             in_section = True
             continue
         if in_section:
-            # Stop only at another CC section marker, not regular headings
-            if line.startswith("## ") and line[3:].strip() in CC_SECTION_MARKERS:
-                break
+            # Stop only at another CC section marker, not regular headings.
+            # Also stops on titled variants (e.g., "## CC Skill — KF Fit Check")
+            # by checking whether the suffix starts with a known marker followed
+            # by a space (handles " — " and similar separators).
+            if line.startswith("## "):
+                section_id = line[3:].strip()
+                if section_id in CC_SECTION_MARKERS or any(
+                    section_id.startswith(m + " ") for m in CC_SECTION_MARKERS
+                ):
+                    break
             result.append(line)
 
     if not in_section:
@@ -375,6 +382,100 @@ def strip_cc_sections(content: str) -> str:
     return stripped
 
 
+def compile_vscode(binding: dict, output_root: Path, dry_run: bool,
+                   diff_mode: bool, version: str) -> list[dict]:
+    """
+    Compile for the vscode platform.
+
+    VS Code uses verbatim module copy — each mode module is emitted as a
+    complete .md resource file loaded at runtime by the extension host.
+    Infrastructure modules (12–25) are NOT compiled; their behaviours are
+    embedded in KFSession TypeScript.
+
+    special_outputs.mode_registry is written as a JSON file.
+    """
+    manifest = []
+    module_outputs = binding.get("module_outputs", {})
+    special = binding.get("special_outputs", {})
+
+    # --- Mode resource files ---
+    for mod_id, mod_spec in module_outputs.items():
+        outputs = mod_spec.get("outputs", [])
+        for out_spec in outputs:
+            if out_spec.get("type") != "resource":
+                continue
+
+            rel_path = out_spec["path"]
+            out_path = output_root / rel_path
+
+            # Find source module by prefix (e.g. "00" → 00_orchestrator.md)
+            candidates = list(MODULES_DIR.glob(f"{mod_id}_*.md"))
+            if not candidates:
+                sys.stderr.write(
+                    f"[kf-compile] Module '{mod_id}' not found — skipping\n"
+                )
+                manifest.append({
+                    "source": f"{mod_id}_*.md",
+                    "output": rel_path,
+                    "section": "verbatim",
+                    "status": "missing_module",
+                })
+                continue
+
+            src = candidates[0]
+            content = src.read_text(encoding="utf-8")
+            entry = {
+                "source": src.name,
+                "output": rel_path,
+                "section": "verbatim",
+            }
+
+            if diff_mode:
+                existing = out_path.read_text(encoding="utf-8") if out_path.exists() else ""
+                if content == existing:
+                    entry["status"] = "unchanged"
+                else:
+                    entry["status"] = "changed"
+                    entry["diff_summary"] = (
+                        f"{len(existing.splitlines())} → {len(content.splitlines())} lines"
+                    )
+            elif dry_run:
+                entry["status"] = "would_write"
+            else:
+                out_path.parent.mkdir(parents=True, exist_ok=True)
+                out_path.write_text(content, encoding="utf-8")
+                entry["status"] = "written"
+
+            entry["bytes"] = len(content.encode())
+            manifest.append(entry)
+
+    # --- special_outputs.mode_registry ---
+    registry_spec = special.get("mode_registry", {})
+    if registry_spec:
+        reg_path = output_root / registry_spec["path"]
+        reg_content = registry_spec.get("content", "")
+        entry = {
+            "source": "platform-bindings/vscode.yaml",
+            "output": registry_spec["path"],
+            "section": "mode_registry",
+        }
+
+        if diff_mode:
+            existing = reg_path.read_text(encoding="utf-8") if reg_path.exists() else ""
+            entry["status"] = "unchanged" if reg_content.strip() == existing.strip() else "changed"
+        elif dry_run:
+            entry["status"] = "would_write"
+        else:
+            reg_path.parent.mkdir(parents=True, exist_ok=True)
+            reg_path.write_text(reg_content.strip() + "\n", encoding="utf-8")
+            entry["status"] = "written"
+
+        entry["bytes"] = len(reg_content.encode())
+        manifest.append(entry)
+
+    return manifest
+
+
 def compile_claude_projects(binding: dict, output_root: Path, dry_run: bool,
                               diff_mode: bool, version: str) -> list[dict]:
     """
@@ -581,7 +682,7 @@ def main():
     parser.add_argument(
         "--target",
         required=True,
-        choices=["claude-code", "claude-projects", "cowork"],
+        choices=["claude-code", "claude-projects", "cowork", "vscode"],
         help="Platform target to compile for",
     )
     parser.add_argument(
@@ -625,6 +726,10 @@ def main():
         )
     elif args.target == "claude-projects":
         manifest = compile_claude_projects(
+            binding, output_root, args.dry_run, args.diff, version
+        )
+    elif args.target == "vscode":
+        manifest = compile_vscode(
             binding, output_root, args.dry_run, args.diff, version
         )
     else:

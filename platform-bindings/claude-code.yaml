@@ -59,6 +59,9 @@ module_outputs:
       - type: skill
         path: ".claude/skills/kf/navigator.md"
         section: "CC Skill"
+      - type: skill
+        path: ".claude/skills/kf/fit-check.md"
+        section: "CC Skill — KF Fit Check"
       - type: agent
         path: ".claude/agents/navigator.md"
         section: "CC Agent"
