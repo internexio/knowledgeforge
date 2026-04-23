@@ -5,13 +5,18 @@
 ```yaml
 module:
   title: Navigator Agent Specification
-  version: 6.6.1
+  version: 6.6.2
   purpose: Detect and resolve genuinely ambiguous user requests — fires only when multiple valid interpretations exist
   topics: [ambiguity-detection, disambiguation, intent-interpretation, routing]
   contexts: [ambiguous-requests, multi-interpretation-scenarios]
   difficulty: intermediate
   related: [02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 13_Decision_Classification, 19_Memory_Architecture, 20_Permission_Model]
   changelog:
+    6.6.2:
+      - Add Step 4 Loop Detection to Ambiguity Detection Protocol
+      - Confusion detection hint fires on second consecutive ambiguous clarification
+      - CC Skill and CC Agent Step 4 renumbered; Loop Detection inserted
+      - No routing index changes, no new risk tiers
     6.6.1: |
       - Activation predicate formalized in orchestrator static zone (SPEC-3 / ERA finding F2)
       - Navigator now fires only when top-2 candidate modes produce different output types
@@ -236,6 +241,44 @@ resolution_pattern:
     not present a generic menu. Each question should halve the interpretation space.
 ```
 
+### Step 4: Loop Detection
+
+Applied only on the **second consecutive Navigator fire** in a session when the user's clarification response was itself ambiguous.
+
+```yaml
+loop_detection:
+  activation_predicate:
+    condition_1: This is the second consecutive Navigator fire in this session
+    condition_2: The user's response to the prior disambiguation question was itself ambiguous
+    both_required: true
+
+  non_activation:
+    - First Navigator fire: never — user has not yet attempted to clarify
+    - Third consecutive Navigator fire: Module 16 circuit breaker applies instead
+    - User response is "I don't know", "not sure", "no idea", or equivalent acknowledgment
+      of genuine uncertainty — hint would not help; proceed to circuit breaker early
+
+  behavior:
+    append_to_disambiguation_question: true
+    hint_format: >
+      Append after the clarifying question, on a new line:
+      "Try phrasing like: '[mode-trigger verb] me [X]' or '[mode-trigger verb] why [X] is [Y].'"
+    hint_examples:
+      - "Try phrasing like: 'build me a spec for X' or 'debug why X is failing.'"
+      - "Try phrasing like: 'review my spec for X' or 'help me prioritize X vs Y.'"
+    hint_is_a_question: false
+    counts_toward_one_question_limit: false
+
+  state_tracking: >
+    Infer from conversation context. If the immediately preceding assistant turn was also
+    a Navigator disambiguation question AND the user's reply to it did not resolve the
+    ambiguity (i.e., Navigator fires again on that reply), the loop detection condition
+    is met. No routing index fields. No new session state variables. Conversation history
+    is sufficient.
+```
+
+**Loop detection does not alter the primary activation predicate.** Navigator still fires only when top-2 candidate modes produce different output types (6.6.1 SPEC-3). Step 4 adds a hint layer on top of Step 3 behavior; it does not change when Navigator fires.
+
 ---
 
 ## Integration with KF-5 (Decision Classification)
@@ -410,7 +453,14 @@ Ask ONE discriminating question. Not a menu — a targeted question:
 
 Never: "What would you like? 1) Build 2) Debug 3) Review..."
 
-### Step 4 — Route
+### Step 4 — Loop Detection (second consecutive fire only)
+If this is the second consecutive Navigator fire AND the user's prior clarification was itself ambiguous:
+- Append a one-line framing hint after the clarifying question: "Try phrasing like: '[mode-trigger verb] me [X]' or '[mode-trigger verb] why [X] is [Y].'"
+- The hint is not a question — it does not count toward the one-question-per-turn limit.
+- Do NOT fire on: first fire, third fire (circuit breaker applies), or "I don't know" responses.
+- State tracking: infer from conversation context — no new session variables needed.
+
+### Step 5 — Route
 After disambiguation, tag decision type: `reckoning | evaluative | predictive | novel`
 
 ## Output Format
@@ -498,13 +548,20 @@ Ask ONE discriminating question. Not a menu — a targeted question:
 - ✅ "Are you looking to debug why it's failing, or review the spec for completeness?"
 - ❌ "What would you like? 1) Build 2) Debug 3) Review..."
 
-### Step 4 — Route
+### Step 4 — Loop Detection (second consecutive fire only)
+If this is the second consecutive Navigator fire AND the prior clarification was itself ambiguous:
+- Append hint after clarifying question: "Try phrasing like: 'build me X' or 'debug why X is failing.'"
+- Hint is NOT a question. Does not count toward one-question limit.
+- Skip on: first fire, third fire (circuit breaker), "I don't know" responses.
+
+### Step 5 — Route
 After disambiguation, tag decision type: `reckoning | evaluative | predictive | novel`
 
 ## Rules
 - NEVER fire on clear intents (wastes tokens)
 - NEVER present generic option menus as clarification
 - Maximum one clarifying question per turn
+- On second consecutive ambiguous fire: append one-line framing hint (not a question) to disambiguation response
 - If Step 1 passes, Navigator is invisible — no output
 - **Capability boundary**: Routing decisions only — no artifacts, no final answers, no design decisions. If the user needs output, route to the appropriate mode.
 
@@ -515,6 +572,6 @@ After disambiguation, tag decision type: `reckoning | evaluative | predictive | 
 
 ## Section-Load Map  →  `~/.claude/skills/kf/navigator.md`
 - **Firing criteria with full examples:** Purpose section
-- **Full ambiguity detection protocol (steps 1–3):** Protocol section
+- **Full ambiguity detection protocol (steps 1–5):** Protocol section
 - **Decision type / KF-5 enrichment:** Variants section
 - **Anti-patterns to avoid:** Quality Gates section
