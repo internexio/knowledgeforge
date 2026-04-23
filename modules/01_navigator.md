@@ -5,13 +5,17 @@
 ```yaml
 module:
   title: Navigator Agent Specification
-  version: 6.6.3
+  version: 7.1.0
   purpose: Detect and resolve genuinely ambiguous user requests — fires only when multiple valid interpretations exist
   topics: [ambiguity-detection, disambiguation, intent-interpretation, routing]
   contexts: [ambiguous-requests, multi-interpretation-scenarios]
   difficulty: intermediate
   related: [02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 13_Decision_Classification, 19_Memory_Architecture, 20_Permission_Model]
   changelog:
+    7.1.0:
+      - Version alignment with KF system 7.1.0
+      - User education layer: Step 4 Loop Detection + CC Skill — KF Fit Check
+      - Module was at 6.6.3; bumped to match system version on next edit
     6.6.3:
       - Add CC Skill — KF Fit Check (user onboarding skill)
       - Explicit invocation only; not in orchestrator mode trigger table

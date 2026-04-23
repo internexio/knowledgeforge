@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.0.2
+version: 7.1.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -33,12 +33,17 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.1.0
+    date: 2026-04-23
+    changes:
+      - User education layer — 00_User_Quickstart.md, Loop Detection (Module 01), kf-fit-check skill
+      - Module 01 version aligned to system (was 6.6.3, now 7.1.0)
+      - Compiler fix: titled CC Skill sections now handled by prefix-aware stop condition
+      - Disambiguation loop hint pattern filed to wiki/orchestration/
   - version: 7.0.2
     date: 2026-04-23
     changes:
-      - User education layer patch — Module 01 (Navigator) v6.6.3
-      - Add CC Skill — KF Fit Check; explicit invocation only; not in orchestrator routing table
-      - Fit-check compiled to .claude/skills/kf/fit-check.md in variant repos
+      - Intermediate during user education layer work (superseded by 7.1.0 same day)
   - version: 7.0.1
     date: 2026-04-16
     changes:
