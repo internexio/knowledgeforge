@@ -5,13 +5,20 @@
 ```yaml
 module:
   title: Salience-Based Resource Allocation
-  version: 6.5.0
+  version: 7.1.0
   purpose: Replace equal resource allocation with dynamic allocation based on task relevance to current goals
   topics: [resource-allocation, salience, prioritization, competitive-inhibition, goal-alignment]
   contexts: [multi-agent-coordination, resource-contention, queue-management, orchestra-integration]
   difficulty: advanced
   related: [03_Coordination_Patterns, 10_Strategist_Agent, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.1.0:
+      date: 2026-04-23
+      changes:
+        - Version alignment with KF system 7.1.0
+        - Add inhibition-first framing spec note to Competitive Inhibition section
+        - References wiki/architecture/imagination-as-suppression-validates-patching.md
+        - No implementation change — spec-level observation for Phase 1 hook design
     6.3.1: |
       - Added access-driven salience signal source from wiki access logs (Module 21)
     6.2.0: |
@@ -116,6 +123,23 @@ competitive_inhibition:
     human_attention: Which agent's output is presented to human first
     context_window: How much context an agent can claim
 ```
+
+### Inhibition-first framing — spec note (7.1.0)
+
+The Competitive Inhibition section above implements selection as amplification-first: compute salience for all competing tasks, route resources to the highest scorer. This is functionally correct.
+
+A complementary framing — suppression-first — shifts the design question from "which task to boost" to "which tasks to silence." The distinction matters for hook design:
+
+- **Amplification-first:** load the relevant module when routing commits
+- **Suppression-first:** suppress irrelevant module attention before routing commits, let the relevant signal settle
+
+Both produce the same allocation outcome at steady state. The difference is in where the work happens: before or after the routing decision.
+
+**Relevance to Phase 1 pre-prompt routing hook:** The UserPromptSubmit hook (Phase 1 critical path) decides which context to load before Claude sees the prompt. Framing this as suppression (prevent irrelevant module attention from loading) rather than amplification (load relevant modules) may produce lower-overhead implementations — suppression is a gate, amplification is a loader.
+
+**Source:** This framing note is grounded in Ng et al. (2026), "Spontaneous Activity Reshaping Hypothesis" (Psychological Review) — see `wiki/architecture/imagination-as-suppression-validates-patching.md` for the mechanism and three KF convergences.
+
+**Status:** Spec-level observation only. Current implementation (highest salience wins) is unchanged. Revisit during Phase 1 hook design revision.
 
 ---
 
