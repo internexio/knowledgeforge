@@ -5,13 +5,18 @@
 ```yaml
 module:
   title: KnowledgeForge 7.0.0 Agent Instructions
-  version: 7.0.3
+  version: 7.0.4
   purpose: Orchestrate all KF modes and infrastructure modules through behavioral prompt instructions — classify, route, execute, verify, deliver
   topics: [orchestration, routing, decision-classification, mode-selection, quality-enforcement, prompt-architecture, knowledge-accretion, infrastructure-planning, entity-relationship-analysis]
   contexts: [all-interactions, session-management, mode-transitions]
   difficulty: foundational
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 06_Quick_Reference, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 23_Taxonomy_Enforcement, 24_Verbatim_History_Mining, 25_Entity_Relationship_Analysis]
   changelog:
+    7.0.4:
+      date: 2026-04-29
+      changes:
+        - Module Reference table updated for Module 07 (loop_exit_protocol vs convergence_loop distinction — 7.0.2) and Module 21 (Dispatcher Boundary contract — 7.0.2) and Module 03 (formula term claimed — 7.0.1)
+        - No orchestrator behavior change. Version tracks downstream module updates.
     7.0.3:
       date: 2026-04-18
       changes:
@@ -529,11 +534,11 @@ Accretion check: Novel relationship patterns or undocumented couplings surfaced
 |--------|------|
 | `01_Navigator_Agent` | Activated only for genuine ambiguity (output-type predicate — 6.6.1) |
 | `02_Builder_Agent` | Activated for creation/specification requests |
-| `03_Coordination_Patterns` | Activated for multi-agent workflow design |
+| `03_Coordination_Patterns` | Activated for multi-agent workflow design; `formula` term claimed for mode-chain recipes exclusively (7.0.1) |
 | `04_Specification_Templates` | Referenced by all modes producing structured output |
 | `05_Expert_Agent_Example` | Activated for domain-specific deep analysis; decision_type_exercised gates auto-verify (6.6.1) |
 | `06_Quick_Reference` | Quick lookup during execution |
-| `07_Critic_Agent` | Activated for review/validation + auto-verification in chains + knowledge base linter variant (6.2) + infrastructure audit variant (6.3) + loop_exit_protocol for Critic ↔ Builder cycles (6.6.1) |
+| `07_Critic_Agent` | Activated for review/validation + auto-verification in chains + knowledge base linter variant (6.2) + infrastructure audit variant (6.3) + loop_exit_protocol for Critic ↔ Builder cycles (6.6.1); loop_exit_protocol max=1 is KF context-token constraint — downstream convergence loops may exceed max=1 without violation (7.0.2) |
 | `08_Synthesizer_Agent` | Activated for pattern extraction |
 | `09_Debugger_Agent` | Activated for diagnosis |
 | `10_Strategist_Agent` | Activated for strategic decisions |
@@ -547,7 +552,7 @@ Accretion check: Novel relationship patterns or undocumented couplings surfaced
 | `18_Salience_Allocation` | Cross-cutting — resource contention (6.3.1: access-driven salience signal from wiki access logs) |
 | `19_Memory_Architecture` | Cross-cutting — routing index + session memory + Tier 0 persistent knowledge; routing_index_schema contract (6.6.1) |
 | `20_Permission_Model` | Cross-cutting — risk classification + capability gates |
-| `21_Knowledge_Accretion` | Cross-cutting — compile-query-enhance loop + accretion signals + knowledge base linter (6.2) (6.3.1: autonomous maintenance cycle, access logging, consolidation protocol, rotating linter coverage); accretion_calibration yield tracking (6.6.1) |
+| `21_Knowledge_Accretion` | Cross-cutting — compile-query-enhance loop + accretion signals + knowledge base linter (6.2) (6.3.1: autonomous maintenance cycle, access logging, consolidation protocol, rotating linter coverage); accretion_calibration yield tracking (6.6.1); Dispatcher Boundary contract — Module 21 owns the gate, downstream routers own dispatch (7.0.2) |
 | `22_Semantic_Wiki_Search` | Cross-cutting — Tier 0 retrieval; metadata-gated semantic search over wiki/ entries |
 | `23_Taxonomy_Enforcement` | Cross-cutting — controlled vocabulary validation shared across Tier 0 and Tier 3 |
 | `24_Verbatim_History_Mining` | Cross-cutting — Tier 3 retrieval; verbatim storage with importance-weighted decay + semantic search via MemPalace sidecar |

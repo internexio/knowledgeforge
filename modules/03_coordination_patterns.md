@@ -5,13 +5,18 @@
 ```yaml
 module:
   title: Agent Coordination Patterns
-  version: 7.0.0
+  version: 7.0.1
   purpose: Design multi-agent workflows by mapping dependencies first, then deriving the coordination pattern from the graph
   topics: [coordination, multi-agent, workflows, handoffs, orchestration, dependency-mapping, verification, capability-restriction]
   contexts: [complex-tasks, agent-teams, workflow-design]
   difficulty: advanced
   related: [01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 14_Metacognitive_Monitor, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]
   changelog:
+    7.0.1:
+      date: 2026-04-29
+      changes:
+        - Claimed `formula` term for mode-chain recipes exclusively — directed downstream implementations to use alternative terms (recipe, playbook, pattern, workflow) for non-mode workflows. Prevents namespace collision with non-KF formula usage (e.g., watch-pattern recipes in [project]).
+        - No behavior change. Term hygiene only.
     7.0.0:
       date: 2026-04-14
       changes:
@@ -783,6 +788,20 @@ This is a hybrid pattern — not forced into one taxonomy entry.
 5. **Design handoffs** → Customize context for your domain
 6. **Build agents** → `02_Builder_Agent.md` for each specialist
 7. **Test the full flow** → Simulate the complete dependency graph
+
+---
+
+## Naming Convention — `formula` (7.0.1)
+
+The term `formula` in KF refers exclusively to **mode-chain recipes** — TOML or YAML definitions of multi-mode workflows with `[[steps]]`, `mode`, `depends_on`, and `condition` fields. Example: `build-validate.formula.toml` describing `@builder → @critic`.
+
+Downstream agents that implement workflow recipes for non-mode workflows (e.g., data-pipeline recipes, watch-pattern recipes, scrape-diff-notify recipes) MUST NOT use `formula`. Recommended alternatives: `recipe`, `playbook`, `pattern`, `workflow`. The distinction matters because:
+
+1. KF formulas resolve to mode chains (orchestrator-aware)
+2. Non-KF recipes resolve to action sequences (orchestrator-blind)
+3. Loaders, registries, and lookup paths must remain non-overlapping
+
+If a downstream implementation has already shipped with `formula` in another sense, KF agents should treat that namespace as foreign and use the fully-qualified path (`<project>/formulas/`) when referencing it. The KF formula namespace is always `kf/formulas/` or equivalent KF-owned path.
 
 ---
 

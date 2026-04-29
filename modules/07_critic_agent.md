@@ -5,13 +5,18 @@
 ```yaml
 module:
   title: Critic Agent Specification
-  version: 7.0.0
+  version: 7.0.2
   purpose: Systematically challenge specifications, find unstated assumptions, and identify edge cases — including adversarial variant for automatic chain verification, knowledge base linter variant for health checks, and infrastructure audit variant for hosting assessment
   topics: [quality-assurance, gap-detection, red-teaming, validation, adversarial-verification, knowledge-base-linting, infrastructure-audit]
   contexts: [specification-review, risk-assessment, completeness-checking, chain-verification, knowledge-base-maintenance, infrastructure-assessment, decomposition-planning]
   difficulty: advanced
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 15_Grounding_Scores, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.0.2:
+      date: 2026-04-29
+      changes:
+        - Clarified loop_exit_protocol vs downstream convergence_loop distinction — KF spec max=1 is context-token-cost-aware; downstream implementations using ephemeral artifacts may exceed max=1 without violating this spec
+        - No behavior change. Prevents spec contradiction against Gas City Pattern #2 (max=2) in KF-cc implementation plan
     7.0.1:
       date: 2026-04-17
       changes:
@@ -607,6 +612,25 @@ loop_exit_protocol:
 
   decision_type: evaluative
   locked: false  # May be revisited if escalation rate exceeds 30% of adversarial chains
+
+  not_to_be_confused_with:           # NEW 7.0.2 — convergence loop distinction
+    pattern: convergence_loop
+    where: |
+      Downstream KF-cc implementations may use multi-round convergence (e.g., Gas City Pattern #2 specifies max=2 rounds).
+    distinction: |
+      The loop_exit_protocol caps at max_automatic_revision_cycles: 1 because KF spec
+      operates on context-window artifacts where each round costs real tokens. Persistent
+      Sev 2 findings escalate to the user rather than iterating further.
+
+      A downstream convergence loop is an implementation pattern operating on ephemeral
+      artifacts (e.g., wisp molecules, transient scratchpad state). When iteration is
+      nearly free, higher round counts are justified. KF spec does not own the downstream
+      implementation budget. Downstream implementations that achieve cheap iteration via
+      ephemeral artifacts MAY exceed max=1 without violating this spec.
+
+      The constraint is: "KF spec loop_exit_protocol ≤ 1 automatic revision cycle."
+      The permission is: "Downstream implementations using non-context artifacts are not
+      bound by this token-economy constraint."
 ```
 
 ---

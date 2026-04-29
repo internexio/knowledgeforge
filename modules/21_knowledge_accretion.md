@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Knowledge Accretion
-  version: 7.0.1
+  version: 7.0.2
   purpose: Cross-cutting detection-and-routing behavior that recognizes when mode outputs contain knowledge worth persisting and either auto-files it (Claude Code) or surfaces it as a compilation candidate (Claude Projects)
   topics: [knowledge-persistence, compile-query-enhance, wiki-generation, accretion-signals, knowledge-base-maintenance]
   contexts: [all-mode-execution, knowledge-management, session-outputs, persistent-storage]
@@ -13,6 +13,11 @@ module:
   related: [07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 02_Builder_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model]
   added_in: "6.2"
   changelog:
+    7.0.2:
+      date: 2026-04-29
+      changes:
+        - Added Dispatcher Boundary section formalizing gate-vs-dispatch separation — Module 21 owns the gate (novelty, reuse value, grounding ≥ 0.6, taxonomy compliance, candidate metadata). Downstream routers own dispatch (tier selection, physical write path). Downstream routers that bypass the Module 21 gate are a Critic linter HIGH finding.
+        - No behavior change. Clarifies boundary for MemoryRouter and similar downstream dispatcher implementations.
     7.0.1:
       date: 2026-04-18
       changes:
@@ -860,6 +865,31 @@ Before filing any accretion candidate:
 - [ ] Metadata header present (yaml frontmatter with all candidate fields)
 - [ ] Taxonomy gate passed — domain, topic, and tags all from Module 23 controlled vocabulary
 - [ ] Embedding computed and upserted into Tier 0 vector index (Module 22)
+
+---
+
+## Dispatcher Boundary (7.0.2)
+
+Module 21 owns the **gate**: what qualifies as an accretion candidate (novelty + reuse value + grounding ≥ 0.6 + taxonomy compliance). It does not own the **dispatch**: where the candidate physically lands.
+
+Downstream implementations may interpose a router between Module 21's gate and the destination (e.g., Tier 0 wiki, Tier 2B file store, Tier 3 archive). These routers do not relax Module 21's gate. They route candidates that have already passed the gate.
+
+### Boundary Contract
+
+| Concern | Module 21 | Downstream router (e.g., MemoryRouter) |
+|---|---|---|
+| Novelty detection | ✓ | — |
+| Reuse value evaluation | ✓ | — |
+| Grounding threshold (≥ 0.6) | ✓ | — |
+| Taxonomy validation (Module 23) | ✓ | — |
+| Candidate metadata generation | ✓ | — |
+| Tier selection (T0 / T2B / T3) | — | ✓ |
+| Discard of non-accretion content | — | ✓ |
+| Physical write path | — | ✓ |
+
+A downstream router that writes content directly to Tier 0 without passing through the Module 21 gate violates this contract. Surface as a Critic linter finding (severity HIGH).
+
+A downstream router that re-applies its own novelty or grounding check on already-gated candidates is redundant but not a violation. The gate is Module 21's responsibility; downstream routers may add routing logic on top of gated output but must not substitute for the gate.
 
 ---
 
