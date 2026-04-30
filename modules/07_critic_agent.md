@@ -5,13 +5,17 @@
 ```yaml
 module:
   title: Critic Agent Specification
-  version: 7.0.2
+  version: 7.0.3
   purpose: Systematically challenge specifications, find unstated assumptions, and identify edge cases — including adversarial variant for automatic chain verification, knowledge base linter variant for health checks, and infrastructure audit variant for hosting assessment
   topics: [quality-assurance, gap-detection, red-teaming, validation, adversarial-verification, knowledge-base-linting, infrastructure-audit]
   contexts: [specification-review, risk-assessment, completeness-checking, chain-verification, knowledge-base-maintenance, infrastructure-assessment, decomposition-planning]
   difficulty: advanced
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 15_Grounding_Scores, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.0.3:
+      date: 2026-04-29
+      changes:
+        - Boundary scoring completed — threshold corrected from 0.3 to 0.2 (per spec), "Sev X (borderline Y)" format added, rationale-for-winning-severity requirement made explicit. Source: plans/baml-integration.md ([project]-swd.4)
     7.0.2:
       date: 2026-04-29
       changes:
@@ -317,20 +321,25 @@ Risk Level: [Critical | High | Medium | Low]
 
 ### Severity Boundary Scoring
 
-When a finding sits at the boundary between two severity levels, score it against both:
+When a finding's characteristics match multiple severity levels, score it against both candidates:
 
 1. Evaluate the finding against the criteria for the higher severity level
 2. Evaluate against the criteria for the lower severity level
-3. Report the winning severity with the margin to the alternative:
+3. Report the winning severity with the margin to the alternative, plus rationale for the winning choice:
 
 ```
 Finding: [description]
-Severity: High (margin: 0.7 over Medium threshold)
+Severity: High (margin: 0.7 over Medium) — exceeds Medium because [specific criterion met]
 ```
 
-A margin < 0.3 signals a genuinely borderline finding — flag it as such and note what additional information would resolve it.
+If margin < 0.2: report as `Sev X (borderline Y)` and state what would tip it from X to Y:
 
-**Rationale:** Binary severity assignment hides uncertainty. Boundary scoring makes that uncertainty explicit and actionable.
+```
+Finding: [description]
+Severity: High (borderline Medium) — classified High because [criterion]; would drop to Medium if [condition]
+```
+
+**Rationale:** Binary severity assignment hides uncertainty at the edges. Boundary scoring makes that uncertainty explicit, shows the reasoning, and tells reviewers exactly what would change the call.
 
 ## Integration
 

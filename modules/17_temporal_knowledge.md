@@ -5,13 +5,17 @@
 ```yaml
 module:
   title: Temporal Knowledge Accumulation
-  version: 7.0.0
+  version: 7.0.1
   purpose: Add temporal structure to KF's knowledge base — every entry gets versioning, relationships, and lifecycle management
   topics: [temporal-reasoning, knowledge-versioning, knowledge-lifecycle, temporal-relationships, accretion-temporality]
   contexts: [knowledge-management, version-tracking, historical-queries, knowledge-hygiene]
   difficulty: advanced
   related: [15_Grounding_Scores, 09_Debugger_Agent, 08_Synthesizer_Agent, 12_Calibration_Layer, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 18_Salience_Allocation]
   changelog:
+    7.0.1:
+      date: 2026-04-29
+      changes:
+        - Research Staleness Gate completed — added trigger predicate (staleness_risk != stable), proportional severity based on staleness ratio (age/half-life), explicit do-not-block rule, and updated caveat format. 7.0.0 had binary gate; missing the proportionality and trigger condition. Source: plans/orchestra-integration.md ([project]-swd.7)
     7.0.0:
       date: 2026-04-14
       changes:
@@ -305,21 +309,28 @@ calibration_integration:
 
 ## Research Staleness Gate
 
+**Trigger:** Before Builder or Expert mode operates on knowledge where `staleness_risk != stable`. Stable knowledge (academic foundations, general architecture) skips this gate.
+
 Before building on externally researched material (web searches, retrieved documents, cited sources), check the research age against domain half-life:
 
-| Domain | Half-life (approximate) |
-|--------|------------------------|
-| AI/ML models and APIs | 3 months |
-| Cloud infrastructure pricing/features | 6 months |
-| Framework versions and APIs | 6 months |
-| Security advisories | 1 month |
-| General software architecture | 2 years |
-| Academic/theoretical foundations | 5+ years |
+| Domain | Half-life (approximate) | staleness_risk |
+|--------|------------------------|----------------|
+| AI/ML models and APIs | 3 months | fast_decay |
+| Security advisories | 1 month | fast_decay |
+| Cloud infrastructure pricing/features | 6 months | slow_decay |
+| Framework versions and APIs | 6 months | slow_decay |
+| General software architecture | 2 years | stable |
+| Academic/theoretical foundations | 5+ years | stable |
 
-**Gate behavior:**
-- Research age < half-life: proceed normally
-- Research age ≥ half-life: flag to user — "This research is [N] months old. Domain half-life is [M] months. Findings may be outdated."
-- If user proceeds with stale research: tag all outputs built on it with `[STALE SOURCE — verify before acting]`
+**Gate behavior** — the gate never blocks; it flags:
+
+- `staleness_ratio = age / half-life`
+- `staleness_ratio < 1.0`: proceed normally
+- `staleness_ratio 1.0–2.0`: flag LOW — "This research is [N] days old (domain half-life: [H] days). Findings may be outdated."
+- `staleness_ratio > 2.0`: flag MEDIUM — "This research is significantly past its domain half-life. Verify before building on it."
+- User decides whether to proceed in all cases — do not block
+
+If the user proceeds with stale research: tag all outputs built on it with a caveat: `Built on unverified research from [date] — verify before acting.`
 
 Research age is computed from the `retrieved_at` field if present, or estimated from content signals (model version numbers, API syntax, date references in text).
 
