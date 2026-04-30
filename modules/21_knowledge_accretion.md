@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Knowledge Accretion
-  version: 7.0.2
+  version: 7.0.3
   purpose: Cross-cutting detection-and-routing behavior that recognizes when mode outputs contain knowledge worth persisting and either auto-files it (Claude Code) or surfaces it as a compilation candidate (Claude Projects)
   topics: [knowledge-persistence, compile-query-enhance, wiki-generation, accretion-signals, knowledge-base-maintenance]
   contexts: [all-mode-execution, knowledge-management, session-outputs, persistent-storage]
@@ -13,6 +13,11 @@ module:
   related: [07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 02_Builder_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model]
   added_in: "6.2"
   changelog:
+    7.0.3:
+      date: 2026-04-29
+      changes:
+        - Expanded Source Fingerprint Deduplication — added partial match case (same finding_key, different content → update existing entry), no-database principle statement, and Critic-finding-specific fingerprint formula
+        - 7.0.0 only handled exact match (skip) and no match (create); partial match left undefined. Source: plans/background-agents-integration.md ([project]-swd.8)
     7.0.2:
       date: 2026-04-29
       changes:
@@ -108,6 +113,8 @@ Accretion does NOT fire on:
 
 ## Source Fingerprint Deduplication
 
+**Principle:** Store deduplication state in the artifact itself. No external dedup database needed — wiki entries are the source of truth for what has been captured. Works offline. No state synchronization required.
+
 Every wiki entry MUST include a `source_fingerprint` in its frontmatter:
 
 ```yaml
@@ -117,18 +124,20 @@ source_fingerprint: [SHA-256 hash or stable identifier of the source artifact]
 ```
 
 **Before accreting any artifact:**
-1. Compute or extract the `source_fingerprint` of the candidate artifact
+1. Compute or extract the `source_fingerprint` of the candidate
 2. Grep existing wiki entries for that fingerprint
-3. If a matching fingerprint is found → **skip accretion** (duplicate source, already captured)
-4. If no match → proceed with accretion, embed fingerprint in new entry
+3. **Exact match** → skip accretion (duplicate source, already captured)
+4. **Partial match** (same `finding_key`, different content hash) → update the existing entry with the new content; preserve the original `source_fingerprint`, add `updated_at`
+5. **No match** → proceed with accretion, embed fingerprint in new entry
 
 **Fingerprint construction:**
+- For Critic findings: hash of (source_mode + finding_key + core_content_hash)
 - For conversation turns: hash of (session_id + turn_index)
 - For documents: hash of content (first 500 chars + length)
 - For URLs: the URL itself (canonical form)
 - For tool outputs: hash of (tool_name + input_hash + output_hash)
 
-This prevents the same source artifact from generating multiple wiki entries across sessions.
+The partial match case handles knowledge that evolves — the finding is the same but has been refined. Updating the existing entry is preferable to creating a duplicate with marginally different content.
 
 ---
 
