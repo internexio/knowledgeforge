@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Permission Model
-  version: 7.0.0
+  version: 7.0.1
   purpose: Layered permission system that classifies action risk, enforces capability restrictions per sub-agent, and gates autonomous behavior with human checkpoints
   topics: [permissions, risk-classification, capability-restriction, autonomous-governance, sub-agent-safety, accretion-permissions]
   contexts: [autonomous-deployment, sub-agent-architecture, mode-chains, production-safety]
@@ -14,6 +14,12 @@ module:
   added_in: "6.1"
   implements: "Directive 5 (Layered Permission Model), Directive 6 (Fork-Join Capabilities)"
   changelog:
+    7.0.1:
+      date: 2026-04-29
+      changes:
+        - Expanded Allow-With-Mutation section — added hook output contract, audit trail spec (.kf/state/permission_mutations.jsonl with fields), and explicit deny-vs-mutate decision rule
+        - 7.0.0 had mutation policies table and implementation note; missing the concrete hook interface, audit path, and when to prefer mutation over denial
+        - Source: plans/hooks-mastery-integration.md ([project]-swd.12)
     7.0.0:
       date: 2026-04-14
       changes:
@@ -134,9 +140,48 @@ Extend the binary allow/deny model with a mutation tier. Some operations should 
 | Cost annotation | LLM API calls with large context | Prepend token estimate to tool input |
 | Scope restriction | File writes to sensitive directories | Redirect to sandbox path |
 
-**Implementation note:** Mutations are applied via `PermissionRequest` hook (pre-execution). The hook receives the proposed tool call, applies the mutation policy, and returns the modified input. Claude sees the mutated version — the original is logged for audit.
+**Hook output contract:** Mutations are applied via the `PermissionRequest` hook. The hook returns:
 
-**Mutation is always logged.** If a mutation changes the semantic meaning of the operation (not just format), surface the change to the user before execution.
+```json
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PermissionRequest",
+    "decision": {
+      "behavior": "allow",
+      "updatedInput": {
+        "command": "{sanitized_command}"
+      },
+      "message": "Input sanitized: {what changed and why}"
+    }
+  }
+}
+```
+
+The hook receives the proposed tool call, applies the matching mutation policy, and returns the modified input. Claude executes the mutated version — the original is preserved in the audit log.
+
+**Audit trail:** Every mutation is logged to `.kf/state/permission_mutations.jsonl`:
+
+```json
+{
+  "timestamp": "ISO-8601",
+  "policy_applied": "path_normalization | safety_flags | cost_annotation | scope_restriction",
+  "original_input": { ... },
+  "mutated_input": { ... },
+  "message": "what changed"
+}
+```
+
+If a mutation changes the semantic meaning of the operation (not just format), surface the change to the user before execution.
+
+**Deny vs. mutate — decision rule:**
+
+| Situation | Decision |
+|-----------|----------|
+| Intent is valid, execution is unsafe | Mutate — allow with sanitized input |
+| Intent is invalid or out-of-scope | Deny — block entirely |
+| Mutation would change semantic meaning and user hasn't confirmed | Surface to user before executing |
+
+Prefer mutation over denial when the intent is valid but the execution is unsafe. Denial is for operations that shouldn't happen at all.
 
 ---
 
