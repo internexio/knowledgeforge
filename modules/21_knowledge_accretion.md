@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Knowledge Accretion
-  version: 7.0.3
+  version: 7.0.4
   purpose: Cross-cutting detection-and-routing behavior that recognizes when mode outputs contain knowledge worth persisting and either auto-files it (Claude Code) or surfaces it as a compilation candidate (Claude Projects)
   topics: [knowledge-persistence, compile-query-enhance, wiki-generation, accretion-signals, knowledge-base-maintenance]
   contexts: [all-mode-execution, knowledge-management, session-outputs, persistent-storage]
@@ -13,6 +13,10 @@ module:
   related: [07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 02_Builder_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model]
   added_in: "6.2"
   changelog:
+    7.0.4:
+      date: 2026-04-29
+      changes:
+        - Expanded Terminal State — added quality_test heuristic, two missing indicators (boundaries/limitations explicit, anti-patterns documented), accretion_pending flag for Tier 2 intermediate filing, and user-promoted promotion path. Source: plans/ai-research-skills-integration.md ([project]-swd.9)
     7.0.3:
       date: 2026-04-29
       changes:
@@ -143,19 +147,27 @@ The partial match case handles knowledge that evolves — the finding is the sam
 
 ## Terminal State Requirement
 
-Only **terminal artifacts** accrete to Tier 0 (wiki). Intermediate artifacts stay in Tier 2 (working state).
+A knowledge artifact reaches terminal state when it is complete, self-contained, and doesn't require session context to be understood.
 
-**Terminal state criteria** — an artifact is terminal when:
-1. Findings are self-contained (no unresolved dependencies on other in-progress work)
-2. Complete (no critical open questions marked TODO or TBD)
-3. No active revision loop (Critic ↔ Builder cycle has closed)
-4. Grounding score ≥ 0.6 (Module 15)
+**Quality test:** *"A reader unfamiliar with this session should be able to derive actionable conclusions from this artifact alone."* If that's not true, it's not terminal.
 
-**Intermediate artifacts** (stay in Tier 2):
+Only **terminal artifacts** accrete to Tier 0 (wiki). Intermediate artifacts stay in Tier 2 (working state) with an `accretion_pending` flag until they reach terminal state or are explicitly promoted by the user.
+
+**Terminal state indicators** — an artifact is terminal when ALL of the following hold:
+1. Core question answered with evidence (findings are self-contained)
+2. No critical open questions that would change the conclusions
+3. Boundaries and limitations are explicit
+4. Anti-patterns documented where applicable
+5. No active revision loop (Critic ↔ Builder cycle has closed)
+6. Grounding score ≥ 0.6 (Module 15)
+
+**Intermediate artifacts** (file to Tier 2 with `accretion_pending: true`):
 - Draft specs mid-revision
 - Partial debugging hypotheses
 - Research notes with open questions
 - Any artifact with `reproduction_status: failed` (Module 09)
+
+Intermediate artifacts in Tier 2 are reviewed on the next health check cycle. They either reach terminal state naturally (revision loop closes, open questions resolve) or are explicitly promoted by the user.
 
 **Rationale:** Tier 0 is a trust layer. Accreting intermediate work pollutes it with uncertain or incomplete knowledge that later sessions treat as authoritative.
 
