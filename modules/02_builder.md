@@ -5,13 +5,18 @@
 ```yaml
 module:
   title: Builder Agent Specification
-  version: 7.0.0
+  version: 7.0.1
   purpose: Create new agents and complete specifications from requirements
   topics: [agent-creation, specification-generation, system-prompts, PDIA-method, template-accretion]
   contexts: [new-agent-requests, specification-needs, system-design]
   difficulty: intermediate
   related: [01_Navigator_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.0.1:
+      date: 2026-04-29
+      changes:
+        - Pre-registration git protocol — added skip_conditions (rapid prototyping, hotfix, explicit opt-out) and deviation rationale requirement for exploratory commits
+        - 7.0.0 had commit prefixes and tagging; missing when NOT to pre-register and what exploratory commits must include. Source: plans/ai-research-skills-integration.md ([project]-swd.10)
     7.0.0:
       date: 2026-04-14
       changes:
@@ -466,9 +471,14 @@ Spec commits precede implementation commits. The commit sequence is mandatory:
 
 **Commit tagging:**
 - `[confirmatory]` — implementation matches spec exactly; add to commit body when true
-- `[exploratory]` — implementation diverges from spec (discovered something during build); triggers spec update before merge
+- `[exploratory]` — implementation diverges from spec (discovered something during build); spec must be updated with deviation rationale before merge
 
-**Why this matters:** Spec-first commits create a verifiable record that the design preceded the code. This enables post-hoc validation (did we build what we intended?), supports Module 21 terminal state detection (spec commit = intent anchor), and makes drift between spec and implementation visible in git history.
+**Skip conditions** — pre-registration is not required when:
+- Rapid prototyping (exploratory phase; spec commitment comes after the prototype validates the approach)
+- Hotfix (fix is the spec; pre-registration adds no value and slows emergency response)
+- Explicitly tagged `no-pre-registration` by the user
+
+**Why this matters:** Spec-first commits create a verifiable record that the design preceded the code. This enables post-hoc validation (did we build what we intended?), supports Module 21 terminal state detection (spec commit = intent anchor), and makes drift between spec and implementation visible in git history. Accretion (Module 21) uses commit order to distinguish genuine design documents from post-hoc documentation.
 
 ---
 
