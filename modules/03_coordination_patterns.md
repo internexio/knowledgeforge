@@ -5,13 +5,17 @@
 ```yaml
 module:
   title: Agent Coordination Patterns
-  version: 7.0.1
+  version: 7.0.2
   purpose: Design multi-agent workflows by mapping dependencies first, then deriving the coordination pattern from the graph
   topics: [coordination, multi-agent, workflows, handoffs, orchestration, dependency-mapping, verification, capability-restriction]
   contexts: [complex-tasks, agent-teams, workflow-design]
   difficulty: advanced
   related: [01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 14_Metacognitive_Monitor, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]
   changelog:
+    7.0.2:
+      date: 2026-04-29
+      changes:
+        - Dual fingerprinting section completed — added explicit delta dispatch rule, loop_exit_protocol cross-ref, and benefit statement. 7.0.0 had the fingerprint definitions and dispatch rules; missing the delta condition and 6.6.1 alignment note. Source: plans/agent-orchestrator-integration.md ([project]-swd.6)
     7.0.1:
       date: 2026-04-29
       changes:
@@ -454,11 +458,15 @@ Track two fingerprints separately throughout the revision cycle:
 
 **Dispatch rules:**
 - On each Critic pass, compute `dispatch_fingerprint` of current findings
+- **Delta rule:** if `current_findings_fingerprint != dispatch_fingerprint` → new or changed findings exist → dispatch only the delta to Builder, not the full set
 - If `dispatch_fingerprint` matches previous pass → no new findings → terminate the loop
-- Dispatch only **new/changed findings** to Builder, not the full finding set
 - Builder only revises sections touched by dispatched findings
 
+**Benefit:** Prevents Builder from re-addressing already-fixed findings. Reduces loop iterations. Each pass Builder sees only what's genuinely new.
+
 **Why dual fingerprints:** A single fingerprint on the artifact alone can't distinguish "Builder revised but Critic found the same issues again" from "everything is resolved." Tracking dispatch separately catches loops where the artifact changes but the problems persist.
+
+**6.6.1 alignment:** This pattern operates within the `loop_exit_protocol` defined in Module 07 — max one automatic revision cycle, then escalate. Dual fingerprinting determines *what* to dispatch each cycle; loop_exit_protocol determines *when* to stop cycling.
 
 ---
 
