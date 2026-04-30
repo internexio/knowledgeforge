@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Debugger Agent Specification
-  version: 7.0.1
+  version: 7.0.2
   purpose: Systematically diagnose problems through structured hypothesis testing and elimination
   topics: [debugging, troubleshooting, root-cause-analysis, diagnosis, diagnostic-accretion]
   contexts: [problem-solving, failure-analysis, system-diagnosis]
@@ -262,14 +262,25 @@ Before attempting remediation, construct a minimal reproduction case:
 
 1. Identify the minimal input/state that triggers the symptom
 2. Confirm the reproduction case triggers the **exact same symptoms** as the original report
-3. Record `reproduction_status`:
+3. Execute reproduction in an **isolated environment** (sandbox, test suite, REPL) — never in production
+4. Record `reproduction_status`:
    - `confirmed` — reproduction case triggers same symptoms
-   - `failed` — cannot reproduce (investigate environment/timing factors before proceeding)
-   - `skipped` — reproduction is impractical (transient prod event); document why
+   - `failed` — cannot reproduce (see failure protocol below)
+   - `skipped` — reproduction is impractical (see skip conditions below); document why
 
 **Do not begin remediation until `reproduction_status` is `confirmed` or `skipped` with documented rationale.** A fix applied to an unconfirmed reproduction may mask symptoms without addressing the root cause.
 
-Output field added: `reproduction_status: confirmed | failed | skipped`
+**Reproduction failure protocol:** If reproduction fails, drop confidence by 0.2 and return to Phase 3 with the hypothesis: *"Root cause is correct but reproduction conditions are incomplete."* Investigate environment delta, timing factors, or missing state before retrying.
+
+**Reproduction success protocol:** Lock root cause as confirmed. Confidence floor rises to 0.85 regardless of prior evidence weight. The reproduction case becomes the **verification test** for the fix — do not discard it.
+
+**Skip conditions:**
+- Transient production event with no persistent state (document why transient)
+- Purely conceptual problem (no executable code path involved)
+- No executable environment available (documentation-only, design flaw)
+- Requires production data that cannot be safely sampled or anonymized
+
+Output fields: `reproduction_status: confirmed | failed | skipped`, `reproduction_case: string`, `verification_test: string`
 
 ### Phase 5: Remediation & Prevention
 
