@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Entity Relationship Analysis
-  version: 7.0.1
+  version: 7.0.2
   purpose: Extract entities and their relationships from queries and context to improve routing accuracy, multi-hop reasoning, and memory retrieval — single-entity analysis misses relational complexity that changes which mode and chain is correct
   topics: [entity-extraction, relationship-mapping, routing-signals, multi-hop, graph-analysis]
   contexts: [decision-classification, mode-routing, memory-retrieval, coordinator-planning]
@@ -13,6 +13,12 @@ module:
   related: [13_Decision_Classification, 19_Memory_Architecture, 22_Semantic_Wiki_Search, 03_Coordination_Patterns, 18_Salience_Allocation, 10_Strategist_Agent]
   added_in: "6.5"
   changelog:
+    7.0.2:
+      date: 2026-04-29
+      changes:
+        - Upstream ERA adversarial checklist from knowledgeforge-cw era-domain skill — compound failures (hidden join paths, blast radius, cardinality violations, brittleness test), blast radius probes, assumption inversions, design implications
+        - Add KF-specific ERA applications — module dependency audit, mode chain contracts, routing index schema
+        - Add adversarial probes to CC Doc section for Expert mode execution
     7.0.1:
       date: 2026-04-17
       changes:
@@ -226,6 +232,94 @@ era:
 
 ---
 
+## Adversarial Checklist
+
+When ERA is running in Expert mode or on high-stakes requests, apply these probes beyond standard entity/relationship mapping. Standard extraction (entity identification, attribute listing, cardinality labeling) is what Sonnet does natively — document it, do not reproduce it. The adversarial checklist targets what gets missed.
+
+### Compound Failures
+
+```yaml
+- "Two apparently independent entities — implicit dependency through a third? (Hidden join path)"
+- "Relationship removed or renamed — which consumers break silently vs. loudly? (Blast radius)"
+- "Cardinality assumption violated at runtime? (1:1 becoming 1:N under load)"
+- "Which entity boundaries force re-analysis if a new requirement is added? (Brittleness test)"
+```
+
+### Blast Radius
+
+```yaml
+- "Entity renamed — full propagation across modules, templates, routing index, accretion candidates?"
+- "Cardinality changes (1:N → M:N) — which consumers require schema migrations vs. cardinality-agnostic?"
+- "Implicit contract made explicit — what hidden coupling is revealed?"
+```
+
+### Assumption Inversions
+
+```yaml
+- "'Entities are independent' → What shared mutable state couples them at runtime?"
+- "'Relationship is 1:1' → What production scenario makes it 1:N?"
+- "'Entity boundary is stable' → What new requirement forces split or merge?"
+- "'Relationship is directional' → Is there a reverse dependency the model omits?"
+- "'All entities explicitly modeled' → What implicit entities (sessions, locks, queues, caches) are missing?"
+```
+
+### Design Implications
+
+```yaml
+- "Entity model reflects domain or implementation? (Implementation-leaking entities = premature coupling)"
+- "Relationship names are verb phrases describing behavior, not nouns describing co-location?"
+- "Clear aggregate root, or competing entry points? (Competing roots = unclear bounded contexts)"
+- "M:N relationships mediated by junction entity, or implicit? (Implicit M:N → unmaintainable)"
+```
+
+---
+
+## KF-Specific ERA Applications
+
+ERA applies to KF's own internal structure — not just external systems. Three recurring applications:
+
+### Module Dependency Audit
+
+```yaml
+entities: [KF_Module, Activation_Condition, Cross_Reference, Data_Flow]
+adversarial_focus:
+  - Orphan cross-references (Module A references Module B; B does not reference A)
+  - Load-coupled vs. reference-only relationships (misclassified in related: fields)
+  - Missing handoff field contracts between chained modes
+```
+
+### Mode Chain Contracts
+
+```yaml
+entities: [Mode, Input_Field, Output_Field, Handoff_Contract]
+relationships:
+  - Mode --requires--> Input_Field (N:M via Handoff_Contract)
+  - Mode --produces--> Output_Field (N:M via Handoff_Contract)
+  - Output_Field --satisfies--> Input_Field (1:1 or 1:N)
+adversarial_focus:
+  - Output fields no downstream mode consumes (dead outputs)
+  - Input fields no upstream mode produces (unsatisfied requirements)
+  - Implicit type coercions between output and input field formats
+```
+
+### Routing Index Schema
+
+```yaml
+entities: [Session, Mode_Engagement, Decision, Artifact, Open_Item]
+relationships:
+  - Session --contains--> Mode_Engagement (1:N)
+  - Decision --produces--> Artifact (1:N)
+  - Mode_Engagement --classifies--> Decision (1:1)
+adversarial_focus:
+  - Decisions without decision_type classification
+  - Artifacts with no producing mode (orphaned)
+  - Open items referencing closed decisions (stale pointers)
+```
+
+ERA analyses of KF's own module structure are high-value accretion candidates. Novel undocumented couplings → flag as ACCRETION_CANDIDATE (novelty_type: new_pattern).
+
+---
+
 ## Integration Points
 
 ### Module 13 (Decision Classification)
@@ -340,3 +434,15 @@ topic: [M23 vocabulary]
 - **Surfacing ERA output to user** — ERA is internal; surface only routing decisions
 - **Overriding M13 with ERA alone** — ERA adjusts (escalates), M13 sets base
 - **Skipping ERA on Coordinator requests** — mandatory; Coordinator without entity analysis misses merge-point constraints
+
+## Adversarial Probes (Expert mode)
+
+Apply when ERA runs in Expert mode or on high-stakes requests. Standard extraction is native to Sonnet — these catch what gets missed:
+
+**Compound failures:** Hidden join paths through third entities; blast radius of relationship renames (silent vs. loud failures); cardinality violations at runtime (1:1 → 1:N under load); brittleness test (which entity boundaries force re-analysis on new requirements).
+
+**Assumption inversions:** "Independent entities" — check for shared mutable state; "1:1 relationship" — what production scenario makes it 1:N; "directional relationship" — is there an undocumented reverse dependency; "all entities modeled" — check for implicit entities (sessions, locks, queues, caches).
+
+**Design check:** Entity names reflect domain or implementation? Relationship names are verb phrases (behavior), not nouns (co-location)? Clear aggregate root? M:N mediated by junction entity or left implicit?
+
+**For KF internal ERA:** Module dependency audit checks for orphan cross-references and missing handoff field contracts. Mode chain contracts check for dead outputs and unsatisfied input fields. Novel couplings discovered → ACCRETION_CANDIDATE.
