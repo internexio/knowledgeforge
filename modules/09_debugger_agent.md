@@ -5,13 +5,18 @@
 ```yaml
 module:
   title: Debugger Agent Specification
-  version: 7.0.0
+  version: 7.0.1
   purpose: Systematically diagnose problems through structured hypothesis testing and elimination
   topics: [debugging, troubleshooting, root-cause-analysis, diagnosis, diagnostic-accretion]
   contexts: [problem-solving, failure-analysis, system-diagnosis]
   difficulty: advanced
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 10_Strategist_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.0.1:
+      date: 2026-04-29
+      changes:
+        - Expanded CI Failure Feedback Loop — added fingerprint comparison logic (same/different/subset), trigger condition, determinism note
+        - Missing from 7.0.0 initial implementation: what to do when fingerprint changes (new issue introduced) or partially changes (subset). Source: plans/agent-orchestrator-integration.md ([project]-swd.11)
     7.0.0:
       date: 2026-04-14
       changes:
@@ -771,19 +776,34 @@ Additional related modules:
 
 ## CI Failure Feedback Loop
 
-When operating against a CI system (automated tests, linters, build pipelines):
+**Trigger:** Iterative test/CI failure signals are available (automated tests, linters, build pipelines that report failure details on each run).
 
-1. **Fingerprint the failure set** on each CI run: hash of (failing test names + error types)
-2. **Dispatch only new failures** — if `failure_fingerprint` matches previous run, the fix did not address the issue; do not re-dispatch the same failures as new work
-3. **Escalation rule:** If the same `failure_fingerprint` persists after N retry attempts (default: 3), escalate to user:
+Protocol:
+
+1. **Receive failure signal** with full details — logs, stack traces, failing test names, error types
+2. **Fingerprint the failure set:** hash of (failing test names + error types). This is deterministic — no LLM judgment needed for the comparison step.
+3. **Generate hypotheses from failure details** — not just failure count. Error types and affected tests constrain the hypothesis space.
+4. **Apply fix, verify against reproduction**
+
+On the next failure signal, **compare fingerprint to previous:**
+
+| Comparison | Interpretation | Action |
+|------------|----------------|--------|
+| **Same fingerprint** | Fix didn't address the issue | Escalate hypothesis priority — current approach is not working |
+| **Different fingerprint** | Original failures resolved; new issue introduced | Treat as new diagnostic cycle; update hypothesis set |
+| **Subset fingerprint** | Partial fix — some failures resolved, others remain | Continue; focus remaining hypotheses on the unresolved subset |
+| **Empty** | All failures resolved | Done |
+
+5. **Escalation rule:** If the same `failure_fingerprint` persists after N iterations (default: 3), escalate to user:
    ```
    CI Escalation: Same failure fingerprint after [N] attempts.
    Failure set: [list]
    This fix approach is not working. Manual intervention needed.
    ```
-4. **Reset fingerprint** only when the failure set genuinely changes (new failures, or failures resolved)
 
-This prevents infinite retry loops where the agent keeps attempting the same fix against the same failures.
+6. **Reset fingerprint** only when the failure set genuinely changes (new failures appear, or failures resolve)
+
+**Why fingerprint:** Prevents infinite retry loops where the agent keeps attempting the same fix against the same failures. The fingerprint comparison is a deterministic check — it gates LLM re-dispatch so the agent doesn't waste cycles on failures it already knows how to reproduce. Feeds into the Operational Bounds reaction engine (Module 16) for retries + escalation tracking.
 
 ---
 
