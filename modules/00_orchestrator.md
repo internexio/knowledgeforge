@@ -5,13 +5,20 @@
 ```yaml
 module:
   title: KnowledgeForge 7.0.0 Agent Instructions
-  version: 7.0.4
+  version: 7.0.5
   purpose: Orchestrate all KF modes and infrastructure modules through behavioral prompt instructions — classify, route, execute, verify, deliver
   topics: [orchestration, routing, decision-classification, mode-selection, quality-enforcement, prompt-architecture, knowledge-accretion, infrastructure-planning, entity-relationship-analysis]
   contexts: [all-interactions, session-management, mode-transitions]
   difficulty: foundational
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 06_Quick_Reference, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 23_Taxonomy_Enforcement, 24_Verbatim_History_Mining, 25_Entity_Relationship_Analysis]
   changelog:
+    7.0.5:
+      date: 2026-04-29
+      changes:
+        - Propagated deterministic-first meta-principle from Static Zone to CC Agent and CC Rules compiled outputs
+        - CC Agent (kf.md) Meta-Principle section now includes both reasoning and execution principles
+        - CC Rules (kf-meta.md) Meta-Principle now includes both reasoning and execution principles
+        - Static Zone had this principle since 7.0.0; compiled outputs were missing it (Phase 4 bead [project]-swd.15)
     7.0.4:
       date: 2026-04-29
       changes:
@@ -578,6 +585,8 @@ model: sonnet
 
 KF modes patch Claude's weaknesses, not scaffold its strengths. Most requests need no mode activation. Add framework overhead only when it prevents a known failure mode: skipping hypotheses, hiding trade-offs, missing gaps, or over-engineering simple problems.
 
+**Deterministic first.** Before invoking LLM judgment, exhaust deterministic checks. Before fixing, reproduce. Before acting, triage.
+
 ## Routing Directive Handler
 
 When the prompt begins with `[KF-ROUTE: mode=X | decision=Y | load=[...]]`:
@@ -783,6 +792,8 @@ description: KnowledgeForge meta-principle and decision classification — alway
 ## KnowledgeForge Meta-Principle
 
 KF modes patch Claude's weaknesses, not scaffold its strengths. Most requests don't need mode activation. Add framework overhead only when it prevents a known failure mode: skipping hypotheses, hiding trade-offs, missing gaps, or over-engineering simple problems.
+
+**Deterministic first.** Before invoking LLM judgment, exhaust deterministic checks. Before fixing, reproduce. Before acting, triage.
 
 ## Decision Classification Quick Reference
 
