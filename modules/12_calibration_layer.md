@@ -5,13 +5,22 @@
 ```yaml
 module:
   title: Calibration Layer
-  version: 7.0.0
+  version: 7.0.2
   purpose: Provide multi-run stability scoring and bias detection for all KF evaluative outputs
   topics: [calibration, evaluation-quality, bias-detection, confidence-intervals, LLM-as-judge]
   contexts: [evaluation, review, scoring, quality-assurance, agent-assessment]
   difficulty: advanced
   related: [02_Builder_Agent, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.0.2:
+      date: 2026-04-29
+      changes:
+        - Judge isolation: add fallback rule (intra-family tier difference when cross-provider unavailable), add specific model examples, add ~80% multi-model benefit quantification
+        - SAP cascade: expand to full 5-strategy sequence (fence extract, multi-object scan, fault-tolerant fix, raw string fallback), add BAML-aligned scoring (StrippedNonAlphaNumeric +3, single_to_array_coercion +1), add fabrication flag and DefaultFromNoValue propagation rule, switch grounding mapping from cost-based multipliers to level-based absolute values (0.8/0.6/0.4/0.1)
+    7.0.1:
+      date: 2026-04-29
+      changes:
+        - (intermediate — superseded by 7.0.2)
     7.0.0:
       date: 2026-04-14
       changes:
@@ -349,11 +358,12 @@ calibration_triggers:
 
 The judge model MUST be from a different provider family than the agent being evaluated:
 
-- Claude agent → OpenAI/GPT judge
+- Claude agent → OpenAI judge (gpt-4o-mini or equivalent)
 - OpenAI/GPT agent → Claude judge
-- Same-family judging introduces self-preference bias that inflates calibration scores
+- **Fallback:** If cross-provider is unavailable, use a different model tier within the same family (e.g., Opus evaluates Sonnet output) — intra-family tier difference reduces but does not eliminate self-preference bias
+- Same-family same-tier judging is prohibited — introduces self-preference bias that inflates calibration scores
 
-**Rationale:** LLMs show measurable preference for outputs from models in the same training lineage. Cross-provider judging eliminates this systematic bias from calibration scores.
+**Rationale:** Self-evaluation bias is documented (two-model critique captures ~80% of multi-model benefit). Cross-provider judging eliminates the self-preference confound entirely. Intra-family tier difference is an acceptable fallback, not preferred.
 
 This rule applies to all multi-pass evaluation runs in Critic, Expert, and Strategist modes.
 
@@ -361,23 +371,39 @@ This rule applies to all multi-pass evaluation runs in Critic, Expert, and Strat
 
 ## Structured Output Parsing Cascade
 
-When a mode produces structured output (specs, checklists, JSON schemas), apply a multi-strategy parsing cascade in order:
+When a mode produces structured output (specs, checklists, JSON schemas), apply a multi-strategy parsing cascade in order. Collect all valid parse candidates, score each, select the lowest-scoring winner.
 
-| Strategy | Cost (lower = better) | When |
-|----------|----------------------|------|
-| Direct parse | 0 | Output matches expected schema exactly |
-| Lenient parse (extra keys tolerated) | +1 per extra key | Output has extra fields |
-| Default-fill (missing optional keys) | +1 per defaulted key | Output missing non-required fields |
-| Coercion (type mismatch, auto-convert) | +10 per coercion | Field type wrong but coercible |
-| Fallback (missing required key) | +100 per field | Required field absent |
+**Strategy sequence:**
 
-**Integration with Module 15 (Grounding Scores):** Parse level maps to grounding score penalty:
-- Cost 0: no penalty
-- Cost 1–5: grounding score × 0.95
-- Cost 6–20: grounding score × 0.85
-- Cost 21+: grounding score × 0.70, flag output as LOW confidence
+| Step | Strategy | Triggered when |
+|------|----------|----------------|
+| 1 | Direct parse (YAML/JSON strict) | Output matches expected schema exactly — accept if clean |
+| 2 | Fence extract — find ` ```yaml ` / ` ```json ` fences, try all closing positions | Structured content inside markdown fences |
+| 3 | Multi-object scan — grep for multiple structured objects in prose | CoT preamble precedes the structured output |
+| 4 | Fault-tolerant fix — character-level repairs (trailing commas, unquoted strings, unterminated collections) | Near-valid output with minor syntax errors |
+| 5 | Raw string fallback — treat entire output as string, attempt schema coercion | No structured content extractable |
 
-Report parse cost alongside output. If total cost > 20, surface to user.
+**Scoring (lower = closer to declared schema):**
+
+| Penalty | Cost |
+|---------|------|
+| `extra_field` — output has a field not in schema | +1 per field |
+| `single_to_array_coercion` — scalar promoted to list | +1 per field |
+| `stripped_characters` — non-alphanumeric chars removed during coercion | +3 per field |
+| `default_from_no_value` — required field absent; value fabricated | +100 per field ⚠️ |
+
+**Fabrication flag (critical):** If the winning candidate has any field with `default_from_no_value` penalty, surface to the caller — that field was fabricated, not extracted. Do not propagate fabricated fields into downstream mode inputs without explicit caveat.
+
+**Integration with Module 15 (Grounding Scores):** Parse level maps to grounding score for that output:
+
+| Parse level | Grounding score |
+|-------------|-----------------|
+| Level 1–2 (strict / fence) | 0.8 — computed from grounded data |
+| Level 3–4 (multi-object / fault-tolerant) | 0.6 — inference with partial verification |
+| Level 5 (raw string fallback) | 0.4 — low-confidence extraction |
+| Any `default_from_no_value` field | 0.1 — pure LLM fabrication |
+
+Report parse level and total penalty cost alongside output. If any `default_from_no_value` penalty applies, flag output as FABRICATION_RISK regardless of level.
 
 ---
 
