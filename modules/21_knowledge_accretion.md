@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Knowledge Accretion
-  version: 7.0.4
+  version: 7.0.5
   purpose: Cross-cutting detection-and-routing behavior that recognizes when mode outputs contain knowledge worth persisting and either auto-files it (Claude Code) or surfaces it as a compilation candidate (Claude Projects)
   topics: [knowledge-persistence, compile-query-enhance, wiki-generation, accretion-signals, knowledge-base-maintenance]
   contexts: [all-mode-execution, knowledge-management, session-outputs, persistent-storage]
@@ -13,6 +13,11 @@ module:
   related: [07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 02_Builder_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model]
   added_in: "6.2"
   changelog:
+    7.0.5:
+      date: 2026-04-30
+      changes:
+        - Added Roadmap Phase Completion Trigger — `/kf-roadmap complete-phase <n>` now runs accretion review against the phase's pre-committed accretion_note; source_mode set to roadmap_phase; novelty_types restricted to [new_pattern, transferable_framework, reusable_analysis, reusable_diagnostic]. Roadmap and vision files themselves added to explicit Non-Triggers / planning artifacts list.
+        - Added bidirectional prerequisite satisfaction check protocol for phase completion.
     7.0.4:
       date: 2026-04-29
       changes:
@@ -103,6 +108,37 @@ During any mode's execution, flag output as `ACCRETION_CANDIDATE` when it meets 
 | Strategist | Decision framework with transferable criteria | Trade-off matrix reusable for similar future decisions |
 | Builder | Specification that establishes a reusable template | New spec pattern worth adding to template library |
 | Calibrator | Configuration pattern for a novel stack combination | Config template reusable for similar projects |
+| Roadmap phase complete | Learnings surfaced during `/kf-roadmap complete-phase <n>` | Pattern, decision, or anti-pattern identified when closing a phase |
+
+### Roadmap Phase Completion Trigger (7.0.5)
+
+When `/kf-roadmap complete-phase <n>` fires, it runs an accretion review as a standard step. This is a **human-prompted accretion event** — not an automatic signal. The command displays the phase's `accretion_note` (pre-committed learning intent) and asks whether learnings worth filing emerged.
+
+```yaml
+roadmap_phase_completed:
+  trigger: "/kf-roadmap complete-phase <n>"
+  action: run_accretion_review
+  source: phase.accretion_note  # The pre-committed intent from roadmap creation
+  prompt: |
+    Phase [N] complete — were there learnings worth filing?
+    Accretion note: "[phase.accretion_note]"
+    - Any patterns, decisions, or anti-patterns to preserve?
+    - Any wiki entries to update?
+    (Answer "none" if nothing warrants filing — that's valid.)
+  on_learning_identified:
+    route_to: Module 21 accretion filing protocol (standard flow)
+    novelty_types_allowed: [new_pattern, transferable_framework, reusable_analysis, reusable_diagnostic]
+    source_mode: roadmap_phase
+```
+
+**Bidirectional link — prerequisite satisfaction check:**
+When a new wiki entry is filed via phase-completion accretion, check `wiki/roadmap.md` for any phase with `knowledge_prerequisites` listing that entry's path. If found, surface:
+> *"Phase [N] listed this as a knowledge prerequisite. It may now be ready to start."*
+
+**What does NOT accrete:**
+- The roadmap file itself (`wiki/roadmap.md`) — planning artifacts are not knowledge artifacts
+- Phase status updates (in_progress → completed) — operational state, not reusable knowledge
+- The vision file (`wiki/vision.md`) — strategic orientation document, not a wiki entry
 
 ### Non-Triggers
 
@@ -112,6 +148,7 @@ Accretion does NOT fire on:
 - Routine mode outputs that apply existing knowledge without extending it
 - Outputs with grounding score below 0.6 without explicit caveat handling
 - Session-specific context with no transferable value (e.g., "user prefers tabs")
+- Roadmap or vision file updates (these are planning artifacts, not knowledge entries)
 
 ---
 

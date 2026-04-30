@@ -5,13 +5,17 @@
 ```yaml
 module:
   title: Temporal Knowledge Accumulation
-  version: 7.0.1
+  version: 7.0.2
   purpose: Add temporal structure to KF's knowledge base — every entry gets versioning, relationships, and lifecycle management
-  topics: [temporal-reasoning, knowledge-versioning, knowledge-lifecycle, temporal-relationships, accretion-temporality]
-  contexts: [knowledge-management, version-tracking, historical-queries, knowledge-hygiene]
+  topics: [temporal-reasoning, knowledge-versioning, knowledge-lifecycle, temporal-relationships, accretion-temporality, planning-artifacts]
+  contexts: [knowledge-management, version-tracking, historical-queries, knowledge-hygiene, vision-staleness, roadmap-staleness]
   difficulty: advanced
   related: [15_Grounding_Scores, 09_Debugger_Agent, 08_Synthesizer_Agent, 12_Calibration_Layer, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 18_Salience_Allocation]
   changelog:
+    7.0.2:
+      date: 2026-04-30
+      changes:
+        - Added Planning Artifact Staleness section — vision (half_life_days: 60) and roadmap (half_life_days: 30) staleness gates with per-artifact severity calibration. In-progress phase stagnation signal added (> 2× expected duration). Aligns with /kf-vision and /kf-roadmap command staleness review modes.
     7.0.1:
       date: 2026-04-29
       changes:
@@ -333,6 +337,67 @@ Before building on externally researched material (web searches, retrieved docum
 If the user proceeds with stale research: tag all outputs built on it with a caveat: `Built on unverified research from [date] — verify before acting.`
 
 Research age is computed from the `retrieved_at` field if present, or estimated from content signals (model version numbers, API syntax, date references in text).
+
+---
+
+## Planning Artifact Staleness (7.0.2)
+
+Vision and roadmap files (`wiki/vision.md`, `wiki/roadmap.md`) are planning artifacts — they have their own staleness semantics distinct from wiki knowledge entries. They are not checked by the general Research Staleness Gate (which applies to externally sourced material). They have their own predicate and half-life table.
+
+### Half-Life Table
+
+| Artifact | Half-life | Rationale |
+|----------|-----------|-----------|
+| `wiki/vision.md` | 60 days | Vision evolves slowly; frequent revision signals instability not clarity |
+| `wiki/roadmap.md` | 30 days | Roadmaps go stale faster — phases complete, dependencies shift, priorities change |
+
+### Staleness Predicate
+
+```yaml
+planning_staleness_check:
+  trigger: "When /kf-vision review, /kf-roadmap review, or TaskMaster standup loads either artifact"
+
+  vision:
+    staleness_ratio: "(today - last_reviewed) / 60"
+    severity_at_below_1x: "None — healthy"
+    severity_at_1x_to_2x: |
+      LOW — advisory only. "Vision last reviewed [N] days ago (half-life: 60 days).
+      Consider /kf-vision update before this session."
+    severity_at_above_2x: |
+      MEDIUM — surface more prominently. "Vision significantly overdue for review ([N] days,
+      2× half-life). Recommend updating before planning work."
+    do_not_block: true  # Vision staleness never blocks execution — it is advisory
+
+  roadmap:
+    staleness_ratio: "(today - last_reviewed) / 30"
+    severity_at_below_1x: "None — healthy"
+    severity_at_1x_to_2x: |
+      LOW — advisory. "Roadmap last reviewed [N] days ago. Consider /kf-roadmap update."
+    severity_at_above_2x: |
+      MEDIUM — "Roadmap significantly overdue for review. Phase statuses may be stale."
+    do_not_block: true
+
+  in_progress_phase_stagnation:
+    trigger: "In-progress phase has not changed status in > 2× its expected duration"
+    expected_duration_proxy: "(roadmap.horizon_end - roadmap.last_reviewed) / phase_count"
+    severity: LOW
+    message: "Phase [N] has been in_progress since [date]. Check whether it's blocked or needs re-scoping."
+    note: "Expected duration is estimated from horizon length ÷ phase count — an approximation only."
+```
+
+### Vision ↔ Roadmap Alignment Check
+
+When a planning artifact is loaded, check version alignment:
+
+```
+linked_vision_version (in roadmap frontmatter) vs. current vision version
+
+If roadmap.linked_vision_version < current vision version:
+  Surface: "This roadmap was written against vision v[N]. Current vision is v[M].
+  Consider /kf-roadmap update to check phase alignment."
+```
+
+This check fires when `/kf-vision update` writes a new vision version. It also fires on `/kf-roadmap review`. It does not fire on every Builder or Strategist request — context economy rule applies.
 
 ---
 

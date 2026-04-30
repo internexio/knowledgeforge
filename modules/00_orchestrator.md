@@ -5,13 +5,18 @@
 ```yaml
 module:
   title: KnowledgeForge 7.0.0 Agent Instructions
-  version: 7.0.5
+  version: 7.0.6
   purpose: Orchestrate all KF modes and infrastructure modules through behavioral prompt instructions — classify, route, execute, verify, deliver
   topics: [orchestration, routing, decision-classification, mode-selection, quality-enforcement, prompt-architecture, knowledge-accretion, infrastructure-planning, entity-relationship-analysis]
   contexts: [all-interactions, session-management, mode-transitions]
   difficulty: foundational
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 06_Quick_Reference, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 23_Taxonomy_Enforcement, 24_Verbatim_History_Mining, 25_Entity_Relationship_Analysis]
   changelog:
+    7.0.6:
+      date: 2026-04-30
+      changes:
+        - Module Reference table updated for M14 (6.6: vision principle drift detection), M17 (7.0.2: planning artifact staleness predicate), M21 (7.0.5: roadmap_phase_completed trigger; vision/roadmap non-triggers)
+        - No orchestrator behavior change. Version tracks downstream module updates.
     7.0.5:
       date: 2026-04-29
       changes:
@@ -552,14 +557,14 @@ Accretion check: Novel relationship patterns or undocumented couplings surfaced
 | `11_Calibrator_Agent` | Activated for AI coder configuration |
 | `12_Calibration_Layer` | Cross-cutting — evaluative outputs |
 | `13_Decision_Classification` | Cross-cutting — every request |
-| `14_Metacognitive_Monitor` | Cross-cutting — extended reasoning |
+| `14_Metacognitive_Monitor` | Cross-cutting — extended reasoning; (6.6) Check 6: vision principle drift detection — fires when Builder/Strategist output explicitly contradicts a wiki/vision.md principle; once per session per principle, never blocks |
 | `15_Grounding_Scores` | Cross-cutting — uncertain knowledge |
 | `16_Operational_Bounds` | Cross-cutting — operational metrics + circuit breakers |
-| `17_Temporal_Knowledge` | Cross-cutting — temporal reasoning (6.3.1: importance-weighted decay, pinning, domain half-life table) |
+| `17_Temporal_Knowledge` | Cross-cutting — temporal reasoning (6.3.1: importance-weighted decay, pinning, domain half-life table); (7.0.2) planning artifact staleness predicate — vision half_life 60d, roadmap half_life 30d, advisory-only, never blocks |
 | `18_Salience_Allocation` | Cross-cutting — resource contention (6.3.1: access-driven salience signal from wiki access logs) |
 | `19_Memory_Architecture` | Cross-cutting — routing index + session memory + Tier 0 persistent knowledge; routing_index_schema contract (6.6.1) |
 | `20_Permission_Model` | Cross-cutting — risk classification + capability gates |
-| `21_Knowledge_Accretion` | Cross-cutting — compile-query-enhance loop + accretion signals + knowledge base linter (6.2) (6.3.1: autonomous maintenance cycle, access logging, consolidation protocol, rotating linter coverage); accretion_calibration yield tracking (6.6.1); Dispatcher Boundary contract — Module 21 owns the gate, downstream routers own dispatch (7.0.2) |
+| `21_Knowledge_Accretion` | Cross-cutting — compile-query-enhance loop + accretion signals + knowledge base linter (6.2) (6.3.1: autonomous maintenance cycle, access logging, consolidation protocol, rotating linter coverage); accretion_calibration yield tracking (6.6.1); Dispatcher Boundary contract — Module 21 owns the gate, downstream routers own dispatch (7.0.2); (7.0.5) roadmap_phase_completed trigger — /kf-roadmap complete-phase <n> runs accretion review against phase accretion_note; vision/roadmap files explicitly excluded as non-triggers |
 | `22_Semantic_Wiki_Search` | Cross-cutting — Tier 0 retrieval; metadata-gated semantic search over wiki/ entries |
 | `23_Taxonomy_Enforcement` | Cross-cutting — controlled vocabulary validation shared across Tier 0 and Tier 3 |
 | `24_Verbatim_History_Mining` | Cross-cutting — Tier 3 retrieval; verbatim storage with importance-weighted decay + semantic search via MemPalace sidecar |

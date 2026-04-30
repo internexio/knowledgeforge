@@ -5,13 +5,15 @@
 ```yaml
 module:
   title: Metacognitive Monitor
-  version: 6.5.0
+  version: 6.6.0
   purpose: Supervisory layer that detects agent failure and user-side session degradation before bad output is produced, triggering appropriate interventions
   topics: [monitoring, failure-detection, intervention, metacognition, agent-safety, user-health, skeptical-verification, accretion-monitoring]
   contexts: [agent-execution, workflow-monitoring, quality-assurance, escalation, session-health]
   difficulty: advanced
   related: [03_Coordination_Patterns, 09_Debugger_Agent, 12_Calibration_Layer, 15_Grounding_Scores, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    6.6.0: |
+      - Added Check 6: Vision Principle Drift Detection — fires when Builder or Strategist output explicitly contradicts a stated vision principle; once per session per principle; requires wiki/vision.md to be present. Source: plans/kf-vision-roadmap-spec.md
     6.2.0: |
       - Added positive novelty detection — accretion signal complements existing confidence_degradation (Module 21 integration)
       - Added accretion monitoring profile (over-accretion, accretion drift)
@@ -37,9 +39,9 @@ Agents fail in predictable ways: they loop, they run out of context, their confi
 
 ---
 
-## Five Core Checks
+## Six Core Checks
 
-*Checks 1–3 are agent-side (6.0). Checks 4–5 are new in 6.1.*
+*Checks 1–3 are agent-side (6.0). Checks 4–5 are new in 6.1. Check 6 is new in 6.6.*
 
 ### 1. Circular Reasoning Detection
 
@@ -201,6 +203,52 @@ skeptical_verification:
     high: ASK_CLARIFICATION — "Earlier we decided [X]. Your current request suggests [Y]. Which should I use?"
     
   integration: "Works with Module 19 (Memory Architecture) routing index and skeptical verification rule"
+```
+
+### 6. Vision Principle Drift Detection (6.6)
+
+When Builder or Strategist output explicitly contradicts a principle stated in `wiki/vision.md`, surface it once per session per principle.
+
+```yaml
+vision_principle_drift:
+  method: explicit_contradiction_check
+  prerequisite: "wiki/vision.md exists and is loadable"
+
+  how_it_works:
+    - After Builder or Strategist produces output, check it against vision principles
+    - Flag only explicit contradictions — not vague tensions
+    - Must be specific: "this design does X, but principle N says Y"
+    - Track which principles have been flagged this session; do not repeat per principle
+
+  trigger_conditions:
+    - Producing mode: Builder or Strategist only
+    - Contradiction type: explicit (not implied, not tension, not out-of-scope)
+    - Specificity required: "current [spec/recommendation] does [X], vision principle [N] says [Y]"
+    - Once per session per principle — suppress repeat for same principle
+
+  not_triggered_by:
+    - Work that is outside the vision scope but not contradicting it
+    - Work when wiki/vision.md does not exist
+    - Expert, Debugger, Synthesizer, or Calibrator output
+    - Vague directional tension without specific clash
+
+  detection_output:
+    type: vision_drift_advisory
+    detail: |
+      Vision principle [N] says '[principle].' The current [spec/recommendation] does [X],
+      which pulls against it. Working against the principle deliberately, or should we revisit?
+    severity: LOW (advisory only — never blocks execution)
+
+  intervention:
+    surface_once: Surface the advisory in-line with the output
+    accept_any_answer: |
+      "Working against it deliberately" is a valid answer. Log the acknowledgment
+      and suppress the same principle for the rest of the session.
+    do_not_block: true
+    do_not_repeat: true  # Same principle, same session
+
+  session_state:
+    flagged_principles: []  # Track which principle indices have been surfaced this session
 ```
 
 ---
@@ -638,7 +686,7 @@ Turn 16: Update routing index. Flag downstream artifacts that assumed REST.
 
 Monitor execution for failure patterns. Default action is CONTINUE — the monitor intervenes only when thresholds are crossed.
 
-## Five Checks
+## Six Checks
 
 **1. Circular reasoning:** Hash working state at each step. Compare against last 10 states. Threshold: 90% similarity within 10-step window. First detection → SWITCH_STRATEGY. Second → ESCALATE.
 
@@ -649,6 +697,8 @@ Monitor execution for failure patterns. Default action is CONTINUE — the monit
 **4. User-side session health:** Repetition (user asks same question differently) → surface routing decision. Escalation signals (caps, emphasis, "this is wrong") → drop ceremony, lead with answer. Correction overload (3+ corrections) → "I'm getting this wrong. Let me reset."
 
 **5. Skeptical verification:** Before acting on recalled state from more than 10 turns ago. Potential mismatch → FLAG_UNCERTAINTY. Direct contradiction → ASK_CLARIFICATION.
+
+**6. Vision principle drift (6.6):** After Builder or Strategist output, if `wiki/vision.md` exists — check for explicit contradictions of vision principles. Explicit = "this design does X, but principle N says Y." Surface once per session per principle: *"Vision principle [N] says '[principle].' The current [spec/recommendation] does [X], which pulls against it. Working against the principle deliberately, or should we revisit?"* Accept any answer. Never block. Never repeat same principle same session.
 
 ## Intervention Strategies
 
