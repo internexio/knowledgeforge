@@ -5,13 +5,17 @@
 ```yaml
 module:
   title: Critic Agent Specification
-  version: 7.0.3
+  version: 7.0.4
   purpose: Systematically challenge specifications, find unstated assumptions, and identify edge cases — including adversarial variant for automatic chain verification, knowledge base linter variant for health checks, and infrastructure audit variant for hosting assessment
   topics: [quality-assurance, gap-detection, red-teaming, validation, adversarial-verification, knowledge-base-linting, infrastructure-audit]
   contexts: [specification-review, risk-assessment, completeness-checking, chain-verification, knowledge-base-maintenance, infrastructure-assessment, decomposition-planning]
   difficulty: advanced
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 15_Grounding_Scores, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.0.4:
+      date: 2026-04-29
+      changes:
+        - Loop exit protocol completed — added circuit_breaker_exemption block with mechanics (why loop iterations are exempt, failure count reset). 6.6.1 had the rule ("do not fire CB") without the rationale. Source: knowledgeforge-cw loop-exit-protocol skill ([project]-swd.5)
     7.0.3:
       date: 2026-04-29
       changes:
@@ -621,6 +625,17 @@ loop_exit_protocol:
 
   decision_type: evaluative
   locked: false  # May be revisited if escalation rate exceeds 30% of adversarial chains
+
+  circuit_breaker_exemption:         # NEW 7.0.4 — from CW loop-exit-protocol skill
+    exempt: true
+    rationale: |
+      The 3-failure circuit breaker counts hard failures (crash, timeout, empty output)
+      and quality failures (output doesn't pass the mode's own quality gate). A revision
+      cycle where Builder produces output is not a failure — it is a deliberate loop.
+    mechanics:
+      - Failure count resets between loop cycles
+      - Only a crash or empty output during revision counts as a circuit breaker failure
+      - Persistent Sev 2+ findings after revision → escalate (not circuit break)
 
   not_to_be_confused_with:           # NEW 7.0.2 — convergence loop distinction
     pattern: convergence_loop
