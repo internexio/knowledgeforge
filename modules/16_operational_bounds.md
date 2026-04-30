@@ -5,13 +5,19 @@
 ```yaml
 module:
   title: Operational Bounds
-  version: 7.0.0
+  version: 7.0.1
   purpose: Maintain key agent operational metrics within defined ranges and trigger corrective behavior when metrics drift
   topics: [operational-safety, metric-monitoring, bounds-checking, corrective-action, chronic-drift, cache-efficiency, circuit-breakers]
   contexts: [agent-operations, quality-assurance, cost-management, reliability]
   difficulty: advanced
   related: [03_Coordination_Patterns, 10_Strategist_Agent, 14_Metacognitive_Monitor, 15_Grounding_Scores, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]
   changelog:
+    7.0.1:
+      date: 2026-04-29
+      changes:
+        - Expanded Pure Decision Functions section — added context_pressure_response function and formal Given/When/Then testability format
+        - decision_catalog now covers circuit_break and context_pressure_response; spawn_decision deferred (implementation-specific, not core KF bounds)
+        - Source: plans/background-agents-integration.md Phase 4 item ([project]-swd.13)
     7.0.0:
       date: 2026-04-14
       changes:
@@ -468,26 +474,58 @@ default_bounds:
 
 ## Pure Decision Functions
 
-Circuit breaker logic and operational threshold checks MUST be expressed as pure functions:
+All operational decisions (circuit break, context pressure response, mode retry) MUST be expressed as pure functions:
 
 - **Input → Output only** — no side effects, no state mutations inside the function
 - **Expressible as a truth table** — every input combination maps to a deterministic output
 - **Testable in isolation** — the function can be evaluated without running the full mode
 
-**Circuit breaker as pure function:**
+**Why pure functions:** Decision logic that mixes state management with outputs is untestable and produces unexpected behavior under compaction (state is lost, decisions become inconsistent). Pure functions with explicit inputs always produce the same output regardless of session history. Side effects (logging, state writes) happen AFTER the pure decision is made, not inside it.
+
+### Decision Catalog
+
+**circuit_break:**
 ```
 inputs:  consecutive_failures (int), threshold (int), stop_hook_active (bool)
-outputs: decision (block | allow | escalate)
+outputs: decision (allow | block | escalate)
 
 truth table:
-  consecutive_failures < threshold  → allow
-  consecutive_failures >= threshold AND stop_hook_active = false → block
-  consecutive_failures >= threshold AND stop_hook_active = true  → escalate (log, allow)
+  consecutive_failures < threshold                                → allow
+  consecutive_failures >= threshold AND stop_hook_active = false  → block
+  consecutive_failures >= threshold AND stop_hook_active = true   → escalate (log, allow)
 ```
 
-**Why pure functions:** Circuit breakers that mix state management with decision logic are untestable and produce unexpected behavior under compaction (state is lost, decisions become inconsistent). Pure functions with explicit inputs always produce the same output regardless of session history.
+**context_pressure_response:**
+```
+inputs:  utilization_pct (float), compression_available (bool)
+outputs: decision (continue | compress | handoff | halt)
 
-Side effects (logging, state writes) happen AFTER the pure decision is made, not inside it.
+truth table:
+  utilization_pct < 80                                          → continue
+  utilization_pct 80–90 AND compression_available = true        → compress
+  utilization_pct 80–90 AND compression_available = false       → handoff
+  utilization_pct > 90                                          → halt
+```
+
+Thresholds derive from the context_utilization bound in this module (healthy: 40–80%, pressure: >80%).
+
+### Testability Rule
+
+Every decision function must be expressible as a truth table. If it cannot be written as input → output without hidden context, it is not pure — refactor until it is.
+
+Test format for verifying any decision function:
+```
+Given: {explicit input state}
+When:  decision_function(state)
+Then:  {expected output}
+```
+
+Example:
+```
+Given: consecutive_failures=3, threshold=3, stop_hook_active=false
+When:  circuit_break(state)
+Then:  block
+```
 
 ---
 
