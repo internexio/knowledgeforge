@@ -15,6 +15,7 @@ metadata:
   pinned: false
   accreted_in: "6.x"
   related:
+    - wiki/migrations/big-bang-rename-supabase-fastapi-react.md  # Execution playbook (filed post-deploy 2026-05-08; gotchas + SQL patterns)
     - wiki/orchestration/spec-commit-before-impl-commit.md
     - modules/02_builder.md
     - modules/06_coordinator.md
