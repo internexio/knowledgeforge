@@ -5,13 +5,21 @@
 ```yaml
 module:
   title: Expert Agent with Adversarial Depth
-  version: 6.6.1
+  version: 7.2.0
   purpose: Provide domain-specific analysis that forces second-order reasoning Sonnet naturally skips
-  topics: [expert-agent, adversarial-depth, domain-specialist, compound-failures, second-order-analysis, reusable-analysis-accretion, infrastructure-architecture, ml-infrastructure, hosting-audit, entity-relationship-analysis]
+  topics: [expert-agent, adversarial-depth, domain-specialist, compound-failures, second-order-analysis, reusable-analysis-accretion, infrastructure-architecture, ml-infrastructure, hosting-audit, entity-relationship-analysis, variant-taxonomy]
   contexts: [agent-creation, expert-design, implementation-reference, security-review, code-review, architecture-review, infrastructure-planning, model-deployment, entity-modeling, dependency-auditing]
   difficulty: intermediate
-  related: [01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 12_Calibration_Layer, 13_Decision_Classification, 15_Grounding_Scores, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
+  related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 12_Calibration_Layer, 13_Decision_Classification, 15_Grounding_Scores, 16_Operational_Bounds, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.2.0:
+      date: 2026-05-10
+      changes:
+        - Formalized variants[] field on agent spec — regular, infrastructure, ml_infrastructure, era (resolves ERA F1 from chain-log-01-tool-calling)
+        - Each variant declares trigger_phrases, output_format, output_template, typical_chain_position, decision_type_typical, risk_tier
+        - decision_type_exercised output field (already required since 6.6.1) now annotated with explicit enum constraint and consumed-by note for Module 00 auto-verify gate (resolves F3)
+        - Mode-selection accuracy metric (Module 16 #10) is now variant-aware
+        - Source: docs/planning/Typed_Mode_Calling/ chain-logs 01–04 (Track C)
     6.6.1: |
       - Added decision_type_exercised field to Expert output spec (ERA finding F5)
       - Closes gate mismatch: auto-verify now fires on actual output depth, not request classification
@@ -93,11 +101,19 @@ agent:
         design_implications: What findings reveal about system design philosophy
         decision_type_tags: Each finding tagged as reckoning/evaluative/predictive/novel
         severity_confidence: Calibrated severity with N-run stability (when applicable)
-        decision_type_exercised: reckoning | evaluative_judgment | predictive_judgment | novel_judgment
+        decision_type_exercised:
+          type: string
+          enum: [reckoning, evaluative_judgment, predictive_judgment, novel_judgment]
+          required: true                    # 6.6.1 informally; 7.2.0 schema-enforced
+          consumed_by: orchestrator_auto_verify_gate  # Module 00 — gate signal
+          backward_compat:
+            rule: "Outputs without this field default to evaluative_judgment (conservative — triggers auto-verify)."
+            deprecation_timeline: KF 7.3.0 — field becomes hard-required, no default
         # NEW 6.6.1 — Tags the actual reasoning depth Expert used, not the incoming request classification.
         # Orchestrator gates auto-verification on this field. Default: evaluative_judgment.
         # Set to reckoning only when Expert's output required no multi-step judgment
         # (e.g., "What port does PostgreSQL use?" routed through Expert context but answered directly).
+        # 7.2.0: enum constraint formalized; was prose convention only (resolves ERA F3).
         
   constraints:
     - Do not spend tokens on scope-definition ceremony — use lightweight header
@@ -151,6 +167,48 @@ agent:
     chain_escalation: false
     domain_escalation: none
     verification_required: false
+
+  # VARIANTS                            # NEW 7.2 (resolves ERA F1)
+  # Formalizes the four Expert variants that previously shared the "Expert" mode
+  # label, distinguished only by trigger phrase and chain context. Aggregate
+  # "Expert accuracy" metrics conflated 4 distinct domain output types per mode.
+  # See chain-log-01-tool-calling §F1 and Module 16 metric #10 (variant-aware).
+  variants:
+    - id: regular
+      purpose: Domain-specific deep analysis with adversarial depth (compound failures, blast radius, assumption inversions, design implications)
+      trigger_phrases: [domain-specific question requiring deep analysis, expert review, deep dive]
+      output_format: analysis_with_adversarial_depth
+      output_template: agent output (Module 04)
+      typical_chain_position: chain_initial | standalone
+      decision_type_typical: evaluative_judgment | predictive_judgment
+      risk_tier: MEDIUM
+
+    - id: infrastructure
+      purpose: Infrastructure architecture domain — service topology, deployment phases, hardware bottlenecks
+      trigger_phrases: [design infrastructure, plan service topology, map deployment phases, architect internal networking]
+      output_format: infrastructure_architecture_inputs
+      output_template: Infrastructure Architecture (Module 04) inputs
+      typical_chain_position: pre_builder (Expert → Builder)
+      decision_type_typical: evaluative_judgment
+      risk_tier: MEDIUM
+
+    - id: ml_infrastructure
+      purpose: Self-hosted model deployment, GPU sizing, inference serving strategy, model-to-hardware mapping
+      trigger_phrases: [self-hosted model deployment, GPU sizing, inference serving, model-to-hardware mapping]
+      output_format: model_hardware_analysis
+      output_template: agent output (Module 04)
+      typical_chain_position: pre_strategist (Expert → Strategist → Builder)
+      decision_type_typical: evaluative_judgment
+      risk_tier: MEDIUM
+
+    - id: era
+      purpose: Entity Relationship Analysis — entity graph, cardinality, coupling analysis, hidden contracts
+      trigger_phrases: [map entity relationships, analyze data model structure, audit module dependencies, model coordination contracts, map what entities a system produces and consumes]
+      output_format: era_analysis_inputs
+      output_template: ERA Specification (Module 04) inputs
+      typical_chain_position: pre_builder (Expert ERA → Builder)
+      decision_type_typical: evaluative_judgment
+      risk_tier: MEDIUM
 ```
 
 ---
