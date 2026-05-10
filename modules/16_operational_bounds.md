@@ -5,13 +5,20 @@
 ```yaml
 module:
   title: Operational Bounds
-  version: 7.0.1
+  version: 7.2.0
   purpose: Maintain key agent operational metrics within defined ranges and trigger corrective behavior when metrics drift
-  topics: [operational-safety, metric-monitoring, bounds-checking, corrective-action, chronic-drift, cache-efficiency, circuit-breakers]
-  contexts: [agent-operations, quality-assurance, cost-management, reliability]
+  topics: [operational-safety, metric-monitoring, bounds-checking, corrective-action, chronic-drift, cache-efficiency, circuit-breakers, mode-selection-accuracy]
+  contexts: [agent-operations, quality-assurance, cost-management, reliability, routing-correctness]
   difficulty: advanced
-  related: [03_Coordination_Patterns, 10_Strategist_Agent, 14_Metacognitive_Monitor, 15_Grounding_Scores, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]
+  related: [00_Orchestrator, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 10_Strategist_Agent, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]
   changelog:
+    7.2.0:
+      date: 2026-05-10
+      changes:
+        - Added metric #10 (mode_selection_accuracy) — primary measurement is re-routing rate (deterministic, from Module 19 routing_decision_log); weekly adversarial sampling for calibration; variant-aware tracking across 8 Critic/Expert variants (resolves ERA F1 + F4 from chain-log-01-tool-calling)
+        - Healthy range — >=90% overall, >=95% per-variant; calibration drift threshold 5pp
+        - Corrective Action Summary extended with 5 new rows
+        - Source: docs/planning/Typed_Mode_Calling/ chain-logs 01–04 (Track C)
     7.0.1:
       date: 2026-04-29
       changes:
@@ -296,6 +303,105 @@ token_cost_per_mode:
     deployment and when optimizing API spend.
 ```
 
+### 10. Mode Selection Accuracy (7.2)
+
+```yaml
+mode_selection_accuracy:
+  measurement:
+    primary:
+      type: deterministic
+      formula: "1 - (re_routed_events / total_routing_events)"
+      window: rolling 100 routing events
+      data_source: Module 19 routing_decision_log
+
+    calibration:
+      type: adversarial_sampling
+      frequency: weekly
+      sample_size: 20
+      method: |
+        Critic adversarial variant reviews sampled routing decisions against
+        original request. "Wrong mode for this task" or "wrong variant for
+        this task" findings at Sev 2+ count as routing failures.
+
+    historical_data_source:
+      type: aggregate
+      location: Module 19 tier_2_metric_aggregates
+      use: "When raw log has rolled past window, calibration uses aggregate"
+
+  tracking:
+    per_mode: [navigator, builder, expert, critic, synthesizer, debugger, strategist, calibrator, orchestrator]
+    per_variant:
+      - critic.regular
+      - critic.linter
+      - critic.audit
+      - critic.adversarial
+      - expert.regular
+      - expert.infrastructure
+      - expert.ml_infrastructure
+      - expert.era
+    rolling_average_window: 100 routing events
+    aggregate_window: weekly (per Module 19 tier_2_metric_aggregates)
+
+  healthy_range:
+    overall: ">= 90%"
+    per_variant: ">= 95%"
+    calibration_drift: "Adversarial-sample failure rate within 5pp of (1 - primary)"
+
+  below_90_overall:
+    diagnosis: Routing logic misclassifying requests; orchestrator prompt may be drifting
+    severity: notification
+    corrective_action:
+      - Trigger Module 13 (Decision Classification) review
+      - Audit recent re_routed events for shared failure pattern
+      - Consider trigger_disambiguator schema update (Module 04)
+
+  below_80_overall:
+    diagnosis: Severe routing failure
+    severity: escalation
+    corrective_action:
+      - ESCALATE
+      - Halt new chain starts until calibration check completes
+      - Surface specific re_routed events for human review
+
+  below_95_per_variant:
+    diagnosis: Variant disambiguation failing within mode label
+    severity: notification
+    corrective_action:
+      - Audit variant-level trigger phrases for overlap
+      - Consider tightening domain_specificity predicate in Module 04 trigger_disambiguator
+
+  below_85_per_variant:
+    diagnosis: Variant taxonomy degraded
+    severity: escalation
+    corrective_action:
+      - Trigger Module 04 trigger_disambiguator review
+      - Halt chains using affected variant until taxonomy resolved
+
+  calibration_drift:
+    rule: "If adversarial-sample failure rate exceeds (1 - primary_measurement) by > 5pp, primary is under-counting"
+    severity: notification
+    corrective_action:
+      - Re-baseline primary measurement
+      - Trigger orchestrator prompt revision
+
+  rationale: |
+    Resolves ERA findings F1 (mode-label collisions: Critic 4 variants, Expert 4
+    variants make aggregate accuracy meaningless) and F4 (no routing-decision
+    logging). Variant-level disaggregation is mandatory. Re-routing rate is the
+    deterministic proxy (KF "Deterministic first" meta-principle); adversarial
+    sampling is the calibration check. Module 19 routing_decision_log is the
+    data source.
+
+  check_frequency:
+    primary: every_chain_completion
+    calibration: weekly
+    aggregation: weekly (writes to tier_2_metric_aggregates)
+
+  data_source:
+    primary: Module 19 routing_decision_log (live entries)
+    historical: Module 19 tier_2_metric_aggregates (post-window)
+```
+
 ---
 
 ## Corrective Action Summary
@@ -314,6 +420,11 @@ token_cost_per_mode:
 | Transition cost > 15% chain cost | Review chain design, consider inline handling |
 | Consolidation < 20% reduction | Close completed work, check Tier 2 retention |
 | Mode token cost > 40% of chain | Decompose task, check Tier 0/1 for re-derivable knowledge, evaluate pass-through |
+| Mode selection accuracy < 90% (overall) | Trigger Module 13 review, audit re_routed events, consider trigger_disambiguator update |
+| Mode selection accuracy < 80% (overall) | ESCALATE, halt new chain starts |
+| Variant accuracy < 95% (per-variant) | Audit variant trigger phrase overlap, tighten domain_specificity predicate |
+| Variant accuracy < 85% (per-variant) | Trigger trigger_disambiguator review, halt affected variant |
+| Calibration drift > 5pp (metric #10) | Re-baseline primary, trigger orchestrator prompt revision |
 
 ---
 
