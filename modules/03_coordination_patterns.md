@@ -5,13 +5,20 @@
 ```yaml
 module:
   title: Agent Coordination Patterns
-  version: 7.0.2
+  version: 7.2.0
   purpose: Design multi-agent workflows by mapping dependencies first, then deriving the coordination pattern from the graph
-  topics: [coordination, multi-agent, workflows, handoffs, orchestration, dependency-mapping, verification, capability-restriction]
-  contexts: [complex-tasks, agent-teams, workflow-design]
+  topics: [coordination, multi-agent, workflows, handoffs, orchestration, dependency-mapping, verification, capability-restriction, handoff-contract-registry]
+  contexts: [complex-tasks, agent-teams, workflow-design, mode-handoff-validation]
   difficulty: advanced
-  related: [01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 14_Metacognitive_Monitor, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]
+  related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 14_Metacognitive_Monitor, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]
   changelog:
+    7.2.0:
+      date: 2026-05-10
+      changes:
+        - Added Handoff Contract Registry — 8 active mode-to-mode handoffs registered as handoff_contract instances per Module 04 entity (resolves ERA F2 from chain-log-01-tool-calling)
+        - Edges — Builder→Critic auto-verify, Expert→Builder, Strategist→Builder, Synthesizer→Builder, Critic→Builder revision, Debugger→Strategist, Critic-audit→Strategist, Strategist→Calibrator
+        - Each entry has explicit payload_schema, fallback_path, and ≥1 deterministic validation_check using the canonical assertion forms (Module 04 P2-Δ1)
+        - Source: docs/planning/Typed_Mode_Calling/ chain-logs 01–04 (Track C)
     7.0.2:
       date: 2026-04-29
       changes:
@@ -211,6 +218,248 @@ coordination_handoff_schema:
       Verify pattern_name matches the graph structure (not pre-selected).
       If any required field is absent, complete the coordination analysis before handoff.
     decision_type: reckoning
+```
+
+### Handoff Contract Registry (NEW 7.2)
+
+Per-edge registrations using the Module 04 `handoff_contract` entity. Covers the eight active mode-to-mode handoffs in the active mode set. Resolves ERA F2 (handoff payload schema gaps): each edge now has explicit `payload_schema`, `fallback_path`, and ≥1 deterministic `validation_checks` entry — handoff failures fail fast at the boundary instead of degrading silently downstream. All assertions use the canonical forms required by Module 04 (field-presence, enum-membership, cardinality, schema-conformance, cross-field).
+
+```yaml
+handoff_contract_registry:
+
+  - id: hc-builder-to-critic-autoverify
+    source_mode: builder
+    source_variant: null
+    target_mode: critic
+    target_variant: adversarial
+    trigger:
+      type: automatic
+      condition: "Builder produces specification with decision_type evaluative_judgment or higher"
+      chain_pattern_reference: "auto-verify"
+    payload_schema:
+      fields:
+        - {name: specification_artifact, type: object, required: true, description: "Full Builder spec output"}
+        - {name: design_decisions, type: array, required: true, description: "Each with decision_type tag"}
+        - {name: grounding_scores, type: array, required: false, description: "Per Module 15"}
+        - {name: accretion_candidate, type: object, required: false, description: "Per Module 21 if applicable"}
+    fallback_path:
+      type: escalate_to_user
+      rationale: "Auto-verify is high-stakes; user awareness preferred over silent abort"
+    validation_checks:
+      - check_id: payload_schema_conforms
+        assertion: "specification_artifact validates against Agent_Specification (Module 04)"  # schema-conformance
+        check_type: deterministic
+        failure_action: escalate_to_user
+        failure_severity: Sev2
+      - check_id: every_decision_typed
+        assertion: "design_decisions[].decision_type matches enum: [reckoning, evaluative_judgment, predictive_judgment, novel_judgment]"  # enum-membership
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev2
+
+  - id: hc-expert-to-builder
+    source_mode: expert
+    source_variant: any
+    target_mode: builder
+    target_variant: null
+    trigger:
+      type: chain_pattern
+      condition: "Expert → Builder chain pattern active"
+      chain_pattern_reference: "expert-to-builder"
+    payload_schema:
+      fields:
+        - {name: first_order_findings, type: array, required: true}
+        - {name: adversarial_depth, type: object, required: true}
+        - {name: design_implications, type: array, required: true}
+        - {name: decision_type_exercised, type: string, required: true, validation: "enum: [reckoning, evaluative_judgment, predictive_judgment, novel_judgment]"}
+    fallback_path:
+      type: route_to_navigator
+      rationale: "Missing required field indicates upstream Expert spec failure; Navigator clarifies with user"
+    validation_checks:
+      - check_id: decision_type_exercised_present
+        assertion: "decision_type_exercised is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: route_to_navigator
+        failure_severity: Sev1
+      - check_id: decision_type_exercised_enum
+        assertion: "decision_type_exercised matches enum: [reckoning, evaluative_judgment, predictive_judgment, novel_judgment]"  # enum-membership
+        check_type: deterministic
+        failure_action: route_to_navigator
+        failure_severity: Sev1
+      - check_id: adversarial_depth_present
+        assertion: "adversarial_depth is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev2
+
+  - id: hc-strategist-to-builder
+    source_mode: strategist
+    source_variant: null
+    target_mode: builder
+    target_variant: null
+    trigger:
+      type: chain_pattern
+      condition: "Strategist → Builder chain pattern active"
+      chain_pattern_reference: "strategist-to-builder"
+    payload_schema:
+      fields:
+        - {name: recommendation, type: object, required: true}
+        - {name: sequencing, type: array, required: true}
+        - {name: reversibility_per_unit, type: array, required: true}
+        - {name: trade_off_matrix, type: object, required: true}
+    fallback_path:
+      type: retry_with_repair
+      rationale: "Strategist output missing fields is correctable in single retry"
+    validation_checks:
+      - check_id: sequencing_dependencies_resolvable
+        assertion: "sequencing[].dependencies and sequencing[].id are mutually consistent (every dependency references a valid id)"  # cross-field
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev2
+      - check_id: trade_off_matrix_present
+        assertion: "trade_off_matrix is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev2
+
+  - id: hc-synthesizer-to-builder
+    source_mode: synthesizer
+    source_variant: null
+    target_mode: builder
+    target_variant: null
+    trigger:
+      type: chain_pattern
+      condition: "Synthesizer → Builder chain pattern active"
+      chain_pattern_reference: "synthesizer-to-builder"
+    payload_schema:
+      fields:
+        - {name: pattern, type: object, required: true}
+        - {name: anti_patterns, type: array, required: true, validation: "min_length: 1"}
+        - {name: applicability_boundaries, type: object, required: true}
+    fallback_path:
+      type: retry_with_repair
+      rationale: "Synthesizer requires anti-patterns; missing means analysis incomplete"
+    validation_checks:
+      - check_id: at_least_one_anti_pattern
+        assertion: "len(anti_patterns) >= 1"  # cardinality
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev1
+
+  - id: hc-critic-to-builder-revision
+    source_mode: critic
+    source_variant: any
+    target_mode: builder
+    target_variant: null
+    trigger:
+      type: chain_pattern
+      condition: "Critic finds Sev 2+ in Builder output; loop_exit_protocol max=1"
+      chain_pattern_reference: "critic-builder-revision"
+    payload_schema:
+      fields:
+        - {name: findings_list, type: array, required: true}
+        - {name: severity_per_finding, type: array, required: true}
+        - {name: location_per_finding, type: array, required: true, description: "specific location reference"}
+        - {name: proposed_fix_per_finding, type: array, required: true}
+        - {name: revision_cycle_count, type: integer, required: true, validation: "max: 1"}
+    fallback_path:
+      type: escalate_to_user
+      rationale: "Per loop_exit_protocol — if revision_cycle_count > 1, escalate with options"
+    validation_checks:
+      - check_id: revision_cycle_within_limit
+        assertion: "revision_cycle_count <= 1"  # cardinality
+        check_type: deterministic
+        failure_action: escalate_to_user
+        failure_severity: Sev1
+      - check_id: findings_have_locations
+        assertion: "len(location_per_finding) == len(findings_list)"  # cross-field
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev2
+
+  - id: hc-debugger-to-strategist
+    source_mode: debugger
+    source_variant: null
+    target_mode: strategist
+    target_variant: null
+    trigger:
+      type: chain_pattern
+      condition: "Debugger → Strategist chain pattern active"
+      chain_pattern_reference: "debugger-to-strategist"
+    payload_schema:
+      fields:
+        - {name: root_cause, type: object, required: true}
+        - {name: confidence, type: float, required: true, validation: "range: [0.0, 1.0], minimum: 0.8"}
+        - {name: diagnostic_path, type: array, required: true}
+    fallback_path:
+      type: route_to_navigator
+      rationale: "Confidence below threshold means diagnosis is uncertain; clarify scope with user"
+    validation_checks:
+      - check_id: root_cause_confidence_threshold
+        assertion: "confidence >= 0.8"  # cardinality
+        check_type: deterministic
+        failure_action: route_to_navigator
+        failure_severity: Sev2
+
+  - id: hc-critic-audit-to-strategist
+    source_mode: critic
+    source_variant: audit
+    target_mode: strategist
+    target_variant: null
+    trigger:
+      type: chain_pattern
+      condition: "Critic audit → Strategist chain pattern (infrastructure cascade)"
+      chain_pattern_reference: "audit-to-extraction-priority"
+    payload_schema:
+      fields:
+        - {name: hosting_inventory, type: object, required: true}
+        - {name: spof_analysis, type: array, required: true}
+        - {name: decomposition_readiness_per_service, type: array, required: true}
+    fallback_path:
+      type: route_to_navigator
+      rationale: "Incomplete audit means extraction priority is unsafe to derive"
+    validation_checks:
+      - check_id: readiness_classifications_valid
+        assertion: "decomposition_readiness_per_service[].readiness matches enum: [ready, needs_work, tightly_coupled, unknown]"  # enum-membership
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev2
+
+  - id: hc-strategist-to-calibrator
+    source_mode: strategist
+    source_variant: null
+    target_mode: calibrator
+    target_variant: null
+    trigger:
+      type: chain_pattern
+      condition: "Strategist → Calibrator chain pattern (decide-stack-then-setup)"
+      chain_pattern_reference: "stack-decision-to-config"
+    payload_schema:
+      fields:
+        - {name: stack_decision, type: object, required: true}
+        - {name: complexity_assessment, type: object, required: true}
+        - {name: compliance_requirements, type: array, required: false}
+    fallback_path:
+      type: retry_with_repair
+      rationale: "Stack decision needs language/framework/deployment_target; correctable in single retry"
+    validation_checks:
+      - check_id: stack_decision_language_present
+        assertion: "stack_decision.language is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev2
+      - check_id: stack_decision_framework_present
+        assertion: "stack_decision.framework is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev2
+      - check_id: stack_decision_target_present
+        assertion: "stack_decision.deployment_target is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev2
+
+# Validation: registry must have exactly 8 entries; ids unique; every entry validates against Module 04 handoff_contract entity schema.
 ```
 
 ---
