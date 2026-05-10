@@ -5,15 +5,23 @@
 ```yaml
 module:
   title: Memory Architecture
-  version: 6.6.1
+  version: 7.2.0
   purpose: Four-tier memory system — persistent domain knowledge (Tier 0), routing index (Tier 1), mode state (Tier 2), and archived history (Tier 3) — that maintains routing accuracy across long sessions and knowledge continuity across sessions
-  topics: [memory, context-management, session-persistence, consolidation, skeptical-verification, persistent-knowledge]
-  contexts: [long-sessions, mode-transitions, context-pressure, state-management, cross-session-knowledge]
+  topics: [memory, context-management, session-persistence, consolidation, skeptical-verification, persistent-knowledge, routing-audit-log, metric-aggregates]
+  contexts: [long-sessions, mode-transitions, context-pressure, state-management, cross-session-knowledge, routing-decision-audit]
   difficulty: advanced
-  related: [03_Coordination_Patterns, 04_Specification_Templates, 14_Metacognitive_Monitor, 16_Operational_Bounds, 17_Temporal_Knowledge, 20_Permission_Model, 21_Knowledge_Accretion]
+  related: [00_Orchestrator, 03_Coordination_Patterns, 04_Specification_Templates, 14_Metacognitive_Monitor, 16_Operational_Bounds, 17_Temporal_Knowledge, 20_Permission_Model, 21_Knowledge_Accretion]
   added_in: "6.1"
   implements: "Directive 2 (Three-Tier Memory Architecture), extended to four tiers in 6.2"
   changelog:
+    7.2.0:
+      date: 2026-05-10
+      changes:
+        - Added routing_decision_log section (schema_version 1.0) — audit trail of every routing decision, separate concern from routing_index state (resolves ERA F4 from chain-log-01-tool-calling)
+        - Retention — rolling 1000 entries + permanent re-route archive at wiki/operations/routing-log/{YYYY-MM}.md
+        - Added tier_2_metric_aggregates schema for weekly metric persistence beyond rolling window
+        - Data source for Module 16 metric #10 (mode_selection_accuracy) — primary measurement reads live log; calibration reads aggregates after window rolls
+        - Source: docs/planning/Typed_Mode_Calling/ chain-logs 01–04 (Track C)
     6.6.1: |
       - Added routing_index_schema section with field-level contract and schema version (ERA finding F6)
       - Each module's read/write fields declared in contract
@@ -209,6 +217,106 @@ routing_index_schema:
       and surface drift at session end.
 ```
 
+### Routing Decision Log (NEW 7.2)
+
+Audit trail of routing decisions, separate from the `routing_index` (which tracks state). The log is the data source for Module 16 metric #10 (`mode_selection_accuracy`). State and audit trail are kept as separate concerns: state answers "what is the current task and what modes are open?", the log answers "for each routing decision, which mode/variant was selected, by which predicate, and was it re-routed?". Resolves ERA F4 (no routing-decision logging).
+
+```yaml
+routing_decision_log:
+  schema_version: "1.0"
+
+  trigger: "On every mode activation by orchestrator (including variant selection)"
+
+  log_entry:
+    fields:
+      - name: timestamp
+        type: ISO8601
+        required: true
+
+      - name: turn_number
+        type: integer
+        required: true
+
+      - name: request_text
+        type: string
+        required: true
+        max_length: 200                    # Truncate; operational data, not user data
+
+      - name: candidate_modes
+        type: array<{mode_id: string, variant_id: string | null, confidence: float}>
+        required: true
+        min_length: 1
+
+      - name: selected_mode
+        type: string
+        required: true
+
+      - name: selected_variant
+        type: string | null
+        required: true                     # null if mode has no variants
+
+      - name: trigger_phrase_matched
+        type: string
+        required: true
+
+      - name: predicate_used
+        type: string | null                # references trigger_disambiguator.predicate.type (Module 04)
+        required: false
+
+      - name: re_routed
+        type: boolean
+        required: true
+        default: false
+
+      - name: re_route_reason
+        type: string | null
+        required: false                    # required when re_routed = true
+        validation:
+          rule: "If re_routed is true, re_route_reason must be non-null"
+
+  retention:
+    rolling_window:
+      size: 1000 entries
+      eviction: oldest first
+
+    permanent_archive:
+      condition: "re_routed = true"
+      destination: "wiki/operations/routing-log/{YYYY-MM}.md"
+      rationale: "Re-routing events are training data for trigger_disambiguator refinement"
+
+  aggregation_persistence:
+    purpose: |
+      Beyond the rolling 1000-entry log, persist aggregate metric values for
+      historical calibration. Module 16 metric #10 reads aggregates here when
+      raw log entries have rolled out of the window.
+    location: tier_2_metric_aggregates
+    schema:
+      window_id: ISO8601 (week start)
+      total_routing_events: integer
+      re_routed_events: integer
+      per_mode_accuracy: object<mode_id, float>
+      per_variant_accuracy: object<{mode_id, variant_id}, float>
+    retention: permanent (until manual archive)
+
+  privacy:
+    request_text:
+      retention: 200 chars truncated
+      pii_filtering: not applied — operational scope
+      access: orchestrator + linter (Critic linter variant) only
+
+  drift_detection:
+    schema_version_check:
+      rule: |
+        When a module reads routing_decision_log entries with schema_version != 1.0,
+        flag SCHEMA_DRIFT in Tier 2 state and surface at session end. Continue with
+        best-effort field mapping.
+
+  consumed_by:
+    - Module 16 metric #10 (mode_selection_accuracy) — primary measurement
+    - Critic linter variant — re-routing pattern analysis during health checks
+    - Orchestrator — session-end metric calculation
+```
+
 ### Tier 2: Mode-Specific State (Loaded On Demand)
 
 Detailed working state for the currently active mode. Only one mode's state is loaded at a time. Swapped on mode transitions.
@@ -260,6 +368,27 @@ mode_state:
       - Interview responses collected
       - Stack decisions made
       - Compliance requirements identified
+
+  # Metric aggregates persistence — NEW 7.2 (extends Tier 2)
+  # Survives rolling-window eviction of routing_decision_log entries.
+  # Source data for Module 16 metric #10 calibration over weekly windows.
+  tier_2_metric_aggregates:
+    purpose: |
+      Per-week aggregate of routing-decision metrics, persisted beyond the
+      1000-entry rolling window of routing_decision_log. Module 16 metric #10
+      reads from here when raw log entries have rolled out.
+    schema:
+      window_id: ISO8601                   # Week start, UTC Monday
+      total_routing_events: integer
+      re_routed_events: integer
+      per_mode_accuracy: object<mode_id, float>
+      per_variant_accuracy: object<{mode_id, variant_id}, float>
+      adversarial_sample_failure_rate: float | null   # Filled weekly per Module 16
+      calibration_drift_flag: boolean
+    retention: permanent (until manual archive)
+    write_trigger: weekly aggregation pass at end of each UTC week
+    writer: orchestrator (Module 00)
+    consumed_by: [Module 16 metric #10 calibration, Critic linter variant]
       
   swap_protocol:
     on_mode_entry:
