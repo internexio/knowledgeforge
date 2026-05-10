@@ -5,13 +5,22 @@
 ```yaml
 module:
   title: Specification Templates
-  version: 6.6.0
+  version: 7.2.0
   purpose: Provide complete, reusable templates for agents, processes, and coordination
-  topics: [templates, specifications, formats, schemas, capability-profiles, risk-tiers, infrastructure-architecture, hosting-audit, era-specification]
-  contexts: [agent-creation, process-design, documentation, infrastructure-planning, entity-modeling]
+  topics: [templates, specifications, formats, schemas, capability-profiles, risk-tiers, infrastructure-architecture, hosting-audit, era-specification, handoff-contracts, trigger-disambiguation]
+  contexts: [agent-creation, process-design, documentation, infrastructure-planning, entity-modeling, mode-routing, chain-handoffs]
   difficulty: intermediate
-  related: [02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
+  related: [00_Orchestrator, 02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.2.0:
+      date: 2026-05-10
+      changes:
+        - Added Trigger Disambiguator Specification Template (resolves ERA F1 + F6 from chain-log-01-tool-calling)
+        - Added Handoff Contract Specification Template (resolves ERA F2 + F5)
+        - Handoff Contract validation_checks[].assertion must reduce to one of five canonical forms — field-presence, enum-membership, cardinality, schema-conformance, cross-field (P2-Δ1 from chain-log-04)
+        - Usage Notes: "Handoff" row renamed to "Handoff Contract"; Trigger Disambiguator row added; legacy Handoff row preserved for backward reference
+        - KF 7.2 field summary table added
+        - Source: docs/planning/Typed_Mode_Calling/ chain-logs 01–04 (tool-calling audit, Track C)
     6.6.0: |
       - Added ERA Specification Template (Expert ERA → Builder chain)
       - Added ERA row to Usage Notes template table
@@ -815,6 +824,85 @@ message:
 
 ---
 
+## Trigger Disambiguator Specification Template (NEW 7.2)
+
+Formal entity for resolving cases where a trigger phrase activates multiple candidate modes or variants. Replaces prose-only convention with an explicit predicate enum so cross-mode and intra-mode (variant) overlaps fail fast at routing time. Resolves ERA findings F1 (mode-label collisions) and F6 (trigger phrase overlaps).
+
+```yaml
+trigger_disambiguator:
+  # IDENTITY
+  id: [unique-identifier]                    # e.g., "td-critic-variants"
+  name: [human-readable name]
+  version: [semantic version]
+
+  # PURPOSE
+  purpose: |
+    Resolve cases where a trigger phrase activates multiple candidate modes
+    or variants. Formalizes the variant-resolution and cross-mode-overlap
+    predicates that previously lived as prose conventions.
+
+  # SCOPE
+  scope:
+    trigger_phrase: [string]                 # The ambiguous phrase
+    candidate_modes:                         # Modes/variants that match this phrase
+      - mode_id: [string]
+        variant_id: [string | null]          # null if mode has no variants
+        match_strength: exact | partial | contextual
+
+  # PREDICATE
+  predicate:
+    type: output_type_difference | domain_specificity | chain_context | user_disambiguation
+    rule: [string — explicit if/then logic]
+    fallback: user_disambiguation            # If primary predicate inconclusive
+
+  # PREDICATE TYPE DEFINITIONS
+  predicate_type_definitions:
+    output_type_difference:
+      description: "Top-2 candidates produce different output types (artifact / recommendation / analysis / route)"
+      action: "Activate Navigator (per orchestrator output-type predicate)"
+      precedent: "Module 01 Navigator activation predicate (6.6.1)"
+    domain_specificity:
+      description: "Trigger phrase scoped by domain context — most domain-specific candidate wins"
+      action: "Route to most-specific candidate"
+      example: "'review API security' → Expert (security domain) not Critic (regular review)"
+    chain_context:
+      description: "Active chain pattern implies variant"
+      action: "Route per chain pattern in Module 03"
+      example: "Critic in auto-verify chain → adversarial variant"
+    user_disambiguation:
+      description: "No automatic resolution available"
+      action: "Activate Navigator with one targeted question"
+      precedent: "Module 01 ambiguity handling"
+
+  # DESIGN DECISIONS
+  design_decisions:
+    - decision: "Predicate types are an enum, not a free-text field"
+      decision_type: evaluative_judgment
+      locked: true
+      rationale: "Enum constrains future additions; new predicate types require explicit Module 04 update."
+    - decision: "Fallback always defaults to user_disambiguation"
+      decision_type: reckoning
+      locked: true
+      rationale: "Asking the user is always safe; never silent-fail to wrong route."
+
+  # CAPABILITIES WHEN SUB-AGENT (per Module 20)
+  capabilities_when_subagent:
+    read: [trigger_phrase, candidate_modes, current_chain_context]
+    write: [predicate result only]
+    create: nothing
+    modify: nothing
+    escalate: when fallback fires
+    restriction: "Read-only logic; emits routing decision, no side effects"
+
+  # RISK TIER
+  risk_tier:
+    base_tier: LOW
+    chain_escalation: false
+    verification_required: false
+```
+
+---
+
 ## Handoff Template
 
 ```yaml
@@ -882,6 +970,103 @@ handoff:
         reversible: true | false
     chain_position: [step X of Y]
     modes_engaged: [list of modes used so far]
+```
+
+---
+
+## Handoff Contract Specification Template (NEW 7.2)
+
+Formalizes mode-to-mode contracts in chains. Required validation_checks force fast-fail at handoff boundary instead of silent degradation downstream. Replaces the informal "Handoff" Usage Notes row with an explicit entity. Resolves ERA findings F2 (handoff payload schema gaps) and F5 (Handoff naming inconsistency).
+
+```yaml
+handoff_contract:
+  # IDENTITY
+  id: [unique-identifier]                    # e.g., "hc-builder-to-critic-autoverify"
+  name: [human-readable name]
+  version: [semantic version]
+
+  # CONTRACT PARTIES
+  source_mode: [string]                      # e.g., "builder"
+  source_variant: [string | null]            # required if source mode has variants[]
+  target_mode: [string]                      # e.g., "critic"
+  target_variant: [string | null]            # required if target mode has variants[]
+
+  # CONTRACT TRIGGER
+  trigger:
+    type: automatic | chain_pattern | user_initiated
+    condition: [string — plain-language activation rule]
+    chain_pattern_reference: [string]        # Module 03 chain pattern ID, if applicable
+
+  # PAYLOAD SCHEMA
+  payload_schema:
+    fields:
+      - name: [field_name]
+        type: string | number | boolean | object | array
+        required: true | false
+        description: [string]
+        validation: [optional rule, e.g., enum, pattern, min/max]
+        grounding_score_minimum: [0.0–1.0]   # Optional, per Module 15
+
+  # FALLBACK PATH
+  fallback_path:
+    type: escalate_to_user | retry_with_repair | abort_chain | route_to_navigator
+    rationale: [string]
+    user_message_template: [string]          # If type = escalate_to_user
+
+  # VALIDATION CHECKS
+  # Boundary checks executed at handoff time against the payload before
+  # the target mode receives control. Every check MUST be expressible as
+  # a deterministic boolean predicate over the payload (or, for impl-time
+  # checks, over the orchestrator's runtime state). Prose assertions are
+  # permitted only as documentation of the predicate's intent — the
+  # assertion text itself MUST be reducible to one of the following
+  # canonical forms (P2-Δ1 from chain-log-04):
+  #
+  #   - field-presence:     "<field_path> is non-null"
+  #   - enum-membership:    "<field_path> matches enum: [<values>]"
+  #   - cardinality:        "len(<field_path>) {==, >=, <=} <int>"
+  #   - schema-conformance: "<field_path> validates against <schema_ref>"
+  #   - cross-field:        "<predicate over multiple field_paths>"
+  #
+  # Assertions that cannot be reduced to one of these forms MUST be
+  # rejected at spec-test time (test_module_04_handoff_contract.py adds
+  # a check: every validation_checks[].assertion parses to a canonical form).
+  validation_checks:
+    - check_id: [unique within contract]
+      assertion: [string — reducible to a canonical form above]
+      check_type: deterministic | llm_judgment   # ≥1 deterministic per contract REQUIRED
+      failure_action: [references fallback_path type]
+      failure_severity: Sev1 | Sev2 | Sev3
+
+  # DESIGN DECISIONS
+  design_decisions:
+    - decision: "≥1 deterministic check required per contract"
+      decision_type: reckoning
+      locked: true
+      rationale: "KF 7.0.0 'Deterministic first' meta-principle. Schema validation, field existence, type checks are deterministic."
+    - decision: "fallback_path is mandatory, not optional"
+      decision_type: evaluative_judgment
+      locked: true
+      rationale: "F2 root cause was silent degradation. Mandatory fallback path forces explicit handling."
+    - decision: "validation_checks[].assertion must reduce to one of five canonical forms"
+      decision_type: reckoning
+      locked: true
+      rationale: "Without canonical-form constraint, prose assertions silently degrade fast-fail to LLM judgment (chain-log-04 §3, P2-Δ1)."
+
+  # CAPABILITIES WHEN SUB-AGENT
+  capabilities_when_subagent:
+    read: [payload from source_mode]
+    write: [validation result + fallback trigger if needed]
+    create: nothing
+    modify: nothing
+    escalate: per fallback_path
+    restriction: "Pure validation; no payload mutation"
+
+  # RISK TIER
+  risk_tier:
+    base_tier: LOW
+    chain_escalation: false
+    verification_required: false
 ```
 
 ---
@@ -1497,7 +1682,9 @@ era_specification:
 | Strategic Decision | Making prioritization or trade-off decisions | Strategist |
 | Process Specification | Designing a multi-step workflow | Coordinator/Builder |
 | Message | Defining agent-to-agent communication | Any |
-| Handoff | Designing transfer points between agents | Coordinator |
+| Handoff Contract | Defining transfer points between modes/agents in chains, with payload schema and validation_checks (NEW 7.2) | Coordinator/Builder |
+| Trigger Disambiguator | Resolving cases where a trigger phrase activates multiple candidate modes/variants (NEW 7.2) | Orchestrator/Coordinator |
+| Handoff (legacy) | Documenting transfer points without payload validation; superseded by Handoff Contract | Coordinator |
 | Context | Tracking state through a session | Any |
 | Assessment | Validating agent or process quality | Critic |
 | AI Coder Configuration | Setting up project AI coder guardrails | Calibrator |
@@ -1565,6 +1752,20 @@ era_specification:
 | `implicit` (relationship) | ERA (6.6) | ERA Specification — relationships[] | Flags relationships that were undocumented before this ERA analysis |
 | `implicit_entities_surfaced` | ERA (6.6) | ERA Specification — adversarial_findings | Structured record of each implicit entity: why it was missing, what changes now it's explicit |
 | `implicit_entities_found` / `implicit_relationships_found` | ERA (6.6) | ERA Specification — summary | Count metrics: how much of the model was previously undocumented |
+
+**KF 7.2 field summary:**
+
+| Field | Source Module | Added To | Purpose |
+|-------|-------------|----------|---------|
+| `trigger_disambiguator` (entity) | 04 (7.2) | New template | Formal predicate-based resolution of ambiguous trigger phrases (output_type_difference / domain_specificity / chain_context / user_disambiguation) |
+| `handoff_contract` (entity) | 04 (7.2) | New template | Mode-to-mode contract with payload_schema, fallback_path, deterministic validation_checks |
+| `validation_checks[].assertion` canonical forms | 04 (7.2) | Handoff Contract | Five forms: field-presence, enum-membership, cardinality, schema-conformance, cross-field |
+| `variants[]` | 05 (7.2), 07 (7.2) | Expert, Critic | Formal variant taxonomy replaces prose-only convention |
+| `decision_type_exercised` | 05 (6.6.1, formalized 7.2) | Expert outputs | Already required (6.6.1); 7.2 adds enum constraint and gate consumption note |
+| `routing_decision_log` | 19 (7.2) | New schema | Audit trail of routing decisions, separate from routing_index state |
+| `tier_2_metric_aggregates` | 19 (7.2) | New schema | Weekly aggregate persistence for metric #10 historical calibration |
+| `mode_selection_accuracy` (metric #10) | 16 (7.2) | New metric | Re-routing rate (deterministic) + adversarial sampling (calibration); variant-aware thresholds |
+| `handoff_contract_registry` | 03 (7.2) | New section | Per-edge instances for 8 active handoffs |
 
 ---
 
