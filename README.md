@@ -1,8 +1,20 @@
 # KnowledgeForge Core
 
-**Version:** 7.0.0 · **Status:** Active development
+**Version:** 7.2.0 · **Status:** Active development
 
 Single source of truth for the KnowledgeForge reasoning framework. All platform variants compile from here.
+
+## What's New in 7.2.0
+
+Tool-calling architecture audit (Track C) — formalizes mode handoffs as typed contracts and makes mode-selection accuracy measurable. Cascade docs in `docs/planning/Typed_Mode_Calling/chain-log-{01..04}-tool-calling.md`.
+
+- **Module 04** — `Handoff_Contract` and `trigger_disambiguator` entities. `validation_checks[].assertion` must reduce to one of five canonical forms (field-presence, enum-membership, cardinality, schema-conformance, cross-field). Resolves the "prose conventions for handoff payloads" gap that produced silent quality drift between modes.
+- **Module 03** — Handoff Contract Registry: 8 active mode-to-mode edges registered as typed contracts with explicit payload_schema, fallback_path, and ≥1 deterministic validation check.
+- **Module 05 / 07** — Expert and Critic now declare `variants[]` as first-class taxonomy. 4 variants each (Expert: regular / infrastructure / ml_infrastructure / era; Critic: regular / linter / audit / adversarial). Routing accuracy is now variant-aware.
+- **Module 16** — New metric #10 `mode_selection_accuracy`. Re-routing rate is the deterministic primary; weekly adversarial sampling provides calibration. Variant-aware thresholds (90% overall, 95% per-variant).
+- **Module 19** — `routing_decision_log` schema v1.0 (audit trail, separate from `routing_index` state) and `tier_2_metric_aggregates` for weekly persistence beyond the rolling window.
+- **Module 00** — Orchestrator writes a log entry on every mode activation and evaluates metric #10 thresholds at chain completion.
+- **Wiki** — Three accretion entries filed: `wiki/patterns/mode-variants-taxonomy.md`, `wiki/diagnostics/handoff-payload-schema-gap.md`, `wiki/methodologies/external-source-to-kf-mapping.md`.
 
 ---
 
@@ -19,8 +31,8 @@ KF modes: Builder · Critic · Debugger · Strategist · Expert · Synthesizer �
 | Repo | Role |
 |------|------|
 | **knowledgeforge-core** (this) | Canonical module specs, plans, wiki, compiler |
-| `knowledgeforge-cp` | Claude Projects variant (current source, will become compilation target) |
-| `knowledgeforge-cc` | Claude Code variant |
+| `knowledgeforge-cp` | Claude Projects variant (compilation target) |
+| `knowledgeforge-cc` | Claude Code variant (compilation target) |
 | `knowledgeforge-cw` | Cowork variant |
 | `knowledgeforge-web` | Web agents variant (future) |
 
@@ -105,8 +117,9 @@ Human-navigable maps showing exactly which module section compiled into which ou
 | Platform | Map |
 |----------|-----|
 | Claude Code (`knowledgeforge-cc`) | [load-map-claude-code.md](load-map-claude-code.md) |
+| Claude Projects (`knowledgeforge-cp`) | [load-map-claude-projects.md](load-map-claude-projects.md) |
 
-Maps are regenerated on each compile run (`compiler/kf-compile.py`).
+Maps are regenerated on each compile run (`compiler/kf-compile.py`). See `CHANGELOG.md` for release-level history.
 
 ---
 
