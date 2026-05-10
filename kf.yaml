@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.1.0
+version: 7.2.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -33,6 +33,23 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.2.0
+    date: 2026-05-10
+    cascade_reference: |
+      Stage 2 cascade — tool-calling architecture audit, Track C (KF 7.2.0).
+      ERA → Strategist → Builder → Critic chain in
+      docs/planning/Typed_Mode_Calling/chain-log-{01..04}-tool-calling.md.
+      Source article: "The Roadmap to Mastering Tool Calling in AI Agents"
+      (7-step practitioner guide), mapped to KF modes-as-tools and
+      orchestrator-as-model. Defensibility audit driver.
+    changes:
+      - Module 04 (7.2.0) — added Handoff_Contract entity with required fields (source_mode, source_variant, target_mode, target_variant, payload_schema, fallback_path, validation_checks), added trigger_disambiguator entity with predicate enum (output_type_difference, domain_specificity, chain_context, user_disambiguation), validation_checks[].assertion canonical-form rule (P2-Δ1), Usage Notes table updated, KF 7.2 field summary table added (resolves ERA F1, F2, F5, F6)
+      - Module 05 (7.2.0) — Expert variants[] formalized (regular, infrastructure, ml_infrastructure, era); decision_type_exercised output field annotated with enum constraint and orchestrator gate consumption note (resolves F1, F3)
+      - Module 07 (7.2.0) — Critic variants[] formalized (regular, linter, audit, adversarial); adversarial variant declares chain_context activation_predicate (resolves F1)
+      - Module 16 (7.2.0) — metric #10 mode_selection_accuracy added; deterministic primary measurement (re-routing rate from Module 19 routing_decision_log); weekly adversarial sampling for calibration; variant-aware thresholds (90% overall, 95% per-variant); 5 new Corrective Action Summary rows (resolves F1, F4)
+      - Module 19 (7.2.0) — routing_decision_log schema v1.0 added (audit trail, separate from routing_index state); tier_2_metric_aggregates schema for weekly persistence beyond rolling window (resolves F4)
+      - Module 03 (7.2.0) — Handoff Contract Registry — 8 active mode-to-mode handoffs registered with payload_schema, fallback_path, deterministic validation_checks using canonical assertion forms (resolves F2)
+      - Module 00 (7.2.0) — Static Zone — write routing_decision_log entry on every mode activation; Mode Selection Accuracy Awareness — evaluate metric #10 thresholds at chain completion (impl commits for U5 + U6)
   - version: 7.1.0
     date: 2026-04-23
     changes:

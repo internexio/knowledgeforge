@@ -5,13 +5,21 @@
 ```yaml
 module:
   title: Critic Agent Specification
-  version: 7.0.4
+  version: 7.2.0
   purpose: Systematically challenge specifications, find unstated assumptions, and identify edge cases — including adversarial variant for automatic chain verification, knowledge base linter variant for health checks, and infrastructure audit variant for hosting assessment
-  topics: [quality-assurance, gap-detection, red-teaming, validation, adversarial-verification, knowledge-base-linting, infrastructure-audit]
+  topics: [quality-assurance, gap-detection, red-teaming, validation, adversarial-verification, knowledge-base-linting, infrastructure-audit, variant-taxonomy]
   contexts: [specification-review, risk-assessment, completeness-checking, chain-verification, knowledge-base-maintenance, infrastructure-assessment, decomposition-planning]
   difficulty: advanced
-  related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 15_Grounding_Scores, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
+  related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 15_Grounding_Scores, 16_Operational_Bounds, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.2.0:
+      date: 2026-05-10
+      changes:
+        - Formalized variants[] field on agent spec — regular, linter, audit, adversarial (resolves ERA F1 from chain-log-01-tool-calling)
+        - Each variant declares trigger_phrases, output_format, output_template, typical_chain_position, decision_type_typical, risk_tier
+        - adversarial variant declares activation_predicate (chain_context) — fires when chain produces evaluative+ output, per Module 00 auto-verify gate
+        - Mode-selection accuracy metric (Module 16 #10) is now variant-aware — aggregate "Critic accuracy" metrics were meaningless without disaggregation
+        - Source: docs/planning/Typed_Mode_Calling/ chain-logs 01–04 (Track C)
     7.0.4:
       date: 2026-04-29
       changes:
@@ -186,6 +194,50 @@ agent:
     chain_escalation: false
     domain_escalation: none
     verification_required: false  # Critic IS the verification agent
+
+  # VARIANTS                            # NEW 7.2 (resolves ERA F1)
+  # Formalizes the four variants that previously shared the "Critic" mode label,
+  # distinguished only by trigger phrase. Aggregate "Critic accuracy" metrics
+  # were meaningless without variant disaggregation. See chain-log-01-tool-calling §F1.
+  variants:
+    - id: regular
+      purpose: Review specifications, designs, or analyses for completeness, consistency, assumptions, edge cases
+      trigger_phrases: [review, check, validate, find gaps, identify what's missing]
+      output_format: findings_list
+      output_template: Critique (Module 04)
+      typical_chain_position: terminal | auto-verify
+      decision_type_typical: evaluative_judgment
+      risk_tier: MEDIUM
+
+    - id: linter
+      purpose: Health check the knowledge base for staleness, contradictions, redundancy, grounding decay, orphan references
+      trigger_phrases: [health check, lint, validate the knowledge base]
+      output_format: maintenance_backlog
+      output_template: Critique (Module 04) extended with maintenance_priority field
+      typical_chain_position: standalone
+      decision_type_typical: evaluative_judgment
+      risk_tier: MEDIUM
+
+    - id: audit
+      purpose: Inventory infrastructure state, analyze single points of failure, rate decomposition readiness
+      trigger_phrases: [hosting audit, infrastructure inventory, decomposition readiness, single-point-of-failure analysis]
+      output_format: hosting_audit_template_populated
+      output_template: Hosting Audit (Module 04)
+      typical_chain_position: chain_initial
+      decision_type_typical: evaluative_judgment
+      risk_tier: MEDIUM
+
+    - id: adversarial
+      purpose: Find the failure mode the producing agent missed; assume output has at least one significant flaw
+      trigger_phrases: ["[automatic — fires on chain producing evaluative+ output]"]
+      activation_predicate:
+        type: chain_context
+        rule: "Active chain pattern includes adversarial verification step (per Module 00 auto-verify gate); decision_type_exercised >= evaluative_judgment"
+      output_format: severity_classified_findings
+      output_template: Critique (Module 04) with framing override
+      typical_chain_position: post_builder | post_strategist | post_expert
+      decision_type_typical: evaluative_judgment
+      risk_tier: MEDIUM
 ```
 
 ---
