@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Taxonomy Enforcement
-  version: 6.5.0
+  version: 6.5.1
   purpose: Fixed controlled vocabulary for wiki entry domain/topic/tags, enforced at write time — prevents taxonomy drift, maintains Module 22 metadata filter reliability, and ensures cross-session consistency of knowledge classification
   topics: [taxonomy, controlled-vocabulary, knowledge-classification, write-time-validation, metadata-quality]
   contexts: [knowledge-accretion, wiki-filing, accretion-gate, linter-runs]
@@ -13,6 +13,18 @@ module:
   related: [21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 19_Memory_Architecture, 17_Temporal_Knowledge]
   added_in: "6.5"
   changelog:
+    6.5.1: |
+      - Vocabulary extension: added 3 tags (scheduling, packaging, filesystem)
+        based on infrastructure-domain audit. scheduling distinguishes cron /
+        systemd / launchd patterns from generic deployment; packaging
+        distinguishes artifact preparation (wheel / npm / Docker image) from
+        release; filesystem distinguishes file-layout / atomic-rename / perms
+        from generic infrastructure.
+      - Vocabulary contraction: removed the tag `infrastructure` (tautological
+        with the `infrastructure` domain — added no filter discrimination).
+        Migrated 3 active entries off the deprecated tag.
+      - Net change: 55 → 57 approved tags. 3 slots below the 60-tag cap.
+      - No domain or topic changes.
     6.5.0: |
       - Initial module — fixed vocabulary enforcement as accretion gate
       - Three-tier hierarchy: domain → topic → tags
@@ -182,9 +194,12 @@ approved_tags:
 
   # Infrastructure
   - deployment
+  - scheduling      # added 6.5.1 — cron / systemd / launchd / APScheduler patterns
+  - packaging       # added 6.5.1 — artifact preparation (wheel / npm / Docker image) distinct from deployment
+  - filesystem      # added 6.5.1 — file-layout / atomic-rename / permissions / path semantics
   - gpu
   - compute
-  - infrastructure
+  # `infrastructure` tag removed in 6.5.1 — tautological with domain `infrastructure`; added no filter discrimination
 
   # Research provenance
   - empirical
@@ -200,7 +215,7 @@ approved_tags:
   - superseded
 ```
 
-This list is version-controlled. Tags may be added only through the Vocabulary Extension Protocol (below). Current count: 55 approved tags.
+This list is version-controlled. Tags may be added only through the Vocabulary Extension Protocol (below). Current count: 57 approved tags.
 
 ---
 
@@ -377,7 +392,7 @@ All three levels required. Missing any → rejection.
 | `debugging` | root-cause-analysis, regression-detection, hypothesis-testing, error-classification |
 | `security` | threat-model, access-control, data-isolation, attack-surface |
 
-### Approved Tags (55 total)
+### Approved Tags (57 total)
 
 ```
 retrieval, recall, decay, importance-weighting, temporal, verbatim, semantic-search,
@@ -387,7 +402,7 @@ grounding, confidence, adversarial, quality-gate, hallucination-risk,
 tier-0, tier-1, tier-2, tier-3, accretion, taxonomy,
 latency, token-cost, throughput, benchmark,
 mcp, api, sidecar, vector-db,
-deployment, gpu, compute, infrastructure,
+deployment, scheduling, packaging, filesystem, gpu, compute,
 empirical, theoretical, experimental, peer-reviewed,
 stable, volatile, pinned, archived, superseded
 ```
