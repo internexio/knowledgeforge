@@ -4,6 +4,7 @@
 
 ### Patterns
 
+- [2026-05-12] Sanitization discipline for public-ready repos — three-pass grep + skip-or-sanitize decision tree — new_pattern — `patterns/2026-05-12_sanitization-three-pass-grep-discipline.md`
 - [2026-05-12] Pin-tests for declarative policy manifests — cheap regression guard against accidental entry deletion — new_pattern — `patterns/2026-05-12_pin-tests-declarative-policy-manifests.md`
 - [2026-05-12] Dogfood the safety machinery — end-to-end apply-path tests via the system's own atomic install + undo — transferable_framework — `patterns/2026-05-12_dogfood-apply-undo-end-to-end-testing.md`
 - [2026-05-11] Archival is retirement, not relocation — autonomous fix systems must honor the difference — transferable_framework — `patterns/2026-05-11_archival-retirement-not-relocation.md`
@@ -33,6 +34,7 @@
 
 ### Infrastructure
 
+- [2026-05-12] Vendoring drift — detect unreviewed divergence between vendored content and its source-of-truth — new_pattern — `infrastructure/2026-05-12_vendoring-drift-detection.md`
 - [2026-05-12] Self-watchdog — autonomous fix systems need external cycle-alive checks — transferable_framework — `infrastructure/2026-05-12_self-watchdog-autonomous-fix-cycles.md`
 - [2026-05-12] Empty-stdin crontab wipe — pipeline-failure footgun — reusable_diagnostic — `infrastructure/2026-05-12_empty-stdin-crontab-wipe-footgun.md`
 - [2026-05-11] Python package CLIs under cron — module form required for relative imports — reusable_diagnostic — `infrastructure/2026-05-11_python-package-cli-under-cron.md`
@@ -58,9 +60,9 @@
 
 ## Index Stats
 
-- **Total entries:** 31
-- **Entry types:** new_pattern (19), transferable_framework (7), reusable_diagnostic (5), template_candidate (1)
-- **Domains:** patterns (5), architecture (6), orchestration (8), infrastructure (4), compiler (1), diagnostics (1), methodologies (1), migrations (1)
+- **Total entries:** 33
+- **Entry types:** new_pattern (21), transferable_framework (7), reusable_diagnostic (5), template_candidate (1)
+- **Domains:** patterns (6), architecture (6), orchestration (8), infrastructure (5), compiler (1), diagnostics (1), methodologies (1), migrations (1)
 - **Avg grounding score:** 0.83 (across grounded entries)
-- **Staleness risk distribution:** stable (18), slow_decay (12), fast_decay (1)
+- **Staleness risk distribution:** stable (20), slow_decay (12), fast_decay (1)
 
