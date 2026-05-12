@@ -4,6 +4,7 @@
 
 ### Patterns
 
+- [2026-05-11] Archival is retirement, not relocation — autonomous fix systems must honor the difference — transferable_framework — `patterns/2026-05-11_archival-retirement-not-relocation.md`
 - [2026-05-11] Atomic-write stubs for pipelines that read-and-write the same file — reusable_diagnostic — `patterns/2026-05-11_atomic-write-stubs-for-readwrite-pipelines.md`
 - [2026-05-11] Audit-log event vocabularies — read-side must accept routing-suffixed forms — new_pattern — `patterns/2026-05-11_audit-log-event-vocabulary-mismatch.md`
 - [2026-05-10] Mode-Label-with-Variants Taxonomy — new_pattern — `patterns/mode-variants-taxonomy.md`
@@ -30,6 +31,8 @@
 
 ### Infrastructure
 
+- [2026-05-12] Self-watchdog — autonomous fix systems need external cycle-alive checks — transferable_framework — `infrastructure/2026-05-12_self-watchdog-autonomous-fix-cycles.md`
+- [2026-05-12] Empty-stdin crontab wipe — pipeline-failure footgun — reusable_diagnostic — `infrastructure/2026-05-12_empty-stdin-crontab-wipe-footgun.md`
 - [2026-05-11] Python package CLIs under cron — module form required for relative imports — reusable_diagnostic — `infrastructure/2026-05-11_python-package-cli-under-cron.md`
 - [2026-04-18] Flat Namespace Prefix Convention — new_pattern — `infrastructure/flat-namespace-prefix-convention.md`
 
@@ -53,9 +56,9 @@
 
 ## Index Stats
 
-- **Total entries:** 26
-- **Entry types:** new_pattern (18), transferable_framework (4), reusable_diagnostic (4), template_candidate (1)
-- **Domains:** patterns (2), architecture (6), orchestration (8), infrastructure (2), compiler (1), diagnostics (1), methodologies (1), migrations (1)
+- **Total entries:** 29
+- **Entry types:** new_pattern (18), transferable_framework (6), reusable_diagnostic (5), template_candidate (1)
+- **Domains:** patterns (3), architecture (6), orchestration (8), infrastructure (4), compiler (1), diagnostics (1), methodologies (1), migrations (1)
 - **Avg grounding score:** 0.83 (across grounded entries)
-- **Staleness risk distribution:** stable (13), slow_decay (12), fast_decay (1)
+- **Staleness risk distribution:** stable (16), slow_decay (12), fast_decay (1)
 
