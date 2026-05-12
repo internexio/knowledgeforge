@@ -4,6 +4,8 @@
 
 ### Patterns
 
+- [2026-05-12] Pin-tests for declarative policy manifests — cheap regression guard against accidental entry deletion — new_pattern — `patterns/2026-05-12_pin-tests-declarative-policy-manifests.md`
+- [2026-05-12] Dogfood the safety machinery — end-to-end apply-path tests via the system's own atomic install + undo — transferable_framework — `patterns/2026-05-12_dogfood-apply-undo-end-to-end-testing.md`
 - [2026-05-11] Archival is retirement, not relocation — autonomous fix systems must honor the difference — transferable_framework — `patterns/2026-05-11_archival-retirement-not-relocation.md`
 - [2026-05-11] Atomic-write stubs for pipelines that read-and-write the same file — reusable_diagnostic — `patterns/2026-05-11_atomic-write-stubs-for-readwrite-pipelines.md`
 - [2026-05-11] Audit-log event vocabularies — read-side must accept routing-suffixed forms — new_pattern — `patterns/2026-05-11_audit-log-event-vocabulary-mismatch.md`
@@ -56,9 +58,9 @@
 
 ## Index Stats
 
-- **Total entries:** 29
-- **Entry types:** new_pattern (18), transferable_framework (6), reusable_diagnostic (5), template_candidate (1)
-- **Domains:** patterns (3), architecture (6), orchestration (8), infrastructure (4), compiler (1), diagnostics (1), methodologies (1), migrations (1)
+- **Total entries:** 31
+- **Entry types:** new_pattern (19), transferable_framework (7), reusable_diagnostic (5), template_candidate (1)
+- **Domains:** patterns (5), architecture (6), orchestration (8), infrastructure (4), compiler (1), diagnostics (1), methodologies (1), migrations (1)
 - **Avg grounding score:** 0.83 (across grounded entries)
-- **Staleness risk distribution:** stable (16), slow_decay (12), fast_decay (1)
+- **Staleness risk distribution:** stable (18), slow_decay (12), fast_decay (1)
 
