@@ -6,6 +6,16 @@
 
 - [2026-05-14] Spec-environment pattern mismatch — dual-pattern regex + authoritative downstream check — new_pattern — `patterns/2026-05-14_spec-environment-dual-pattern-regex-authoritative-check.md`
 - [2026-05-14] File-based stub for deferred external dispatch surfaces — new_pattern — `patterns/2026-05-14_file-based-stub-deferred-dispatch-surfaces.md`
+- [2026-05-13] Best-effort bash pipeline runner — subshell + pipefail + sed-prefix + WARN-not-fail composition — new_pattern — `patterns/2026-05-13_best-effort-bash-pipeline-runner.md`
+- [2026-05-13] Collapse near-duplicate fetchers by making the rich shape canonical — transferable_framework — `patterns/2026-05-13_collapse-duplicate-fetchers-rich-canonical.md`
+- [2026-05-13] Conditional UPDATE for atomic queue claim — single-row claim via WHERE + RETURNING — new_pattern — `patterns/2026-05-13_conditional-update-for-atomic-queue-claim.md`
+- [2026-05-13] Content-addressed cache with versioned hash prefix — new_pattern — `patterns/2026-05-13_content-addressed-cache-versioned-hash-prefix.md`
+- [2026-05-13] Helper extraction beats loop refactor when per-step state diverges — transferable_framework — `patterns/2026-05-13_helper-extraction-beats-loop-refactor-state-divergence.md`
+- [2026-05-13] Jinja2 `{% raw %}` required when migrating .format() templates with literal curly braces — new_pattern — `patterns/2026-05-13_jinja2-raw-block-format-migration.md`
+- [2026-05-13] Per-request-instantiated service with instance-attribute caches is dead state — reusable_diagnostic — `patterns/2026-05-13_per-request-instantiated-service-dead-cache-state.md`
+- [2026-05-13] Phased god-module split — facade-first, late-bound helpers, simplest-first sequencing — transferable_framework — `patterns/2026-05-13_phased-god-module-split-facade-first.md`
+- [2026-05-13] Validator-after-ownership-gate pattern for shared CRUD scaffolds — new_pattern — `patterns/2026-05-13_validator-after-ownership-gate-shared-crud-scaffolds.md`
+- [2026-05-12] FastAPI StreamingResponse pre-flight gates must raise BEFORE construction — new_pattern — `patterns/2026-05-12_fastapi-streaming-preflight-gates.md`
 - [2026-05-12] Sanitization discipline for public-ready repos — three-pass grep + skip-or-sanitize decision tree — new_pattern — `patterns/2026-05-12_sanitization-three-pass-grep-discipline.md`
 - [2026-05-12] Pin-tests for declarative policy manifests — cheap regression guard against accidental entry deletion — new_pattern — `patterns/2026-05-12_pin-tests-declarative-policy-manifests.md`
 - [2026-05-12] Dogfood the safety machinery — end-to-end apply-path tests via the system's own atomic install + undo — transferable_framework — `patterns/2026-05-12_dogfood-apply-undo-end-to-end-testing.md`
@@ -26,6 +36,8 @@
 
 ### Orchestration
 
+- [2026-05-13] Coalesce at enqueue, every coalesce gets a row — new_pattern — `orchestration/2026-05-13_coalesce-at-enqueue-every-coalesce-gets-a-row.md`
+- [2026-05-13] One reconciliation pipeline, called twice (startup + periodic) — new_pattern — `orchestration/2026-05-13_one-reconciliation-pipeline-called-twice.md`
 - [2026-05-08] Multi-Framework CP Composition — new_pattern — `orchestration/multi-framework-cp-composition.md`
 - [2026-05-08] KF Version Gap Bridging — reusable_diagnostic — `orchestration/kf-version-gap-bridging.md`
 - [2026-04-20] Schema-First Elicitation Order — new_pattern — `orchestration/schema-first-elicitation-order.md`
@@ -38,7 +50,10 @@
 ### Infrastructure
 
 - [2026-05-14] Idempotent watchdog producer pattern — detector + check_and_alert + dated state file + CLI + cron block — transferable_framework — `infrastructure/2026-05-14_idempotent-watchdog-producer-pattern.md`
+- [2026-05-13] Bash `$RANDOM` in command-substitution subshells is deterministic across rapid calls — reusable_diagnostic — `infrastructure/2026-05-13_bash-random-deterministic-command-substitution-subshells.md`
 - [2026-05-13] Default to extension over sibling for existing infrastructure — new_pattern — `infrastructure/2026-05-13_default-extension-over-sibling-infrastructure.md`
+- [2026-05-13] docker compose down/up container-name race in deploy scripts — reusable_diagnostic — `infrastructure/2026-05-13_docker-compose-down-up-container-name-race.md`
+- [2026-05-13] POSIX atomic-append for concurrent JSONL writers — flock unnecessary under PIPE_BUF — transferable_framework — `infrastructure/2026-05-13_posix-append-pipe-buf-concurrent-jsonl-writers.md`
 - [2026-05-13] launchd CWD-is-slash trap for CWD-relative CLIs — reusable_diagnostic — `infrastructure/2026-05-13_launchd-cwd-trap-relative-tool-lookups.md`
 - [2026-05-13] Deployment-gap audit checklist for shadow-mode patterns — reusable_diagnostic — `infrastructure/2026-05-13_deployment-gap-audit-shadow-mode-patterns.md`
 - [2026-05-12] Vendoring drift — detect unreviewed divergence between vendored content and its source-of-truth — new_pattern — `infrastructure/2026-05-12_vendoring-drift-detection.md`
@@ -49,11 +64,19 @@
 
 ### Compiler
 
+- [2026-05-13] Trailing-newline divergence between Python triple-quoted strings and Jinja2 default rendering — new_pattern — `compiler/2026-05-13_trailing-newline-divergence-python-jinja2.md`
+- [2026-05-12] ES2020/ES2021 lib divergence — local tsc green, CI tsc red on String.replaceAll — reusable_diagnostic — `compiler/2026-05-12_es2020-es2021-lib-divergence-string-replacall.md`
 - [2026-04-18] Multi-Repo Artifact Placement — reusable_diagnostic — `compiler/multi-repo-artifact-placement.md`
 
 ### Diagnostics
 
+- [2026-05-13] Asymmetric write-time guard coverage across parallel write paths — reusable_diagnostic — `diagnostics/2026-05-13_asymmetric-write-time-guard-coverage.md`
+- [2026-05-13] bd search idempotency grep trap — match `^Found` header, not query string — reusable_diagnostic — `diagnostics/2026-05-13_bd-search-idempotency-grep-trap.md`
 - [2026-05-13] Content-diff mtime preservation inverts liveness signal on idle-but-healthy systems — new_pattern — `diagnostics/2026-05-13_content-diff-mtime-inversion-idle-systems.md`
+- [2026-05-13] Fabricated-default fallback at call site hides upstream data quality bugs — reusable_diagnostic — `diagnostics/2026-05-13_fabricated-default-fallback-at-call-site.md`
+- [2026-05-13] Pricing-table key vs default value — don't collapse identical literals when extracting settings — reusable_diagnostic — `diagnostics/2026-05-13_pricing-table-key-vs-default-value-collapse.md`
+- [2026-05-13] Python `logging.extra=` reserved-key hazard — reusable_diagnostic — `diagnostics/2026-05-13_python-logging-extra-reserved-keys-hazard.md`
+- [2026-05-13] unittest.mock.patch targets shift when a module becomes a package — reusable_diagnostic — `diagnostics/2026-05-13_unittest-mock-patch-targets-shift-module-to-package.md`
 - [2026-04-18] Handoff Payload Schema Gap — reusable_diagnostic — `diagnostics/handoff-payload-schema-gap.md`
 
 ### Methodologies
@@ -61,6 +84,7 @@
 - [2026-05-14] Healthy-system gate trap — failure-mode thresholds never trip in working systems — reusable_diagnostic — `methodologies/2026-05-14_healthy-system-gate-trap-empirical-thresholds.md`
 - [2026-05-13] Find-consumer-first before designing data migrations — reusable_diagnostic — `methodologies/2026-05-13_find-consumer-first-before-data-migration.md`
 - [2026-05-13] Critic-finding triage — Strategist for spec-MUST violations, deferred-doc for forward-compat — emerging_pattern — `methodologies/2026-05-13_critic-triage-routing-strategist-vs-defer-doc.md`
+- [2026-05-13] Verify audit-doc structural claims against current code before designing the fix — reusable_diagnostic — `methodologies/2026-05-13_verify-audit-claims-before-designing-fix.md`
 - [2026-04-18] External Source to KF Mapping — template_candidate — `methodologies/external-source-to-kf-mapping.md`
 
 ### Migrations
@@ -71,9 +95,9 @@
 
 ## Index Stats
 
-- **Total entries:** 44
-- **Entry types:** new_pattern (26), transferable_framework (8), reusable_diagnostic (9), template_candidate (1), emerging_pattern (1)
-- **Domains:** patterns (8), architecture (7), orchestration (8), infrastructure (9), compiler (1), diagnostics (2), methodologies (4), migrations (1)
-- **Avg grounding score:** 0.84 (across grounded entries)
-- **Staleness risk distribution:** stable (24), slow_decay (13), fast_decay (1)
+- **Total entries:** 65
+- **Entry types:** new_pattern (30), transferable_framework (11), reusable_diagnostic (22), template_candidate (1), emerging_pattern (1)
+- **Domains:** patterns (19), architecture (7), orchestration (10), infrastructure (12), compiler (3), diagnostics (8), methodologies (5), migrations (1)
+- **Avg grounding score:** 0.85 (across grounded entries)
+- **Staleness risk distribution:** stable (62), slow_decay (2), fast_decay (1)
 
