@@ -49,6 +49,8 @@
 
 ### Infrastructure
 
+- [2026-05-14] File-based timer-poll pattern for deferred async acknowledgement — transferable_framework — `infrastructure/2026-05-14_file-based-timer-poll-deferred-ack-semantics.md`
+- [2026-05-14] Self-identity-minting CLI flag for cron-scheduled workers — new_pattern — `infrastructure/2026-05-14_self-identity-minting-cli-flag-cron-workers.md`
 - [2026-05-14] Idempotent watchdog producer pattern — detector + check_and_alert + dated state file + CLI + cron block — transferable_framework — `infrastructure/2026-05-14_idempotent-watchdog-producer-pattern.md`
 - [2026-05-13] Bash `$RANDOM` in command-substitution subshells is deterministic across rapid calls — reusable_diagnostic — `infrastructure/2026-05-13_bash-random-deterministic-command-substitution-subshells.md`
 - [2026-05-13] Default to extension over sibling for existing infrastructure — new_pattern — `infrastructure/2026-05-13_default-extension-over-sibling-infrastructure.md`
@@ -95,9 +97,9 @@
 
 ## Index Stats
 
-- **Total entries:** 65
-- **Entry types:** new_pattern (30), transferable_framework (11), reusable_diagnostic (22), template_candidate (1), emerging_pattern (1)
-- **Domains:** patterns (19), architecture (7), orchestration (10), infrastructure (12), compiler (3), diagnostics (8), methodologies (5), migrations (1)
+- **Total entries:** 67
+- **Entry types:** new_pattern (31), transferable_framework (12), reusable_diagnostic (22), template_candidate (1), emerging_pattern (1)
+- **Domains:** patterns (19), architecture (7), orchestration (10), infrastructure (14), compiler (3), diagnostics (8), methodologies (5), migrations (1)
 - **Avg grounding score:** 0.85 (across grounded entries)
-- **Staleness risk distribution:** stable (62), slow_decay (2), fast_decay (1)
+- **Staleness risk distribution:** stable (64), slow_decay (2), fast_decay (1)
 
