@@ -4,6 +4,8 @@
 
 ### Patterns
 
+- [2026-05-14] Spec-environment pattern mismatch — dual-pattern regex + authoritative downstream check — new_pattern — `patterns/2026-05-14_spec-environment-dual-pattern-regex-authoritative-check.md`
+- [2026-05-14] File-based stub for deferred external dispatch surfaces — new_pattern — `patterns/2026-05-14_file-based-stub-deferred-dispatch-surfaces.md`
 - [2026-05-12] Sanitization discipline for public-ready repos — three-pass grep + skip-or-sanitize decision tree — new_pattern — `patterns/2026-05-12_sanitization-three-pass-grep-discipline.md`
 - [2026-05-12] Pin-tests for declarative policy manifests — cheap regression guard against accidental entry deletion — new_pattern — `patterns/2026-05-12_pin-tests-declarative-policy-manifests.md`
 - [2026-05-12] Dogfood the safety machinery — end-to-end apply-path tests via the system's own atomic install + undo — transferable_framework — `patterns/2026-05-12_dogfood-apply-undo-end-to-end-testing.md`
@@ -35,6 +37,7 @@
 
 ### Infrastructure
 
+- [2026-05-14] Idempotent watchdog producer pattern — detector + check_and_alert + dated state file + CLI + cron block — transferable_framework — `infrastructure/2026-05-14_idempotent-watchdog-producer-pattern.md`
 - [2026-05-13] Default to extension over sibling for existing infrastructure — new_pattern — `infrastructure/2026-05-13_default-extension-over-sibling-infrastructure.md`
 - [2026-05-13] launchd CWD-is-slash trap for CWD-relative CLIs — reusable_diagnostic — `infrastructure/2026-05-13_launchd-cwd-trap-relative-tool-lookups.md`
 - [2026-05-13] Deployment-gap audit checklist for shadow-mode patterns — reusable_diagnostic — `infrastructure/2026-05-13_deployment-gap-audit-shadow-mode-patterns.md`
@@ -68,9 +71,9 @@
 
 ## Index Stats
 
-- **Total entries:** 41
-- **Entry types:** new_pattern (24), transferable_framework (7), reusable_diagnostic (9), template_candidate (1), emerging_pattern (1)
-- **Domains:** patterns (6), architecture (7), orchestration (8), infrastructure (8), compiler (1), diagnostics (2), methodologies (4), migrations (1)
-- **Avg grounding score:** 0.83 (across grounded entries)
-- **Staleness risk distribution:** stable (22), slow_decay (12), fast_decay (1)
+- **Total entries:** 44
+- **Entry types:** new_pattern (26), transferable_framework (8), reusable_diagnostic (9), template_candidate (1), emerging_pattern (1)
+- **Domains:** patterns (8), architecture (7), orchestration (8), infrastructure (9), compiler (1), diagnostics (2), methodologies (4), migrations (1)
+- **Avg grounding score:** 0.84 (across grounded entries)
+- **Staleness risk distribution:** stable (24), slow_decay (13), fast_decay (1)
 
