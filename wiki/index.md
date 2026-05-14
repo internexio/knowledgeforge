@@ -4,6 +4,7 @@
 
 ### Patterns
 
+- [2026-05-14] Autouse fake-stages fixture for neutralizing subprocess-invoking pipeline tests — new_pattern — `patterns/2026-05-14_autouse-fake-stages-fixture-subprocess-pipeline-tests.md`
 - [2026-05-14] Spec-environment pattern mismatch — dual-pattern regex + authoritative downstream check — new_pattern — `patterns/2026-05-14_spec-environment-dual-pattern-regex-authoritative-check.md`
 - [2026-05-14] File-based stub for deferred external dispatch surfaces — new_pattern — `patterns/2026-05-14_file-based-stub-deferred-dispatch-surfaces.md`
 - [2026-05-13] Best-effort bash pipeline runner — subshell + pipefail + sed-prefix + WARN-not-fail composition — new_pattern — `patterns/2026-05-13_best-effort-bash-pipeline-runner.md`
@@ -49,6 +50,7 @@
 
 ### Infrastructure
 
+- [2026-05-14] Claude CLI --bare disables OAuth/keychain — subscription-billed subprocess workers must omit it — reusable_diagnostic — `infrastructure/2026-05-14_claude-cli-bare-disables-oauth-keychain-auth.md`
 - [2026-05-14] File-based timer-poll pattern for deferred async acknowledgement — transferable_framework — `infrastructure/2026-05-14_file-based-timer-poll-deferred-ack-semantics.md`
 - [2026-05-14] Self-identity-minting CLI flag for cron-scheduled workers — new_pattern — `infrastructure/2026-05-14_self-identity-minting-cli-flag-cron-workers.md`
 - [2026-05-14] Idempotent watchdog producer pattern — detector + check_and_alert + dated state file + CLI + cron block — transferable_framework — `infrastructure/2026-05-14_idempotent-watchdog-producer-pattern.md`
@@ -83,6 +85,7 @@
 
 ### Methodologies
 
+- [2026-05-14] Structural-invariant acceptance over wall-clock measurement on stubbed code paths — transferable_framework — `methodologies/2026-05-14_structural-invariant-acceptance-over-wall-clock-stubbed-paths.md`
 - [2026-05-14] Healthy-system gate trap — failure-mode thresholds never trip in working systems — reusable_diagnostic — `methodologies/2026-05-14_healthy-system-gate-trap-empirical-thresholds.md`
 - [2026-05-13] Find-consumer-first before designing data migrations — reusable_diagnostic — `methodologies/2026-05-13_find-consumer-first-before-data-migration.md`
 - [2026-05-13] Critic-finding triage — Strategist for spec-MUST violations, deferred-doc for forward-compat — emerging_pattern — `methodologies/2026-05-13_critic-triage-routing-strategist-vs-defer-doc.md`
@@ -97,9 +100,9 @@
 
 ## Index Stats
 
-- **Total entries:** 67
-- **Entry types:** new_pattern (31), transferable_framework (12), reusable_diagnostic (22), template_candidate (1), emerging_pattern (1)
-- **Domains:** patterns (19), architecture (7), orchestration (10), infrastructure (14), compiler (3), diagnostics (8), methodologies (5), migrations (1)
+- **Total entries:** 70
+- **Entry types:** new_pattern (32), transferable_framework (13), reusable_diagnostic (23), template_candidate (1), emerging_pattern (1)
+- **Domains:** patterns (20), architecture (7), orchestration (10), infrastructure (15), compiler (3), diagnostics (8), methodologies (6), migrations (1)
 - **Avg grounding score:** 0.85 (across grounded entries)
-- **Staleness risk distribution:** stable (64), slow_decay (2), fast_decay (1)
+- **Staleness risk distribution:** stable (68), slow_decay (2), fast_decay (1)
 
