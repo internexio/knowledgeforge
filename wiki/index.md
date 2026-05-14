@@ -34,6 +34,9 @@
 
 ### Infrastructure
 
+- [2026-05-13] Default to extension over sibling for existing infrastructure — new_pattern — `infrastructure/2026-05-13_default-extension-over-sibling-infrastructure.md`
+- [2026-05-13] launchd CWD-is-slash trap for CWD-relative CLIs — reusable_diagnostic — `infrastructure/2026-05-13_launchd-cwd-trap-relative-tool-lookups.md`
+- [2026-05-13] Deployment-gap audit checklist for shadow-mode patterns — reusable_diagnostic — `infrastructure/2026-05-13_deployment-gap-audit-shadow-mode-patterns.md`
 - [2026-05-12] Vendoring drift — detect unreviewed divergence between vendored content and its source-of-truth — new_pattern — `infrastructure/2026-05-12_vendoring-drift-detection.md`
 - [2026-05-12] Self-watchdog — autonomous fix systems need external cycle-alive checks — transferable_framework — `infrastructure/2026-05-12_self-watchdog-autonomous-fix-cycles.md`
 - [2026-05-12] Empty-stdin crontab wipe — pipeline-failure footgun — reusable_diagnostic — `infrastructure/2026-05-12_empty-stdin-crontab-wipe-footgun.md`
@@ -46,10 +49,13 @@
 
 ### Diagnostics
 
+- [2026-05-13] Content-diff mtime preservation inverts liveness signal on idle-but-healthy systems — new_pattern — `diagnostics/2026-05-13_content-diff-mtime-inversion-idle-systems.md`
 - [2026-04-18] Handoff Payload Schema Gap — reusable_diagnostic — `diagnostics/handoff-payload-schema-gap.md`
 
 ### Methodologies
 
+- [2026-05-13] Find-consumer-first before designing data migrations — reusable_diagnostic — `methodologies/2026-05-13_find-consumer-first-before-data-migration.md`
+- [2026-05-13] Critic-finding triage — Strategist for spec-MUST violations, deferred-doc for forward-compat — emerging_pattern — `methodologies/2026-05-13_critic-triage-routing-strategist-vs-defer-doc.md`
 - [2026-04-18] External Source to KF Mapping — template_candidate — `methodologies/external-source-to-kf-mapping.md`
 
 ### Migrations
@@ -60,9 +66,9 @@
 
 ## Index Stats
 
-- **Total entries:** 33
-- **Entry types:** new_pattern (21), transferable_framework (7), reusable_diagnostic (5), template_candidate (1)
-- **Domains:** patterns (6), architecture (6), orchestration (8), infrastructure (5), compiler (1), diagnostics (1), methodologies (1), migrations (1)
+- **Total entries:** 39
+- **Entry types:** new_pattern (23), transferable_framework (7), reusable_diagnostic (8), template_candidate (1), emerging_pattern (1)
+- **Domains:** patterns (6), architecture (6), orchestration (8), infrastructure (8), compiler (1), diagnostics (2), methodologies (3), migrations (1)
 - **Avg grounding score:** 0.83 (across grounded entries)
 - **Staleness risk distribution:** stable (20), slow_decay (12), fast_decay (1)
 
