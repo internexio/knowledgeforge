@@ -14,6 +14,7 @@
 
 ### Architecture
 
+- [2026-05-14] Identity registry + append-only event log — separate "who/what" from "what happened" — new_pattern — `architecture/2026-05-14_identity-registry-append-only-event-log-separation.md`
 - [2026-05-10] Pattern Extraction & Reuse Heuristic — transferable_framework — `architecture/pattern-extraction-reuse-heuristic.md`
 - [2026-04-18] Scaffolding vs Patching Pattern — new_pattern — `architecture/scaffolding-vs-patching-pattern.md`
 - [2026-04-18] Neuro-Symbolic Pattern Validation — new_pattern — `architecture/neuro-symbolic-pattern-validation.md`
@@ -54,6 +55,7 @@
 
 ### Methodologies
 
+- [2026-05-14] Healthy-system gate trap — failure-mode thresholds never trip in working systems — reusable_diagnostic — `methodologies/2026-05-14_healthy-system-gate-trap-empirical-thresholds.md`
 - [2026-05-13] Find-consumer-first before designing data migrations — reusable_diagnostic — `methodologies/2026-05-13_find-consumer-first-before-data-migration.md`
 - [2026-05-13] Critic-finding triage — Strategist for spec-MUST violations, deferred-doc for forward-compat — emerging_pattern — `methodologies/2026-05-13_critic-triage-routing-strategist-vs-defer-doc.md`
 - [2026-04-18] External Source to KF Mapping — template_candidate — `methodologies/external-source-to-kf-mapping.md`
@@ -66,9 +68,9 @@
 
 ## Index Stats
 
-- **Total entries:** 39
-- **Entry types:** new_pattern (23), transferable_framework (7), reusable_diagnostic (8), template_candidate (1), emerging_pattern (1)
-- **Domains:** patterns (6), architecture (6), orchestration (8), infrastructure (8), compiler (1), diagnostics (2), methodologies (3), migrations (1)
+- **Total entries:** 41
+- **Entry types:** new_pattern (24), transferable_framework (7), reusable_diagnostic (9), template_candidate (1), emerging_pattern (1)
+- **Domains:** patterns (6), architecture (7), orchestration (8), infrastructure (8), compiler (1), diagnostics (2), methodologies (4), migrations (1)
 - **Avg grounding score:** 0.83 (across grounded entries)
-- **Staleness risk distribution:** stable (20), slow_decay (12), fast_decay (1)
+- **Staleness risk distribution:** stable (22), slow_decay (12), fast_decay (1)
 
