@@ -4,6 +4,9 @@
 
 ### Patterns
 
+- [2026-05-14] Claude CLI Subscription Subprocess Context Trim — cwd + --setting-sources — reusable_diagnostic — `patterns/2026-05-14_claude-cli-subscription-subprocess-context-trim.md`
+- [2026-05-14] Claude CLI structured-output vs result routing — json-schema callers must check structured_output first — reusable_diagnostic — `patterns/2026-05-14_claude-cli-structured-output-vs-result-routing.md`
+- [2026-05-14] Collapse N-useState chorus into discriminated union + reducer — new_pattern — `patterns/2026-05-14_collapse-usestate-discriminated-union-reducer.md`
 - [2026-05-14] Autouse fake-stages fixture for neutralizing subprocess-invoking pipeline tests — new_pattern — `patterns/2026-05-14_autouse-fake-stages-fixture-subprocess-pipeline-tests.md`
 - [2026-05-14] Spec-environment pattern mismatch — dual-pattern regex + authoritative downstream check — new_pattern — `patterns/2026-05-14_spec-environment-dual-pattern-regex-authoritative-check.md`
 - [2026-05-14] File-based stub for deferred external dispatch surfaces — new_pattern — `patterns/2026-05-14_file-based-stub-deferred-dispatch-surfaces.md`
@@ -27,6 +30,7 @@
 
 ### Architecture
 
+- [2026-05-14] Domain exceptions should not carry HTTP metadata — transferable_framework — `architecture/2026-05-14_domain-exceptions-exclude-http-metadata.md`
 - [2026-05-14] Identity registry + append-only event log — separate "who/what" from "what happened" — new_pattern — `architecture/2026-05-14_identity-registry-append-only-event-log-separation.md`
 - [2026-05-10] Pattern Extraction & Reuse Heuristic — transferable_framework — `architecture/pattern-extraction-reuse-heuristic.md`
 - [2026-04-18] Scaffolding vs Patching Pattern — new_pattern — `architecture/scaffolding-vs-patching-pattern.md`
@@ -37,6 +41,7 @@
 
 ### Orchestration
 
+- [2026-05-14] Cost meter must always emit release event on cycle exit, even on overrun — new_pattern — `orchestration/2026-05-14_cost-meter-always-emit-release-on-cycle-exit.md`
 - [2026-05-13] Coalesce at enqueue, every coalesce gets a row — new_pattern — `orchestration/2026-05-13_coalesce-at-enqueue-every-coalesce-gets-a-row.md`
 - [2026-05-13] One reconciliation pipeline, called twice (startup + periodic) — new_pattern — `orchestration/2026-05-13_one-reconciliation-pipeline-called-twice.md`
 - [2026-05-08] Multi-Framework CP Composition — new_pattern — `orchestration/multi-framework-cp-composition.md`
@@ -74,6 +79,7 @@
 
 ### Diagnostics
 
+- [2026-05-13] PostgREST or_() filter-injection — sanitize free-text before interpolation — reusable_diagnostic — `diagnostics/2026-05-13_postgrest-or-filter-injection-sanitize-freetext.md`
 - [2026-05-13] Asymmetric write-time guard coverage across parallel write paths — reusable_diagnostic — `diagnostics/2026-05-13_asymmetric-write-time-guard-coverage.md`
 - [2026-05-13] bd search idempotency grep trap — match `^Found` header, not query string — reusable_diagnostic — `diagnostics/2026-05-13_bd-search-idempotency-grep-trap.md`
 - [2026-05-13] Content-diff mtime preservation inverts liveness signal on idle-but-healthy systems — new_pattern — `diagnostics/2026-05-13_content-diff-mtime-inversion-idle-systems.md`
@@ -100,9 +106,9 @@
 
 ## Index Stats
 
-- **Total entries:** 70
-- **Entry types:** new_pattern (32), transferable_framework (13), reusable_diagnostic (23), template_candidate (1), emerging_pattern (1)
-- **Domains:** patterns (20), architecture (7), orchestration (10), infrastructure (15), compiler (3), diagnostics (8), methodologies (6), migrations (1)
+- **Total entries:** 73
+- **Entry types:** new_pattern (33), transferable_framework (14), reusable_diagnostic (24), template_candidate (1), emerging_pattern (1)
+- **Domains:** patterns (21), architecture (8), orchestration (10), infrastructure (15), compiler (3), diagnostics (9), methodologies (6), migrations (1)
 - **Avg grounding score:** 0.85 (across grounded entries)
-- **Staleness risk distribution:** stable (68), slow_decay (2), fast_decay (1)
+- **Staleness risk distribution:** stable (71), slow_decay (2), fast_decay (1)
 
