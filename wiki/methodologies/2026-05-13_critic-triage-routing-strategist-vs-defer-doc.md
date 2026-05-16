@@ -93,8 +93,8 @@ Both paths produced ship-ready v0.3 code.
 
 ## Related
 
-- [[builder-after-critic-revision-flow]] — Builder's complete response surface to Critic findings (close relative; this entry adds the routing question Builder asks first)
-- [[forward-compat-vs-premature-optimization]] — broader principle this triage strategy applies to
+- **builder-after-critic-revision-flow** — Builder's complete response surface to Critic findings (close relative; this entry adds the routing question Builder asks first) — concept-tag, not yet a wiki entry
+- **forward-compat-vs-premature-optimization** — broader principle this triage strategy applies to — concept-tag, not yet a wiki entry
 
 ## Source Context
 

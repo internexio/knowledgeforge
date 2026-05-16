@@ -95,8 +95,8 @@ Startup-only systems (reconciliation only on boot, nowhere else) mask mid-flight
 ## Related Patterns
 
 - **[[conditional-update-for-atomic-queue-claim]]** — the primitive each reconciliation step uses to safely transition state
-- **[[log-only-when-something-changed]]** — the silent-tick discipline this pattern depends on
-- **[[self-watchdog]]** — external monitoring that the reconciliation pipeline itself is running correctly (this pattern reconciles work; self-watchdog reconciles the reconciler)
+- **log-only-when-something-changed** — the silent-tick discipline this pattern depends on (concept-tag; see "Quiet by default" invariant above)
+- **[[self-watchdog-autonomous-fix-cycles]]** — external monitoring that the reconciliation pipeline itself is running correctly (this pattern reconciles work; self-watchdog reconciles the reconciler)
 
 ## Source Context
 
