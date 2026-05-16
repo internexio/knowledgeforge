@@ -1,26 +1,27 @@
-# Adversarial Filename Audit as Mandatory Bundle Gate
-
-```yaml
-metadata:
-  source_mode: synthesizer
-  source_session: redacted
-  created: "2026-04-21T00:00:00Z"
-  date: "2026-04-21"
-  confidence: 0.95
-  grounding_score: 0.95
-  grounding_source: "VisionForge Unified composition chain. Sev 1 findings [1] and [4]: 13 wrong Leonardo filenames + 1 doubled prefix. Both phantom filename failures. Both caught only by filesystem glob verification in Adversarial Critic pass. Combined: two of three framework contributions silently absent from every session."
-  novelty_type: transferable_framework
-  staleness_risk: stable
-  importance: 4
-  pinned: true
-  accreted_in: "6.5"
-  related:
-    - wiki/infrastructure/flat-namespace-prefix-convention.md
-    - wiki/orchestration/multi-framework-cp-composition.md
-    - modules/07_critic_agent.md
-```
-
 ---
+title: Adversarial Filename Audit as Mandatory Bundle Gate
+source_mode: synthesizer
+source_session: redacted
+created: '2026-04-21T00:00:00Z'
+date: '2026-04-21'
+confidence: 0.95
+grounding_score: 0.95
+grounding_source: 'VisionForge Unified composition chain. Sev 1 findings [1] and [4]:
+  13 wrong Leonardo filenames + 1 doubled prefix. Both phantom filename failures.
+  Both caught only by filesystem glob verification in Adversarial Critic pass. Combined:
+  two of three framework contributions silently absent from every session.'
+novelty_type: transferable_framework
+staleness_risk: stable
+importance: 4
+pinned: true
+accreted_in: '6.5'
+related:
+- wiki/infrastructure/flat-namespace-prefix-convention.md
+- wiki/orchestration/multi-framework-cp-composition.md
+- modules/07_critic_agent.md
+---
+
+# Adversarial Filename Audit as Mandatory Bundle Gate
 
 ## Pattern
 

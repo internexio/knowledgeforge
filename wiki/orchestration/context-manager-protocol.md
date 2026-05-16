@@ -1,27 +1,29 @@
-# Context-Manager Protocol
-
-```yaml
-metadata:
-  source_mode: synthesizer
-  source_session: redacted
-  created: "2026-04-29T00:00:00Z"
-  date: "2026-04-29"
-  confidence: 0.88
-  grounding_score: 0.88
-  grounding_source: "Two independent implementations observed: CCT's context-manager.md (repo-internal agent that opens with JSON state query before any output) and KF's own context-manager protocol (MemPalace Tier 3 retrieval at session start). Both solve the same problem — agent context amnesia in multi-agent workflows — via the same pattern: state query precedes task execution."
-  novelty_type: design_principle
-  staleness_risk: low
-  importance: 3
-  pinned: false
-  accreted_in: "6.5"
-  related:
-    - wiki/orchestration/schema-first-elicitation-order.md
-    - wiki/orchestration/multi-framework-cp-composition.md
-    - modules/01_kf_orchestrator.md
-    - modules/09_coordinator.md
-```
-
 ---
+title: Context-Manager Protocol
+source_mode: synthesizer
+source_session: redacted
+created: '2026-04-29T00:00:00Z'
+date: '2026-04-29'
+confidence: 0.88
+grounding_score: 0.88
+grounding_source: 'Two independent implementations observed: CCT''s context-manager.md
+  (repo-internal agent that opens with JSON state query before any output) and KF''s
+  own context-manager protocol (MemPalace Tier 3 retrieval at session start). Both
+  solve the same problem — agent context amnesia in multi-agent workflows — via the
+  same pattern: state query precedes task execution.'
+novelty_type: design_principle
+staleness_risk: low
+importance: 3
+pinned: false
+accreted_in: '6.5'
+related:
+- wiki/orchestration/schema-first-elicitation-order.md
+- wiki/orchestration/multi-framework-cp-composition.md
+- modules/01_kf_orchestrator.md
+- modules/09_coordinator.md
+---
+
+# Context-Manager Protocol
 
 ## Pattern
 

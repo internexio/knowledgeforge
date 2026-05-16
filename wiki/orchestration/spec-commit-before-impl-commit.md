@@ -1,26 +1,28 @@
-# Spec-Commit-Before-Impl-Commit: Decoupling Plan from Application
-
-```yaml
-metadata:
-  source_mode: coordinator
-  source_session: redacted
-  created: "2026-05-05T00:00:00Z"
-  date: "2026-05-05"
-  confidence: 0.80
-  grounding_score: 0.80
-  grounding_source: "Empirical: cos-bfm migration sequencing. First Studio apply of migration 071 failed; root cause diagnosed and migration revised. Because the codemod (impl) commit was already in the tree but had not yet been deployed, the revised migration could be re-applied without rewriting or re-running the codemod. The decoupling is what made just-in-time recovery possible."
-  novelty_type: process_pattern
-  staleness_risk: low
-  importance: 2
-  pinned: false
-  accreted_in: "6.x"
-  related:
-    - wiki/orchestration/codemod-driven-big-bang-rename.md
-    - modules/02_builder.md
-    - modules/05_debugger.md
-```
-
 ---
+title: 'Spec-Commit-Before-Impl-Commit: Decoupling Plan from Application'
+source_mode: coordinator
+source_session: redacted
+created: '2026-05-05T00:00:00Z'
+date: '2026-05-05'
+confidence: 0.8
+grounding_score: 0.8
+grounding_source: 'Empirical: cos-bfm migration sequencing. First Studio apply of
+  migration 071 failed; root cause diagnosed and migration revised. Because the codemod
+  (impl) commit was already in the tree but had not yet been deployed, the revised
+  migration could be re-applied without rewriting or re-running the codemod. The decoupling
+  is what made just-in-time recovery possible.'
+novelty_type: process_pattern
+staleness_risk: low
+importance: 2
+pinned: false
+accreted_in: 6.x
+related:
+- wiki/orchestration/codemod-driven-big-bang-rename.md
+- modules/02_builder.md
+- modules/05_debugger.md
+---
+
+# Spec-Commit-Before-Impl-Commit: Decoupling Plan from Application
 
 ## Pattern
 

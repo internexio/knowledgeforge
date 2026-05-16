@@ -1,26 +1,27 @@
-# KF Version-Gap Bridging via Adapter Classification
-
-```yaml
-metadata:
-  source_mode: synthesizer
-  source_session: redacted
-  created: "2026-04-21T00:00:00Z"
-  date: "2026-04-21"
-  confidence: 0.90
-  grounding_score: 0.90
-  grounding_source: "VisionForge Unified composition chain. COS Batch 8 (6 modules) initially flagged as high-probability duplicates. ERA revealed all 6 carry domain-specific additions. Module census reclassified all 6 as adapter. Adversarial Critic Sev 2 finding [7] confirmed the rescue."
-  novelty_type: transferable_framework
-  staleness_risk: low
-  importance: 3
-  pinned: false
-  accreted_in: "6.5"
-  related:
-    - wiki/orchestration/multi-framework-cp-composition.md
-    - modules/25_era.md
-    - modules/07_critic_agent.md
-```
-
 ---
+title: KF Version-Gap Bridging via Adapter Classification
+source_mode: synthesizer
+source_session: redacted
+created: '2026-04-21T00:00:00Z'
+date: '2026-04-21'
+confidence: 0.9
+grounding_score: 0.9
+grounding_source: VisionForge Unified composition chain. COS Batch 8 (6 modules) initially
+  flagged as high-probability duplicates. ERA revealed all 6 carry domain-specific
+  additions. Module census reclassified all 6 as adapter. Adversarial Critic Sev 2
+  finding [7] confirmed the rescue.
+novelty_type: transferable_framework
+staleness_risk: low
+importance: 3
+pinned: false
+accreted_in: '6.5'
+related:
+- wiki/orchestration/multi-framework-cp-composition.md
+- modules/25_era.md
+- modules/07_critic_agent.md
+---
+
+# KF Version-Gap Bridging via Adapter Classification
 
 ## Pattern
 

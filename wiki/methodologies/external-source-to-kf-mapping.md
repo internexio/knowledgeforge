@@ -1,33 +1,37 @@
-# External Source → KF Mapping (Practitioner-Guide-to-Spec Translation)
-
-```yaml
-metadata:
-  source_mode: expert_era
-  source_session: redacted
-  created: "2026-05-10T00:00:00Z"
-  date: "2026-05-10"
-  confidence: 0.75
-  grounding_score: 0.75
-  grounding_source: |
-    Stage 2 cascade — tool-calling-architecture-audit. Source: practitioner article
-    "The Roadmap to Mastering Tool Calling in AI Agents" (7-step guide). Each step
-    was mapped through KF abstractions (modes-as-tools, orchestrator-as-model,
-    chains-as-tool-calls) to surface architecture-level gaps. Translation
-    methodology generalized across 7 article principles → 9 KF patches.
-  source_fingerprint: "tool-calling-audit-track-c-era-3"
-  novelty_type: transferable_framework
-  staleness_risk: low
-  importance: 4
-  pinned: true
-  accreted_in: "7.2.0"
-  related:
-    - wiki/patterns/mode-variants-taxonomy.md
-    - wiki/diagnostics/handoff-payload-schema-gap.md
-    - wiki/architecture/scaffolding-vs-patching-pattern.md
-    - modules/25_entity_relationship_analysis.md
-```
-
 ---
+title: External Source → KF Mapping (Practitioner-Guide-to-Spec Translation)
+source_mode: expert_era
+source_session: redacted
+created: '2026-05-10T00:00:00Z'
+date: '2026-05-10'
+confidence: 0.75
+grounding_score: 0.75
+grounding_source: 'Stage 2 cascade — tool-calling-architecture-audit. Source: practitioner
+  article
+
+  "The Roadmap to Mastering Tool Calling in AI Agents" (7-step guide). Each step
+
+  was mapped through KF abstractions (modes-as-tools, orchestrator-as-model,
+
+  chains-as-tool-calls) to surface architecture-level gaps. Translation
+
+  methodology generalized across 7 article principles → 9 KF patches.
+
+  '
+source_fingerprint: tool-calling-audit-track-c-era-3
+novelty_type: transferable_framework
+staleness_risk: low
+importance: 4
+pinned: true
+accreted_in: 7.2.0
+related:
+- wiki/patterns/mode-variants-taxonomy.md
+- wiki/diagnostics/handoff-payload-schema-gap.md
+- wiki/architecture/scaffolding-vs-patching-pattern.md
+- modules/25_entity_relationship_analysis.md
+---
+
+# External Source → KF Mapping (Practitioner-Guide-to-Spec Translation)
 
 ## Methodology
 

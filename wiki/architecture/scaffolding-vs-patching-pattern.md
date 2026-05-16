@@ -1,34 +1,38 @@
-# Scaffolding vs. Patching: A Design Trajectory Pattern
-
-```yaml
-metadata:
-  source_mode: synthesizer
-  source_session: redacted
-  created: "2026-04-17T00:00:00Z"
-  date: "2026-04-17"
-  confidence: 0.85
-  grounding_score: 0.85
-  grounding_source: "Three-artifact triangulation: PAIR.AI strategy doc (Oct 2025), KF Module 14 (built ~Nov 2025), Sofroniew et al. Transformer Circuits (April 2026). Empirical mechanism evidence from the third."
-  source_fingerprint: "transformer-circuits-2026-emotions-sofroniew-et-al"
-  novelty_type: meta_pattern
-  staleness_risk: stable
-  importance: 4
-  pinned: true
-  accreted_in: "6.6.1"
-  promoted_to_core: "7.0.0"
-  citation: |
-    Sofroniew et al., "Emotion Concepts and their Function in a Large Language Model,"
-    Transformer Circuits Thread, April 2026.
-    https://transformer-circuits.pub/2026/emotions/index.html
-  related:
-    - wiki/architecture/neuro-symbolic-pattern-validation.md
-    - modules/02_builder.md        # PDIA tagging surfaces scaffolding tendencies at design time
-    - modules/07_critic_agent.md   # Linter variant should flag scaffolding patterns in module audits
-    - modules/14_metacognitive_monitor.md  # The surviving artifact of the emotion-engine reduction
-    - modules/21_knowledge_accretion.md    # Compile-query-enhance loop is itself a patching pattern
-```
-
 ---
+title: 'Scaffolding vs. Patching: A Design Trajectory Pattern'
+source_mode: synthesizer
+source_session: redacted
+created: '2026-04-17T00:00:00Z'
+date: '2026-04-17'
+confidence: 0.85
+grounding_score: 0.85
+grounding_source: 'Three-artifact triangulation: PAIR.AI strategy doc (Oct 2025),
+  KF Module 14 (built ~Nov 2025), Sofroniew et al. Transformer Circuits (April 2026).
+  Empirical mechanism evidence from the third.'
+source_fingerprint: transformer-circuits-2026-emotions-sofroniew-et-al
+novelty_type: meta_pattern
+staleness_risk: stable
+importance: 4
+pinned: true
+accreted_in: 6.6.1
+promoted_to_core: 7.0.0
+citation: 'Sofroniew et al., "Emotion Concepts and their Function in a Large Language
+  Model,"
+
+  Transformer Circuits Thread, April 2026.
+
+  https://transformer-circuits.pub/2026/emotions/index.html
+
+  '
+related:
+- wiki/architecture/neuro-symbolic-pattern-validation.md
+- modules/02_builder.md
+- modules/07_critic_agent.md
+- modules/14_metacognitive_monitor.md
+- modules/21_knowledge_accretion.md
+---
+
+# Scaffolding vs. Patching: A Design Trajectory Pattern
 
 ## Pattern
 

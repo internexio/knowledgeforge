@@ -1,26 +1,27 @@
-# Disambiguation Loop Hint Injection
-
-```yaml
-metadata:
-  source_mode: expert
-  source_session: redacted
-  created: "2026-04-23T00:00:00Z"
-  date: "2026-04-23"
-  confidence: 0.92
-  grounding_score: 0.92
-  grounding_source: "Direct read of modules/01_navigator.md v6.6.3, loop_detection block (lines 248-279, 460-464, 555-559). Module 16 circuit breaker consulted for contrast. Grep confirmed zero prior wiki matches on confusion-detection, loop-detection, framing-hint, or disambiguation-loop terms."
-  novelty_type: transferable_framework
-  staleness_risk: stable
-  importance: 3
-  pinned: false
-  accreted_in: "6.6.3"
-  related:
-    - modules/01_navigator.md
-    - modules/16_circuit_breaker.md
-    - wiki/architecture/scaffolding-vs-patching-pattern.md
-```
-
 ---
+title: Disambiguation Loop Hint Injection
+source_mode: expert
+source_session: redacted
+created: '2026-04-23T00:00:00Z'
+date: '2026-04-23'
+confidence: 0.92
+grounding_score: 0.92
+grounding_source: Direct read of modules/01_navigator.md v6.6.3, loop_detection block
+  (lines 248-279, 460-464, 555-559). Module 16 circuit breaker consulted for contrast.
+  Grep confirmed zero prior wiki matches on confusion-detection, loop-detection, framing-hint,
+  or disambiguation-loop terms.
+novelty_type: transferable_framework
+staleness_risk: stable
+importance: 3
+pinned: false
+accreted_in: 6.6.3
+related:
+- modules/01_navigator.md
+- modules/16_circuit_breaker.md
+- wiki/architecture/scaffolding-vs-patching-pattern.md
+---
+
+# Disambiguation Loop Hint Injection
 
 ## Pattern
 

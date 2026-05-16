@@ -1,34 +1,43 @@
-# Audit-Log Event Vocabularies — Read-Side Must Accept Routing-Suffixed Forms
-
-```yaml
-metadata:
-  title: Audit-log event vocabularies — read-side must accept routing-suffixed forms
-  source_mode: direct
-  source_session: redacted
-  created: "2026-05-11T00:00:00Z"
-  date: "2026-05-11"
-  confidence: 0.75
-  grounding_score: 0.75
-  grounding_source: |
-    Discovered during [project] Dreaming Tier 1 — Phase I8 (cycle orchestration).
-    Integration test `test_per_finding_duplicate_skipped` caught the mismatch at end-to-end stage.
-    Write side was emitting `filed_per_finding` events; read-side dedup logic only recognized bare `filed`.
-    Second cycle re-emitted the same finding because `is_active()` returned False.
-    Root cause verified: contract mismatch between write-side event naming and read-side state derivation.
-  novelty_type: new_pattern
-  staleness_risk: slow_decay
-  importance: 3
-  pinned: false
-  domain: patterns
-  topic: validation
-  tags: [grounding, quality-gate, adversarial]
-  accreted_in: "6.5"
-  related:
-    - modules/21_Knowledge_Accretion.md
-    - wiki/diagnostics/handoff-payload-schema-gap.md
-```
-
 ---
+title: Audit-log event vocabularies — read-side must accept routing-suffixed forms
+source_mode: direct
+source_session: redacted
+created: '2026-05-11T00:00:00Z'
+date: '2026-05-11'
+confidence: 0.75
+grounding_score: 0.75
+grounding_source: 'Discovered during [project] Dreaming Tier 1 — Phase I8 (cycle
+  orchestration).
+
+  Integration test `test_per_finding_duplicate_skipped` caught the mismatch at end-to-end
+  stage.
+
+  Write side was emitting `filed_per_finding` events; read-side dedup logic only recognized
+  bare `filed`.
+
+  Second cycle re-emitted the same finding because `is_active()` returned False.
+
+  Root cause verified: contract mismatch between write-side event naming and read-side
+  state derivation.
+
+  '
+novelty_type: new_pattern
+staleness_risk: slow_decay
+importance: 3
+pinned: false
+domain: patterns
+topic: validation
+tags:
+- grounding
+- quality-gate
+- adversarial
+accreted_in: '6.5'
+related:
+- modules/21_Knowledge_Accretion.md
+- wiki/diagnostics/handoff-payload-schema-gap.md
+---
+
+# Audit-Log Event Vocabularies — Read-Side Must Accept Routing-Suffixed Forms
 
 ## Pattern
 

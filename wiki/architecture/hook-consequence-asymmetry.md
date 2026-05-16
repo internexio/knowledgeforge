@@ -1,26 +1,28 @@
-# Hook Consequence Asymmetry
-
-```yaml
-metadata:
-  source_mode: synthesizer
-  source_session: redacted
-  created: "2026-04-29T00:00:00Z"
-  date: "2026-04-29"
-  confidence: 0.93
-  grounding_score: 0.93
-  grounding_source: "CCT triage of 72 hook files across 11 categories. Asymmetry observed from comparing security hooks (exit 2, friction-tolerant) against productivity hooks (exit 0, latency-sensitive). Cross-referenced against CCT anti-pattern: build-on-change.json (runs 8-minute COS Docker build on every file Edit) and plan-gate.json (blocks legitimate fixes when todo.md absent)."
-  novelty_type: design_principle
-  staleness_risk: stable
-  importance: 4
-  pinned: false
-  accreted_in: "6.5"
-  related:
-    - wiki/architecture/scaffolding-vs-patching-pattern.md
-    - wiki/architecture/skills-vs-agents-design-boundary.md
-    - modules/02_builder.md
-```
-
 ---
+title: Hook Consequence Asymmetry
+source_mode: synthesizer
+source_session: redacted
+created: '2026-04-29T00:00:00Z'
+date: '2026-04-29'
+confidence: 0.93
+grounding_score: 0.93
+grounding_source: 'CCT triage of 72 hook files across 11 categories. Asymmetry observed
+  from comparing security hooks (exit 2, friction-tolerant) against productivity hooks
+  (exit 0, latency-sensitive). Cross-referenced against CCT anti-pattern: build-on-change.json
+  (runs 8-minute COS Docker build on every file Edit) and plan-gate.json (blocks legitimate
+  fixes when todo.md absent).'
+novelty_type: design_principle
+staleness_risk: stable
+importance: 4
+pinned: false
+accreted_in: '6.5'
+related:
+- wiki/architecture/scaffolding-vs-patching-pattern.md
+- wiki/architecture/skills-vs-agents-design-boundary.md
+- modules/02_builder.md
+---
+
+# Hook Consequence Asymmetry
 
 ## Pattern
 

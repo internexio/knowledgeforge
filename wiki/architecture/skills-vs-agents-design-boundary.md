@@ -1,26 +1,28 @@
-# Skills vs. Agents Design Boundary
-
-```yaml
-metadata:
-  source_mode: synthesizer
-  source_session: redacted
-  created: "2026-04-29T00:00:00Z"
-  date: "2026-04-29"
-  confidence: 0.91
-  grounding_score: 0.91
-  grounding_source: "CCT triage of 422 agents + skill files in davila7/claude-code-templates. Design boundary observed from systematic misclassification: context-manager (state service) placed in agents/; code-formatter (deterministic tool) placed in skills/; hook behaviors placed in neither. Cross-referenced against KF's own agent/skill/hook taxonomy."
-  novelty_type: transferable_framework
-  staleness_risk: stable
-  importance: 4
-  pinned: false
-  accreted_in: "6.5"
-  related:
-    - wiki/architecture/scaffolding-vs-patching-pattern.md
-    - modules/02_builder.md
-    - modules/01_kf_orchestrator.md
-```
-
 ---
+title: Skills vs. Agents Design Boundary
+source_mode: synthesizer
+source_session: redacted
+created: '2026-04-29T00:00:00Z'
+date: '2026-04-29'
+confidence: 0.91
+grounding_score: 0.91
+grounding_source: 'CCT triage of 422 agents + skill files in davila7/claude-code-templates.
+  Design boundary observed from systematic misclassification: context-manager (state
+  service) placed in agents/; code-formatter (deterministic tool) placed in skills/;
+  hook behaviors placed in neither. Cross-referenced against KF''s own agent/skill/hook
+  taxonomy.'
+novelty_type: transferable_framework
+staleness_risk: stable
+importance: 4
+pinned: false
+accreted_in: '6.5'
+related:
+- wiki/architecture/scaffolding-vs-patching-pattern.md
+- modules/02_builder.md
+- modules/01_kf_orchestrator.md
+---
+
+# Skills vs. Agents Design Boundary
 
 ## Pattern
 

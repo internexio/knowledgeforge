@@ -1,32 +1,32 @@
-# Imagination as Suppression: New Evidence for the Patching Principle
-
-```yaml
-metadata:
-  source_mode: expert
-  source_session: redacted
-  created: "2026-04-23T00:00:00Z"
-  confidence: 0.55
-  grounding_score: 0.55
-  grounding_source: "Single primary paper presenting a hypothesis, not replicated consensus. Convergent with three independent KF observations (patching principle, Module 18 inhibition mechanics, Leonardo anti-cliché prevention-first). Convergence is the evidence; promote score if replication emerges."
-  source_fingerprint: "ng-et-al-2026-spontaneous-activity-reshaping-hypothesis"
-  # schema-note: novelty_type value 'new_evidence_for_existing_pattern' is new — prior entries
-  # use 'meta_pattern' and 'reusable_analysis'. Added here to distinguish entries that extend
-  # an existing Tier 0 entry vs. entries that establish a new pattern from scratch.
-  novelty_type: new_evidence_for_existing_pattern
-  staleness_risk: stable
-  importance: 3
-  pinned: false
-  accreted_in: "7.1.0"
-  citation: |
-    Ng et al. (2026), "Spontaneous Activity Reshaping Hypothesis."
-    Psychological Review.
-  related:
-    - wiki/architecture/scaffolding-vs-patching-pattern.md
-    - modules/18_salience_allocation.md
-    - modules/21_knowledge_accretion.md
-```
-
 ---
+title: 'Imagination as Suppression: New Evidence for the Patching Principle'
+source_mode: expert
+source_session: redacted
+created: '2026-04-23T00:00:00Z'
+confidence: 0.55
+grounding_score: 0.55
+grounding_source: Single primary paper presenting a hypothesis, not replicated consensus.
+  Convergent with three independent KF observations (patching principle, Module 18
+  inhibition mechanics, Leonardo anti-cliché prevention-first). Convergence is the
+  evidence; promote score if replication emerges.
+source_fingerprint: ng-et-al-2026-spontaneous-activity-reshaping-hypothesis
+novelty_type: new_evidence_for_existing_pattern
+staleness_risk: stable
+importance: 3
+pinned: false
+accreted_in: 7.1.0
+citation: 'Ng et al. (2026), "Spontaneous Activity Reshaping Hypothesis."
+
+  Psychological Review.
+
+  '
+related:
+- wiki/architecture/scaffolding-vs-patching-pattern.md
+- modules/18_salience_allocation.md
+- modules/21_knowledge_accretion.md
+---
+
+# Imagination as Suppression: New Evidence for the Patching Principle
 
 ## Core Claim
 

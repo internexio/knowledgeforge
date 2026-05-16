@@ -1,26 +1,29 @@
-# Big-Bang Rename Playbook: Supabase + FastAPI + React Stack
-
-```yaml
-metadata:
-  source_mode: synthesizer
-  source_session: redacted
-  created: "2026-05-08T20:00:00Z"
-  date: "2026-05-08"
-  confidence: 0.95
-  grounding_score: 0.95
-  grounding_source: "Empirical execution of cos-bfm migration: 13 Postgres tables, 12 RLS policies, 1 view, 1 function, ~50 backend files, ~30 frontend files. Single-transaction big-bang rename applied to shared Supabase project (enjuizlqazkuxpdwxhvk) covering both staging and production. Adversarial audit batch (cos-acr) ran post-deploy and surfaced two playbook gaps fixed inline (.15 idempotent rename + .16 IVFFLAT memory tuning)."
-  novelty_type: transferable_framework
-  staleness_risk: stable
-  importance: 4
-  pinned: false
-  accreted_in: "6.5"
-  related:
-    - wiki/orchestration/codemod-driven-big-bang-rename.md  # When to choose big-bang (decision framework). This entry covers HOW once chosen.
-    - wiki/infrastructure/flat-namespace-prefix-convention.md
-    - wiki/architecture/scaffolding-vs-patching-pattern.md
-```
-
 ---
+title: 'Big-Bang Rename Playbook: Supabase + FastAPI + React Stack'
+source_mode: synthesizer
+source_session: redacted
+created: '2026-05-08T20:00:00Z'
+date: '2026-05-08'
+confidence: 0.95
+grounding_score: 0.95
+grounding_source: 'Empirical execution of cos-bfm migration: 13 Postgres tables, 12
+  RLS policies, 1 view, 1 function, ~50 backend files, ~30 frontend files. Single-transaction
+  big-bang rename applied to shared Supabase project (enjuizlqazkuxpdwxhvk) covering
+  both staging and production. Adversarial audit batch (cos-acr) ran post-deploy and
+  surfaced two playbook gaps fixed inline (.15 idempotent rename + .16 IVFFLAT memory
+  tuning).'
+novelty_type: transferable_framework
+staleness_risk: stable
+importance: 4
+pinned: false
+accreted_in: '6.5'
+related:
+- wiki/orchestration/codemod-driven-big-bang-rename.md
+- wiki/infrastructure/flat-namespace-prefix-convention.md
+- wiki/architecture/scaffolding-vs-patching-pattern.md
+---
+
+# Big-Bang Rename Playbook: Supabase + FastAPI + React Stack
 
 ## Companion entry
 

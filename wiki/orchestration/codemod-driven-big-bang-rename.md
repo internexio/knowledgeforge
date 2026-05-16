@@ -1,27 +1,29 @@
-# Codemod-Driven Big-Bang Rename: Phase-0-Gated Migration Pattern
-
-```yaml
-metadata:
-  source_mode: coordinator
-  source_session: redacted
-  created: "2026-05-05T00:00:00Z"
-  date: "2026-05-05"
-  confidence: 0.85
-  grounding_score: 0.85
-  grounding_source: "Empirical: cos-bfm migration applied to staging end-to-end. 13 tables + 39 indexes + 12 RLS policies + 1 view + 1 function renamed in single transaction; codemod applied across two repo worktrees; all 8/8 validation gates passed. Phase 0 inventory found 0 user-data rows + 0 API traffic in 14d, validating big-bang strategy choice."
-  novelty_type: process_pattern
-  staleness_risk: low
-  importance: 3
-  pinned: false
-  accreted_in: "6.x"
-  related:
-    - wiki/migrations/big-bang-rename-supabase-fastapi-react.md  # Execution playbook (filed post-deploy 2026-05-08; gotchas + SQL patterns)
-    - wiki/orchestration/spec-commit-before-impl-commit.md
-    - modules/02_builder.md
-    - modules/06_coordinator.md
-```
-
 ---
+title: 'Codemod-Driven Big-Bang Rename: Phase-0-Gated Migration Pattern'
+source_mode: coordinator
+source_session: redacted
+created: '2026-05-05T00:00:00Z'
+date: '2026-05-05'
+confidence: 0.85
+grounding_score: 0.85
+grounding_source: 'Empirical: cos-bfm migration applied to staging end-to-end. 13
+  tables + 39 indexes + 12 RLS policies + 1 view + 1 function renamed in single transaction;
+  codemod applied across two repo worktrees; all 8/8 validation gates passed. Phase
+  0 inventory found 0 user-data rows + 0 API traffic in 14d, validating big-bang strategy
+  choice.'
+novelty_type: process_pattern
+staleness_risk: low
+importance: 3
+pinned: false
+accreted_in: 6.x
+related:
+- wiki/migrations/big-bang-rename-supabase-fastapi-react.md
+- wiki/orchestration/spec-commit-before-impl-commit.md
+- modules/02_builder.md
+- modules/06_coordinator.md
+---
+
+# Codemod-Driven Big-Bang Rename: Phase-0-Gated Migration Pattern
 
 ## Pattern
 

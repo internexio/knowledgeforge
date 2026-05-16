@@ -1,31 +1,32 @@
-# Three-Framework CP Composition Template
-
-```yaml
-metadata:
-  source_mode: synthesizer
-  source_session: redacted
-  created: "2026-04-21T00:00:00Z"
-  date: "2026-04-21"
-  confidence: 0.90
-  grounding_score: 0.90
-  grounding_source: "VisionForge Unified composition chain (chain-log/00 through 06-accretion-candidates.md). ERA identified 6 implicit contracts, 5 coupling hotspots, 6 failure modes before first bundle file written. Adversarial Critic found 13 wrong Leonardo filenames — a finding that would have been Step 4 if ERA had included filename verification."
-  novelty_type: transferable_framework
-  staleness_risk: stable
-  importance: 4
-  pinned: false
-  accreted_in: "6.5"
-  related:
-    - wiki/orchestration/kf-version-gap-bridging.md
-    - wiki/orchestration/adversarial-filename-audit.md
-    - wiki/orchestration/schema-first-elicitation-order.md
-    - wiki/infrastructure/flat-namespace-prefix-convention.md
-    - modules/25_era.md
-    - modules/02_builder.md
-    - modules/07_critic_agent.md
-    - modules/10_strategist.md
-```
-
 ---
+title: Three-Framework CP Composition Template
+source_mode: synthesizer
+source_session: redacted
+created: '2026-04-21T00:00:00Z'
+date: '2026-04-21'
+confidence: 0.9
+grounding_score: 0.9
+grounding_source: VisionForge Unified composition chain (chain-log/00 through 06-accretion-candidates.md).
+  ERA identified 6 implicit contracts, 5 coupling hotspots, 6 failure modes before
+  first bundle file written. Adversarial Critic found 13 wrong Leonardo filenames
+  — a finding that would have been Step 4 if ERA had included filename verification.
+novelty_type: transferable_framework
+staleness_risk: stable
+importance: 4
+pinned: false
+accreted_in: '6.5'
+related:
+- wiki/orchestration/kf-version-gap-bridging.md
+- wiki/orchestration/adversarial-filename-audit.md
+- wiki/orchestration/schema-first-elicitation-order.md
+- wiki/infrastructure/flat-namespace-prefix-convention.md
+- modules/25_era.md
+- modules/02_builder.md
+- modules/07_critic_agent.md
+- modules/10_strategist.md
+---
+
+# Three-Framework CP Composition Template
 
 ## Pattern
 

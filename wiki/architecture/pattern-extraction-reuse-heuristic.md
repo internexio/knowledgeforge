@@ -1,27 +1,27 @@
-# Pattern Extraction & Reuse Heuristic — Agent Architecture Patterns
-
-```yaml
-metadata:
-  source_mode: expert → critic → strategist
-  source_session: redacted
-  created: "2026-04-18T00:00:00Z"
-  date: "2026-04-18"
-  confidence: 0.90
-  grounding_score: 0.90
-  grounding_source: "Full source read of AllOfUs repo (src/agent.ts, dev-keys/src/*) + scan of 5 recent ~/Scripts/ projects (agi, visionforge, hinotes, partnership, knowledgeforge-core). Adversarial critic pass surfaced 6 High/Critical findings."
-  novelty_type: transferable_framework
-  staleness_risk: stable
-  importance: 4
-  pinned: false
-  accreted_in: "6.5"
-  related:
-    - modules/02_builder.md
-    - modules/07_critic_agent.md
-    - modules/21_knowledge_accretion.md
-    - wiki/architecture/scaffolding-vs-patching-pattern.md
-```
-
 ---
+title: Pattern Extraction & Reuse Heuristic — Agent Architecture Patterns
+source_mode: expert → critic → strategist
+source_session: redacted
+created: '2026-04-18T00:00:00Z'
+date: '2026-04-18'
+confidence: 0.9
+grounding_score: 0.9
+grounding_source: Full source read of AllOfUs repo (src/agent.ts, dev-keys/src/*)
+  + scan of 5 recent ~/Scripts/ projects (agi, visionforge, hinotes, partnership,
+  knowledgeforge-core). Adversarial critic pass surfaced 6 High/Critical findings.
+novelty_type: transferable_framework
+staleness_risk: stable
+importance: 4
+pinned: false
+accreted_in: '6.5'
+related:
+- modules/02_builder.md
+- modules/07_critic_agent.md
+- modules/21_knowledge_accretion.md
+- wiki/architecture/scaffolding-vs-patching-pattern.md
+---
+
+# Pattern Extraction & Reuse Heuristic — Agent Architecture Patterns
 
 ## The Heuristic
 

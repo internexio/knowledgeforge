@@ -1,26 +1,27 @@
-# Flat-Namespace Prefix Convention for Subdirectory-Free Environments
-
-```yaml
-metadata:
-  source_mode: synthesizer
-  source_session: redacted
-  created: "2026-04-21T00:00:00Z"
-  date: "2026-04-21"
-  confidence: 0.92
-  grounding_score: 0.92
-  grounding_source: "VisionForge Unified composition chain. 13 wrong Leonardo filenames in CLAUDE.md (Sev 1 finding [4]) and doubled-prefix typo brand-brand-schema.md (Sev 1 finding [1]) both traced directly to retroactive renaming under flat-file constraint discovered late. VisionForge CLAUDE.md carries bolded warning added reactively."
-  novelty_type: transferable_framework
-  staleness_risk: stable
-  importance: 4
-  pinned: false
-  accreted_in: "6.5"
-  related:
-    - wiki/orchestration/adversarial-filename-audit.md
-    - wiki/orchestration/multi-framework-cp-composition.md
-    - modules/02_builder.md
-```
-
 ---
+title: Flat-Namespace Prefix Convention for Subdirectory-Free Environments
+source_mode: synthesizer
+source_session: redacted
+created: '2026-04-21T00:00:00Z'
+date: '2026-04-21'
+confidence: 0.92
+grounding_score: 0.92
+grounding_source: VisionForge Unified composition chain. 13 wrong Leonardo filenames
+  in CLAUDE.md (Sev 1 finding [4]) and doubled-prefix typo brand-brand-schema.md (Sev
+  1 finding [1]) both traced directly to retroactive renaming under flat-file constraint
+  discovered late. VisionForge CLAUDE.md carries bolded warning added reactively.
+novelty_type: transferable_framework
+staleness_risk: stable
+importance: 4
+pinned: false
+accreted_in: '6.5'
+related:
+- wiki/orchestration/adversarial-filename-audit.md
+- wiki/orchestration/multi-framework-cp-composition.md
+- modules/02_builder.md
+---
+
+# Flat-Namespace Prefix Convention for Subdirectory-Free Environments
 
 ## Pattern
 

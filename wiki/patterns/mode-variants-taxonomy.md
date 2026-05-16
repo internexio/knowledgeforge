@@ -1,34 +1,37 @@
-# Mode-Label-with-Variants Taxonomy
-
-```yaml
-metadata:
-  source_mode: expert_era
-  source_session: redacted
-  created: "2026-05-10T00:00:00Z"
-  date: "2026-05-10"
-  confidence: 0.85
-  grounding_score: 0.85
-  grounding_source: |
-    Stage 2 ERA finding F1 (chain-log-01-tool-calling §F1). Mechanically derived from
-    enumerating Critic and Expert trigger-phrase tables and observing 4 distinct
-    output formats per mode label, distinguished only by trigger phrase + chain
-    context. Variant-level disaggregation makes mode-selection accuracy meaningful.
-  source_fingerprint: "tool-calling-audit-track-c-era-f1"
-  novelty_type: new_pattern
-  staleness_risk: low
-  importance: 4
-  pinned: true
-  accreted_in: "7.2.0"
-  related:
-    - modules/05_expert_agent.md
-    - modules/07_critic_agent.md
-    - modules/04_specification_templates.md
-    - modules/16_operational_bounds.md
-    - wiki/diagnostics/handoff-payload-schema-gap.md
-    - wiki/methodologies/external-source-to-kf-mapping.md
-```
-
 ---
+title: Mode-Label-with-Variants Taxonomy
+source_mode: expert_era
+source_session: redacted
+created: '2026-05-10T00:00:00Z'
+date: '2026-05-10'
+confidence: 0.85
+grounding_score: 0.85
+grounding_source: 'Stage 2 ERA finding F1 (chain-log-01-tool-calling §F1). Mechanically
+  derived from
+
+  enumerating Critic and Expert trigger-phrase tables and observing 4 distinct
+
+  output formats per mode label, distinguished only by trigger phrase + chain
+
+  context. Variant-level disaggregation makes mode-selection accuracy meaningful.
+
+  '
+source_fingerprint: tool-calling-audit-track-c-era-f1
+novelty_type: new_pattern
+staleness_risk: low
+importance: 4
+pinned: true
+accreted_in: 7.2.0
+related:
+- modules/05_expert_agent.md
+- modules/07_critic_agent.md
+- modules/04_specification_templates.md
+- modules/16_operational_bounds.md
+- wiki/diagnostics/handoff-payload-schema-gap.md
+- wiki/methodologies/external-source-to-kf-mapping.md
+---
+
+# Mode-Label-with-Variants Taxonomy
 
 ## Pattern
 

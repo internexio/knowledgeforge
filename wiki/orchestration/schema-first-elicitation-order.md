@@ -1,27 +1,29 @@
-# Schema-First Elicitation Authorship Order
-
-```yaml
-metadata:
-  source_mode: synthesizer
-  source_session: redacted
-  created: "2026-04-21T00:00:00Z"
-  date: "2026-04-21"
-  confidence: 0.92
-  grounding_score: 0.92
-  grounding_source: "VisionForge Unified composition chain. Sev 1 finding [2]: grep confirmed behavioral_signals, problem_statement, desired_state, acceptance_criteria all had zero matches in wf-elicitation.md. Field name mismatch (demographic_signals vs behavioral_signals) was the mechanism. Every brief exits elicitation failing the completeness gate."
-  novelty_type: transferable_framework
-  staleness_risk: stable
-  importance: 4
-  pinned: false
-  accreted_in: "6.5"
-  related:
-    - wiki/orchestration/multi-framework-cp-composition.md
-    - wiki/orchestration/adversarial-filename-audit.md
-    - modules/02_builder.md
-    - modules/07_critic_agent.md
-```
-
 ---
+title: Schema-First Elicitation Authorship Order
+source_mode: synthesizer
+source_session: redacted
+created: '2026-04-21T00:00:00Z'
+date: '2026-04-21'
+confidence: 0.92
+grounding_score: 0.92
+grounding_source: 'VisionForge Unified composition chain. Sev 1 finding [2]: grep
+  confirmed behavioral_signals, problem_statement, desired_state, acceptance_criteria
+  all had zero matches in wf-elicitation.md. Field name mismatch (demographic_signals
+  vs behavioral_signals) was the mechanism. Every brief exits elicitation failing
+  the completeness gate.'
+novelty_type: transferable_framework
+staleness_risk: stable
+importance: 4
+pinned: false
+accreted_in: '6.5'
+related:
+- wiki/orchestration/multi-framework-cp-composition.md
+- wiki/orchestration/adversarial-filename-audit.md
+- modules/02_builder.md
+- modules/07_critic_agent.md
+---
+
+# Schema-First Elicitation Authorship Order
 
 ## Pattern
 

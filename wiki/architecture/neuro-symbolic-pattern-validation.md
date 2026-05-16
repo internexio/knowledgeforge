@@ -1,29 +1,37 @@
-# Neuro-Symbolic Architecture Validation
-
-```yaml
-metadata:
-  source_mode: expert
-  source_session: redacted
-  created: "2026-04-07T00:00:00Z"
-  confidence: 0.85
-  grounding_score: 0.80
-  grounding_source: "Paper verified 2026-04-19 via HRI Lab page and project site. Main findings confirmed: ~2.8x success, ~100x energy, generalization to unseen variants. One claim (50 demos vs 300) could not be verified from public sources — PDF binary, not parsed."
-  verification_status: verified_partial
-  novelty_type: reusable_analysis
-  staleness_risk: stable
-  importance: 4
-  pinned: false
-  accreted_in: "6.4.0"
-  citation: |
-    Duggan et al., "The Price Is Not Right: Neuro-Symbolic Methods Outperform VLAs on
-    Structured Long-Horizon Manipulation Tasks with Significantly Lower Energy Consumption."
-    ICRA 2026. Tufts HRI Lab.
-    https://hrilab.tufts.edu/publications/dugganetal26icra/
-    PDF: https://hrilab.tufts.edu/publications/dugganetal26icra.pdf
-    Project: https://price-is-not-right.github.io
-```
-
 ---
+title: Neuro-Symbolic Architecture Validation
+source_mode: expert
+source_session: redacted
+created: '2026-04-07T00:00:00Z'
+confidence: 0.85
+grounding_score: 0.8
+grounding_source: 'Paper verified 2026-04-19 via HRI Lab page and project site. Main
+  findings confirmed: ~2.8x success, ~100x energy, generalization to unseen variants.
+  One claim (50 demos vs 300) could not be verified from public sources — PDF binary,
+  not parsed.'
+verification_status: verified_partial
+novelty_type: reusable_analysis
+staleness_risk: stable
+importance: 4
+pinned: false
+accreted_in: 6.4.0
+citation: 'Duggan et al., "The Price Is Not Right: Neuro-Symbolic Methods Outperform
+  VLAs on
+
+  Structured Long-Horizon Manipulation Tasks with Significantly Lower Energy Consumption."
+
+  ICRA 2026. Tufts HRI Lab.
+
+  https://hrilab.tufts.edu/publications/dugganetal26icra/
+
+  PDF: https://hrilab.tufts.edu/publications/dugganetal26icra.pdf
+
+  Project: https://price-is-not-right.github.io
+
+  '
+---
+
+# Neuro-Symbolic Architecture Validation
 
 ## Pattern
 

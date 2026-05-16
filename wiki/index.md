@@ -1,9 +1,15 @@
+---
+title: Wiki Index
+type: index
+---
+
 # Wiki Index
 
 ## Entries by Category
 
 ### Patterns
 
+- [2026-05-15] REST client tolerance — distinguish 200 OK from 201 Created — new_pattern — `patterns/2026-05-15_rest-client-tolerance-http-status.md`
 - [2026-05-14] Claude CLI Subscription Subprocess Context Trim — cwd + --setting-sources — reusable_diagnostic — `patterns/2026-05-14_claude-cli-subscription-subprocess-context-trim.md`
 - [2026-05-14] Claude CLI structured-output vs result routing — json-schema callers must check structured_output first — reusable_diagnostic — `patterns/2026-05-14_claude-cli-structured-output-vs-result-routing.md`
 - [2026-05-14] Collapse N-useState chorus into discriminated union + reducer — new_pattern — `patterns/2026-05-14_collapse-usestate-discriminated-union-reducer.md`
@@ -55,6 +61,7 @@
 
 ### Infrastructure
 
+- [2026-05-15] Silent-success scripts — monitor by state artifact, not log file — reusable_diagnostic — `infrastructure/2026-05-15_silent-success-scripts-state-artifact-freshness.md`
 - [2026-05-14] Claude CLI --bare disables OAuth/keychain — subscription-billed subprocess workers must omit it — reusable_diagnostic — `infrastructure/2026-05-14_claude-cli-bare-disables-oauth-keychain-auth.md`
 - [2026-05-14] File-based timer-poll pattern for deferred async acknowledgement — transferable_framework — `infrastructure/2026-05-14_file-based-timer-poll-deferred-ack-semantics.md`
 - [2026-05-14] Self-identity-minting CLI flag for cron-scheduled workers — new_pattern — `infrastructure/2026-05-14_self-identity-minting-cli-flag-cron-workers.md`
@@ -79,6 +86,7 @@
 
 ### Diagnostics
 
+- [2026-05-15] Check exit code before parsing CLI output — failures emit help that greedy-matches success regexes — reusable_diagnostic — `diagnostics/2026-05-15_check-exit-code-before-cli-output-parsing.md`
 - [2026-05-13] PostgREST or_() filter-injection — sanitize free-text before interpolation — reusable_diagnostic — `diagnostics/2026-05-13_postgrest-or-filter-injection-sanitize-freetext.md`
 - [2026-05-13] Asymmetric write-time guard coverage across parallel write paths — reusable_diagnostic — `diagnostics/2026-05-13_asymmetric-write-time-guard-coverage.md`
 - [2026-05-13] bd search idempotency grep trap — match `^Found` header, not query string — reusable_diagnostic — `diagnostics/2026-05-13_bd-search-idempotency-grep-trap.md`
@@ -107,9 +115,9 @@
 
 ## Index Stats
 
-- **Total entries:** 73
-- **Entry types:** new_pattern (33), transferable_framework (14), reusable_diagnostic (24), template_candidate (1), emerging_pattern (1)
-- **Domains:** patterns (21), architecture (8), orchestration (10), infrastructure (15), compiler (3), diagnostics (9), methodologies (6), migrations (1)
+- **Total entries:** 76
+- **Entry types:** new_pattern (34), transferable_framework (14), reusable_diagnostic (26), template_candidate (1), emerging_pattern (1)
+- **Domains:** patterns (22), architecture (8), orchestration (10), infrastructure (16), compiler (3), diagnostics (10), methodologies (6), migrations (1)
 - **Avg grounding score:** 0.85 (across grounded entries)
-- **Staleness risk distribution:** stable (71), slow_decay (2), fast_decay (1)
+- **Staleness risk distribution:** stable (74), slow_decay (2), fast_decay (1)
 

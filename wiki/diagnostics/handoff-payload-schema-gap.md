@@ -1,33 +1,37 @@
-# Handoff Payload Schema Gap (ERA Diagnostic Category)
-
-```yaml
-metadata:
-  source_mode: expert_era
-  source_session: redacted
-  created: "2026-05-10T00:00:00Z"
-  date: "2026-05-10"
-  confidence: 0.80
-  grounding_score: 0.80
-  grounding_source: |
-    Stage 2 ERA finding F2 (chain-log-01-tool-calling §F2). 8 active mode-to-mode
-    handoff edges audited; 0 had formal payload_schema, 0 had formal fallback_path,
-    0 had formal validation_checks. All eight surfaced the same gap class.
-    Resolution patches (Module 04 Handoff_Contract entity, Module 03 registry)
-    closed the gap without breaking changes.
-  source_fingerprint: "tool-calling-audit-track-c-era-f2"
-  novelty_type: reusable_diagnostic
-  staleness_risk: low
-  importance: 3
-  pinned: false
-  accreted_in: "7.2.0"
-  related:
-    - modules/04_specification_templates.md
-    - modules/03_coordination_patterns.md
-    - wiki/patterns/mode-variants-taxonomy.md
-    - wiki/methodologies/external-source-to-kf-mapping.md
-```
-
 ---
+title: Handoff Payload Schema Gap (ERA Diagnostic Category)
+source_mode: expert_era
+source_session: redacted
+created: '2026-05-10T00:00:00Z'
+date: '2026-05-10'
+confidence: 0.8
+grounding_score: 0.8
+grounding_source: 'Stage 2 ERA finding F2 (chain-log-01-tool-calling §F2). 8 active
+  mode-to-mode
+
+  handoff edges audited; 0 had formal payload_schema, 0 had formal fallback_path,
+
+  0 had formal validation_checks. All eight surfaced the same gap class.
+
+  Resolution patches (Module 04 Handoff_Contract entity, Module 03 registry)
+
+  closed the gap without breaking changes.
+
+  '
+source_fingerprint: tool-calling-audit-track-c-era-f2
+novelty_type: reusable_diagnostic
+staleness_risk: low
+importance: 3
+pinned: false
+accreted_in: 7.2.0
+related:
+- modules/04_specification_templates.md
+- modules/03_coordination_patterns.md
+- wiki/patterns/mode-variants-taxonomy.md
+- wiki/methodologies/external-source-to-kf-mapping.md
+---
+
+# Handoff Payload Schema Gap (ERA Diagnostic Category)
 
 ## Diagnostic
 
