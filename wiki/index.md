@@ -9,6 +9,7 @@ type: index
 
 ### Patterns
 
+- [2026-05-15] Post-deliberation per-entity aggregation pattern (synthesizer pass) — new_pattern — `patterns/2026-05-15_post-deliberation-per-entity-aggregation-pattern.md`
 - [2026-05-15] REST client tolerance — distinguish 200 OK from 201 Created — new_pattern — `patterns/2026-05-15_rest-client-tolerance-http-status.md`
 - [2026-05-14] Claude CLI Subscription Subprocess Context Trim — cwd + --setting-sources — reusable_diagnostic — `patterns/2026-05-14_claude-cli-subscription-subprocess-context-trim.md`
 - [2026-05-14] Claude CLI structured-output vs result routing — json-schema callers must check structured_output first — reusable_diagnostic — `patterns/2026-05-14_claude-cli-structured-output-vs-result-routing.md`
@@ -61,6 +62,7 @@ type: index
 
 ### Infrastructure
 
+- [2026-05-15] Realigning diverged git remotes via content-equivalence check + force-push — reusable_diagnostic — `infrastructure/2026-05-15_diverged-git-remotes-content-equivalence-realign.md`
 - [2026-05-15] Silent-success scripts — monitor by state artifact, not log file — reusable_diagnostic — `infrastructure/2026-05-15_silent-success-scripts-state-artifact-freshness.md`
 - [2026-05-14] Claude CLI --bare disables OAuth/keychain — subscription-billed subprocess workers must omit it — reusable_diagnostic — `infrastructure/2026-05-14_claude-cli-bare-disables-oauth-keychain-auth.md`
 - [2026-05-14] File-based timer-poll pattern for deferred async acknowledgement — transferable_framework — `infrastructure/2026-05-14_file-based-timer-poll-deferred-ack-semantics.md`
@@ -99,6 +101,7 @@ type: index
 
 ### Methodologies
 
+- [2026-05-15] Pre-emptive scope sweep of downstream tasks after a strategic verdict supersedes them — transferable_framework — `methodologies/2026-05-15_pre-emptive-scope-sweep-downstream-verdict.md`
 - [2026-05-15] Two-call Anthropic cache prefix verification — synthetic probe before shipping cached prompts — reusable_diagnostic — `methodologies/2026-05-15_two-call-anthropic-cache-prefix-verification.md`
 - [2026-05-14] Structural-invariant acceptance over wall-clock measurement on stubbed code paths — transferable_framework — `methodologies/2026-05-14_structural-invariant-acceptance-over-wall-clock-stubbed-paths.md`
 - [2026-05-14] Healthy-system gate trap — failure-mode thresholds never trip in working systems — reusable_diagnostic — `methodologies/2026-05-14_healthy-system-gate-trap-empirical-thresholds.md`
@@ -115,9 +118,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 76
-- **Entry types:** new_pattern (34), transferable_framework (14), reusable_diagnostic (26), template_candidate (1), emerging_pattern (1)
-- **Domains:** patterns (22), architecture (8), orchestration (10), infrastructure (16), compiler (3), diagnostics (10), methodologies (6), migrations (1)
+- **Total entries:** 79
+- **Entry types:** new_pattern (35), transferable_framework (15), reusable_diagnostic (27), template_candidate (1), emerging_pattern (1)
+- **Domains:** patterns (23), architecture (8), orchestration (10), infrastructure (17), compiler (3), diagnostics (10), methodologies (7), migrations (1)
 - **Avg grounding score:** 0.85 (across grounded entries)
-- **Staleness risk distribution:** stable (74), slow_decay (2), fast_decay (1)
+- **Staleness risk distribution:** stable (77), slow_decay (2), fast_decay (1)
 
