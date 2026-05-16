@@ -9,6 +9,7 @@ type: index
 
 ### Patterns
 
+- [2026-05-16] Extending a discriminated enum across the full stack — 7-point checklist — transferable_framework — `patterns/2026-05-16_discriminated-enum-extension-7-point-checklist.md`
 - [2026-05-16] Migrating Zustand toggle-state to URL routing for deep-linkable views — transferable_framework — `patterns/2026-05-16_zustand-toggle-to-url-routing-migration.md`
 - [2026-05-15] Post-deliberation per-entity aggregation pattern (synthesizer pass) — new_pattern — `patterns/2026-05-15_post-deliberation-per-entity-aggregation-pattern.md`
 - [2026-05-15] REST client tolerance — distinguish 200 OK from 201 Created — new_pattern — `patterns/2026-05-15_rest-client-tolerance-http-status.md`
@@ -102,6 +103,7 @@ type: index
 
 ### Methodologies
 
+- [2026-05-16] Surviving an upstream-noise flood in the issue tracker — close-with-source-pointer, accept recurring waves — transferable_framework — `methodologies/2026-05-16_upstream-noise-flood-bulk-close-source-pointer.md`
 - [2026-05-15] Pre-emptive scope sweep of downstream tasks after a strategic verdict supersedes them — transferable_framework — `methodologies/2026-05-15_pre-emptive-scope-sweep-downstream-verdict.md`
 - [2026-05-15] Two-call Anthropic cache prefix verification — synthetic probe before shipping cached prompts — reusable_diagnostic — `methodologies/2026-05-15_two-call-anthropic-cache-prefix-verification.md`
 - [2026-05-14] Structural-invariant acceptance over wall-clock measurement on stubbed code paths — transferable_framework — `methodologies/2026-05-14_structural-invariant-acceptance-over-wall-clock-stubbed-paths.md`
@@ -120,9 +122,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 81
-- **Entry types:** new_pattern (35), transferable_framework (16), reusable_diagnostic (28), template_candidate (1), emerging_pattern (1)
-- **Domains:** patterns (24), architecture (8), orchestration (10), infrastructure (17), compiler (3), diagnostics (10), methodologies (7), migrations (2)
+- **Total entries:** 82
+- **Entry types:** new_pattern (35), transferable_framework (17), reusable_diagnostic (28), template_candidate (1), emerging_pattern (1)
+- **Domains:** patterns (24), architecture (8), orchestration (10), infrastructure (17), compiler (3), diagnostics (10), methodologies (8), migrations (2)
 - **Avg grounding score:** 0.85 (across grounded entries)
-- **Staleness risk distribution:** stable (79), slow_decay (2), fast_decay (1)
+- **Staleness risk distribution:** stable (80), slow_decay (2), fast_decay (1)
 
