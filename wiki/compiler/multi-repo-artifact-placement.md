@@ -1,22 +1,20 @@
-# Multi-Repo Compile Pipeline: Artifact Placement for Human Navigation
-
-```yaml
-metadata:
-  source_mode: direct
-  source_session: redacted
-  created: "2026-04-15T00:00:00Z"
-  confidence: 0.95
-  grounding_score: 0.95
-  grounding_source: "Observed directly while implementing kf-compile load map feature"
-  novelty_type: reusable_pattern
-  staleness_risk: stable
-  importance: 3
-  pinned: false
-  accreted_in: "7.0.0"
-  source_fingerprint: "session:2748dcca-13e3-4cf1-87a3-bf6a55ba87c7 / kf-compile load-map 2026-04-15"
-```
-
 ---
+title: "Multi-Repo Compile Pipeline: Artifact Placement for Human Navigation"
+source_mode: direct
+source_session: redacted
+created: 2026-04-15
+confidence: 0.95
+grounding_score: 0.95
+grounding_source: Observed directly while implementing kf-compile load map feature
+novelty_type: reusable_pattern
+staleness_risk: stable
+importance: 3
+pinned: false
+accreted_in: "7.0.0"
+source_fingerprint: "session:2748dcca-13e3-4cf1-87a3-bf6a55ba87c7 / kf-compile load-map 2026-04-15"
+---
+
+# Multi-Repo Compile Pipeline: Artifact Placement for Human Navigation
 
 ## Pattern
 
