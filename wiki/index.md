@@ -9,6 +9,7 @@ type: index
 
 ### Patterns
 
+- [2026-05-16] Migrating Zustand toggle-state to URL routing for deep-linkable views — transferable_framework — `patterns/2026-05-16_zustand-toggle-to-url-routing-migration.md`
 - [2026-05-15] Post-deliberation per-entity aggregation pattern (synthesizer pass) — new_pattern — `patterns/2026-05-15_post-deliberation-per-entity-aggregation-pattern.md`
 - [2026-05-15] REST client tolerance — distinguish 200 OK from 201 Created — new_pattern — `patterns/2026-05-15_rest-client-tolerance-http-status.md`
 - [2026-05-14] Claude CLI Subscription Subprocess Context Trim — cwd + --setting-sources — reusable_diagnostic — `patterns/2026-05-14_claude-cli-subscription-subprocess-context-trim.md`
@@ -112,15 +113,16 @@ type: index
 
 ### Migrations
 
+- [2026-05-16] Verify FK target table on remote before writing migrations against renamed tables — reusable_diagnostic — `migrations/2026-05-16_verify-fk-target-table-remote-before-migration.md`
 - [2026-04-18] Big-Bang Rename: Supabase, FastAPI, React — transferable_framework — `migrations/big-bang-rename-supabase-fastapi-react.md`
 
 ---
 
 ## Index Stats
 
-- **Total entries:** 79
-- **Entry types:** new_pattern (35), transferable_framework (15), reusable_diagnostic (27), template_candidate (1), emerging_pattern (1)
-- **Domains:** patterns (23), architecture (8), orchestration (10), infrastructure (17), compiler (3), diagnostics (10), methodologies (7), migrations (1)
+- **Total entries:** 81
+- **Entry types:** new_pattern (35), transferable_framework (16), reusable_diagnostic (28), template_candidate (1), emerging_pattern (1)
+- **Domains:** patterns (24), architecture (8), orchestration (10), infrastructure (17), compiler (3), diagnostics (10), methodologies (7), migrations (2)
 - **Avg grounding score:** 0.85 (across grounded entries)
-- **Staleness risk distribution:** stable (77), slow_decay (2), fast_decay (1)
+- **Staleness risk distribution:** stable (79), slow_decay (2), fast_decay (1)
 
