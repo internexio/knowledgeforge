@@ -91,6 +91,7 @@
 
 ### Methodologies
 
+- [2026-05-15] Two-call Anthropic cache prefix verification — synthetic probe before shipping cached prompts — reusable_diagnostic — `methodologies/2026-05-15_two-call-anthropic-cache-prefix-verification.md`
 - [2026-05-14] Structural-invariant acceptance over wall-clock measurement on stubbed code paths — transferable_framework — `methodologies/2026-05-14_structural-invariant-acceptance-over-wall-clock-stubbed-paths.md`
 - [2026-05-14] Healthy-system gate trap — failure-mode thresholds never trip in working systems — reusable_diagnostic — `methodologies/2026-05-14_healthy-system-gate-trap-empirical-thresholds.md`
 - [2026-05-13] Find-consumer-first before designing data migrations — reusable_diagnostic — `methodologies/2026-05-13_find-consumer-first-before-data-migration.md`
