@@ -78,7 +78,7 @@ Worker B: UPDATE runs SET status='running' WHERE id=123 AND status='queued' -- f
 
 - **[[one-reconciliation-pipeline-called-twice]]** — higher-level pattern that uses this primitive to safely transition work through state machines
 - **[[lazy-locking-with-idempotency-guard]]** — alternative: stamping `lock_owner` at claim time with `WHERE lock IS NULL OR lock = $me`
-- **[[coalesce-at-enqueue]]** — what to do when a duplicate enqueue arrives mid-flight
+- **[[coalesce-at-enqueue-every-coalesce-gets-a-row]]** — what to do when a duplicate enqueue arrives mid-flight
 
 ## Source Context
 
