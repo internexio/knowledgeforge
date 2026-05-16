@@ -103,7 +103,7 @@ If the probe had been skipped, the chosen migration would have either broken gas
 
 ## Related
 
-- [[critic-finding-triage]]** — the routing pattern that ensures probes like this surface BEFORE design lands
+- **[[critic-triage-routing-strategist-vs-defer-doc]]** — the routing pattern that ensures probes like this surface BEFORE design lands
 - **[[verify-audit-claims-before-designing-fix]]** — same class of pre-design due-diligence; different artifact (audit doc vs. runtime data)
 - The legacy-suggestion `kind` variant in the iteration-loop v0.3 architecture (the spec-amendment shape that resulted)
 
