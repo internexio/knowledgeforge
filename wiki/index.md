@@ -9,6 +9,10 @@ type: index
 
 ### Patterns
 
+- [2026-05-18] Default policy diverges by path — smart-default tri-state parameters for composite endpoints — new_pattern — `patterns/2026-05-18_default-policy-tri-state-parameters-composite-endpoints.md`
+- [2026-05-18] Composite vs atomic MCP tool design for agent and CRM integrations — transferable_framework — `patterns/2026-05-18_composite-vs-atomic-mcp-tool-design.md`
+- [2026-05-18] Markdown-to-binary artifact drift when both are source-edited independently — new_pattern — `patterns/2026-05-18_markdown-binary-artifact-drift-independent-editing.md`
+- [2026-05-18] python-pptx in-place editing patterns for cleaning shipped decks — reusable_diagnostic — `patterns/2026-05-18_python-pptx-in-place-editing-patterns.md`
 - [2026-05-16] Extending a discriminated enum across the full stack — 7-point checklist — transferable_framework — `patterns/2026-05-16_discriminated-enum-extension-7-point-checklist.md`
 - [2026-05-16] Migrating Zustand toggle-state to URL routing for deep-linkable views — transferable_framework — `patterns/2026-05-16_zustand-toggle-to-url-routing-migration.md`
 - [2026-05-15] Post-deliberation per-entity aggregation pattern (synthesizer pass) — new_pattern — `patterns/2026-05-15_post-deliberation-per-entity-aggregation-pattern.md`
@@ -39,6 +43,7 @@ type: index
 
 ### Architecture
 
+- [2026-05-18] Bead-as-context-anchor — convert in-session deferrals into persistent runbooks before session end — new_pattern — `architecture/2026-05-18_bead-as-context-anchor-deferred-runbooks.md`
 - [2026-05-14] Domain exceptions should not carry HTTP metadata — transferable_framework — `architecture/2026-05-14_domain-exceptions-exclude-http-metadata.md`
 - [2026-05-14] Identity registry + append-only event log — separate "who/what" from "what happened" — new_pattern — `architecture/2026-05-14_identity-registry-append-only-event-log-separation.md`
 - [2026-05-10] Pattern Extraction & Reuse Heuristic — transferable_framework — `architecture/pattern-extraction-reuse-heuristic.md`
@@ -64,6 +69,9 @@ type: index
 
 ### Infrastructure
 
+- [2026-05-19] git -C /abs/path for CWD-unstable Claude Code Bash harness — reusable_diagnostic — `infrastructure/2026-05-19_git-dash-c-cwd-stability-claude-code-bash.md`
+- [2026-05-19] sem-tools Google Ads Keyword Planner wrapper — canonical reference location + setup — template_candidate — `infrastructure/2026-05-19_sem-tools-google-ads-keyword-planner-wrapper.md`
+- [2026-05-18] Editable-venv install for MCP servers — Python version floors + dependency major bumps — reusable_diagnostic — `infrastructure/2026-05-18_editable-venv-mcp-server-installation.md`
 - [2026-05-15] Realigning diverged git remotes via content-equivalence check + force-push — reusable_diagnostic — `infrastructure/2026-05-15_diverged-git-remotes-content-equivalence-realign.md`
 - [2026-05-15] Silent-success scripts — monitor by state artifact, not log file — reusable_diagnostic — `infrastructure/2026-05-15_silent-success-scripts-state-artifact-freshness.md`
 - [2026-05-14] Claude CLI --bare disables OAuth/keychain — subscription-billed subprocess workers must omit it — reusable_diagnostic — `infrastructure/2026-05-14_claude-cli-bare-disables-oauth-keychain-auth.md`
@@ -90,6 +98,15 @@ type: index
 
 ### Diagnostics
 
+- [2026-05-19] COS MCP analyze_full_comms timeout — direct curl fallback — reusable_diagnostic — `diagnostics/2026-05-19_cos-mcp-analyze-full-timeout-direct-curl-fallback.md`
+- [2026-05-18] HTTP status signatures (404 vs 405 vs 401) as positive deploy-verification signals — reusable_diagnostic — `diagnostics/2026-05-18_http-status-signatures-deploy-verification-smoke-test.md`
+- [2026-05-18] Happy CLI file-watcher binds to ghost session_id that Claude never creates — reusable_diagnostic — `diagnostics/2026-05-18_happy-cli-filewatcher-ghost-session-mismatch.md`
+- [2026-05-18] bd validates issue title length in UTF-8 bytes, not codepoints — error message says "characters" — reusable_diagnostic — `diagnostics/2026-05-18_bd-title-length-utf8-bytes-not-codepoints.md`
+- [2026-05-18] HTTP/2 HPACK dynamic-table desync masquerades as "Invalid API key" in PostgREST — reusable_diagnostic — `diagnostics/2026-05-18_http2-hpack-desync-bogus-401-from-postgrest.md`
+- [2026-05-18] Flaky-endpoint cluster across same-parent subresources = shared backend dependency — reusable_diagnostic — `diagnostics/2026-05-18_flaky-endpoint-cluster-shared-backend-dependency.md`
+- [2026-05-18] Chrome MCP automation of React composers — Enter-to-send and onChange traps — reusable_diagnostic — `diagnostics/2026-05-18_chrome-mcp-react-composer-enter-send-onchange-traps.md`
+- [2026-05-18] stripe.Event does not support .get() — use [] access — reusable_diagnostic — `diagnostics/2026-05-18_stripe-event-no-get-method-use-bracket-access.md`
+- [2026-05-18] Vary input across smoke runs — different audiences expose different LLM-prompt failure modes — reusable_diagnostic — `diagnostics/2026-05-18_vary-input-smoke-runs-llm-failure-modes.md`
 - [2026-05-15] Check exit code before parsing CLI output — failures emit help that greedy-matches success regexes — reusable_diagnostic — `diagnostics/2026-05-15_check-exit-code-before-cli-output-parsing.md`
 - [2026-05-13] PostgREST or_() filter-injection — sanitize free-text before interpolation — reusable_diagnostic — `diagnostics/2026-05-13_postgrest-or-filter-injection-sanitize-freetext.md`
 - [2026-05-13] Asymmetric write-time guard coverage across parallel write paths — reusable_diagnostic — `diagnostics/2026-05-13_asymmetric-write-time-guard-coverage.md`
@@ -103,6 +120,10 @@ type: index
 
 ### Methodologies
 
+- [2026-05-19] Volume-vs-CPC trade-off for emerging-category SEO keywords — transferable_framework — `methodologies/2026-05-19_seo-keyword-volume-cpc-tradeoff.md`
+- [2026-05-18] Read the validation spec, don't iterate on rejection — agent bias correction for taxonomy-gated writes — reusable_diagnostic — `methodologies/2026-05-18_read-spec-heuristic-taxonomy-gate-iteration.md`
+- [2026-05-18] Polish-as-blocker drift — when iteration cycles need an explicit ship gate — reusable_diagnostic — `methodologies/2026-05-18_polish-as-blocker-drift-explicit-ship-gate.md`
+- [2026-05-18] Reframe stated scope to actual goal before sequencing — large-scope strategist heuristic — reusable_diagnostic — `methodologies/2026-05-18_reframe-stated-scope-to-actual-goal-strategist-heuristic.md`
 - [2026-05-16] Surviving an upstream-noise flood in the issue tracker — close-with-source-pointer, accept recurring waves — transferable_framework — `methodologies/2026-05-16_upstream-noise-flood-bulk-close-source-pointer.md`
 - [2026-05-15] Pre-emptive scope sweep of downstream tasks after a strategic verdict supersedes them — transferable_framework — `methodologies/2026-05-15_pre-emptive-scope-sweep-downstream-verdict.md`
 - [2026-05-15] Two-call Anthropic cache prefix verification — synthetic probe before shipping cached prompts — reusable_diagnostic — `methodologies/2026-05-15_two-call-anthropic-cache-prefix-verification.md`
@@ -118,13 +139,17 @@ type: index
 - [2026-05-16] Verify FK target table on remote before writing migrations against renamed tables — reusable_diagnostic — `migrations/2026-05-16_verify-fk-target-table-remote-before-migration.md`
 - [2026-04-18] Big-Bang Rename: Supabase, FastAPI, React — transferable_framework — `migrations/big-bang-rename-supabase-fastapi-react.md`
 
+### Strategy
+
+- [2026-05-18] Terse-by-design — orchestrators add overhead only when patching known LLM failure modes — new_pattern — `strategy/2026-05-18_terse-by-design-orchestrator-overhead-only-patches-failure-modes.md`
+
 ---
 
 ## Index Stats
 
-- **Total entries:** 82
-- **Entry types:** new_pattern (35), transferable_framework (17), reusable_diagnostic (28), template_candidate (1), emerging_pattern (1)
-- **Domains:** patterns (24), architecture (8), orchestration (10), infrastructure (17), compiler (3), diagnostics (10), methodologies (8), migrations (2)
+- **Total entries:** 98
+- **Entry types:** new_pattern (36), transferable_framework (19), reusable_diagnostic (41), template_candidate (1), emerging_pattern (1)
+- **Domains:** patterns (25), architecture (9), orchestration (10), infrastructure (19), compiler (3), diagnostics (19), methodologies (12), migrations (2), strategy (1)
 - **Avg grounding score:** 0.85 (across grounded entries)
-- **Staleness risk distribution:** stable (80), slow_decay (2), fast_decay (1)
+- **Staleness risk distribution:** stable (89), slow_decay (4), fast_decay (1)
 
