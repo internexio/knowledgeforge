@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.2.0
+version: 7.2.1
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -33,6 +33,20 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.2.1
+    date: 2026-05-11
+    backported_from: knowledgeforge-cp@5feae69
+    note: |
+      Editorial back-port from cp — F1–F7 from the kf-7.2.0 audit redo.
+      All seven findings were applied directly to compiled cp artifacts on 2026-05-11
+      and lived only in cp for ~8 days. This release lifts them into core/modules/
+      so future compiles don't revert them.
+    changes:
+      - Module 00 (7.2.1) — Module Reference table annotated for 03/04/05/07/16/19 with 7.2.0 additions (F2); Mode Selection Accuracy section adds note on weekly adversarial calibration cadence (F4); 7.1.0 downstream-only changelog stub added (F5); variant ID storage rule documented (F7); cross-ref to Module 19 re_routing_triggers added
+      - Module 04 (7.2.1) — 16_Operational_Bounds added to related list (F6); editorial backlink completion
+      - Module 06 (7.2.0) — Quick Reference brought from 6.6.1 to 7.2 baseline (F1): meta-principle/identity/title bumped, Mode Variants section added, KF-4 metric #10 row added, KF-8 Routing Decision Log subsection added, Handoff Contract Registry section added, Trigger Disambiguator section added, Module Reference table extended to 22/23/24/25, Quality Checklist updated, related list adds 25
+      - Module 19 (7.2.1) — re_routing_triggers enumeration added under routing_decision_log: 3 canonical triggers + 3 non-triggers + consumer/refinement-target cross-refs (F3); selected_variant field annotated with unqualified-storage + read-time-composition rule (F7)
+      - No orchestrator behavior change. schema_version remains 1.0.
   - version: 7.2.0
     date: 2026-05-10
     cascade_reference: |

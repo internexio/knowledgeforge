@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Memory Architecture
-  version: 7.2.0
+  version: 7.2.1
   purpose: Four-tier memory system — persistent domain knowledge (Tier 0), routing index (Tier 1), mode state (Tier 2), and archived history (Tier 3) — that maintains routing accuracy across long sessions and knowledge continuity across sessions
   topics: [memory, context-management, session-persistence, consolidation, skeptical-verification, persistent-knowledge, routing-audit-log, metric-aggregates]
   contexts: [long-sessions, mode-transitions, context-pressure, state-management, cross-session-knowledge, routing-decision-audit]
@@ -14,6 +14,15 @@ module:
   added_in: "6.1"
   implements: "Directive 2 (Three-Tier Memory Architecture), extended to four tiers in 6.2"
   changelog:
+    7.2.1:
+      date: 2026-05-11
+      changes:
+        - Added re_routing_triggers enumeration to routing_decision_log section — canonical events that set re_routed = true (resolves F3 from kf-7.2.0 audit redo; previously this definition lived only in project agent instructions prose)
+        - Three canonical triggers — navigator_activation_after_initial_routing, user_explicit_redirect, critic_adversarial_wrong_mode_finding
+        - Three non-triggers documented — chain_progression, variant_selection_within_mode, critic_revision_loop
+        - Cross-refs added — Module 00 (writer), Module 16 metric #10 (consumer), Module 04 trigger_disambiguator (refinement target)
+        - Added variant ID composition rule to selected_variant field — `<selected_mode>.<selected_variant>` is the canonical qualified form used by Module 16 metric #10 per_variant tracking; Modules 05 and 07 variants[].id stored unqualified (resolves F7 from kf-7.2.0 audit redo; new finding surfaced on second-pass parity check)
+        - No schema field changes. schema_version remains 1.0.
     7.2.0:
       date: 2026-05-10
       changes:
@@ -254,6 +263,11 @@ routing_decision_log:
       - name: selected_variant
         type: string | null
         required: true                     # null if mode has no variants
+        # 7.2.1: Stored UNQUALIFIED to match variants[].id in Modules 05/07
+        # (e.g., "regular", "era", "linter" — not "expert.era" or "critic.linter").
+        # Qualified form '<selected_mode>.<selected_variant>' is the canonical join
+        # key for per-variant aggregation (Module 16 metric #10 per_variant tracking).
+        # Consumers MUST compose the qualified ID at read time, not at write time.
 
       - name: trigger_phrase_matched
         type: string
@@ -283,6 +297,50 @@ routing_decision_log:
       condition: "re_routed = true"
       destination: "wiki/operations/routing-log/{YYYY-MM}.md"
       rationale: "Re-routing events are training data for trigger_disambiguator refinement"
+
+  re_routing_triggers:
+    # Canonical events that cause an orchestrator writer to set re_routed = true.
+    # Added in 7.2.1 to close audit finding F3 — definition previously lived only
+    # in project agent instructions prose. Module 19 is the schema owner and must
+    # enumerate the set so downstream consumers (Module 16 metric #10, linter)
+    # can validate re_routed entries without cross-reading the orchestrator.
+    canonical_set:
+      - id: navigator_activation_after_initial_routing
+        description: |
+          Orchestrator initially routed to mode X, then activated Navigator to
+          disambiguate. The Navigator-issued routing decision is the re_routed entry;
+          re_route_reason should reference the disambiguation question.
+        writer: Module 00 (project agent instructions / orchestrator)
+        re_route_reason_format: "navigator_disambiguated: <question>"
+
+      - id: user_explicit_redirect
+        description: |
+          User message explicitly redirects from the currently-active mode
+          ("no, use Debugger instead" / "actually I want a Critic review").
+          Next mode activation is the re_routed entry.
+        writer: Module 00 (project agent instructions / orchestrator)
+        re_route_reason_format: "user_redirect: <user_quote_truncated_80_chars>"
+
+      - id: critic_adversarial_wrong_mode_finding
+        description: |
+          Critic adversarial pass surfaces a finding at Sev 2+ whose category is
+          "wrong mode for this task" or "wrong variant for this task". Next mode
+          activation (re-execution under corrected routing) is the re_routed entry.
+        writer: Module 00 (orchestrator), triggered by Module 07 (Critic adversarial)
+        re_route_reason_format: "critic_adversarial_finding: <finding_id>"
+        severity_threshold: 2
+
+    non_triggers:
+      # Events that look like re-routing but are NOT re_routed = true
+      - id: chain_progression
+        description: "Normal mode-to-mode handoff in a planned chain (e.g., Builder → Critic auto-verify). Each activation gets its own log entry with re_routed = false."
+      - id: variant_selection_within_mode
+        description: "Choosing critic.linter vs critic.audit at routing time is a routing decision, not a re-route. Logged with re_routed = false."
+      - id: critic_revision_loop
+        description: "Critic ↔ Builder convergence loop (Module 07 loop_exit_protocol). Loop iterations are not re-routes; the final exit is."
+
+    consumer: Module 16 metric #10 (mode_selection_accuracy) — re_routing rate is the primary measurement
+    refinement_target: Module 04 trigger_disambiguator — re_routed entries are training data for predicate tightening
 
   aggregation_persistence:
     purpose: |

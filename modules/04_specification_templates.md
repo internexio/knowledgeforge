@@ -5,13 +5,18 @@
 ```yaml
 module:
   title: Specification Templates
-  version: 7.2.0
+  version: 7.2.1
   purpose: Provide complete, reusable templates for agents, processes, and coordination
   topics: [templates, specifications, formats, schemas, capability-profiles, risk-tiers, infrastructure-architecture, hosting-audit, era-specification, handoff-contracts, trigger-disambiguation]
   contexts: [agent-creation, process-design, documentation, infrastructure-planning, entity-modeling, mode-routing, chain-handoffs]
   difficulty: intermediate
-  related: [00_Orchestrator, 02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
+  related: [00_Orchestrator, 02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.2.1:
+      date: 2026-05-11
+      changes:
+        - Added 16_Operational_Bounds to related list — Module 16 metric #10 corrective actions reference Module 04 trigger_disambiguator entity, and Module 04 KF 7.2 field summary table documents mode_selection_accuracy as a Module 16 entity (resolves F6 from kf-7.2.0 audit redo)
+        - No behavior change. Editorial backlink completion.
     7.2.0:
       date: 2026-05-10
       changes:
