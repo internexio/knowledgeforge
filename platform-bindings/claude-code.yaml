@@ -225,18 +225,12 @@ special_outputs:
         source: "enhancements/enh-006-spec-drift-checkpoint.md"
         section: "CC Agent"
 
-  # Hooks — copied verbatim from core/hooks/
-  hooks:
-    source_dir: "hooks/"
-    files:
-      - kf-route.py
-      - kf-stats.py
-      - kf_module_index.txt
-      - kf-stop-validator.py
-      - kf-precompact.py
-      - kf-postcompact.py
-      - kf-edit-nudge.py
-      - kf-session-start.py
+  # Hooks — NOT compiled. As of 2026-05-19, knowledgeforge-cc is the
+  # authoritative source for .claude/hooks/ (synced from cw, see cc commit
+  # 1f5b748). cc/install.sh deploys hooks into ~/.claude/hooks/ at install
+  # time. The historical files in core/hooks/ are retained for reference
+  # only and may lag behind cc. Compiler skips hook output entirely when
+  # this section is absent.
 
   # Static agents — hand-maintained, not compiled from modules
   static_agents:
