@@ -232,11 +232,16 @@ special_outputs:
   # only and may lag behind cc. Compiler skips hook output entirely when
   # this section is absent.
 
-  # Static agents — hand-maintained, not compiled from modules
+  # Static agents — hand-maintained in knowledgeforge-cc, NOT in core.
+  # core has never owned these files; the compiler does not read or write
+  # them. cc/install.sh copies cc/.claude/agents/*.md → ~/.claude/agents/
+  # at install time. Listed here purely as inventory; pathway is informational.
   static_agents:
     - ".claude/agents/adversarial-critic.md"
     - ".claude/agents/knowledge-librarian.md"
 
-  # Commands — hand-maintained templates, not compiled
+  # Commands — hand-maintained in knowledgeforge-cc, NOT in core.
+  # Same ownership rule as static_agents above. cc/install.sh copies
+  # cc/.claude/commands/*.md → ~/.claude/commands/ at install time.
   static_commands:
     - ".claude/commands/"
