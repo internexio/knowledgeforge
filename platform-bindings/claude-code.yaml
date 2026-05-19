@@ -28,6 +28,12 @@ constraints:
 # Output structure — relative to target CC repo root
 # --------------------------------------------------------------------------
 output_structure:
+  # claude_md is hand-maintained in knowledgeforge-cc, NOT compiled from core.
+  # Added to cc directly in commit 6052c02 (2026-05-18) as the "thin project
+  # orchestrator" — loaded into every cc session as always-on context. The
+  # design intent lives in core/plans/kf-hook-driven-routing.md; the
+  # artifact is owned by cc. The compiler does not read or write this path;
+  # the entry is retained for inventory only.
   claude_md: "CLAUDE.md"
   agents_dir: ".claude/agents/"
   skills_dir: ".claude/skills/kf/"
