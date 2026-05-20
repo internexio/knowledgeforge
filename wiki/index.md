@@ -120,6 +120,7 @@ type: index
 
 ### Methodologies
 
+- [2026-05-20] Primary-source vendor guidance reanchor — three-tier evidence stratification when vendor docs contradict industry consensus (worked example: Google AI optimization guide, May 2026) — transferable_framework — `methodologies/2026-05-20_primary-source-vendor-guidance-reanchor.md`
 - [2026-05-19] Volume-vs-CPC trade-off for emerging-category SEO keywords — transferable_framework — `methodologies/2026-05-19_seo-keyword-volume-cpc-tradeoff.md`
 - [2026-05-18] Read the validation spec, don't iterate on rejection — agent bias correction for taxonomy-gated writes — reusable_diagnostic — `methodologies/2026-05-18_read-spec-heuristic-taxonomy-gate-iteration.md`
 - [2026-05-18] Polish-as-blocker drift — when iteration cycles need an explicit ship gate — reusable_diagnostic — `methodologies/2026-05-18_polish-as-blocker-drift-explicit-ship-gate.md`
