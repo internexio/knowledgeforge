@@ -26,3 +26,10 @@ venv/
 # Build outputs
 compiler/dist/
 compiler/__pycache__/
+
+# Local tooling artifacts (per-machine, not project content)
+.gitnexus
+.claude/
+AGENTS.md
+entities.json
+mempalace.yaml
