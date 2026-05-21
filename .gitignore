@@ -33,3 +33,8 @@ compiler/__pycache__/
 AGENTS.md
 entities.json
 mempalace.yaml
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key

@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "knowledgeforge_core",
+  "project_id": "8bd06769-4493-47d1-951b-fdf495634815"
+}
