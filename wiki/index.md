@@ -9,6 +9,12 @@ type: index
 
 ### Patterns
 
+- [2026-05-21] Backward-compatible hash-fragment renames via aria-hidden anchor shims — new_pattern — `patterns/2026-05-21_aria-hidden-anchor-shims-hash-fragment-renames.md`
+- [2026-05-21] Per-host caching for per-page detectors with per-host signal — new_pattern — `patterns/2026-05-21_per-host-caching-per-page-detectors.md`
+- [2026-05-21] SEO meta split between Blade templates and DB-stored pages in Laravel/Filament CMS — new_pattern — `patterns/2026-05-21_seo-meta-split-blade-db-laravel-filament-cms.md`
+- [2026-05-21] Sync-first pattern for divergent staging branches — new_pattern — `patterns/2026-05-21_sync-first-pattern-divergent-staging-branches.md`
+- [2026-05-20] Per-detector error isolation in multi-detector audit pipelines — new_pattern — `patterns/2026-05-20_per-detector-error-isolation-audit-pipelines.md`
+- [2026-05-20] Hybrid LLM-generation + embedding-coverage for topic-fan-out audits — transferable_framework — `patterns/2026-05-20_hybrid-llm-embedding-coverage-audit-pattern.md`
 - [2026-05-18] Default policy diverges by path — smart-default tri-state parameters for composite endpoints — new_pattern — `patterns/2026-05-18_default-policy-tri-state-parameters-composite-endpoints.md`
 - [2026-05-18] Composite vs atomic MCP tool design for agent and CRM integrations — transferable_framework — `patterns/2026-05-18_composite-vs-atomic-mcp-tool-design.md`
 - [2026-05-18] Markdown-to-binary artifact drift when both are source-edited independently — new_pattern — `patterns/2026-05-18_markdown-binary-artifact-drift-independent-editing.md`
@@ -43,6 +49,8 @@ type: index
 
 ### Architecture
 
+- [2026-05-21] Cross-project capability audit via structured repo-agent prompt — transferable_framework — `architecture/2026-05-21_cross-project-capability-audit-structured-repo-agent-prompts.md`
+- [2026-05-20] Platform deprecation — preserve architectural intent, replace syntactic constraint — reusable_diagnostic + transferable_framework — `architecture/2026-05-20_platform-deprecation-architectural-intent-preservation.md`
 - [2026-05-18] Bead-as-context-anchor — convert in-session deferrals into persistent runbooks before session end — new_pattern — `architecture/2026-05-18_bead-as-context-anchor-deferred-runbooks.md`
 - [2026-05-14] Domain exceptions should not carry HTTP metadata — transferable_framework — `architecture/2026-05-14_domain-exceptions-exclude-http-metadata.md`
 - [2026-05-14] Identity registry + append-only event log — separate "who/what" from "what happened" — new_pattern — `architecture/2026-05-14_identity-registry-append-only-event-log-separation.md`
@@ -69,6 +77,7 @@ type: index
 
 ### Infrastructure
 
+- [2026-05-20] Static-site rsync excludes — internal-artifact leak prevention — new_pattern — `infrastructure/2026-05-20_static-site-rsync-excludes-leak-prevention.md`
 - [2026-05-19] git -C /abs/path for CWD-unstable Claude Code Bash harness — reusable_diagnostic — `infrastructure/2026-05-19_git-dash-c-cwd-stability-claude-code-bash.md`
 - [2026-05-19] sem-tools Google Ads Keyword Planner wrapper — canonical reference location + setup — template_candidate — `infrastructure/2026-05-19_sem-tools-google-ads-keyword-planner-wrapper.md`
 - [2026-05-18] Editable-venv install for MCP servers — Python version floors + dependency major bumps — reusable_diagnostic — `infrastructure/2026-05-18_editable-venv-mcp-server-installation.md`
@@ -98,6 +107,12 @@ type: index
 
 ### Diagnostics
 
+- [2026-05-21] Test the wrapped tool directly — narrowing pattern for wrapper bugs — transferable_framework — `diagnostics/2026-05-21_test-wrapped-tool-directly-narrowing-search-space.md`
+- [2026-05-21] Encrypted server-side state can outlive every client-side fix — reusable_diagnostic — `diagnostics/2026-05-21_server-side-state-outlives-client-fixes-saas-wrappers.md`
+- [2026-05-20] `if key in seen: pass` — Python no-op silently breaks dedup loops — reusable_diagnostic — `diagnostics/2026-05-20_python-pass-noops-dedup-loop-intent-gap.md`
+- [2026-05-20] COS analyze_full payload size ceiling — 26K chars triggers 502, ~2.6K succeeds in 130s — reusable_diagnostic — `diagnostics/2026-05-20_cos-analyze-full-payload-ceiling-502.md`
+- [2026-05-21] Happy file-watcher ghost session_id — detection + absolute-path symlink fix — reusable_diagnostic — `diagnostics/2026-05-21_happy-filewatcher-absolute-path-symlink-fix.md` (supersedes 2026-05-18 entry)
+- [2026-05-20] Entity-definition gap diagnostic for category SEO queries — reusable_diagnostic — `diagnostics/2026-05-20_entity-definition-gap-diagnostic-category-seo-queries.md`
 - [2026-05-19] COS MCP analyze_full_comms timeout — direct curl fallback — reusable_diagnostic — `diagnostics/2026-05-19_cos-mcp-analyze-full-timeout-direct-curl-fallback.md`
 - [2026-05-18] HTTP status signatures (404 vs 405 vs 401) as positive deploy-verification signals — reusable_diagnostic — `diagnostics/2026-05-18_http-status-signatures-deploy-verification-smoke-test.md`
 - [2026-05-18] Happy CLI file-watcher binds to ghost session_id that Claude never creates — reusable_diagnostic — `diagnostics/2026-05-18_happy-cli-filewatcher-ghost-session-mismatch.md`
@@ -120,6 +135,14 @@ type: index
 
 ### Methodologies
 
+- [2026-05-21] SaaS migration pre-cancel checklist — silent-failure config-pointer risk — transferable_framework — `methodologies/2026-05-21_saas-migration-pre-cancel-checklist-silent-failure-config-pointer-risk.md`
+- [2026-05-21] Critic verification pass — run KF Critic AGAIN on the revisions, not just on the draft — new_pattern — `methodologies/2026-05-21_critic-verification-pass-second-pass-validation.md`
+- [2026-05-21] Platform-behavior verification discipline — transferable_framework — `methodologies/2026-05-21_platform-behavior-verification-discipline.md`
+- [2026-05-21] Same-day pre-deploy snapshot as measurement anchor — new_pattern — `methodologies/2026-05-21_same-day-pre-deploy-snapshot-measurement-anchor.md`
+- [2026-05-21] Sequencing Landing-Page Changes That Affect Both PPC Quality Score and SEO — operational_pattern — `methodologies/2026-05-21_landing-page-ppc-seo-deployment-sequencing.md`
+- [2026-05-21] Keyword Data Triangulation — DataForSEO + SEMrush + GSC — operational_pattern — `methodologies/2026-05-21_keyword-data-triangulation-datasources.md`
+- [2026-05-21] Seasonality-first measurement for organic SEO changes — transferable_framework — `methodologies/2026-05-21_seasonality-first-measurement-organic-seo-changes.md`
+- [2026-05-20] Propagation-gap pattern — addenda propose downstream changes that don't get executed — reusable_diagnostic — `methodologies/2026-05-20_propagation-gap-addenda-propose-downstream-changes-that-dont-execute.md`
 - [2026-05-20] Primary-source vendor guidance reanchor — three-tier evidence stratification when vendor docs contradict industry consensus (worked example: Google AI optimization guide, May 2026) — transferable_framework — `methodologies/2026-05-20_primary-source-vendor-guidance-reanchor.md`
 - [2026-05-19] Volume-vs-CPC trade-off for emerging-category SEO keywords — transferable_framework — `methodologies/2026-05-19_seo-keyword-volume-cpc-tradeoff.md`
 - [2026-05-18] Read the validation spec, don't iterate on rejection — agent bias correction for taxonomy-gated writes — reusable_diagnostic — `methodologies/2026-05-18_read-spec-heuristic-taxonomy-gate-iteration.md`
@@ -137,20 +160,30 @@ type: index
 
 ### Migrations
 
+- [2026-05-21] Expand-contract column rename — two-commit SQLite migration with commit-boundary discipline — new_pattern — `migrations/2026-05-21_expand-contract-column-rename-sqlite-commit-boundary.md`
+- [2026-05-21] Cross-DB bead migration with external-ref provenance tracking — transferable_framework — `migrations/2026-05-21_cross-db-bead-migration-external-ref-provenance.md`
+- [2026-05-21] Idempotent multi-target issue-tracker migration with state file + dependency reconstruction — transferable_framework — `migrations/2026-05-21_idempotent-multi-target-issue-tracker-migration-state-file-dependencies.md`
+- [2026-05-20] Idempotent additive-column migration pattern for SQLite without a migration framework — new_pattern — `migrations/2026-05-20_idempotent-additive-column-sqlite-migrations.md`
 - [2026-05-16] Verify FK target table on remote before writing migrations against renamed tables — reusable_diagnostic — `migrations/2026-05-16_verify-fk-target-table-remote-before-migration.md`
 - [2026-04-18] Big-Bang Rename: Supabase, FastAPI, React — transferable_framework — `migrations/big-bang-rename-supabase-fastapi-react.md`
 
 ### Strategy
 
+- [2026-05-21] Vendor selection — calibration uncertainty is the bottleneck, not measurement precision — transferable_framework — `strategy/2026-05-21_vendor-selection-calibration-uncertainty-dominance.md`
 - [2026-05-18] Terse-by-design — orchestrators add overhead only when patching known LLM failure modes — new_pattern — `strategy/2026-05-18_terse-by-design-orchestrator-overhead-only-patches-failure-modes.md`
+
+### Integration
+
+- [2026-05-21] Vendor-in decision framework for flat-script Python projects — transferable_framework — `integration/2026-05-21_vendor-in-decision-framework-flat-script-python.md`
+- [2026-05-21] Wayback Machine CDX API recipe — earliest snapshot in date range — reusable_diagnostic — `integration/2026-05-21_wayback-machine-cdx-api-date-range-recipe.md`
 
 ---
 
 ## Index Stats
 
-- **Total entries:** 98
-- **Entry types:** new_pattern (36), transferable_framework (19), reusable_diagnostic (41), template_candidate (1), emerging_pattern (1)
-- **Domains:** patterns (25), architecture (9), orchestration (10), infrastructure (19), compiler (3), diagnostics (19), methodologies (12), migrations (2), strategy (1)
+- **Total entries:** 121
+- **Entry types:** new_pattern (43), transferable_framework (29), reusable_diagnostic (45), template_candidate (1), emerging_pattern (1), operational_pattern (2)
+- **Domains:** patterns (29), architecture (10), orchestration (10), infrastructure (20), compiler (3), diagnostics (24), methodologies (18), migrations (5), strategy (2), integration (2)
 - **Avg grounding score:** 0.85 (across grounded entries)
-- **Staleness risk distribution:** stable (89), slow_decay (4), fast_decay (1)
+- **Staleness risk distribution:** stable (99), slow_decay (10), fast_decay (1)
 
