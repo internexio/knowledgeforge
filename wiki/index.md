@@ -9,6 +9,7 @@ type: index
 
 ### Patterns
 
+- [2026-05-22] Spec-to-implementation gap as a distinct review category — reusable_diagnostic — `patterns/2026-05-22_spec-to-implementation-gap-distinct-review-pass.md`
 - [2026-05-21] Backward-compatible hash-fragment renames via aria-hidden anchor shims — new_pattern — `patterns/2026-05-21_aria-hidden-anchor-shims-hash-fragment-renames.md`
 - [2026-05-21] Per-host caching for per-page detectors with per-host signal — new_pattern — `patterns/2026-05-21_per-host-caching-per-page-detectors.md`
 - [2026-05-21] SEO meta split between Blade templates and DB-stored pages in Laravel/Filament CMS — new_pattern — `patterns/2026-05-21_seo-meta-split-blade-db-laravel-filament-cms.md`
@@ -107,6 +108,7 @@ type: index
 
 ### Diagnostics
 
+- [2026-05-24] Threshold-vs-empirical calibration gap in similarity-based systems — reusable_diagnostic — `diagnostics/2026-05-24_threshold-vs-empirical-calibration-gap-similarity-systems.md`
 - [2026-05-24] Popover top-overflow — trigger-anchored vs viewport-anchored positioning — reusable_diagnostic — `diagnostics/2026-05-24_popover-top-overflow-trigger-vs-viewport-anchored-positioning.md`
 - [2026-05-24] GHCR multi-image deploy — package-to-repo Actions access link — reusable_diagnostic — `diagnostics/2026-05-24_ghcr-multi-image-deploy-access-link.md`
 - [2026-05-23] Live-smoke as the verification gate — mocks pass, prod still breaks — reusable_diagnostic — `diagnostics/2026-05-23_live-smoke-as-verification-gate-mocks-pass-prod-breaks.md`
@@ -143,6 +145,7 @@ type: index
 ### Methodologies
 
 - [2026-05-24] Probe-before-chain — verify handoff brief inputs before running multi-mode chains — new_pattern — `methodologies/2026-05-24_probe-before-chain-reconciliation.md`
+- [2026-05-22] Adversarial-critic convergence trajectory — each pass uncovers a new CATEGORY of error — new_pattern — `methodologies/2026-05-22_adversarial-critic-convergence-trajectory-category-per-pass.md`
 - [2026-05-23] Salvage-vs-Revert Decision Framework for Mid-Execution Discovered Conflicts — transferable_framework — `methodologies/2026-05-23_salvage-vs-revert-mid-execution-conflict-framework.md`
 - [2026-05-23] Vendor swap implies semantics-recalibration audit — "same thing" rarely is — transferable_framework — `methodologies/2026-05-23_vendor-swap-semantics-recalibration-audit.md`
 - [2026-05-23] Vendor-hostile migration triggers — when token revocation forecloses the pre-cancel capture step — refinement — `methodologies/2026-05-23_vendor-hostile-migration-triggers-token-revocation.md`
@@ -197,9 +200,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 128
-- **Entry types:** new_pattern (43), transferable_framework (31), reusable_diagnostic (49), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1)
-- **Domains:** patterns (29), architecture (10), orchestration (10), infrastructure (20), compiler (3), diagnostics (27), methodologies (22), migrations (5), strategy (2), integration (2)
+- **Total entries:** 130
+- **Entry types:** new_pattern (44), transferable_framework (31), reusable_diagnostic (50), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1)
+- **Domains:** patterns (29), architecture (10), orchestration (10), infrastructure (20), compiler (3), diagnostics (28), methodologies (23), migrations (5), strategy (2), integration (2)
 - **Avg grounding score:** 0.85 (across grounded entries)
-- **Staleness risk distribution:** stable (106), slow_decay (11), fast_decay (1)
+- **Staleness risk distribution:** stable (106), slow_decay (12), fast_decay (1)
 

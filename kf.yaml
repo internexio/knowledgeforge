@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.3.0
+version: 7.3.1
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -33,6 +33,28 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.3.1
+    date: 2026-05-25
+    driver: knowledgeforge-core-rk4
+    note: |
+      Module 22 Phase 1 hook implementation landed + empirical threshold recalibration.
+
+      During rk4 implementation, empirical probing against the live MemPalace collection
+      (2415 drawers) revealed that exact-content queries cap at ~0.889 cosine similarity
+      due to MemPalace's chunked drawer storage. The spec'd threshold of 0.9 was
+      empirically unreachable — Phase 1 at 0.9 would have shipped as a no-op.
+
+      Builder calibration call: threshold recalibrated to 0.85 (below 0.889 with margin;
+      far above novel-content noise ceiling at ~-0.04). M22 v7.3.0 → v7.3.1. Hook code
+      shipped at the calibrated value. End-to-end test confirmed the dup-check fires on
+      a known wiki entry.
+
+      The calibration finding was filed to wiki/diagnostics/ as a reusable pattern
+      (Threshold-vs-empirical calibration gap in similarity-based systems).
+    changes:
+      - Module 22 (7.3.1) — threshold recalibrated 0.9 → 0.85 across spec text + code blocks + warning messages + CC Doc. Implementation Status table flipped — hook row now ✅ Landed with the calibrated threshold. Success Criteria section updated to reflect live state.
+      - mempalace-wiki-mine.py (hook, ~/.claude/hooks/) — module-load guarded import (`except BaseException` catches argparse SystemExit + KnowledgeGraph SQLite errors), dup-check call between fingerprint-idempotency check and mine_wiki() at the calibrated 0.85 threshold. End-to-end verified.
+      - knowledgeforge-core-rk4 closed (P2 → CLOSED).
   - version: 7.3.0
     date: 2026-05-24
     driver: knowledgeforge-core-8xq

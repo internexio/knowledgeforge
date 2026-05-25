@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Semantic Wiki Search
-  version: 7.3.0
+  version: 7.3.1
   purpose: Retrieval contract over the Tier 0 wiki — KF's specification on top of MemPalace's tool surface, defining how the accretion pipeline gates against duplicates and how retrieval degrades gracefully when the vector backend is unavailable
   topics: [retrieval, semantic-search, mempalace, vector-index, wiki-search, duplicate-detection]
   contexts: [knowledge-retrieval, accretion-check, linter-runs, cross-session-queries]
@@ -13,6 +13,23 @@ module:
   related: [19_Memory_Architecture, 21_Knowledge_Accretion, 23_Taxonomy_Enforcement, 24_Verbatim_History_Mining, 17_Temporal_Knowledge]
   added_in: "6.5"
   changelog:
+    7.3.1: |
+      - Dup-check threshold recalibrated 0.9 → 0.85 based on empirical probing
+        during knowledgeforge-core-rk4 hook implementation. MemPalace mines wiki
+        files into smaller drawers (chunked storage); full-file queries against
+        drawer fragments top out at ~0.889 cosine similarity for EXACT-content
+        matches. The original 0.9 threshold was empirically unreachable — Phase 1
+        would have shipped as a no-op.
+      - Empirical anchors (knowledgeforge-core wiki collection, 2415 drawers,
+        2026-05-25): exact-content top similarity = 0.889; novel content top
+        similarity ≈ -0.04 (negative — far from any drawer). Threshold 0.85
+        catches exact matches with margin to spare; novel content scores far
+        below.
+      - See wiki/diagnostics/2026-05-24_threshold-vs-empirical-calibration-gap-
+        similarity-systems.md for the full diagnostic and calibration probe.
+      - knowledgeforge-core-rk4 also closed in this pass — hook implementation
+        landed in ~/.claude/hooks/mempalace-wiki-mine.py with the
+        calibrated threshold. Implementation Status table flipped to ✅.
     7.3.0: |
       - Phase 1 reconciliation with MemPalace adoption (knowledgeforge-core-8xq)
       - Replaced direct ChromaDB prescription with MemPalace MCP / direct-import tool surface
@@ -54,15 +71,16 @@ Phase 1 is intentionally minimum-viable. The original v6.5.0 95% R@10 design int
 
 ## Implementation Status
 
-This spec is the **contract** for Phase 1. The hook code that satisfies the contract is tracked separately and was NOT modified by the 8xq spec-reconciliation pass.
+Phase 1 is **fully landed** as of v7.3.1 (knowledgeforge-core-rk4).
 
 | Component | Status | Tracked in |
 |---|---|---|
 | M22 v7.3.0 spec rewrite | ✅ Landed | knowledgeforge-core-8xq |
 | M21 / M23 / M00 / M06 / M25 / M24 cross-reference updates | ✅ Landed | knowledgeforge-core-8xq |
-| `mempalace-wiki-mine.py` extension to call `tool_check_duplicate` per spec | ⏳ Pending | knowledgeforge-core-rk4 (P2, depends on 8xq) |
+| `mempalace-wiki-mine.py` extension to call `tool_check_duplicate` | ✅ Landed (threshold=0.85, calibrated empirically) | knowledgeforge-core-rk4 |
+| Threshold recalibration 0.9 → 0.85 + spec v7.3.1 | ✅ Landed | knowledgeforge-core-rk4 |
 
-Until the hook is wired, "Phase 1" as described below is the target state, not the current state. The spec is reviewable and compilable as-is; the hook code lands in a separate pass.
+The hook calls `tool_check_duplicate` via direct Python import (`from mempalace.mcp_server import tool_check_duplicate`), guarded by `except BaseException` to catch both `KnowledgeGraph()` SQLite errors and argparse `SystemExit` on `--help`. Detect-and-warn semantics — does NOT block the mine.
 
 ---
 
@@ -79,12 +97,12 @@ When a wiki entry is filed, the accretion pipeline calls MemPalace's `tool_check
 # and the MCP runtime (hooks shouldn't depend on MCP being connected).
 from mempalace.mcp_server import tool_check_duplicate, _get_collection
 
-result = tool_check_duplicate(content=entry_text, threshold=0.9)
+result = tool_check_duplicate(content=entry_text, threshold=0.85)
 if result.get("is_duplicate"):
     matches = result.get("matches", [])
     sys.stderr.write(
         f"[Module 22] near-duplicate detected for {file_path}: "
-        f"{len(matches)} match(es) at similarity ≥ 0.9. "
+        f"{len(matches)} match(es) at similarity ≥ 0.85. "
         f"Top match: {matches[0].get('id', '?')} ({matches[0].get('wing', '?')}/{matches[0].get('room', '?')})\n"
     )
 ```
@@ -142,7 +160,7 @@ MemPalace's full MCP tool surface is available to the orchestrator agent at runt
 ## Integration Points
 
 ### Module 21 (Knowledge Accretion)
-Accretion pipeline writes entries to `wiki/`, triggering `mempalace-wiki-mine.py` (PostToolUse). The hook (Phase 1) must call `tool_check_duplicate(entry_content, threshold=0.9)` via direct Python import, emit a stderr WARNING on duplicates, and proceed with the `mempalace mine` subprocess regardless. **(Target state — pending `knowledgeforge-core-rk4`. See Implementation Status section.)** Module 21's note about ChromaDB/LanceDB at step 4b is superseded by this spec — embedding happens inside MemPalace's mine pipeline; Module 21 callers do not invoke ChromaDB directly.
+Accretion pipeline writes entries to `wiki/`, triggering `mempalace-wiki-mine.py` (PostToolUse). The hook (Phase 1) must call `tool_check_duplicate(entry_content, threshold=0.85)` via direct Python import, emit a stderr WARNING on duplicates, and proceed with the `mempalace mine` subprocess regardless. **(Target state — pending `knowledgeforge-core-rk4`. See Implementation Status section.)** Module 21's note about ChromaDB/LanceDB at step 4b is superseded by this spec — embedding happens inside MemPalace's mine pipeline; Module 21 callers do not invoke ChromaDB directly.
 
 ### Module 23 (Taxonomy Enforcement)
 Phase 1 retrieval does not consume Module 23's vocabulary. Module 23 still enforces frontmatter validation at write time so Phase 2 can rely on it. Module 23's "Module 22 integration" cross-reference should be qualified: "M22's metadata pre-filter is Phase 2 (Deferred); Phase 1 uses no frontmatter filter."
@@ -173,7 +191,7 @@ Module 24 also uses MemPalace, but against Tier 3 (verbatim conversation history
 
 ## Success Criteria (Phase 1)
 
-These criteria are the target state once `knowledgeforge-core-rk4` (hook implementation) lands. They are NOT currently satisfied — see Implementation Status section above.
+Criteria became live with v7.3.1 (knowledgeforge-core-rk4). Initial verification completed against an existing wiki entry: `[Module 22] near-duplicate detected` warning emitted correctly. Ongoing measurement per the table below.
 
 | Metric | Target | Measurement |
 |--------|--------|-------------|
@@ -250,7 +268,7 @@ Phase 2 work is gated by observed evidence. Any one of these signals — when re
 
 2. **Observed false negative.** Orchestrator fails to surface an obviously-relevant wiki entry that exists, in a session where it should have. File a `wiki/diagnostics/YYYY-MM-DD_module22-false-negative-*.md` entry when observed. Two such reports = trigger.
 
-3. **Duplicate creep past threshold.** `mempalace_check_duplicate` at threshold 0.9 misses a near-duplicate and a duplicate gets filed. File `wiki/diagnostics/YYYY-MM-DD_module22-duplicate-miss-*.md`. One report = investigate; two = trigger.
+3. **Duplicate creep past threshold.** `mempalace_check_duplicate` at threshold 0.85 misses a near-duplicate and a duplicate gets filed. File `wiki/diagnostics/YYYY-MM-DD_module22-duplicate-miss-*.md`. One report = investigate; two = trigger.
 
 4. **User-reported "search isn't finding things."** Subjective report from David. Single report = trigger immediately (priority overrides quantitative signals).
 
@@ -297,7 +315,7 @@ except BaseException as e:  # BaseException, not Exception — argparse may rais
     sys.stderr.write(f"[Module 22 FALLBACK] import failed: {e}\n")
 else:
     try:
-        result = tool_check_duplicate(content=entry_text, threshold=0.9)
+        result = tool_check_duplicate(content=entry_text, threshold=0.85)
         if result.get("is_duplicate"):
             sys.stderr.write(f"[Module 22] near-duplicate detected for {file_path}: ...\n")
     except Exception as e:
