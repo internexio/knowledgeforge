@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Knowledge Accretion
-  version: 7.0.5
+  version: 7.0.6
   purpose: Cross-cutting detection-and-routing behavior that recognizes when mode outputs contain knowledge worth persisting and either auto-files it (Claude Code) or surfaces it as a compilation candidate (Claude Projects)
   topics: [knowledge-persistence, compile-query-enhance, wiki-generation, accretion-signals, knowledge-base-maintenance]
   contexts: [all-mode-execution, knowledge-management, session-outputs, persistent-storage]
@@ -13,6 +13,13 @@ module:
   related: [07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 02_Builder_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model]
   added_in: "6.2"
   changelog:
+    7.0.6:
+      date: 2026-05-24
+      driver: knowledgeforge-core-8xq
+      changes:
+        - Updated step_4b_embedding to reflect MemPalace adoption — embedding happens inside MemPalace's mine pipeline (which wraps ChromaDB internally), not via direct ChromaDB calls from this module
+        - step_4b_embedding's metadata description corrected — Phase 1 of Module 22 does NOT consume frontmatter at retrieval time; metadata is preserved at write time for Phase 2 readiness
+        - rebuild_trigger reference clarified — Module 22's index rebuild is automatic via mempalace-wiki-mine.py (PostToolUse hook), not invoked from this module
     7.0.5:
       date: 2026-04-30
       changes:
@@ -370,9 +377,9 @@ claude_code_runtime:
       tag_count: "1–5 tags required. Reject outside this range."
 
     step_4b_embedding:
-      action: "Embed entry content using configured embedding model (Module 22 spec)"
-      upsert: "Insert into Tier 0 vector index (ChromaDB/LanceDB) with metadata: {domain, topic, tags, importance, created_at, last_accessed, grounding_score}"
-      rebuild_trigger: "If this is the first entry for a domain/topic combination, trigger Module 22 index rebuild"
+      action: "Embedding happens inside MemPalace's mine pipeline — Module 21 does not invoke an embedder directly. The mempalace-wiki-mine.py PostToolUse hook fires on every wiki write and calls `python -m mempalace mine` which ChromaDB-indexes the entry."
+      metadata_written: "Frontmatter fields (domain, topic, tags, importance, created_at, last_accessed, grounding_score, staleness_risk) are present in the on-disk markdown for human readers and Phase 2 readiness. Module 22 Phase 1 does NOT consume these at retrieval time."
+      rebuild_trigger: "No manual rebuild needed — mempalace-wiki-mine maintains the index incrementally on every Write/Edit/MultiEdit. If MemPalace's index is lost, run `python -m mempalace mine <wiki_dir>` to re-index from disk."
 
     step_5_file:
       - Write compiled markdown to {wiki_root}/{domain}/{topic}.md
@@ -1067,13 +1074,11 @@ grounding < 0.6 → Surface with caveat; do not auto-file
 
 ## Filing Protocol Gates
 
-Before disk write, two gates must pass:
+**Gate 4a (Taxonomy, M23):** Before disk write, validate `domain`, `topic`, and `tags` against controlled vocabulary. On fail: reject with nearest-match suggestion. Never auto-assign. This IS a blocking gate.
 
-**Gate 4a (Taxonomy, M23):** Validate `domain`, `topic`, and `tags` against controlled vocabulary. On fail: reject with nearest-match suggestion. Never auto-assign.
+**Gate 4b (Duplicate check, M22 Phase 1):** AFTER disk write (PostToolUse), `mempalace-wiki-mine.py` calls `tool_check_duplicate(content, threshold=0.9)` via direct Python import from `mempalace.mcp_server`. This is **detect-and-warn**, not block — the file is already on disk by the time the hook fires. On `is_duplicate=true`: emit `[Module 22] near-duplicate detected for <path>` to stderr. On MemPalace unavailable: emit `[Module 22 FALLBACK]` and proceed. The mining run proceeds regardless of the dup result.
 
-**Gate 4b (Embedding, M22):** After taxonomy passes, embed entry content and upsert into Tier 0 vector index. First new domain/topic combination → trigger index rebuild.
-
-Filing to disk is Step 5, after both gates pass.
+Filing to disk is Step 5, gated only by 4a. Gate 4b runs post-write and is informational. Phase 2 (M22 v7.4+, deferred) will add a pre-write embedding gate.
 
 ## Over-Accretion Warning
 

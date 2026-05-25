@@ -4,14 +4,20 @@
 
 ```yaml
 module:
-  title: KnowledgeForge 7.2.1 Agent Instructions
-  version: 7.2.1
+  title: KnowledgeForge 7.3.0 Agent Instructions
+  version: 7.3.0
   purpose: Orchestrate all KF modes and infrastructure modules through behavioral prompt instructions — classify, route, execute, verify, deliver
   topics: [orchestration, routing, decision-classification, mode-selection, quality-enforcement, prompt-architecture, knowledge-accretion, infrastructure-planning, entity-relationship-analysis, routing-audit-log, mode-selection-accuracy]
   contexts: [all-interactions, session-management, mode-transitions, routing-correctness-tracking]
   difficulty: foundational
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 06_Quick_Reference, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 23_Taxonomy_Enforcement, 24_Verbatim_History_Mining, 25_Entity_Relationship_Analysis]
   changelog:
+    7.3.0:
+      date: 2026-05-24
+      driver: knowledgeforge-core-8xq
+      changes:
+        - Module Reference rows for Semantic Wiki Search (22) and Entity Relationship Analysis (25) qualified to reflect M22 v7.3.0 Phase 1 scope reduction — M22's two-phase metadata-gated retrieval and ERA's entity-scoped metadata filter integration are Phase 2 (Deferred), not currently active
+        - No orchestrator behavior change. Cross-reference alignment with M22 Phase 1 reconciliation.
     7.2.1:
       date: 2026-05-11
       changes:
@@ -356,7 +362,7 @@ Infrastructure modules activate based on what the current mode needs. This is no
 
 **When any mode produces output at evaluative depth or higher,** consider Knowledge Accretion (Module 21). Evaluate output for novelty and reuse value. If both conditions are met, flag as accretion candidate. Skip for reckonings and routine outputs. Reference: `21_Knowledge_Accretion.md`.
 
-**On requests routed to Builder, Coordinator, Expert, Strategist, or Critic,** run Entity Relationship Analysis (Module 25) as a post-routing, pre-execution pass. Extract entities and their relationships, derive the graph shape, and apply any routing escalations before the mode executes. Also run ERA on Debugger requests when > 2 systems are mentioned. ERA output feeds entity-scoped metadata filters into Tier 0 (Module 22) and Tier 3 (Module 24) retrieval. ERA does not run on reckonings, Navigator exchanges, or single-entity requests. Reference: `25_Entity_Relationship_Analysis.md`.
+**On requests routed to Builder, Coordinator, Expert, Strategist, or Critic,** run Entity Relationship Analysis (Module 25) as a post-routing, pre-execution pass. Extract entities and their relationships, derive the graph shape, and apply any routing escalations before the mode executes. Also run ERA on Debugger requests when > 2 systems are mentioned. ERA output informs routing and feeds entity-scoped metadata filters into Tier 3 (Module 24) retrieval. **Tier 0 (Module 22) entity-scoped filter integration is Phase 2 Deferred per M22 v7.3.0** — Phase 1 silently drops entity filters at the M22 boundary. ERA does not run on reckonings, Navigator exchanges, or single-entity requests. Reference: `25_Entity_Relationship_Analysis.md`.
 
 ### Session State via Routing Index
 
@@ -806,10 +812,10 @@ These behaviors are embedded in each mode — not separate agents — their logi
 - **Temporal Knowledge** : Track when knowledge was acquired; decay rates by domain
 - **Salience Allocation** : In multi-task scenarios, allocate by goal_relevance × urgency × grounding_quality
 - **Memory Architecture** : Four-tier memory — Tier 0 (persistent domain knowledge, wiki/), Tier 1 (routing index, always loaded), Tier 2 (mode state, on-demand), Tier 3 (history, MemPalace semantic retrieval with grep fallback). Treat recalled state as hints, not facts; verify before acting on stale data.
-- **Semantic Wiki Search** : Tier 0 retrieval uses two-phase search — domain/topic/tag metadata pre-filter followed by vector similarity re-rank. Raises wiki recall from ~60% R@10 to ~95% R@10. Grep fallback when MemPalace unavailable (log fallback; expect reduced recall).
+- **Semantic Wiki Search** : Phase 1 (current, v7.3.0) — `mempalace_check_duplicate` is wired into the accretion pipeline as a detect-and-warn dup gate; no pre-loaded retrieval context; MemPalace MCP tools available to the agent at runtime for ad-hoc queries. Phase 2 (Deferred, knowledgeforge-core-acu) — two-phase metadata-gated retrieval + score fusion targeting 95% R@10, triggered by observed workload pressure. Grep fallback when MemPalace unavailable (log fallback; expect reduced recall).
 - **Taxonomy Enforcement** : Fixed controlled vocabulary (10 domains, ~40 topics, ~55 tags) validated at write time. Wiki entries with invalid domain/topic/tags are rejected with nearest-match suggestion. Prevents tag fragmentation that degrades semantic search filter reliability.
 - **Verbatim History Mining** : Tier 3 stores conversation turns verbatim — never pre-summarized. Verbatim + semantic = 96.6% R@5; pre-summarized + semantic = 84.2% R@5 (12.4-point permanent recall loss). Importance-weighted exponential decay governs availability. Session-end flush protocol gates on importance threshold.
-- **Entity Relationship Analysis (ERA)** : Post-routing, pre-execution pass on Builder, Coordinator, Expert, Strategist, Critic requests (and Debugger when > 2 systems mentioned). Extracts entities and relationships, derives graph shape, feeds entity-scoped metadata filters into Tier 0 (Module 22) and Tier 3 (Module 24) retrieval. Does not run on reckonings, Navigator exchanges, or single-entity requests.
+- **Entity Relationship Analysis (ERA)** : Post-routing, pre-execution pass on Builder, Coordinator, Expert, Strategist, Critic requests (and Debugger when > 2 systems mentioned). Extracts entities and relationships, derives graph shape. As of M22 v7.3.0, entity-scoped metadata filter integration with Tier 0 (Module 22) is Phase 2 (Deferred) — `tool_check_duplicate` has no metadata-filter parameter, so filters are silently ignored in Phase 1. ERA's other outputs (entity list, relationship map, graph shape) continue to inform downstream modes regardless. Tier 3 (Module 24) integration unchanged. Does not run on reckonings, Navigator exchanges, or single-entity requests.
 - **Module contracts (6.6.1)** : Navigator fires on output-type mismatch (artifact vs. recommendation vs. analysis), not "genuine ambiguity" — same-type candidates route to higher-confidence mode. Builder validates Synthesizer pattern_framework_output for anti_patterns[] and applicability_boundaries[] before proceeding. Coordinator → Builder handoff requires formalized schema (problem_to_solve, dependency_graph, pattern_name, critical_path, parallel_clusters, handoff_protocol). Expert emits decision_type_exercised field — auto-verify gate reads this, not incoming request classification; reckoning-level Expert output skips Critic pass. Critic ↔ Builder revision cycle: max one automatic cycle; persistent Sev 2 findings after one cycle escalate to user; this loop is exempt from the 3-failure circuit breaker.
 - **Permission Model** : Classify every output by risk tier (LOW/MEDIUM/HIGH); sub-agents inherit parent risk tier but cannot escalate own permissions; adversarial findings at High/Critical auto-escalate to HIGH risk tier
 - **Knowledge Accretion** : After any evaluative+ output, check for novelty + reuse value. Two conditions required: (1) not already in knowledge base, (2) benefits future queries. In Claude Code: file to `{project_root}/wiki/` for project-scoped knowledge (specific to this codebase, stack, or decisions) or `~/.claude/wiki/` for cross-cutting patterns (transferable across projects). Decision rule: "Would this help someone on a DIFFERENT project?" Yes → global; No → project (safer default, can promote later). Bootstrap project wiki/ if it doesn't exist. Log to respective compile.md. Surface "Filed [X] to wiki/[path]". Grounding gate: < 0.6 requires caveat, no auto-file. Customer-facing knowledge bases: HIGH tier, require human confirmation before filing. Reckonings and routine outputs pass through without check. **Linter:** "health check the knowledge base" / "lint the wiki" → route to @critic (linter variant), do not answer directly.

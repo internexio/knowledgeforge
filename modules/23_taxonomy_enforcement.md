@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Taxonomy Enforcement
-  version: 6.5.1
+  version: 6.5.2
   purpose: Fixed controlled vocabulary for wiki entry domain/topic/tags, enforced at write time — prevents taxonomy drift, maintains Module 22 metadata filter reliability, and ensures cross-session consistency of knowledge classification
   topics: [taxonomy, controlled-vocabulary, knowledge-classification, write-time-validation, metadata-quality]
   contexts: [knowledge-accretion, wiki-filing, accretion-gate, linter-runs]
@@ -13,6 +13,17 @@ module:
   related: [21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 19_Memory_Architecture, 17_Temporal_Knowledge]
   added_in: "6.5"
   changelog:
+    6.5.2: |
+      - Updated Module 22 cross-reference to acknowledge Phase 1 vs Phase 2 split
+        (knowledgeforge-core-8xq). Phase 1 of M22 does NOT consume Module 23's
+        vocabulary at retrieval time — frontmatter is preserved at write time for
+        Phase 2 readiness only. Write-time validation in this module remains
+        mandatory: it is what makes Phase 2 deployable when triggered.
+      - Module 24 cross-reference (Integration Points) updated to qualify
+        cross-tier filtering as Phase 2 Deferred — the Tier 0 half of the
+        cross-tier filter is M22 Phase 2 work. Caught by fourth critic pass
+        as a reverse-direction reference.
+      - No vocabulary changes.
     6.5.1: |
       - Vocabulary extension: added 3 tags (scheduling, packaging, filesystem)
         based on infrastructure-domain audit. scheduling distinguishes cron /
@@ -309,13 +320,13 @@ Adding a new term requires:
 Taxonomy validation runs as Gate 4a in the Module 21 filing protocol, before grounding check and before embedding. An entry that fails taxonomy validation is rejected — returned to the caller with specific rejection reason and nearest-match suggestions. Module 21 does not file entries with invalid taxonomy.
 
 ### Module 22 (Semantic Wiki Search)
-Module 22's metadata pre-filter reads `domain`, `topic`, and `tags` and treats them as controlled vocabulary. The filter's reliability guarantee depends entirely on Module 23 enforcement at write time. If Module 23 is bypassed, Module 22 accuracy degrades toward the unfiltered ~60% R@10 baseline.
+**As of M22 v7.3.0, Phase 1 of Module 22 does not consume this module's vocabulary at retrieval time.** Phase 1 wires only the wing-less duplicate-check gate (`mempalace_check_duplicate`). Module 22's metadata pre-filter — which reads `domain`, `topic`, and `tags` as controlled vocabulary — is Phase 2 (Deferred), triggered by observed evidence (see M22's Phase 2 Upgrade Triggers). Write-time enforcement here remains mandatory: it is the prerequisite that lets Phase 2 deploy cleanly when triggered. If Module 23 is bypassed before Phase 2 lands, the Phase 2 filter — when activated — would degrade toward the unfiltered ~60% R@10 baseline.
 
 ### Module 19 (Memory Architecture)
 The taxonomy vocabulary is a Tier 0 artifact — it lives in `wiki/taxonomy/vocabulary.yaml` and is version-controlled alongside wiki entries.
 
 ### Module 24 (Verbatim History Mining)
-Tier 3 entries (verbatim conversation turns stored in MemPalace) also use Module 23's domain/topic/tag vocabulary. This enables cross-tier metadata filters — a query scoped to `domain=architecture, topic=memory-systems` retrieves relevant wiki entries (Module 22) and relevant historical turns (Module 24) in a single coherent filter pass.
+Tier 3 entries (verbatim conversation turns stored in MemPalace) also use Module 23's domain/topic/tag vocabulary. **When M22 Phase 2 lands (knowledgeforge-core-acu)**, this enables cross-tier metadata filters — a query scoped to `domain=architecture, topic=memory-systems` will simultaneously retrieve wiki entries (Module 22 Phase 2) and historical turns (Module 24) in a single coherent filter pass. In Phase 1, this cross-tier filter is NOT active on the Tier 0 side — M22's frontmatter-based filter is deferred. Write-time vocabulary enforcement here remains mandatory so Phase 2 can deploy cleanly when triggered.
 
 ---
 
@@ -355,7 +366,7 @@ Tier 3 entries (verbatim conversation turns stored in MemPalace) also use Module
 - `21_Knowledge_Accretion.md` — taxonomy validation is Gate 4a in the filing protocol
 - `22_Semantic_Wiki_Search.md` — filter reliability depends on controlled vocabulary
 - `19_Memory_Architecture.md` — vocabulary file is a Tier 0 artifact
-- `24_Verbatim_History_Mining.md` — Tier 3 entries also use this vocabulary for cross-tier filtering
+- `24_Verbatim_History_Mining.md` — Tier 3 entries also use this vocabulary; cross-tier filtering activates when M22 Phase 2 lands (knowledgeforge-core-acu)
 - `17_Temporal_Knowledge.md` — `staleness_risk` values are also a controlled vocabulary (same principle)
 
 ## CC Doc

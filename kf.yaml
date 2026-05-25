@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.2.1
+version: 7.3.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -33,6 +33,45 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.3.0
+    date: 2026-05-24
+    driver: knowledgeforge-core-8xq
+    note: |
+      Module 22 Phase 1 reconciliation with MemPalace adoption (post adversarial review).
+
+      Original v6.5.0 spec assumed direct ChromaDB integration; reality is that MemPalace
+      (already installed + connected as MCP, wraps ChromaDB internally) provides the vector
+      store. Strategist analysis selected a Phased A→D approach: Phase 1 = minimum-viable
+      MemPalace wrapping, Phase 2 = layered fusion + frontmatter filter when triggered.
+
+      Initial Builder draft included orchestrator-context retrieval via kf-route.py and
+      wing/room pre-filter scoping. Adversarial-critic review found 5 sev-2+ flaws:
+      (1) check-duplicate CLI subcommand doesn't exist; (2) wing derivation in
+      mempalace-wiki-mine.py collapses subdomains into repo-level wing; (3) M21/M23
+      cross-references contradicted Phase 1 scope; (4) "zero duplicates filed" criterion
+      structurally unachievable in PostToolUse; (5) wing inference + additionalContext
+      contract in kf-route.py was vague and didn't match actual hook output schema.
+
+      Scope reduced post-critic: Phase 1 is now JUST the dup-check gate (via direct Python
+      import from mempalace.mcp_server, bypassing both CLI and MCP runtime). Wing/room
+      scoping, score fusion, and orchestrator-context retrieval moved to Phase 2
+      (knowledgeforge-core-acu), with the wing-derivation defect listed as a Phase 2
+      prerequisite. M21 and M23 cross-references updated.
+    changes:
+      - Module 22 (7.3.0) — full rewrite + post-critic scope reduction. Phase 1 = dup-check only (wing-less, direct Python import). Phase 2 (Deferred) preserves the v6.5.0 design intent for fusion + frontmatter filter + wing scoping. Anti-patterns updated with explicit "CLI subcommand doesn't exist" and "wing-scoping check_duplicate is a no-op" rules. 4 Phase 2 Upgrade Triggers documented. Phase 2 prerequisites listed (including wing-derivation fix in mempalace-wiki-mine.py).
+      - Module 21 (7.0.6) — step_4b_embedding rewritten: embedding happens inside MemPalace's mine pipeline, not via direct ChromaDB. Metadata preservation acknowledged as Phase 2 readiness, not Phase 1 retrieval input. rebuild_trigger clarified — index maintained automatically by mempalace-wiki-mine PostToolUse hook.
+      - Module 23 (6.5.2) — Module 22 cross-reference updated: Phase 1 of M22 does not consume Module 23 vocabulary at retrieval time; write-time enforcement remains mandatory as a Phase 2 prerequisite.
+      - Module 00 (7.3.0) — Module Reference rows for Semantic Wiki Search (22) and Entity Relationship Analysis (25) qualified to Phase 1 reality; title and version bumped to track system version. Caught by second critic pass — dragnet for stale Phase-2-as-current cross-references.
+      - Module 25 (7.0.3) — Memory Retrieval Enhancement section qualified: entity-scoped metadata filter integration with M22 is Phase 2; Phase 1 silently drops the filter args. M24 integration unchanged.
+      - Module 21 (7.0.6) addendum — CC Doc Gate 4b rewritten: was "blocking embedding gate (pre-write)", now correctly "detect-and-warn dup-check (post-write PostToolUse)". Caught by second critic pass.
+      - "Module 22 (7.3.0) addendum — import safety qualifier added: `from mempalace.mcp_server import ...` instantiates `KnowledgeGraph()` at module-load time, so the import depends on palace initialization. Spec now mandates try/except around the import. Caught by second critic pass."
+      - Module 06 (7.3.0) — Quick Reference: FOUR locations updated for M22/M25 Phase 1 reality. Initial pass missed three (Module Reference Table M22 + M25 rows; Integration Graph M25 entry; Infrastructure Modules M25 row). Third critic pass caught these.
+      - Module 22 (7.3.0) addendum 2 — import guard upgraded from `except Exception` to `except BaseException`. argparse's `parse_known_args()` runs at mcp_server.py module-load and can raise `SystemExit` (which inherits from BaseException, not Exception). Caught by third critic pass.
+      - Module 23 (6.5.2) addendum + Module 24 (6.5.1) — reverse-direction references updated: M23 Integration Points → Module 24 subsection, M23 Related Modules bullet, and M24 entry-schema subsection all qualified cross-tier filtering as Phase 2 Deferred. Caught by fourth critic pass.
+      - Module 00 (7.3.0) addendum — orchestrator Phase-2 routing paragraph (the post-routing ERA pass) qualified: Tier 0 entity-scoped filter integration is Phase 2 Deferred; Tier 3 (M24) remains active. Caught by fourth critic pass self-dragnet.
+      - Module 22 (7.3.0) addendum 3 — Implementation Status section added making explicit that 8xq landed the SPEC, not the hook code. Phase 1 Success Criteria reframed as target state pending knowledgeforge-core-rk4 (hook implementation bead, P2, depends on 8xq). Caught by fifth critic pass — spec-to-implementation gap was a category prior passes missed by reviewing only spec artifacts.
+      - Module 22 (7.3.0) addendum 4 — pending-state qualifiers propagated to Integration Points and CC Doc sections; CC Doc insertion-point language reconciled (BETWEEN fingerprint check and mine_wiki, matching Implementation section); Phase 1 Success Criteria measurement expanded with three rows verifying insertion point, BaseException guard pattern, and bead-state. Caught by sixth critic pass — residual Implementation Status disclaimer scope.
+      - Phase 2 trigger bead filed as knowledgeforge-core-acu (P4, deferred-triggered).
   - version: 7.2.1
     date: 2026-05-11
     backported_from: knowledgeforge-cp@5feae69

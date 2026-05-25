@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Entity Relationship Analysis
-  version: 7.0.2
+  version: 7.0.3
   purpose: Extract entities and their relationships from queries and context to improve routing accuracy, multi-hop reasoning, and memory retrieval — single-entity analysis misses relational complexity that changes which mode and chain is correct
   topics: [entity-extraction, relationship-mapping, routing-signals, multi-hop, graph-analysis]
   contexts: [decision-classification, mode-routing, memory-retrieval, coordinator-planning]
@@ -13,6 +13,12 @@ module:
   related: [13_Decision_Classification, 19_Memory_Architecture, 22_Semantic_Wiki_Search, 03_Coordination_Patterns, 18_Salience_Allocation, 10_Strategist_Agent]
   added_in: "6.5"
   changelog:
+    7.0.3:
+      date: 2026-05-24
+      driver: knowledgeforge-core-8xq
+      changes:
+        - Memory Retrieval Enhancement section qualified — entity-scoped metadata filter integration with M22 is Phase 2 (Deferred). `mempalace_check_duplicate` (Phase 1) has no metadata filter parameter; passing entity/relationship/domain filters in Phase 1 is silently dropped. ERA's other outputs (entity list, relationship map, graph shape) remain consumed by downstream modes.
+        - Tier 3 (M24) integration unchanged.
     7.0.2:
       date: 2026-04-29
       changes:
@@ -166,7 +172,9 @@ This mirrors the A-RAG hierarchical retrieval pattern (Hutchinson, 2025): keywor
 
 ## Memory Retrieval Enhancement
 
-ERA's entity list and relationship map are passed as metadata filters to Module 22 (Semantic Wiki Search) and Module 24 (Verbatim History Mining):
+**M22 Phase 1 limitation (as of v7.3.0):** `tool_check_duplicate` and the Phase 1 hook integration do NOT accept metadata filter parameters. Entity-scoped metadata filtering against Module 22 (Semantic Wiki Search) is Phase 2 (Deferred) work — tracked in `knowledgeforge-core-acu`. ERA's entity list and relationship map continue to inform downstream modes (Coordinator, Builder, Expert, Strategist, Critic) and Module 24 (Verbatim History Mining) integration is unchanged. The schema below documents the intended Phase 2 surface; in Phase 1, the `domain` / `entities` / `relationships` fields are ignored by M22.
+
+ERA's entity list and relationship map are passed as metadata filters to Module 22 (Semantic Wiki Search) [Phase 2] and Module 24 (Verbatim History Mining) [active]:
 
 ```yaml
 # ERA output metadata filter example

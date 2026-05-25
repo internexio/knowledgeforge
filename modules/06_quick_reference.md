@@ -5,13 +5,22 @@
 ```yaml
 module:
   title: KnowledgeForge 7.2 Quick Reference
-  version: 7.2.0
+  version: 7.3.0
   purpose: Quick lookup for all patterns, checklists, mode triggers, integration flows, and core concepts across the full KF 7.2 framework
   topics: [quick-reference, cheatsheet, mode-selection, integration-flows, checklists, anti-patterns, variant-taxonomy, routing-audit-log]
   contexts: [all-interactions, lookup, orientation]
   difficulty: foundational
   related: [Agent_Instructions (orchestrator), 01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 23_Taxonomy_Enforcement, 24_Verbatim_History_Mining, 25_Entity_Relationship_Analysis]
   changelog:
+    7.3.0:
+      date: 2026-05-24
+      driver: knowledgeforge-core-8xq
+      changes:
+        - Four locations updated for M22 / M25 Phase 1 reality (initial pass missed three; caught by third critic pass):
+          * Infrastructure Modules table (line 192) — M22 row: "metadata-gated semantic search" → Phase 1 dup-check gate; Phase 2 deferred
+          * Infrastructure Modules table (line 205) — M25 row: entity-scoped filters qualified — Tier 0 (M22) Phase 2 Deferred, Tier 3 (M24) active
+          * Module Reference Table — M22 row (line 604) and M25 row (line 607) qualified
+          * Integration Graph (line 708) — M25 ↔ 22 marked Phase 2 Deferred
     7.2.0:
       date: 2026-05-11
       changes:
@@ -189,7 +198,7 @@ Formalized in 7.2 via `variants[]` field on Expert (Module 05) and Critic (Modul
 
 | Module | Purpose | Key Concept |
 |--------|---------|-------------|
-| **22 Semantic Wiki Search** | Tier 0 retrieval via metadata-gated semantic search | Filter-first: domain/topic/tag pre-filter → embedding re-rank |
+| **22 Semantic Wiki Search** | Tier 0 retrieval via MemPalace (Phase 1: dup-check gate; Phase 2 deferred: metadata-gated retrieval) | Phase 1: `tool_check_duplicate` via direct Python import, detect-and-warn. Phase 2 (acu): domain/topic/tag pre-filter + score fusion, workload-triggered |
 | **23 Taxonomy Enforcement** | Controlled vocabulary shared across Tier 0 and Tier 3 | Fixed domain/topic/tag vocabulary validated at write time |
 | **24 Verbatim History Mining** | Tier 3 retrieval via verbatim storage + semantic search | Verbatim + semantic = 96.6% R@5; pre-summarized = 84.2% |
 
@@ -197,7 +206,7 @@ Formalized in 7.2 via `variants[]` field on Expert (Module 05) and Critic (Modul
 
 | Module | Purpose | Key Concept |
 |--------|---------|-------------|
-| **25 Entity Relationship Analysis** | Post-routing, pre-execution entity extraction + relationship mapping | Graph shape → routing escalation + entity-scoped memory filters for Tier 0/Tier 3 |
+| **25 Entity Relationship Analysis** | Post-routing, pre-execution entity extraction + relationship mapping | Graph shape → routing escalation. Entity-scoped memory filters: Tier 3 (M24) active; Tier 0 (M22) is Phase 2 Deferred per M25 v7.0.3 |
 | **ERA domain (Module 05)** | Expert variant — adversarial depth applied to entity graphs, module dependencies, agent contracts | Implicit entity detection + cardinality violation + handoff contract auditing; produces ERA Specification Template (Module 04) |
 
 ## KF-N Shorthand → Module Mapping
@@ -596,10 +605,10 @@ Every spec needs:
 | `19_Memory_Architecture` | Four-tier memory (6.1, extended 6.2) + routing_index_schema (6.6.1) + routing_decision_log schema v1.0 + tier_2_metric_aggregates (7.2) + re_routing_triggers + variant ID composition rule (7.2.1) |
 | `20_Permission_Model` | Risk tiers + capability restrictions + circuit breakers (6.1) |
 | `21_Knowledge_Accretion` | Compile-query-enhance loop + linter (6.2) + autonomous maintenance + access logging (6.3.1) + accretion_calibration (6.6.1) + Dispatcher Boundary (7.0.2) + roadmap_phase_completed trigger (7.0.5) |
-| `22_Semantic_Wiki_Search` | Tier 0 retrieval — metadata-gated semantic search over wiki/ |
+| `22_Semantic_Wiki_Search` | Tier 0 retrieval — Phase 1 (v7.3.0): `tool_check_duplicate` dup-gate, detect-and-warn. Phase 2 deferred (acu): metadata-gated semantic search + score fusion |
 | `23_Taxonomy_Enforcement` | Controlled vocabulary shared across Tier 0 and Tier 3 |
 | `24_Verbatim_History_Mining` | Tier 3 retrieval — verbatim + semantic search via MemPalace sidecar (96.6% R@5) |
-| `25_Entity_Relationship_Analysis` | Post-routing, pre-execution entity extraction + relationship mapping + graph shape → routing escalation + entity-scoped memory filters (6.6) |
+| `25_Entity_Relationship_Analysis` | Post-routing, pre-execution entity extraction + relationship mapping + graph shape → routing escalation. Entity-scoped filters: M24 (Tier 3) active; M22 (Tier 0) Phase 2 Deferred per M25 v7.0.3 |
 
 ---
 
@@ -700,7 +709,7 @@ Expert (ERA) → Builder → AUTO: Critic (adversarial): Full ERA chain with ver
 22 Semantic Wiki Search ↔ 19 (Tier 0), 21, 23 (taxonomy validation)
 23 Taxonomy Enforcement ↔ 19, 21, 22, 24 (shared vocabulary)
 24 Verbatim History Mining ↔ 19 (Tier 3), 21, 23
-25 Entity Relationship Analysis ↔ 00 (post-routing pass), 19, 22, 24 (entity-scoped filters)
+25 Entity Relationship Analysis ↔ 00 (post-routing pass), 19, 22 (entity-scoped filters: Phase 2 Deferred), 24 (entity-scoped filters: active)
 ```
 
 ---

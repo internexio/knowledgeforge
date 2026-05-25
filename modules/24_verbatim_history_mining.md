@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Verbatim History Mining
-  version: 6.5.0
+  version: 6.5.1
   purpose: Tier 3 rewrite from grep-only to semantic vector search via MemPalace sidecar — verbatim storage prevents the 12.4-point permanent recall loss caused by pre-summarization; importance-weighted exponential decay governs effective availability over time
   topics: [tier-3, verbatim, semantic-search, memory-systems, decay, retrieval]
   contexts: [cross-session-recall, history-mining, pattern-detection, decision-archaeology]
@@ -13,6 +13,15 @@ module:
   related: [19_Memory_Architecture, 22_Semantic_Wiki_Search, 23_Taxonomy_Enforcement, 21_Knowledge_Accretion, 17_Temporal_Knowledge]
   added_in: "6.5"
   changelog:
+    6.5.1: |
+      - Cross-tier filtering reference qualified — the Tier 0 half of cross-tier
+        metadata filtering (M22) is Phase 2 Deferred per knowledgeforge-core-8xq.
+        Phase 1 has no active cross-tier filter; M24 retains vocabulary at write
+        time for Phase 2 readiness. Caught by fourth critic pass as a reverse-
+        direction reference. No M24 behavioral change — purely documentation.
+      - See also: knowledgeforge-core-b3g (M24 reconciliation follow-up, P4)
+        which tracks whether M24's own retrieval surface needs a similar Phase 1
+        / Phase 2 split given MemPalace's tool_search signature constraints.
     6.5.0: |
       - Initial module — replaces grep-only Tier 3
       - Verbatim storage: 96.6% R@5 vs 84.2% R@5 (pre-summarized) — 12.4-point permanent gap
@@ -112,7 +121,7 @@ last_accessed: "2026-04-05T14:22:00Z"
 project: "knowledgeforge-cp"            # optional project scoping
 ```
 
-Domain/topic/tags for Tier 3 entries use Module 23's controlled vocabulary. This makes cross-tier filtering possible: a query scoped to `domain=architecture, topic=memory-systems` can simultaneously retrieve wiki entries (Module 22) and historical turns (Module 24) using the same filter pass.
+Domain/topic/tags for Tier 3 entries use Module 23's controlled vocabulary. **When M22 Phase 2 lands (knowledgeforge-core-acu)**, this will make cross-tier filtering possible: a query scoped to `domain=architecture, topic=memory-systems` could simultaneously retrieve wiki entries (Module 22 Phase 2) and historical turns (Module 24) using the same filter pass. In Phase 1, the wiki/Tier 0 side of this filter is NOT active — M22's frontmatter-based filter is deferred. M24 retains the vocabulary at write time so Phase 2 can activate the cross-tier surface when triggered.
 
 ---
 

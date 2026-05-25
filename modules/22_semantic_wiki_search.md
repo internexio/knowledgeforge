@@ -5,14 +5,30 @@
 ```yaml
 module:
   title: Semantic Wiki Search
-  version: 6.5.0
-  purpose: Metadata-gated two-phase retrieval over the Tier 0 wiki — domain/topic/tag pre-filter followed by vector similarity scoring — closing the 35-point recall gap between keyword search (~60% R@10) and filtered semantic search (~95% R@10)
-  topics: [retrieval, semantic-search, metadata-filter, embedding, vector-index, wiki-search]
+  version: 7.3.0
+  purpose: Retrieval contract over the Tier 0 wiki — KF's specification on top of MemPalace's tool surface, defining how the accretion pipeline gates against duplicates and how retrieval degrades gracefully when the vector backend is unavailable
+  topics: [retrieval, semantic-search, mempalace, vector-index, wiki-search, duplicate-detection]
   contexts: [knowledge-retrieval, accretion-check, linter-runs, cross-session-queries]
-  difficulty: advanced
+  difficulty: intermediate
   related: [19_Memory_Architecture, 21_Knowledge_Accretion, 23_Taxonomy_Enforcement, 24_Verbatim_History_Mining, 17_Temporal_Knowledge]
   added_in: "6.5"
   changelog:
+    7.3.0: |
+      - Phase 1 reconciliation with MemPalace adoption (knowledgeforge-core-8xq)
+      - Replaced direct ChromaDB prescription with MemPalace MCP / direct-import tool surface
+      - Phase 1 scope narrowed (post adversarial review): dup-check gate only — no wing/room
+        pre-filter, no score fusion, no orchestrator-context retrieval. Single-purpose,
+        verifiable, shippable.
+      - Score fusion, wing/room pre-filter, frontmatter metadata filter, and orchestrator-
+        context retrieval all preserved under "Phase 2 (Deferred)" — workload-triggered
+        not scheduled. Trigger bead: knowledgeforge-core-acu.
+      - Phase 2 prerequisites enumerated explicitly — including the known wing-derivation
+        defect in mempalace-wiki-mine.py (single-level wing collapses subdomains into
+        repo-wing; must be fixed before Phase 2 can scope by subdomain)
+      - Cross-references in M21 and M23 updated to acknowledge Phase 1 vs Phase 2 boundary
+      - Anti-Patterns updated: added "bypassing mempalace_check_duplicate during accretion";
+        relocated fusion / wing-filter / frontmatter-filter anti-patterns to Phase 2
+      - Strategist trade-off analysis (Phased A→D) recorded in 8xq comments
     6.5.0: |
       - Initial module — closes the retrieval half of the compile-query-enhance loop
       - Two-phase retrieval: metadata pre-filter + semantic re-rank
@@ -26,37 +42,193 @@ module:
 
 ## Core Approach
 
-Keyword search fails on paraphrase, synonym, and conceptual queries. Pure semantic search without metadata pre-filtering achieves ~60% R@10 on a heterogeneous wiki — the unrelated-domain noise drowns the relevant signal. Hierarchical metadata pre-filtering raises this to ~95% R@10. The 35-point gain costs nothing at query time; it requires only that entries carry structured taxonomy fields at write time (Module 23) and pre-computed embeddings (Module 21).
+KF retrieves from the Tier 0 wiki through MemPalace, which wraps a ChromaDB vector store. MemPalace's `mempalace mine` CLI is invoked by `mempalace-wiki-mine.py` (PostToolUse on Write/Edit/MultiEdit) on every wiki write, keeping the index current without explicit re-indexing. KF's contract with MemPalace lives in this module.
 
-**Two-phase retrieval. Order is not interchangeable.**
+**Phase 1 (this spec):** narrow scope — `mempalace_check_duplicate` is wired into the accretion pipeline as a detect-and-warn gate. No semantic search, no orchestrator-context retrieval, no wing/room scoping. The dup-check is wing-less by design (MemPalace's `tool_check_duplicate` signature accepts only `(content, threshold)`), so Phase 1 has zero dependency on wing derivation. Grep fallback is the retrieval surface for everything else.
 
-Phase 1 — Metadata pre-filter: narrow the candidate set using YAML frontmatter before any semantic scoring. Domain filtering eliminates the largest mass of irrelevant entries. Topic narrows further. Tag overlap catches edge cases.
+**Phase 2 (deferred):** wing/room pre-filter, frontmatter (`domain`/`topic`/`tags`/`importance`) filter, score fusion, and orchestrator-context retrieval are all Phase 2 work, gated by observed upgrade triggers (see "Phase 2 Upgrade Triggers"). Phase 2 also depends on fixing the wing-derivation defect in `mempalace-wiki-mine.py` (current code derives a single repo-level wing; Phase 2 needs per-subdomain wings).
 
-Phase 2 — Semantic re-rank: compute vector similarity over the filtered candidate set only. Operating on a small, already-domain-relevant set is what produces the 95% recall figure.
+Phase 1 is intentionally minimum-viable. The original v6.5.0 95% R@10 design intent is preserved in the Phase 2 section, not deleted.
+
+---
+
+## Implementation Status
+
+This spec is the **contract** for Phase 1. The hook code that satisfies the contract is tracked separately and was NOT modified by the 8xq spec-reconciliation pass.
+
+| Component | Status | Tracked in |
+|---|---|---|
+| M22 v7.3.0 spec rewrite | ✅ Landed | knowledgeforge-core-8xq |
+| M21 / M23 / M00 / M06 / M25 / M24 cross-reference updates | ✅ Landed | knowledgeforge-core-8xq |
+| `mempalace-wiki-mine.py` extension to call `tool_check_duplicate` per spec | ⏳ Pending | knowledgeforge-core-rk4 (P2, depends on 8xq) |
+
+Until the hook is wired, "Phase 1" as described below is the target state, not the current state. The spec is reviewable and compilable as-is; the hook code lands in a separate pass.
+
+---
+
+## Implementation (Phase 1)
+
+### Dup-Check Gate (only Phase 1 integration)
+
+When a wiki entry is filed, the accretion pipeline calls MemPalace's `tool_check_duplicate` to detect near-duplicates. The check is **detect-and-warn**, not block: the PostToolUse hook fires AFTER the file is on disk, so blocking is not possible at this layer. The contract: every near-duplicate that gets filed must produce a stderr WARNING that surfaces to the user.
+
+**Integration interface (for hook implementation):**
+
+```python
+# Direct Python import — bypasses both the CLI (no check-duplicate subcommand exists)
+# and the MCP runtime (hooks shouldn't depend on MCP being connected).
+from mempalace.mcp_server import tool_check_duplicate, _get_collection
+
+result = tool_check_duplicate(content=entry_text, threshold=0.9)
+if result.get("is_duplicate"):
+    matches = result.get("matches", [])
+    sys.stderr.write(
+        f"[Module 22] near-duplicate detected for {file_path}: "
+        f"{len(matches)} match(es) at similarity ≥ 0.9. "
+        f"Top match: {matches[0].get('id', '?')} ({matches[0].get('wing', '?')}/{matches[0].get('room', '?')})\n"
+    )
+```
+
+**Where this lives:** extend `~/.claude/hooks/mempalace-wiki-mine.py` to call this BEFORE the existing `mempalace mine` subprocess, scoped only to wiki/ writes. The dup-check is best-effort: any exception in this code path must not block the mining or crash the hook.
+
+### Fallback: Grep
+
+When MemPalace is unavailable (cold start before MCP connects, broken install, ChromaDB index corruption):
+
+1. Fall back to `grep -rli "<query terms>" wiki/` for any retrieval need
+2. Log to stderr: `[Module 22 FALLBACK] MemPalace unavailable — using grep. Expect reduced recall.`
+3. Never fail silently. The recall regression must be visible.
+
+### Required YAML Fields
+
+Frontmatter is preserved at write time for human readers and Phase 2 readiness. Phase 1 retrieval does not read it. Required fields per Module 21:
+
+```yaml
+domain:          # M23 controlled vocabulary — Phase 2 will filter on this
+topic:           # M23 controlled vocabulary — Phase 2 will filter on this
+tags:            # M23 vocabulary, 1–5 tags — Phase 2 will require ≥2 overlap
+importance:      # integer 1–5 — Phase 2 fusion input
+created_at:      # YYYY-MM-DD
+last_accessed:   # YYYY-MM-DD — Phase 2 recency boost input
+grounding_score: # 0.0–1.0 from Module 21 grounding gate
+staleness_risk:  # M17 vocabulary — Phase 2 fusion decay parameter
+```
+
+These fields are written by Module 21's accretion pipeline. Phase 1 does not consume them; Module 23 enforces vocabulary validity at write time so Phase 2 can rely on them when triggered.
+
+### Runtime Availability (NOT pre-loaded by hooks)
+
+MemPalace's full MCP tool surface is available to the orchestrator agent at runtime (`mempalace_search`, `mempalace_traverse`, `mempalace_find_tunnels`, `mempalace_status`, etc.). The agent MAY call these tools when an information need arises in-conversation. Phase 1 does NOT pre-load any retrieval context via hooks — that is Phase 2 work.
+
+---
+
+## Anti-Patterns
+
+| Anti-Pattern | Consequence | Correct Approach | Phase |
+|---|---|---|---|
+| Bypassing `mempalace_check_duplicate` during accretion | Duplicate wiki entries accumulate; threshold-0.9 near-dupes escape | Wire the dup-check into the accretion pipeline; emit WARNING for every detected duplicate | 1 |
+| Treating PostToolUse dup-check as a hard block | Hook fires too late — the file is already on disk | Detect-and-warn; surface to user via stderr; do NOT block the mine | 1 |
+| Calling ChromaDB directly, bypassing MemPalace | Two indexes drift; breaks MemPalace's wing/room organization | Go through MemPalace MCP tools or direct Python imports from `mempalace.mcp_server` | 1 |
+| Calling `mempalace check-duplicate` via CLI | CLI does not expose this subcommand — only `init`, `mine`, `split`, `search`, `mcp`, `compress`, `wake-up`, `repair`, `migrate`, `status`, `hook`, `instructions` | Use direct Python import: `from mempalace.mcp_server import tool_check_duplicate` | 1 |
+| Silently swallowing MemPalace failures | Hidden recall regression; users don't know retrieval is broken | Emit `[Module 22 FALLBACK]` or `[Module 22]` to stderr, fall through to grep where applicable | 1 |
+| Wing-scoping a Phase 1 dup-check | `tool_check_duplicate` has no `wing` parameter; passing one is silently ignored | Don't pass wing in Phase 1; global similarity is correct here | 1 |
+| Pre-loading retrieval context in any hook | Phase 1 intentionally has no read-side hook integration | If you need pre-loaded context, file a Phase 2 trigger | 1 |
+| Post-hoc tag filtering (filter after semantic scoring) | Wastes compute on irrelevant candidates; misses paraphrase cases | Filter before scoring (Phase 2 wraps MemPalace results client-side) | 2 |
+| Treating domain mismatch as soft penalty | Off-domain entries contaminate top-K even with low score | Domain mismatch = hard exclude in fusion layer | 2 |
+| Re-embedding all entries at query time | O(n) cost per query, unacceptable at scale | Pre-compute embeddings at write time (MemPalace handles this) | 1 |
+
+---
+
+## Integration Points
+
+### Module 21 (Knowledge Accretion)
+Accretion pipeline writes entries to `wiki/`, triggering `mempalace-wiki-mine.py` (PostToolUse). The hook (Phase 1) must call `tool_check_duplicate(entry_content, threshold=0.9)` via direct Python import, emit a stderr WARNING on duplicates, and proceed with the `mempalace mine` subprocess regardless. **(Target state — pending `knowledgeforge-core-rk4`. See Implementation Status section.)** Module 21's note about ChromaDB/LanceDB at step 4b is superseded by this spec — embedding happens inside MemPalace's mine pipeline; Module 21 callers do not invoke ChromaDB directly.
+
+### Module 23 (Taxonomy Enforcement)
+Phase 1 retrieval does not consume Module 23's vocabulary. Module 23 still enforces frontmatter validation at write time so Phase 2 can rely on it. Module 23's "Module 22 integration" cross-reference should be qualified: "M22's metadata pre-filter is Phase 2 (Deferred); Phase 1 uses no frontmatter filter."
+
+### Module 19 (Memory Architecture)
+Tier 0 (wiki/) is the corpus. Module 22 provides the dup-detection mechanism for accretion-time gating into Tier 0. Tier 1 routing index is small enough to load fully — Module 22 is not applied there.
+
+### Module 17 (Temporal Knowledge)
+Phase 1: not consumed. Phase 2: `staleness_risk` drives the recency-decay parameter in score fusion.
+
+### Module 24 (Verbatim History Mining)
+Module 24 also uses MemPalace, but against Tier 3 (verbatim conversation history) rather than Tier 0 (wiki). The two are separate MemPalace wings (`conversation-*` vs `wiki-*`) sharing the same ChromaDB backend.
+
+---
+
+## Constraints
+
+- Hooks calling MemPalace must wrap the call in `try/except` and emit `[Module 22]` or `[Module 22 FALLBACK]` to stderr on failure — never propagate to a hook crash. Graceful degradation is mandatory per CLAUDE.md.
+- The dup-check is best-effort and post-write: it CANNOT prevent a duplicate from being filed; it can only surface that one was. Treat success as "every duplicate that got filed produced a warning," not "no duplicates were filed."
+- Phase 1 hooks must not depend on MCP runtime connectivity. Use direct Python import (`from mempalace.mcp_server import tool_check_duplicate`) — this works without the MCP server running, BUT the import has TWO failure modes the hook guard must cover:
+  1. **Side-effect instantiations.** `MempalaceConfig()` and `KnowledgeGraph()` run at module-load (mcp_server.py:59-63). `KnowledgeGraph()` opens a SQLite connection to the palace; if `MEMPALACE_PALACE_PATH` is misconfigured or the palace has never been initialized, this raises a normal `Exception`. Verify palace state once via `python -m mempalace status` before deploying.
+  2. **argparse `SystemExit`.** `_parse_args()` calls `parse_known_args()` against `sys.argv` at module-load (mcp_server.py:41-54). If the hook is ever invoked with `-h` or `--help` in `sys.argv` (manual operator runs, test harnesses, hook wrappers), argparse calls `sys.exit(0)`. `SystemExit` inherits from `BaseException`, not `Exception` — a plain `except Exception` does NOT catch it.
+
+  The hook guard MUST use `except BaseException as e` (or `except (Exception, SystemExit) as e`) to cover both failure modes, then emit `[Module 22 FALLBACK] import failed: <err>` to stderr. Plain `except Exception` is insufficient — silent dup-gate disablement on `--help` invocations would result.
+- Don't call ChromaDB directly. Go through MemPalace tools.
+
+---
+
+## Success Criteria (Phase 1)
+
+These criteria are the target state once `knowledgeforge-core-rk4` (hook implementation) lands. They are NOT currently satisfied — see Implementation Status section above.
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Dup-check wired into accretion path | `mempalace-wiki-mine.py` calls `tool_check_duplicate` BETWEEN the fingerprint check and `mine_wiki()` | grep the hook for `tool_check_duplicate` import + call; verify insertion point by reading the hook source |
+| Import guard uses `except BaseException` (not `except Exception`) | covers both `KnowledgeGraph()` SQLite errors AND argparse `SystemExit` | grep the hook for `except BaseException` around the import line |
+| Bead-state verification before rk4 implementation starts | `bd show knowledgeforge-core-rk4` confirms P2 priority and depends-on 8xq | runtime check before implementing the hook |
+| Near-duplicate detection coverage | Every near-duplicate that gets filed emits a stderr WARNING | Inspect `~/.claude/logs/kf-events.jsonl` and stderr logs |
+| Unflagged near-duplicates filed | 0 in one month post-deploy | Manual spot-check: pick a handful of recent entries; run `tool_check_duplicate` retroactively; verify warnings exist |
+| Hook crash rate from MemPalace integration | 0 | stderr log inspection; check that all `mempalace-wiki-mine` invocations exit 0 |
+| Grep-fallback engagement | < 5% of wiki-touching operations | Add counter in fallback branch; weekly review |
+
+Phase 1 explicitly does NOT measure recall, precision, R@10, or any retrieval-quality metric. Those are Phase 2 targets, triggered by observed evidence.
+
+---
+
+## Phase 2 (Deferred)
+
+This section preserves the v6.5.0 design intent. Implement only when one of the Phase 2 Upgrade Triggers fires.
+
+### Prerequisites
+
+Phase 2 cannot be cleanly implemented until these are addressed (folded into knowledgeforge-core-acu):
+
+1. **Wing-derivation defect in `mempalace-wiki-mine.py`.** Current code collapses every wiki subdirectory under `knowledgeforge-core/wiki/` into the single wing `wiki-kf-core` (hardcoded in WIKI_WING_MAP). For per-subdomain wing scoping (architecture/diagnostics/methodologies/patterns/etc.), the hook must derive wing from the first subdirectory under `wiki/`, e.g., `wiki/architecture/foo.md` → `wing=wiki-architecture`. Existing drawers under the legacy `wiki-kf-core` wing remain queryable via that wing name — migration is optional.
+
+2. **Wing-inference path for queries.** If Phase 2 wires `mempalace_search` into any hook, that hook needs a deterministic way to infer the right wing from a query. Options: extend `kf-route.py`'s Gemini classifier to return a `wiki_wing` field, OR use a static mapping from `cross_cutting` module IDs to wings, OR omit wing scoping and accept noisier results.
+
+3. **Hook output schema.** `kf-route.py`'s UserPromptSubmit output uses `updatedPrompt`, not `additionalContext`. Any context-injection design in Phase 2 must conform to the actual UserPromptSubmit output schema, not an imagined one.
+
+### Two-Phase Retrieval (Hierarchical Filter)
 
 ```
 query
   → extract domain / topic / tag signals from query text
-  → candidates = entries where domain matches ∩ topic matches
-                 UNION entries with ≥ 2 tag overlaps
-  → embed query (cached for session duration)
-  → semantic score each candidate: cosine_sim(query_emb, entry_emb)
-  → fuse scores
+  → Phase 2a (metadata pre-filter):
+      candidates = entries where domain matches ∩ topic matches
+                   UNION entries with ≥ 2 tag overlaps
+  → call mempalace_search(query, wing=inferred_wing, limit=50)
+  → intersect MemPalace results with frontmatter-filter results
+  → Phase 2b (score fusion re-rank)
   → return top-K
 ```
+
+Implementation pattern: client-side wrapper around `mempalace_search` that pulls a broad candidate set, reads each result's source MD file, parses frontmatter, applies metadata filter + fusion math in Python.
 
 ### Score Fusion
 
 ```
 final_score(entry) =
-  0.65 · cosine_similarity(query_embedding, entry_embedding)
-  + 0.20 · normalize(entry.importance, range=[1,5])
+  0.65 · cosine_similarity(query_emb, entry_emb)   // from MemPalace
+  + 0.20 · normalize(entry.importance, range=[1,5]) // from frontmatter
   + 0.15 · recency_boost(entry.last_accessed, entry.staleness_risk)
 ```
 
-Weights are defaults. Importance and recency prevent stale low-signal entries from ranking above fresh relevant ones.
-
-`recency_boost` formula:
+`recency_boost`:
 
 ```
 recency_boost(last_accessed, staleness_risk) =
@@ -66,122 +238,23 @@ recency_boost(last_accessed, staleness_risk) =
             0.15 for staleness_risk = volatile
 ```
 
-Volatile entries decay faster from the recency component, ensuring stale volatile knowledge does not surface above fresh stable knowledge.
+Cosine similarity is supplied by MemPalace; importance and recency are computed client-side from frontmatter.
 
 ---
 
-## Implementation
+## Phase 2 Upgrade Triggers
 
-### Backend Options
+Phase 2 work is gated by observed evidence. Any one of these signals — when reproducibly observed — escalates `knowledgeforge-core-acu` from P4 to P2.
 
-| Backend | Deployment | Best Fit |
-|---------|-----------|----------|
-| ChromaDB | Embedded (no server) | Small–medium wiki (< 50K entries) |
-| LanceDB | Embedded (no server) | Large wiki, columnar analytics queries |
-| Qdrant | Server | Multi-user or production deployment |
+1. **Scale + off-domain noise.** Wiki crosses 100 entries AND a sample of `mempalace_search` queries returns ≥ 2/5 off-domain results in the top-5. Measure by manual sampling once per month or whenever wiki grows by ≥ 25 entries.
 
-**Default:** ChromaDB embedded. Zero extra dependencies, native metadata filter support, persistent on disk, Python package install.
+2. **Observed false negative.** Orchestrator fails to surface an obviously-relevant wiki entry that exists, in a session where it should have. File a `wiki/diagnostics/YYYY-MM-DD_module22-false-negative-*.md` entry when observed. Two such reports = trigger.
 
-### Embedding Model
+3. **Duplicate creep past threshold.** `mempalace_check_duplicate` at threshold 0.9 misses a near-duplicate and a duplicate gets filed. File `wiki/diagnostics/YYYY-MM-DD_module22-duplicate-miss-*.md`. One report = investigate; two = trigger.
 
-- **Default:** `text-embedding-3-small` — 1536-dim, fast, ~$0.02/1M tokens
-- **Local fallback:** `nomic-embed-text` via Ollama — no API cost, comparable quality on technical content
-- **Floor:** 768-dim minimum. Below 512-dim, precision on technical distinctions degrades unacceptably.
+4. **User-reported "search isn't finding things."** Subjective report from David. Single report = trigger immediately (priority overrides quantitative signals).
 
-Embeddings are computed at **write time** (Module 21 pipeline) and stored in the vector index. Module 22 never re-embeds at query time. Query embedding is computed once per query and cached for the session.
-
-### Required YAML Fields for Search
-
-Every wiki entry must carry these fields for the filter to function:
-
-```yaml
-domain: "architecture"          # top-level taxonomy node (Module 23 vocabulary)
-topic: "memory-systems"         # mid-level node (Module 23 vocabulary)
-tags: ["retrieval", "decay"]    # leaf tags (Module 23 vocabulary)
-importance: 4                   # integer 1–5 (assigned by Module 21)
-created_at: "2026-04-05"
-last_accessed: "2026-04-05"
-grounding_score: 0.85           # from Module 21 grounding gate
-staleness_risk: "stable"        # from Module 17 vocabulary
-```
-
-Entries missing `domain` are excluded from filtered search and fall back to full-corpus semantic search for that entry. Module 22 logs a warning for each such entry.
-
-### Query Analysis
-
-Extract domain/topic signals before embedding. LLM classification preferred; keyword heuristic acceptable for latency-sensitive paths.
-
-```
-Input: "how does KF handle memory decay for old entries?"
-→ domain signal: "architecture"
-→ topic signal: "memory-systems"
-→ tag signals: ["decay", "temporal", "retrieval"]
-→ clean query for embedding: "memory decay old entries KF"
-```
-
-### Candidate Size Limit
-
-If the metadata filter returns > 200 candidates, tighten filter (require topic match in addition to domain, or require ≥ 2 tag overlaps). Semantic scoring over > 200 candidates is fine for embedded backends but signals an under-specified taxonomy.
-
-### Fallback
-
-When the vector DB is unavailable (cold start, missing dependency, index corruption):
-1. Fall back to keyword grep over wiki/ files
-2. Log: `[Module 22 FALLBACK] Vector DB unavailable — using grep. Expect reduced recall.`
-3. Never fail silently. The recall regression must be visible.
-
----
-
-## Anti-Patterns
-
-| Anti-Pattern | Consequence | Correct Approach |
-|---|---|---|
-| Pure semantic search, no metadata filter | ~60% R@10; surfaces unrelated entries from different domains | Always pre-filter by domain at minimum |
-| Post-hoc tag filtering (filter after semantic scoring) | Wastes compute on irrelevant candidates; still misses paraphrase cases | Filter before semantic scoring |
-| Re-embedding all entries at query time | O(n) cost per query, unacceptable at scale | Pre-compute embeddings at write time (Module 21) |
-| BM25/TF-IDF as primary ranker | Synonyms and paraphrases fall through | BM25 acceptable as optional diversity re-ranker only |
-| Rebuilding index on every query | Latency unacceptable at scale | Index persists on disk; rebuild only on new entry, archive, importance delta > 1, or taxonomy reassignment |
-| Treating domain mismatch as soft penalty | Off-domain entries contaminate top-K | Domain mismatch = hard exclude, not soft penalty |
-
----
-
-## Integration Points
-
-### Module 21 (Knowledge Accretion)
-Accretion pipeline embeds entries at write time and upserts into the vector index. `entry.embedding`, `entry.importance`, `entry.last_accessed`, `entry.domain`, `entry.topic`, and `entry.tags` are all written at accretion time. Module 22 is read-only against this index.
-
-### Module 23 (Taxonomy Enforcement)
-Domain/topic/tag values used in metadata pre-filter come from Module 23's controlled vocabulary. An entry with invalid taxonomy values is excluded from filtered search and falls back to full-corpus semantic search. Module 23 prevents this at write time; Module 22 degrades gracefully if it happens anyway.
-
-### Module 19 (Memory Architecture)
-Tier 0 (wiki/) is the corpus. Module 22 provides the retrieval mechanism for Tier 0. The Tier 1 routing index is small enough to load fully; Module 22 is not applied there.
-
-### Module 17 (Temporal Knowledge)
-`staleness_risk` field drives the λ parameter in `recency_boost`. Volatile entries decay faster from the recency component.
-
-### Module 24 (Verbatim History Mining)
-Module 24 applies the same metadata-filter-first pattern to Tier 3 (verbatim conversation history). Module 22 is the wiki-specific instantiation; Module 24 is the history-specific instantiation. Both share Module 23's controlled vocabulary, enabling cross-tier queries that search wiki and history in a single coherent filter pass.
-
----
-
-## Constraints
-
-- Do not embed entries with `grounding_score < 0.6`. Low-grounding entries pollute the index.
-- Index rebuild required on: new entry accreted, entry archived, importance delta > 1, taxonomy reassignment.
-- Return at least 3 results unless fewer than 3 entries pass the metadata filter. Do not return zero results if any entries exist.
-- Maximum K for default queries: 10. Caller may request up to 25 for synthesis tasks.
-
----
-
-## Success Criteria
-
-| Metric | Target | Baseline |
-|--------|--------|----------|
-| R@10 with hierarchical filter | ≥ 95% | ~60% (no filter) |
-| Query latency, embedded backend | < 200ms P95 | — |
-| Index rebuild time, 1K-entry wiki | < 30s full rebuild | — |
-| Fallback rate | < 1% of queries | — |
-| Entries missing required YAML fields | 0% (enforced by Module 23) | — |
+When triggered: open `bd show knowledgeforge-core-acu`, escalate priority from P4 to P2, and begin the Phase 2 implementation pass (which starts with fixing the wing-derivation defect listed under Prerequisites above).
 
 ---
 
@@ -189,76 +262,73 @@ Module 24 applies the same metadata-filter-first pattern to Tier 3 (verbatim con
 
 | Element | Source |
 |---------|--------|
-| Metadata-gated retrieval, 60% → 95% R@10 | LongMemEval benchmark, Arora et al. 2025 |
-| Score fusion design | Our design |
-| ChromaDB | trychroma.com — Apache 2.0 |
-| LanceDB | lancedb.com — Apache 2.0 |
+| Hierarchical metadata-gated retrieval, 60% → 95% R@10 (Phase 2 target) | LongMemEval benchmark, Arora et al. 2025 |
+| Score fusion design (Phase 2) | KF original (v6.5.0) |
+| MemPalace | github.com/milla-jovovich/mempalace — MIT |
+| ChromaDB (under MemPalace) | trychroma.com — Apache 2.0 |
+| Phased A→D architectural decision | knowledgeforge-core-8xq Strategist analysis (2026-05-24) |
+| Phase 1 scope reduction post-critic | knowledgeforge-core-8xq adversarial-critic findings (2026-05-24) |
 
 ---
 
 ## Related Modules
 
 - `19_Memory_Architecture.md` — Tier 0 is the search corpus
-- `21_Knowledge_Accretion.md` — write-time embedding pipeline feeds this module
-- `23_Taxonomy_Enforcement.md` — controls vocabulary used in metadata filters
-- `24_Verbatim_History_Mining.md` — same filter-first pattern applied to Tier 3
-- `17_Temporal_Knowledge.md` — staleness signals used in recency boost
+- `21_Knowledge_Accretion.md` — write-time pipeline triggers `mempalace-wiki-mine`
+- `23_Taxonomy_Enforcement.md` — frontmatter vocabulary (Phase 2 input)
+- `24_Verbatim_History_Mining.md` — same MemPalace backend, different wings
+- `17_Temporal_Knowledge.md` — staleness vocabulary (Phase 2 input)
 
 ## CC Doc
 
-# Module 22: Semantic Wiki Search — Execution Protocol
-**Apply when:** [KF-ROUTE] load list includes M22, or retrieving from wiki (accretion checks, linter runs, cross-session queries)
+# Module 22: Semantic Wiki Search — Execution Protocol (Phase 1)
+**Apply when:** [KF-ROUTE] load list includes M22, or filing a new wiki entry (accretion-check)
 
-Two-phase retrieval over the Tier 0 wiki. Keyword-only search achieves ~60% R@10. Hierarchical metadata pre-filtering raises this to ~95% R@10. Phase order is not interchangeable.
+Phase 1: KF wires `mempalace_check_duplicate` into accretion as a detect-and-warn gate. No pre-loaded retrieval context, no wing/room scoping, no score fusion — all deferred to Phase 2 (workload-triggered, not scheduled). MemPalace's full MCP surface remains available to the orchestrator at runtime for ad-hoc queries.
 
-## Retrieval Pipeline
+## Phase 1 Required Behavior
 
-```
-query
-  → extract domain / topic / tag signals from query text
-  → Phase 1 (metadata pre-filter):
-      candidates = entries where domain matches ∩ topic matches
-                   UNION entries with ≥ 2 tag overlaps
-  → embed query (cached for session)
-  → Phase 2 (semantic re-rank):
-      cosine_sim(query_embedding, entry_embedding) per candidate
-  → fuse scores → return top-K
-```
+**Accretion-check dup gate (the only Phase 1 hook integration — target state, pending `knowledgeforge-core-rk4`).** In `mempalace-wiki-mine.py`, BEFORE the existing `mempalace mine` subprocess (i.e., between the fingerprint-idempotency check and the `mine_wiki()` call), call:
 
-## Score Fusion
-
-```
-final_score =
-  0.65 × cosine_similarity(query_emb, entry_emb)
-  + 0.20 × normalize(entry.importance, range=[1,5])
-  + 0.15 × recency_boost(last_accessed, staleness_risk)
+```python
+try:
+    from mempalace.mcp_server import tool_check_duplicate
+except BaseException as e:  # BaseException, not Exception — argparse may raise SystemExit
+    sys.stderr.write(f"[Module 22 FALLBACK] import failed: {e}\n")
+else:
+    try:
+        result = tool_check_duplicate(content=entry_text, threshold=0.9)
+        if result.get("is_duplicate"):
+            sys.stderr.write(f"[Module 22] near-duplicate detected for {file_path}: ...\n")
+    except Exception as e:
+        sys.stderr.write(f"[Module 22 FALLBACK] dup-check failed: {e}\n")
 ```
 
-`recency_boost` decay rates: λ = 0.01 (stable), 0.05 (slow_decay), 0.15 (volatile).
+Use direct Python import — there is no `mempalace check-duplicate` CLI subcommand. Two failure modes to guard:
 
-## Required Wiki Entry Fields
+1. The import runs `MempalaceConfig()` + `KnowledgeGraph()` at module-load (mcp_server.py:59-63). `KnowledgeGraph()` opens a SQLite connection; misconfigured palace state raises `Exception`. Verify with `python -m mempalace status` once before deploying.
 
-```yaml
-domain: "architecture"        # M23 controlled vocabulary
-topic: "memory-systems"       # M23 controlled vocabulary
-tags: ["retrieval", "decay"]  # M23 vocabulary, 1–5 tags
-importance: 4                 # integer 1–5
-created_at: "2026-04-05"
-last_accessed: "2026-04-05"
-grounding_score: 0.85
-staleness_risk: "stable"
-```
+2. The import also runs `_parse_args()` against `sys.argv` (mcp_server.py:41-54). If `sys.argv` contains `-h`/`--help`, argparse raises `SystemExit` — which `except Exception` does NOT catch (SystemExit inherits from BaseException). Use `except BaseException` for the import guard.
 
-Entries missing `domain` fall back to full-corpus search — log warning. Entries with `grounding_score < 0.6` excluded from index.
+Detect-and-warn; do NOT block the mine (the file is already on disk).
 
-## Fallback
+**Fallback.** Wrap every MemPalace call in try/except. On failure, emit `[Module 22 FALLBACK]` to stderr and continue. Use `grep -rli` against `wiki/` if any retrieval is needed (Phase 1 doesn't pre-load retrieval; this is the last-resort surface for ad-hoc orchestrator queries).
 
-When vector DB is unavailable: grep `wiki/` files. Log: `[Module 22 FALLBACK] Vector DB unavailable — using grep. Expect reduced recall.` Never fail silently.
+## Phase 1 Anti-Patterns
 
-## Anti-Patterns
+- Calling `python -m mempalace check-duplicate` (CLI subcommand doesn't exist)
+- Calling ChromaDB directly (go through MemPalace)
+- Passing `wing` to `tool_check_duplicate` (it ignores the arg silently)
+- Pre-loading retrieval context from any hook (Phase 2 only)
+- Treating the dup-check as a write-block (PostToolUse is too late)
 
-Never pure semantic search without metadata pre-filter. Never post-hoc tag filtering (filter before scoring, not after). Never re-embed all entries at query time (pre-compute at write). Domain mismatch is a hard exclude, not a soft penalty.
+## Phase 2 Triggers (escalate the Phase 2 bead `knowledgeforge-core-acu` when observed)
 
-## Success Criteria
+- Wiki > 100 entries + sampled queries return ≥2/5 off-domain results in top-5
+- Two filed `wiki/diagnostics/*module22-false-negative*` entries
+- Two filed `wiki/diagnostics/*module22-duplicate-miss*` entries
+- David reports "search isn't finding things"
 
-R@10 with hierarchical filter ≥ 95%. Query latency < 200ms P95. Fallback rate < 1% of queries.
+## Success Criteria (Phase 1)
+
+`mempalace-wiki-mine.py` calls `tool_check_duplicate` before mining. Every near-duplicate filed has a stderr WARNING. Hook crash rate = 0. Grep-fallback engagement < 5%. Recall/precision metrics are deferred to Phase 2.
