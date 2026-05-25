@@ -78,6 +78,9 @@ type: index
 
 ### Infrastructure
 
+- [2026-05-25] GitHub PAT rotation hygiene + verify-via-rerun — reusable_diagnostic — `infrastructure/2026-05-25_github-pat-rotation-hygiene-verify-via-rerun.md`
+- [2026-05-25] CI auth failure presents as "compilation/deploy failing" — check workflows before chasing local state — reusable_diagnostic — `infrastructure/2026-05-25_ci-auth-failure-workflow-diagnosis-before-chasing-local-state.md`
+- [2026-05-25] Hook installed-vs-source drift after direct ~/.claude/ edits — reusable_diagnostic — `infrastructure/2026-05-25_hook-installed-vs-source-drift-direct-edits.md`
 - [2026-05-20] Static-site rsync excludes — internal-artifact leak prevention — new_pattern — `infrastructure/2026-05-20_static-site-rsync-excludes-leak-prevention.md`
 - [2026-05-19] git -C /abs/path for CWD-unstable Claude Code Bash harness — reusable_diagnostic — `infrastructure/2026-05-19_git-dash-c-cwd-stability-claude-code-bash.md`
 - [2026-05-19] sem-tools Google Ads Keyword Planner wrapper — canonical reference location + setup — template_candidate — `infrastructure/2026-05-19_sem-tools-google-ads-keyword-planner-wrapper.md`
@@ -200,9 +203,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 130
-- **Entry types:** new_pattern (44), transferable_framework (31), reusable_diagnostic (50), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1)
-- **Domains:** patterns (29), architecture (10), orchestration (10), infrastructure (20), compiler (3), diagnostics (28), methodologies (23), migrations (5), strategy (2), integration (2)
+- **Total entries:** 133
+- **Entry types:** new_pattern (44), transferable_framework (31), reusable_diagnostic (53), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1)
+- **Domains:** patterns (29), architecture (10), orchestration (10), infrastructure (23), compiler (3), diagnostics (28), methodologies (23), migrations (5), strategy (2), integration (2)
 - **Avg grounding score:** 0.85 (across grounded entries)
-- **Staleness risk distribution:** stable (106), slow_decay (12), fast_decay (1)
+- **Staleness risk distribution:** stable (108), slow_decay (13), fast_decay (1)
 
