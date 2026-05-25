@@ -107,6 +107,13 @@ type: index
 
 ### Diagnostics
 
+- [2026-05-24] Popover top-overflow — trigger-anchored vs viewport-anchored positioning — reusable_diagnostic — `diagnostics/2026-05-24_popover-top-overflow-trigger-vs-viewport-anchored-positioning.md`
+- [2026-05-24] GHCR multi-image deploy — package-to-repo Actions access link — reusable_diagnostic — `diagnostics/2026-05-24_ghcr-multi-image-deploy-access-link.md`
+- [2026-05-23] Live-smoke as the verification gate — mocks pass, prod still breaks — reusable_diagnostic — `diagnostics/2026-05-23_live-smoke-as-verification-gate-mocks-pass-prod-breaks.md`
+- [2026-05-23] Threshold-tune illusion when results are capped — flatline sensitivity hides the real problem — reusable_diagnostic — `diagnostics/2026-05-23_threshold-tune-illusion-data-caps-flatline-sensitivity.md`
+- [2026-05-23] Post-flip structural verification — distinguish routing success from downstream success in config-pointer migrations — reusable_diagnostic — `diagnostics/2026-05-23_post-flip-structural-verification-routing-vs-downstream.md`
+- [2026-05-23] Compile pipelines complete tracked work invisibly — reusable_diagnostic — `diagnostics/2026-05-23_compile-pipelines-complete-tracked-work-invisibly.md`
+- [2026-05-23] Beads multi-database working-directory gotcha — same project, two .beads/ databases — reusable_diagnostic — `diagnostics/2026-05-23_beads-multi-database-working-directory-gotcha.md`
 - [2026-05-21] Test the wrapped tool directly — narrowing pattern for wrapper bugs — transferable_framework — `diagnostics/2026-05-21_test-wrapped-tool-directly-narrowing-search-space.md`
 - [2026-05-21] Encrypted server-side state can outlive every client-side fix — reusable_diagnostic — `diagnostics/2026-05-21_server-side-state-outlives-client-fixes-saas-wrappers.md`
 - [2026-05-20] `if key in seen: pass` — Python no-op silently breaks dedup loops — reusable_diagnostic — `diagnostics/2026-05-20_python-pass-noops-dedup-loop-intent-gap.md`
@@ -135,6 +142,14 @@ type: index
 
 ### Methodologies
 
+- [2026-05-24] Probe-before-chain — verify handoff brief inputs before running multi-mode chains — new_pattern — `methodologies/2026-05-24_probe-before-chain-reconciliation.md`
+- [2026-05-23] Salvage-vs-Revert Decision Framework for Mid-Execution Discovered Conflicts — transferable_framework — `methodologies/2026-05-23_salvage-vs-revert-mid-execution-conflict-framework.md`
+- [2026-05-23] Vendor swap implies semantics-recalibration audit — "same thing" rarely is — transferable_framework — `methodologies/2026-05-23_vendor-swap-semantics-recalibration-audit.md`
+- [2026-05-23] Vendor-hostile migration triggers — when token revocation forecloses the pre-cancel capture step — refinement — `methodologies/2026-05-23_vendor-hostile-migration-triggers-token-revocation.md`
+- [2026-05-23] Beads ↔ disk reconciliation discipline — reusable_diagnostic — `methodologies/2026-05-23_beads-disk-reconciliation-discipline.md`
+- [2026-05-23] Multi-pass keyword research methodology — head pass, then long-tail by validated cluster — transferable_framework — `methodologies/2026-05-23_multi-pass-keyword-research-methodology.md`
+- [2026-05-23] SEO Repositioning Pattern — Trade Failing Rank for Unranked LOW-Comp Head Term — transferable_framework — `methodologies/2026-05-23_seo-repositioning-failing-rank-for-unranked-head-term.md`
+- [2026-05-23] Audit Existing Site Content Before Re-Anchoring to a Candidate Head Term — reusable_diagnostic — `methodologies/2026-05-23_audit-site-content-before-re-anchoring-head-term.md` (amends 2026-05-23_seo-repositioning-failing-rank-for-unranked-head-term.md)
 - [2026-05-21] SaaS migration pre-cancel checklist — silent-failure config-pointer risk — transferable_framework — `methodologies/2026-05-21_saas-migration-pre-cancel-checklist-silent-failure-config-pointer-risk.md`
 - [2026-05-21] Critic verification pass — run KF Critic AGAIN on the revisions, not just on the draft — new_pattern — `methodologies/2026-05-21_critic-verification-pass-second-pass-validation.md`
 - [2026-05-21] Platform-behavior verification discipline — transferable_framework — `methodologies/2026-05-21_platform-behavior-verification-discipline.md`
@@ -160,6 +175,7 @@ type: index
 
 ### Migrations
 
+- [2026-05-24] Safe one-shot backfill script architecture — dry-run default + idempotent + skip-no-improvement — reusable_pattern — `migrations/2026-05-24_safe-one-shot-backfill-script-dry-run-idempotent-no-improvement-skip.md`
 - [2026-05-21] Expand-contract column rename — two-commit SQLite migration with commit-boundary discipline — new_pattern — `migrations/2026-05-21_expand-contract-column-rename-sqlite-commit-boundary.md`
 - [2026-05-21] Cross-DB bead migration with external-ref provenance tracking — transferable_framework — `migrations/2026-05-21_cross-db-bead-migration-external-ref-provenance.md`
 - [2026-05-21] Idempotent multi-target issue-tracker migration with state file + dependency reconstruction — transferable_framework — `migrations/2026-05-21_idempotent-multi-target-issue-tracker-migration-state-file-dependencies.md`
@@ -181,9 +197,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 121
-- **Entry types:** new_pattern (43), transferable_framework (29), reusable_diagnostic (45), template_candidate (1), emerging_pattern (1), operational_pattern (2)
-- **Domains:** patterns (29), architecture (10), orchestration (10), infrastructure (20), compiler (3), diagnostics (24), methodologies (18), migrations (5), strategy (2), integration (2)
+- **Total entries:** 128
+- **Entry types:** new_pattern (43), transferable_framework (31), reusable_diagnostic (49), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1)
+- **Domains:** patterns (29), architecture (10), orchestration (10), infrastructure (20), compiler (3), diagnostics (27), methodologies (22), migrations (5), strategy (2), integration (2)
 - **Avg grounding score:** 0.85 (across grounded entries)
-- **Staleness risk distribution:** stable (99), slow_decay (10), fast_decay (1)
+- **Staleness risk distribution:** stable (106), slow_decay (11), fast_decay (1)
 
