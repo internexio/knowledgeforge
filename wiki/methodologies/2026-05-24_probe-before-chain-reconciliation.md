@@ -86,5 +86,5 @@ After probe: brief intent preserved, artifacts re-baselined, chain ran cleanly, 
 
 ## Related patterns
 
-- [[2026-05-13_verify-audit-claims-before-designing-fix]] — same family: verify the failure-mode-as-described matches the actual code before designing remediation. Probe-before-chain is the brief-level analog.
-- [[2026-05-13_critic-triage-routing-strategist-vs-defer-doc]] — once probe surfaces mismatches, the triage decision (run chain corrected vs halt for user input) is itself a Strategist call.
+- [[verify-audit-claims-before-designing-fix]] — same family: verify the failure-mode-as-described matches the actual code before designing remediation. Probe-before-chain is the brief-level analog.
+- [[critic-triage-routing-strategist-vs-defer-doc]] — once probe surfaces mismatches, the triage decision (run chain corrected vs halt for user input) is itself a Strategist call.

@@ -71,7 +71,7 @@ The bead was closed moot — the 2026-04-27 snapshot (6,663 rows, source='semrus
 ## Related
 
 - [[saas-migration-pre-cancel-checklist-silent-failure-config-pointer-risk]] — the canonical pre-cancel checklist this entry refines for the hostile-vendor case
-- [[post-flip-structural-verification]] — how to verify the config-pointer flip itself succeeded once the priority order is reset
+- [[post-flip-structural-verification-routing-vs-downstream]] — how to verify the config-pointer flip itself succeeded once the priority order is reset
 
 ---
 
