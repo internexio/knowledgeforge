@@ -9,6 +9,7 @@ type: index
 
 ### Patterns
 
+- [2026-05-29] Test isolation for shared file state — autouse fixture + post-test mtime guard — new_pattern — `patterns/2026-05-29_test-isolation-autouse-fixture-post-test-mtime-guard.md`
 - [2026-05-29] FastAPI API-surface classification via openapi() + auth-dependency AST extraction — transferable_framework — `patterns/2026-05-29_fastapi-api-surface-classification-auth-dependency-extraction.md`
 - [2026-05-28] Threading a new field through endpoints — enumerate ALL request/response models, not just the dominant one — transferable_framework — `patterns/2026-05-28_threading-field-through-endpoints-enumerate-all-models.md`
 - [2026-05-25] Google Ads customer_id has dual semantic roles — auth context vs data context — new_pattern — `patterns/2026-05-25_google-ads-customer-id-dual-semantic-roles.md`
@@ -68,6 +69,7 @@ type: index
 
 ### Orchestration
 
+- [2026-05-29] Append-only queue with re-running producer — fingerprint dedup + clean-run-only reconcile-GC — transferable_framework — `orchestration/2026-05-29_append-only-queue-fingerprint-dedup-reconcile-gc.md`
 - [2026-05-14] Cost meter must always emit release event on cycle exit, even on overrun — new_pattern — `orchestration/2026-05-14_cost-meter-always-emit-release-on-cycle-exit.md`
 - [2026-05-13] Coalesce at enqueue, every coalesce gets a row — new_pattern — `orchestration/2026-05-13_coalesce-at-enqueue-every-coalesce-gets-a-row.md`
 - [2026-05-13] One reconciliation pipeline, called twice (startup + periodic) — new_pattern — `orchestration/2026-05-13_one-reconciliation-pipeline-called-twice.md`
@@ -82,6 +84,7 @@ type: index
 
 ### Infrastructure
 
+- [2026-05-29] Telegram getUpdates exclusivity — single-bridge architecture for multi-consumer apps — transferable_framework — `infrastructure/2026-05-29_telegram-getupdates-single-bridge-architecture.md`
 - [2026-05-28] Docker Compose env vars need 3 coordinated layers to reach a container and survive deploys — reusable_diagnostic — `infrastructure/2026-05-28_docker-compose-env-vars-three-coordinated-layers.md`
 - [2026-05-27] bd CLI dependency-wiring inversion + two-pass create-then-wire pattern — tool_quirk_and_workaround_pattern — `infrastructure/2026-05-27_bd-cli-dependency-wiring-inversion-two-pass-pattern.md`
 - [2026-05-26] SSH alias without User= defaults to current local user — operations land as root, breaking ownership — reusable_diagnostic — `infrastructure/2026-05-26_ssh-alias-user-default-drift-chmod-failures.md`
@@ -163,6 +166,7 @@ type: index
 
 ### Methodologies
 
+- [2026-05-29] Dormant-subsystem forensics — check the supervision layer before the subsystem code — reusable_diagnostic — `methodologies/2026-05-29_dormant-subsystem-forensics-check-supervision-first.md`
 - [2026-05-29] Deterministic-first debugging — exhaust deterministic checks before invoking LLM judgment — transferable_framework — `methodologies/2026-05-29_deterministic-first-debugging.md`
 - [2026-05-28] Feasibility-gate a validation thesis on data power before building the harness; defer-don't-kill when untestable — transferable_framework — `methodologies/2026-05-28_feasibility-gate-validation-thesis-defer-untestable.md`
 - [2026-05-27] Supervise the first real-data run before letting an autonomous loop go overnight — reusable_diagnostic — `methodologies/2026-05-27_supervise-first-real-data-run-autonomous-loops.md`
@@ -225,9 +229,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 145
-- **Entry types:** new_pattern (44), transferable_framework (36), reusable_diagnostic (60), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1)
-- **Domains:** patterns (31), architecture (10), orchestration (10), infrastructure (24), compiler (3), diagnostics (32), methodologies (27), migrations (5), strategy (3), integration (2)
+- **Total entries:** 146
+- **Entry types:** new_pattern (45), transferable_framework (36), reusable_diagnostic (60), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1)
+- **Domains:** patterns (32), architecture (10), orchestration (10), infrastructure (24), compiler (3), diagnostics (32), methodologies (27), migrations (5), strategy (3), integration (2)
 - **Avg grounding score:** 0.84 (across grounded entries)
 - **Staleness risk distribution:** stable (143), slow_decay (1), fast_decay (1)
 
