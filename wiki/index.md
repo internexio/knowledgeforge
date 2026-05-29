@@ -9,6 +9,9 @@ type: index
 
 ### Patterns
 
+- [2026-05-29] FastAPI API-surface classification via openapi() + auth-dependency AST extraction — transferable_framework — `patterns/2026-05-29_fastapi-api-surface-classification-auth-dependency-extraction.md`
+- [2026-05-28] Threading a new field through endpoints — enumerate ALL request/response models, not just the dominant one — transferable_framework — `patterns/2026-05-28_threading-field-through-endpoints-enumerate-all-models.md`
+- [2026-05-25] Google Ads customer_id has dual semantic roles — auth context vs data context — new_pattern — `patterns/2026-05-25_google-ads-customer-id-dual-semantic-roles.md`
 - [2026-05-22] Spec-to-implementation gap as a distinct review category — reusable_diagnostic — `patterns/2026-05-22_spec-to-implementation-gap-distinct-review-pass.md`
 - [2026-05-21] Backward-compatible hash-fragment renames via aria-hidden anchor shims — new_pattern — `patterns/2026-05-21_aria-hidden-anchor-shims-hash-fragment-renames.md`
 - [2026-05-21] Per-host caching for per-page detectors with per-host signal — new_pattern — `patterns/2026-05-21_per-host-caching-per-page-detectors.md`
@@ -50,6 +53,7 @@ type: index
 
 ### Architecture
 
+- [2026-05-26] Domain cooldown vs network rate-limit — when to keep them separate — new_pattern — `architecture/2026-05-26_domain-cooldown-vs-network-rate-limit-separation.md`
 - [2026-05-21] Cross-project capability audit via structured repo-agent prompt — transferable_framework — `architecture/2026-05-21_cross-project-capability-audit-structured-repo-agent-prompts.md`
 - [2026-05-20] Platform deprecation — preserve architectural intent, replace syntactic constraint — reusable_diagnostic + transferable_framework — `architecture/2026-05-20_platform-deprecation-architectural-intent-preservation.md`
 - [2026-05-18] Bead-as-context-anchor — convert in-session deferrals into persistent runbooks before session end — new_pattern — `architecture/2026-05-18_bead-as-context-anchor-deferred-runbooks.md`
@@ -78,6 +82,11 @@ type: index
 
 ### Infrastructure
 
+- [2026-05-28] Docker Compose env vars need 3 coordinated layers to reach a container and survive deploys — reusable_diagnostic — `infrastructure/2026-05-28_docker-compose-env-vars-three-coordinated-layers.md`
+- [2026-05-27] bd CLI dependency-wiring inversion + two-pass create-then-wire pattern — tool_quirk_and_workaround_pattern — `infrastructure/2026-05-27_bd-cli-dependency-wiring-inversion-two-pass-pattern.md`
+- [2026-05-26] SSH alias without User= defaults to current local user — operations land as root, breaking ownership — reusable_diagnostic — `infrastructure/2026-05-26_ssh-alias-user-default-drift-chmod-failures.md`
+- [2026-05-26] Laravel 11 ignores Kernel.php — schedules must live in routes/console.php (plus 3 sub-traps) — reusable_diagnostic — `infrastructure/2026-05-26_laravel-11-scheduler-discovery-routes-console-not-kernel.md`
+- [2026-05-25] SSH alias drift — verify destination hostname before treating "you're on X" as fact — reusable_diagnostic — `infrastructure/2026-05-25_ssh-alias-drift-verify-destination-hostname.md`
 - [2026-05-25] GitHub PAT rotation hygiene + verify-via-rerun — reusable_diagnostic — `infrastructure/2026-05-25_github-pat-rotation-hygiene-verify-via-rerun.md`
 - [2026-05-25] CI auth failure presents as "compilation/deploy failing" — check workflows before chasing local state — reusable_diagnostic — `infrastructure/2026-05-25_ci-auth-failure-workflow-diagnosis-before-chasing-local-state.md`
 - [2026-05-25] Hook installed-vs-source drift after direct ~/.claude/ edits — reusable_diagnostic — `infrastructure/2026-05-25_hook-installed-vs-source-drift-direct-edits.md`
@@ -111,6 +120,13 @@ type: index
 
 ### Diagnostics
 
+- [2026-05-28] Retrospective ad-performance analysis must include removed ads and verify score↔performance linkage before correlating — reusable_diagnostic — `diagnostics/2026-05-28_removed-ads-retain-history-join-scope-mismatch-retrospective-analysis.md`
+- [2026-05-28] FastAPI shared response_model silently strips handler-specific fields — reusable_diagnostic — `diagnostics/2026-05-28_fastapi-shared-response-model-silently-strips-handler-fields.md`
+- [2026-05-26] PHP 8 array_combine throws ValueError — @ suppression does NOT catch it — reusable_diagnostic — `diagnostics/2026-05-26_php8-array-combine-throws-valueerror-suppression-doesnt-catch.md`
+- [2026-05-25] HTTP adapter bugs hidden by broad try/except + continue — mandatory integration test for production adapter call paths — reusable_diagnostic — `diagnostics/2026-05-25_http-adapter-silent-failure-integration-test-mandatory.md`
+- [2026-05-25] Vendor accepts parameter, upstream returns zeros — proxy-API data-availability vs. capability gap — reusable_diagnostic — `diagnostics/2026-05-25_vendor-accepts-parameter-upstream-returns-zeros.md`
+- [2026-05-25] Multi-dimensional UNIQUE + schema-defaults = silent dimension flattening — reusable_diagnostic — `diagnostics/2026-05-25_multi-dimensional-unique-schema-defaults-silent-flattening.md`
+- [2026-05-25] GSC Sitemap report indexed-count is unreliable — use URL Inspection API for ground truth — reusable_diagnostic — `diagnostics/2026-05-25_gsc-sitemap-indexed-count-unreliable-use-url-inspection-api.md`
 - [2026-05-24] Threshold-vs-empirical calibration gap in similarity-based systems — reusable_diagnostic — `diagnostics/2026-05-24_threshold-vs-empirical-calibration-gap-similarity-systems.md`
 - [2026-05-24] Popover top-overflow — trigger-anchored vs viewport-anchored positioning — reusable_diagnostic — `diagnostics/2026-05-24_popover-top-overflow-trigger-vs-viewport-anchored-positioning.md`
 - [2026-05-24] GHCR multi-image deploy — package-to-repo Actions access link — reusable_diagnostic — `diagnostics/2026-05-24_ghcr-multi-image-deploy-access-link.md`
@@ -147,6 +163,11 @@ type: index
 
 ### Methodologies
 
+- [2026-05-29] Deterministic-first debugging — exhaust deterministic checks before invoking LLM judgment — transferable_framework — `methodologies/2026-05-29_deterministic-first-debugging.md`
+- [2026-05-28] Feasibility-gate a validation thesis on data power before building the harness; defer-don't-kill when untestable — transferable_framework — `methodologies/2026-05-28_feasibility-gate-validation-thesis-defer-untestable.md`
+- [2026-05-27] Supervise the first real-data run before letting an autonomous loop go overnight — reusable_diagnostic — `methodologies/2026-05-27_supervise-first-real-data-run-autonomous-loops.md`
+- [2026-05-27] Read ground truth, not surface signals — universal debugging discipline — reusable_diagnostic — `methodologies/2026-05-27_read-ground-truth-not-surface-signals-universal-antipattern.md`
+- [2026-05-26] Deterministic scan before claiming refactor/audit-doc beads — reusable_diagnostic + transferable_framework — `methodologies/2026-05-26_deterministic-scan-before-claiming-refactor-audit-beads.md`
 - [2026-05-24] Probe-before-chain — verify handoff brief inputs before running multi-mode chains — new_pattern — `methodologies/2026-05-24_probe-before-chain-reconciliation.md`
 - [2026-05-22] Adversarial-critic convergence trajectory — each pass uncovers a new CATEGORY of error — new_pattern — `methodologies/2026-05-22_adversarial-critic-convergence-trajectory-category-per-pass.md`
 - [2026-05-23] Salvage-vs-Revert Decision Framework for Mid-Execution Discovered Conflicts — transferable_framework — `methodologies/2026-05-23_salvage-vs-revert-mid-execution-conflict-framework.md`
@@ -191,6 +212,7 @@ type: index
 
 ### Strategy
 
+- [2026-05-29] Pricing LLM-wrapper APIs against the DIY-floor constraint — transferable_framework — `strategy/2026-05-29_llm-wrapper-api-pricing-diy-floor-calibration.md`
 - [2026-05-21] Vendor selection — calibration uncertainty is the bottleneck, not measurement precision — transferable_framework — `strategy/2026-05-21_vendor-selection-calibration-uncertainty-dominance.md`
 - [2026-05-18] Terse-by-design — orchestrators add overhead only when patching known LLM failure modes — new_pattern — `strategy/2026-05-18_terse-by-design-orchestrator-overhead-only-patches-failure-modes.md`
 
@@ -203,9 +225,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 133
-- **Entry types:** new_pattern (44), transferable_framework (31), reusable_diagnostic (53), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1)
-- **Domains:** patterns (29), architecture (10), orchestration (10), infrastructure (23), compiler (3), diagnostics (28), methodologies (23), migrations (5), strategy (2), integration (2)
-- **Avg grounding score:** 0.85 (across grounded entries)
-- **Staleness risk distribution:** stable (108), slow_decay (13), fast_decay (1)
+- **Total entries:** 145
+- **Entry types:** new_pattern (44), transferable_framework (36), reusable_diagnostic (60), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1)
+- **Domains:** patterns (31), architecture (10), orchestration (10), infrastructure (24), compiler (3), diagnostics (32), methodologies (27), migrations (5), strategy (3), integration (2)
+- **Avg grounding score:** 0.84 (across grounded entries)
+- **Staleness risk distribution:** stable (143), slow_decay (1), fast_decay (1)
 
