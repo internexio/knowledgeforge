@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.5.0
+version: 7.6.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -33,6 +33,50 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.6.0
+    date: 2026-06-10
+    driver: knowledgeforge-core-e0x
+    spec: docs/planning/2026-06-10_module-23-vocabulary-drift-reconciliation-spec.md
+    note: |
+      Module 23 vocabulary drift reconciliation — Option C (hybrid expand
+      + grandfather).
+
+      Adds 5 new domains (methodologies, diagnostics, orchestration,
+      migrations, compiler) covering 51% of wiki entries previously in
+      directories absent from v6.5.x vocab. Topic lists are empirical
+      baselines from on-disk frontmatter (55 topics observed), not
+      speculative.
+
+      Grandfathering policy: entries created before 2026-06-10 exempt
+      from domain/topic field requirement. Creation timestamp resolves
+      via created: → git first-commit → file mtime. Forgery resistance
+      via M21 linter MEDIUM finding on ±1 day created vs git divergence.
+
+      patterns/orchestration topic DEPRECATED (collision with new
+      orchestration domain). Lazy migration on next touch.
+
+      Extension event counting interpretation locked: one bead = one
+      protocol invocation = one event. v6.x budget consumed 1/5.
+
+      Phase 0 probe (empirical):
+        - 218 wiki entries total
+        - 111 (51%) in drift dirs
+        - 95 (44%) lack domain/topic schema (grandfathered)
+        - 55 unique topics observed across drift dirs
+
+      Adversarial-critic pass surfaced 6 findings, all absorbed before
+      gate. See revision history at top of spec.
+
+      Follow-up beads filed (not blocking impl):
+        - y64 (P3) — cc librarian agent update
+        - 3ym (P3) — M21:527 file-layout reconciliation (pre-existing)
+        - 96p (P4) — bulk migration of grandfathered entries
+        - a05 (P4) — topic pruning + sparse domain expansion
+        - 01q (P4) — comma-separated topic reconciliation
+    changes:
+      - Module 23 (6.5.2 → 6.6.0) — 5 new domains, ~55 new topics, Grandfathering section, patterns/orchestration deprecation.
+      - Module 21 (7.1.1 → 7.1.2) — Gate 4a grandfather pre-check, linter schema-completeness rule, linter backdating-detection rule.
+      - knowledgeforge-core-e0x closed (P3 → CLOSED).
   - version: 7.5.0
     date: 2026-06-10
     driver: knowledgeforge-core-261

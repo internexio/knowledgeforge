@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Knowledge Accretion
-  version: 7.1.1
+  version: 7.1.2
   purpose: Cross-cutting detection-and-routing behavior that recognizes when mode outputs contain knowledge worth persisting and either auto-files it (Claude Code) or surfaces it as a compilation candidate (Claude Projects)
   topics: [knowledge-persistence, compile-query-enhance, wiki-generation, accretion-signals, knowledge-base-maintenance]
   contexts: [all-mode-execution, knowledge-management, session-outputs, persistent-storage]
@@ -13,6 +13,14 @@ module:
   related: [07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 02_Builder_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model]
   added_in: "6.2"
   changelog:
+    7.1.2:
+      date: 2026-06-10
+      driver: knowledgeforge-core-e0x
+      spec: docs/planning/2026-06-10_module-23-vocabulary-drift-reconciliation-spec.md
+      changes:
+        - Gate 4a (taxonomy validation) gains grandfather pre-check — entries whose creation timestamp is before 2026-06-10 (M23 v6.6.0 release) skip the domain/topic vocabulary validation if those fields are absent. See M23 Grandfathering section for timestamp resolution order (created → git first-commit → file mtime).
+        - Knowledge Base Linter gains two new rules — (a) schema-completeness check is grandfather-aware; (b) created: vs git-first-commit divergence beyond ±1 day raises a MEDIUM finding (possible-backdated-entry).
+        - No behavior change for entries created after 2026-06-10 — Gate 4a enforces the expanded M23 v6.6.0 vocabulary strictly on new entries.
     7.1.1:
       date: 2026-06-10
       driver: knowledgeforge-core-261
@@ -517,6 +525,15 @@ claude_code_runtime:
       action: "Validate entry.domain, entry.topic, and all entry.tags against Module 23 controlled vocabulary"
       on_fail: "Reject with nearest-match suggestion. Do not proceed to embedding or disk write."
       tag_count: "1–5 tags required. Reject outside this range."
+      grandfather_precheck:
+        # Added 7.1.2 (bead e0x). When the entry's creation timestamp resolves to
+        # before 2026-06-10 (M23 v6.6.0 release) AND the entry has neither domain
+        # nor topic field, the gate skips domain/topic vocabulary validation.
+        # Tags validation still applies. See M23 Grandfathering section for the
+        # creation-timestamp resolution order (created → git first-commit → file mtime).
+        condition: "creation_timestamp < 2026-06-10 AND entry.domain is absent AND entry.topic is absent"
+        action: "Skip domain/topic vocabulary validation. Tags must still be approved."
+        rationale: "Pre-gate entries are exempt; lazy migration on next touch (M23 v6.6.0)."
 
     step_4b_embedding:
       action: "Embedding happens inside MemPalace's mine pipeline — Module 21 does not invoke an embedder directly. The mempalace-wiki-mine.py PostToolUse hook fires on every wiki write and calls `python -m mempalace mine` which ChromaDB-indexes the entry."
@@ -655,10 +672,12 @@ linter_behavior:
        - Redundancy: Is this entry substantially duplicated by another? Flag for merge.
        - Grounding decay: Has the grounding score's basis changed? (e.g., API behavior changed, library deprecated)
        - Orphan references: Does this entry reference other entries that don't exist?
+       - Schema completeness (added 7.1.2): For entries whose creation timestamp is on or after 2026-06-10 (M23 v6.6.0 release), check that `domain` and `topic` are present and validate against the M23 controlled vocabulary. Grandfathered entries (creation pre-v6.6.0) are exempt — see M23 Grandfathering section.
+       - Backdating detection (added 7.1.2): Compare each entry's `created:` field against the first-commit date for the entry's file in git history. Divergence beyond ±1 day raises a MEDIUM finding (`possible-backdated-entry`). Catches the honor-system bypass of the grandfather gate.
     3. Produce maintenance backlog ranked by impact:
        - CRITICAL: Contradictions between entries (knowledge base is self-inconsistent)
-       - HIGH: Stale entries with fast_decay past window (actively misleading)
-       - MEDIUM: Redundant entries (noise, not harm)
+       - HIGH: Stale entries with fast_decay past window (actively misleading); post-v6.6.0 entries with missing or invalid domain/topic schema
+       - MEDIUM: Redundant entries (noise, not harm); possible-backdated-entry findings
        - LOW: Orphan references, minor formatting issues
     
   output_format:
@@ -1263,7 +1282,7 @@ grounding < 0.6 → Surface with caveat; do not auto-file
 
 ## Filing Protocol Gates
 
-**Gate 4a (Taxonomy, M23):** Before disk write, validate `domain`, `topic`, and `tags` against controlled vocabulary. On fail: reject with nearest-match suggestion. Never auto-assign. This IS a blocking gate.
+**Gate 4a (Taxonomy, M23):** Before disk write, validate `domain`, `topic`, and `tags` against controlled vocabulary. On fail: reject with nearest-match suggestion. Never auto-assign. This IS a blocking gate. **Grandfather pre-check (7.1.2, bead e0x):** entries whose creation timestamp resolves to before 2026-06-10 AND have neither `domain` nor `topic` skip domain/topic validation; tags still validate. See M23 Grandfathering section.
 
 **Gate 4b (Duplicate check, M22 Phase 1):** AFTER disk write (PostToolUse), `mempalace-wiki-mine.py` calls `tool_check_duplicate(content, threshold=0.9)` via direct Python import from `mempalace.mcp_server`. This is **detect-and-warn**, not block — the file is already on disk by the time the hook fires. On `is_duplicate=true`: emit `[Module 22] near-duplicate detected for <path>` to stderr. On MemPalace unavailable: emit `[Module 22 FALLBACK]` and proceed. The mining run proceeds regardless of the dup result.
 

@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Taxonomy Enforcement
-  version: 6.5.2
+  version: 6.6.0
   purpose: Fixed controlled vocabulary for wiki entry domain/topic/tags, enforced at write time — prevents taxonomy drift, maintains Module 22 metadata filter reliability, and ensures cross-session consistency of knowledge classification
   topics: [taxonomy, controlled-vocabulary, knowledge-classification, write-time-validation, metadata-quality]
   contexts: [knowledge-accretion, wiki-filing, accretion-gate, linter-runs]
@@ -13,6 +13,30 @@ module:
   related: [21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 19_Memory_Architecture, 17_Temporal_Knowledge]
   added_in: "6.5"
   changelog:
+    6.6.0:
+      date: 2026-06-10
+      driver: knowledgeforge-core-e0x
+      spec: docs/planning/2026-06-10_module-23-vocabulary-drift-reconciliation-spec.md
+      changes:
+        - Added 5 new domains (methodologies, diagnostics, orchestration, migrations, compiler)
+          covering 51% of wiki entries previously in directories absent from v6.5.x vocab.
+          Topic lists are empirical baselines extracted from on-disk frontmatter (55 topics
+          observed across the 5 directories), not speculative derivations.
+        - Total domain count 10 → 15. Tag cap unchanged at 57/60 approved tags.
+        - Added Grandfathering section after Vocabulary Extension Protocol — entries with
+          creation timestamp before 2026-06-10 are NOT retroactively required to carry
+          domain/topic fields. New entries strict; existing entries lazy-migrate.
+        - Creation timestamp resolution order — created: frontmatter → git first-commit date
+          → file mtime. Git fallback covers the 3 entries identified during Phase 0 audit
+          that lack created: entirely.
+        - Forgery resistance — linter MEDIUM finding on ±1 day created: vs git first-commit
+          divergence. Cultural norm, not cryptographic enforcement.
+        - Deprecated patterns/orchestration topic (collision with new orchestration domain).
+          DEPRECATED-not-deleted — still validates on grandfathered entries; new entries
+          should use the new orchestration domain.
+        - Extension event counting interpretation locked: one bead = one Vocabulary
+          Extension Protocol invocation = one event (regardless of how many domains added).
+          This bead consumes 1 of v6.x's 5-event budget; 4 remain.
     6.5.2: |
       - Updated Module 22 cross-reference to acknowledge Phase 1 vs Phase 2 split
         (knowledgeforge-core-8xq). Phase 1 of M22 does NOT consume Module 23's
@@ -87,7 +111,7 @@ taxonomy:
       - classification
       - synthesis
       - validation
-      - orchestration
+      - orchestration   # DEPRECATED 6.6.0 — new entries should use the orchestration domain. Still validates on grandfathered entries.
 
   anti-patterns:
     topics:
@@ -149,6 +173,93 @@ taxonomy:
       - access-control
       - data-isolation
       - attack-surface
+
+  # --- ADDED 6.6.0 (bead e0x) ---
+  # Topic lists are empirical baselines from on-disk frontmatter, NOT speculative.
+  # Sparse domains (migrations, compiler, orchestration) reflect undercoverage in
+  # the existing wiki; future extensions add topics on as-needed basis via the
+  # Vocabulary Extension Protocol (one-domain-per-topic micro-extension).
+
+  methodologies:
+    # Process patterns for doing work. Distinct from `patterns` (content-level
+    # patterns) because methodologies describe WORK, not artifacts.
+    topics:
+      - acceptance-criteria
+      - artifact-discipline
+      - bead-triage-workflow
+      - conflict-recovery
+      - decision-framework
+      - deployment-sequencing
+      - experiment-design
+      - gate-design
+      - keyword-repositioning            # SEO-domain leakage — candidate for pruning (bead a05)
+      - keyword-research-methodology     # SEO-domain leakage — candidate for pruning (bead a05)
+      - keyword-selection                # SEO-domain leakage — candidate for pruning (bead a05)
+      - measurement-methodology
+      - prioritization
+      - propagation-discipline
+      - quality-gate
+      - risk-assessment
+      - scope-management
+      - staged-rollout
+      - trade-off-analysis
+      - validation
+
+  diagnostics:
+    # Concrete problem→fix patterns. Distinct from `debugging` (the act);
+    # diagnostics is the documented residue.
+    topics:
+      - api-design
+      - calibration
+      - classification
+      - data-integrity
+      - data-quality
+      - data-validation
+      - error-classification
+      - error-handling
+      - google-ads                       # SEO-domain leakage — candidate for pruning (bead a05)
+      - hypothesis-testing
+      - intent-vs-execution
+      - issue-tracking
+      - liveness
+      - measurement-logic
+      - multi-repo-workflows
+      - ops
+      - queue-observability-pitfall
+      - refactoring
+      - reporting
+      - retrospective-analysis
+      - root-cause-analysis
+      - serp-ranking-diagnosis           # SEO-domain leakage — candidate for pruning (bead a05)
+      - server-configuration
+      - test-isolation
+      - testing
+      - threshold-tuning
+      - watchdog
+      - workflow-discipline
+
+  orchestration:
+    # Multi-agent / multi-process workflow coordination patterns.
+    # Note: topic `orchestration` (self-referential) is preserved but DEPRECATED.
+    # New entries should pick a more specific topic.
+    topics:
+      - epic-closure-workflow
+      - multi-stage-issue-workflow
+      - orchestration                    # DEPRECATED 6.6.0 — self-referential; pick a specific topic
+      - recovery
+
+  migrations:
+    # State transitions, schema migrations, vendor swaps, data backfills.
+    # Sparse — most existing entries are grandfathered without topic. Expand via
+    # Vocabulary Extension Protocol when new topics are needed.
+    topics:
+      - error-classification
+
+  compiler:
+    # KF-internal infrastructure — kf-compile.py and platform-binding shapes.
+    topics:
+      - ci-cd
+      - version-incompatibility
 ```
 
 ### Approved Tags
@@ -301,6 +412,66 @@ Adding a new term requires:
 
 ---
 
+## Grandfathering — Pre-Gate Entries (Added 6.6.0)
+
+The M23 write-time gate enforces vocabulary on entries CREATED AFTER its
+introduction. Entries that pre-date the gate (or pre-date a vocabulary
+extension that would have applied to them) are NOT retroactively required
+to carry the full schema.
+
+A wiki entry is `grandfathered` if its creation timestamp is before
+2026-06-10 (M23 v6.6.0 release date). Creation timestamp is resolved in
+this order:
+
+1. **`created:` frontmatter field** if present AND not obviously hand-forged
+   (see "Forgery resistance" below).
+2. **First-commit date from git history** as a fallback for entries lacking
+   `created:` (the 3 entries identified during Phase 0 audit of bead e0x).
+3. **File mtime** as a last resort (only when git history is unavailable,
+   e.g., entries created in a session before being committed).
+
+**Grandfathered entry validity:**
+- `title`, `source_mode`, `novelty_type`, `grounding_score`, `staleness_risk`,
+  `importance` remain REQUIRED for all entries.
+- `domain`, `topic` are OPTIONAL on grandfathered entries.
+- `tags` remain REQUIRED, with all values from the approved list.
+
+**New entries (post-v6.6.0)** MUST include `domain` and `topic` per the
+expanded vocabulary. No grandfathering applies. New entries lacking
+`created:` are NOT grandfathered — the gate adds the field at write time.
+
+**Lazy migration:** When a contributor touches a grandfathered entry for
+any other reason (content update, related-entries fix, supersession),
+they SHOULD add `domain` and `topic` at that time. Lazy schema completion
+without a forced sweep.
+
+**Bulk migration** of grandfathered entries to full schema is OUT of scope
+for this release. Tracked separately in bead `knowledgeforge-core-96p`
+(P4 — triggered when M22 Phase 2 acu activates).
+
+### Forgery resistance (acknowledged honor system)
+
+The `created:` field is editable in the markdown frontmatter. A
+contributor can backdate `created:` to bypass the gate. This is an
+honor system, not a cryptographic enforcement. Mitigations:
+
+1. **Linter check** (added in 6.6.0, see Module 21 linter protocol):
+   compare `created:` against the entry's first-commit date in git
+   history. Divergence beyond ±1 day raises a MEDIUM finding
+   ("possible backdated entry").
+2. **PR review surface:** the linter's MEDIUM finding surfaces in
+   routine knowledge-base health checks, giving a human reviewer a
+   signal to investigate.
+3. **Cultural norm:** grandfathering is documented as a transitional
+   mechanism, not a permanent escape hatch.
+
+Cryptographic enforcement would require signed git commits + per-entry
+commit-hash binding in frontmatter — out of scope. The lighter detection
+mechanism is adequate given the threat model (no adversarial contributors;
+the only risk is sloppy bypass-for-convenience).
+
+---
+
 ## Anti-Patterns
 
 | Anti-Pattern | Consequence | Correct Approach |
@@ -402,6 +573,13 @@ All three levels required. Missing any → rejection.
 | `infrastructure` | deployment, ops, ci-cd, observability, server-configuration |
 | `debugging` | root-cause-analysis, regression-detection, hypothesis-testing, error-classification |
 | `security` | threat-model, access-control, data-isolation, attack-surface |
+| `methodologies` | acceptance-criteria, artifact-discipline, bead-triage-workflow, conflict-recovery, decision-framework, deployment-sequencing, experiment-design, gate-design, keyword-repositioning, keyword-research-methodology, keyword-selection, measurement-methodology, prioritization, propagation-discipline, quality-gate, risk-assessment, scope-management, staged-rollout, trade-off-analysis, validation |
+| `diagnostics` | api-design, calibration, classification, data-integrity, data-quality, data-validation, error-classification, error-handling, google-ads, hypothesis-testing, intent-vs-execution, issue-tracking, liveness, measurement-logic, multi-repo-workflows, ops, queue-observability-pitfall, refactoring, reporting, retrospective-analysis, root-cause-analysis, serp-ranking-diagnosis, server-configuration, test-isolation, testing, threshold-tuning, watchdog, workflow-discipline |
+| `orchestration` | epic-closure-workflow, multi-stage-issue-workflow, orchestration (deprecated), recovery |
+| `migrations` | error-classification |
+| `compiler` | ci-cd, version-incompatibility |
+
+**Grandfathering (6.6.0):** Entries with creation timestamp before 2026-06-10 are exempt from `domain`/`topic` requirement. See main body for full grandfathering policy. The `patterns/orchestration` topic is DEPRECATED — new entries should use the `orchestration` domain instead.
 
 ### Approved Tags (57 total)
 
