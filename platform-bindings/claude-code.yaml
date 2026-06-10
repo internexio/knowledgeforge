@@ -1,5 +1,5 @@
 platform: claude-code
-platform_version: "7.0"
+platform_version: "7.1"
 description: >
   Claude Code (CC) — filesystem-capable, hook-driven, multi-file context.
   Modules are compiled into skill files, doc files, and hook scripts.
@@ -41,7 +41,14 @@ output_structure:
   hooks_dir: ".claude/hooks/"
   rules_dir: ".claude/rules/"
   commands_dir: ".claude/commands/"
-  settings: ".claude/settings.json"   # Not compiled — platform config only
+  # Settings.json — partial ownership split (added 7.1)
+  #   .claude/settings.json itself:   cc-owned (not compiled)
+  #   .claude/settings.kf.json:       fully compiled — see special_outputs.cc_settings_fragment
+  # At install time, cc/install.sh shallow-merges settings.kf.json into settings.json
+  # via the sidecar manifest at .claude/.kf-install-manifest.json (idempotent strip-then-add).
+  # See spec docs/planning/2026-06-10_cc-rules-and-hook-emitter-spec.md Section 5.
+  settings: ".claude/settings.json"
+  settings_kf: ".claude/settings.kf.json"   # Compiled — KF-managed hook entries only
 
 # --------------------------------------------------------------------------
 # Module → output mapping
@@ -231,12 +238,43 @@ special_outputs:
         source: "enhancements/enh-006-spec-drift-checkpoint.md"
         section: "CC Agent"
 
-  # Hooks — NOT compiled. As of 2026-05-19, knowledgeforge-cc is the
-  # authoritative source for .claude/hooks/ (synced from cw, see cc commit
-  # 1f5b748). cc/install.sh deploys hooks into ~/.claude/hooks/ at install
-  # time. The historical files in core/hooks/ are retained for reference
-  # only and may lag behind cc. Compiler skips hook output entirely when
-  # this section is absent.
+  # Hooks scripts — NOT compiled (unchanged from prior policy).
+  # As of 2026-05-19, knowledgeforge-cc is the authoritative source for
+  # .claude/hooks/ (synced from cw, see cc commit 1f5b748). cc/install.sh
+  # deploys hooks into ~/.claude/hooks/ at install time. The historical
+  # files in core/hooks/ are retained for reference only and may lag
+  # behind cc. Compiler skips hook output entirely when this section is absent.
+  #
+  # Hook ENTRIES (declarations in settings.json) — compiled via cc_settings_fragment
+  # below (added 7.1 — Phase 2 spec 5fd). Hook scripts and hook entries are
+  # different artifacts: scripts live in .claude/hooks/ (cc-owned),
+  # entries live in .claude/settings.json (cc-owned base) with the
+  # KF-managed contribution split into .claude/settings.kf.json (compiler-owned)
+  # and merged at install time.
+
+  # Compile-time path-gated rules (added 7.1 — Phase 2 spec 5fd)
+  # Per-module cc_rules: frontmatter entries are compiled into
+  # .claude/rules/kf/*.md with paths: frontmatter. Orphan cleanup on each
+  # compile removes pre-existing files not in the current manifest.
+  # Subdirs of .claude/rules/kf/ are NOT recursed — kf-runtime/ is a
+  # separate partition owned by the M21 accretion loop (M21:step_5b).
+  cc_rules:
+    output_dir: ".claude/rules/kf/"
+    cleanup: "remove orphans not present in current manifest"
+    section_naming_convention: "CC Rules — X"   # plural; matches CC_SECTION_MARKERS
+
+  # Compiled settings.json fragment (added 7.1 — Phase 2 spec 5fd)
+  # Per-module cc_hooks: frontmatter entries are aggregated across all modules
+  # into a `kf_hooks` parallel key in .claude/settings.kf.json. cc/install.sh
+  # shallow-merges into .claude/settings.json at install time via the sidecar
+  # manifest at .claude/.kf-install-manifest.json (idempotent strip-then-add).
+  # At v1, no module ships cc_hooks entries — emitter omits the file entirely.
+  cc_settings_fragment:
+    output_path: ".claude/settings.kf.json"
+    install_merge: true
+    install_manifest: ".claude/.kf-install-manifest.json"
+    reserved_prefix: "_kf_"   # hand-authored entries MUST NOT use this prefix
+    omit_if_empty: true       # at v1, hooks aggregate is empty; file is not emitted
 
   # Static agents — hand-maintained in knowledgeforge-cc, NOT in core.
   # core has never owned these files; the compiler does not read or write

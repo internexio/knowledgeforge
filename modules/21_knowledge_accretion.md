@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Knowledge Accretion
-  version: 7.1.0
+  version: 7.1.1
   purpose: Cross-cutting detection-and-routing behavior that recognizes when mode outputs contain knowledge worth persisting and either auto-files it (Claude Code) or surfaces it as a compilation candidate (Claude Projects)
   topics: [knowledge-persistence, compile-query-enhance, wiki-generation, accretion-signals, knowledge-base-maintenance]
   contexts: [all-mode-execution, knowledge-management, session-outputs, persistent-storage]
@@ -13,6 +13,15 @@ module:
   related: [07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 02_Builder_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model]
   added_in: "6.2"
   changelog:
+    7.1.1:
+      date: 2026-06-10
+      driver: knowledgeforge-core-261
+      spec: docs/planning/2026-06-10_cc-rules-and-hook-emitter-spec.md
+      changes:
+        - Added step_5b_emit_path_gated_rule to claude_code_runtime.filing — when activation_profile.trigger == path_bound AND scope == project, also write .claude/rules/kf-runtime/<slug>.md with paths: frontmatter populated from path_globs
+        - KF-internal provenance metadata (kf_source, kf_bead, kf_activation_profile) lives in an HTML comment block at the bottom of the runtime rule file, NOT in the paths-bearing YAML frontmatter — avoids any substrate-parser ambiguity around unknown YAML siblings
+        - On-error policy — wiki write already succeeded; log step_5b errors to compile.md and continue without rolling back the wiki entry
+        - Cross-references Phase 2 cc target spec for emitter behavior; see knowledgeforge-core-261 implementation
     7.1.0:
       date: 2026-06-10
       driver: knowledgeforge-core-poz
@@ -519,6 +528,29 @@ claude_code_runtime:
       - Include metadata header (yaml frontmatter with accretion_candidate fields)
       - Update {wiki_root}/index.md with new entry (title, path, novelty_type, created date)
       - Append accretion event to {wiki_root}/compile.md log
+
+    step_5b_emit_path_gated_rule:
+      # Added 7.1.1 (Phase 2 spec 5fd). Runs after step_5 wiki write, before user_surface.
+      # Mirrors the wiki entry into the cc rules substrate as a runtime-accreted
+      # path-gated rule. Only fires for path_bound + project candidates.
+      condition: activation_profile.trigger == path_bound AND scope == project AND path_globs is non-empty
+      action:
+        - Write .claude/rules/kf-runtime/<slug>.md with `paths:` YAML frontmatter populated from path_globs
+        - Body: candidate body content (markdown)
+        - Append KF-internal provenance to an HTML comment block at the bottom of the file (kf_source, kf_bead, kf_candidate_id, kf_created, kf_activation_profile)
+        - Provenance is in an HTML comment, NOT in the YAML frontmatter — avoids substrate-parser ambiguity around unknown YAML siblings to the `paths:` key (see Phase 2 spec 5fd Critic finding [4])
+      partition_note:
+        - .claude/rules/kf/ is the COMPILE-TIME partition (owned by kf-compile.py emit_cc_rules_partition)
+        - .claude/rules/kf-runtime/ is the RUNTIME partition (owned by this step)
+        - Compile-time orphan cleanup operates only on kf/, NOT kf-runtime/
+      on_error:
+        - Wiki write (step_5) has already succeeded; do NOT roll back the wiki entry
+        - Log step_5b error to compile.md with reason "step_5b_rule_emit_failed: <message>"
+        - Continue to user_surface
+      cleanup:
+        - Runtime kf-runtime/ entries are NOT automatically deleted on next compile
+        - The Module 21 linter (Knowledge Base Linter, see below) flags stale entries (no matching code for the paths: globs) for human archival
+        - Auto-deletion is OUT of scope at v1 — avoids silent loss
 
   user_surface:
     project_scoped: "Filed [description] to wiki/[path]"

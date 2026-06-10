@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.4.0
+version: 7.5.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -33,6 +33,48 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.5.0
+    date: 2026-06-10
+    driver: knowledgeforge-core-261
+    spec: docs/planning/2026-06-10_cc-rules-and-hook-emitter-spec.md
+    note: |
+      Phase 2 — cc rules emitter + settings.kf.json hook fragment emitter.
+
+      Adds two new compile-time emitters to the claude-code target:
+        - cc_rules: per-module YAML frontmatter cc_rules entries are
+          compiled into .claude/rules/kf/*.md with `paths:` frontmatter.
+          Orphan cleanup on each compile removes pre-existing files not
+          in the current manifest.
+        - cc_settings_fragment: per-module cc_hooks entries aggregate
+          into a `kf_hooks` parallel key in .claude/settings.kf.json,
+          which cc/install.sh shallow-merges into .claude/settings.json
+          via the sidecar manifest at .claude/.kf-install-manifest.json.
+
+      Ownership-rule resolution (Option B fragment-merge): cc keeps
+      ownership of .claude/hooks/ scripts and the base settings.json.
+      The compiler owns only settings.kf.json. Hook scripts and hook
+      entries are different artifacts.
+
+      Idempotency contract (subdir partition):
+        .claude/rules/kf/         — compile-time partition (orphan-cleaned each compile)
+        .claude/rules/kf-runtime/ — runtime partition (M21 accretion loop; step_5b)
+
+      Deferred-activation at v1: no module ships cc_hooks entries at v1,
+      so emit_settings_fragment OMITS the file entirely (does not emit `{}`).
+      First production cc_hooks entries land after the linter violation
+      counter ships (bead knowledgeforge-core-8zt).
+
+      Test fixture: tests/fixtures/cc_hooks_smoke_module.md exercises the
+      pipeline with one synthetic cc_hooks entry.
+
+      M21 7.1.0 → 7.1.1 (added step_5b_emit_path_gated_rule for runtime emit).
+      Platform binding claude-code.yaml 7.0 → 7.1.
+    changes:
+      - compiler/kf-compile.py — added parse_module_metadata, emit_cc_rules_for_module, cleanup_orphan_rules, collect_cc_hooks_entry, emit_settings_fragment. Wired into compile_claude_code.
+      - platform-bindings/claude-code.yaml — bumped to 7.1; added cc_rules and cc_settings_fragment under special_outputs; documented ownership split for settings.json.
+      - modules/21_knowledge_accretion.md — bumped 7.1.0 → 7.1.1; added step_5b_emit_path_gated_rule to claude_code_runtime.filing.
+      - tests/fixtures/cc_hooks_smoke_module.md — synthetic test fixture for emitter validation.
+      - knowledgeforge-core-261 closed (P2 → CLOSED).
   - version: 7.4.0
     date: 2026-06-10
     driver: knowledgeforge-core-poz
