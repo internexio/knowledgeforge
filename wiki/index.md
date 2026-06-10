@@ -9,6 +9,11 @@ type: index
 
 ### Patterns
 
+- [2026-06-10] Idempotent merge of tool-managed fragments into hand-editable config via sidecar manifest — transferable_framework — `patterns/2026-06-10_idempotent-sidecar-manifest-config-merge.md`
+- [2026-06-10] Verify MCP tool response shape live before writing parsing code — spec assumption costs revision passes — reusable_diagnostic, transferable_framework — `patterns/2026-06-10_mcp-tool-response-shape-live-verification-before-parsing.md`
+- [2026-06-09] MCP-over-SSE Starlette routing — use class-based ASGI endpoint, not function — new_pattern — `patterns/2026-06-09_mcp-sse-starlette-class-based-asgi-endpoint.md`
+- [2026-05-31] Marker-based auto-regen pattern for hand-curated markdown — new_pattern — `patterns/2026-05-31_marker-based-auto-regen-markdown-pattern.md`
+- [2026-05-30] Chrome MCP automation of verified-owner web interfaces as paid-API alternative — new_pattern — `patterns/2026-05-30_chrome-mcp-verified-owner-api-alternative.md`
 - [2026-05-29] Test isolation for shared file state — autouse fixture + post-test mtime guard — new_pattern — `patterns/2026-05-29_test-isolation-autouse-fixture-post-test-mtime-guard.md`
 - [2026-05-29] FastAPI API-surface classification via openapi() + auth-dependency AST extraction — transferable_framework — `patterns/2026-05-29_fastapi-api-surface-classification-auth-dependency-extraction.md`
 - [2026-05-28] Threading a new field through endpoints — enumerate ALL request/response models, not just the dominant one — transferable_framework — `patterns/2026-05-28_threading-field-through-endpoints-enumerate-all-models.md`
@@ -69,6 +74,11 @@ type: index
 
 ### Orchestration
 
+- [2026-05-30] Force-closing a bd epic with an intentionally-deferred child — when --force is acceptable and how to document it — reusable_diagnostic — `orchestration/2026-05-30_force-close-epic-deferred-child-pattern.md`
+- [2026-05-30] Pre-flight cred-gap detection in /bead-build — halt + checklist or decompose, never ship dead-code stubs — workflow_pattern — `orchestration/2026-05-30_preflight-cred-gap-detection-bead-build-halt-decompose.md`
+- [2026-05-30] Parallel-agent triage for backlog reconciliation — new_pattern — `orchestration/2026-05-30_parallel-agent-triage-backlog-reconciliation.md`
+- [2026-05-30] Bead-tracker workflow pipeline (triage → decisions → build → deploy) — transferable_framework — `orchestration/2026-05-30_bead-tracker-workflow-pipeline-triage-decisions-build-deploy.md`
+- [2026-05-30] Validate new mutation-bearing orchestration skills with --dry-run on real-but-small data — reusable_diagnostic — `orchestration/2026-05-30_dry-run-first-validation-mutation-bearing-orchestration-skills.md`
 - [2026-05-29] Append-only queue with re-running producer — fingerprint dedup + clean-run-only reconcile-GC — transferable_framework — `orchestration/2026-05-29_append-only-queue-fingerprint-dedup-reconcile-gc.md`
 - [2026-05-14] Cost meter must always emit release event on cycle exit, even on overrun — new_pattern — `orchestration/2026-05-14_cost-meter-always-emit-release-on-cycle-exit.md`
 - [2026-05-13] Coalesce at enqueue, every coalesce gets a row — new_pattern — `orchestration/2026-05-13_coalesce-at-enqueue-every-coalesce-gets-a-row.md`
@@ -84,6 +94,7 @@ type: index
 
 ### Infrastructure
 
+- [2026-06-10] launchd-spawned subprocess cannot resolve shell aliases — always invoke the underlying binary — reusable_diagnostic — `infrastructure/2026-06-10_launchd-subprocess-shell-alias-resolution-gotcha.md`
 - [2026-05-29] Telegram getUpdates exclusivity — single-bridge architecture for multi-consumer apps — transferable_framework — `infrastructure/2026-05-29_telegram-getupdates-single-bridge-architecture.md`
 - [2026-05-28] Docker Compose env vars need 3 coordinated layers to reach a container and survive deploys — reusable_diagnostic — `infrastructure/2026-05-28_docker-compose-env-vars-three-coordinated-layers.md`
 - [2026-05-27] bd CLI dependency-wiring inversion + two-pass create-then-wire pattern — tool_quirk_and_workaround_pattern — `infrastructure/2026-05-27_bd-cli-dependency-wiring-inversion-two-pass-pattern.md`
@@ -117,12 +128,15 @@ type: index
 
 ### Compiler
 
+- [2026-06-10] extract_section() in kf-compile.py stops only at CC markers — non-CC headings cause silent over-extraction — reusable_diagnostic — `compiler/2026-06-10_extract-section-cc-marker-stop-condition-over-extraction.md`
 - [2026-05-13] Trailing-newline divergence between Python triple-quoted strings and Jinja2 default rendering — new_pattern — `compiler/2026-05-13_trailing-newline-divergence-python-jinja2.md`
 - [2026-05-12] ES2020/ES2021 lib divergence — local tsc green, CI tsc red on String.replaceAll — reusable_diagnostic — `compiler/2026-05-12_es2020-es2021-lib-divergence-string-replacall.md`
 - [2026-04-18] Multi-Repo Artifact Placement — reusable_diagnostic — `compiler/multi-repo-artifact-placement.md`
 
 ### Diagnostics
 
+- [2026-06-10] Refresh-in-place dedup creates false-positive silence alarms — pin first_seen_at separately from enqueued_at — reusable_diagnostic, new_pattern — `diagnostics/2026-06-10_refresh-in-place-dedup-false-positive-silence-alarms.md`
+- [2026-05-31] Per-entity status classifiers must distinguish "unmeasured" from "measured-null" — reusable_diagnostic — `diagnostics/2026-05-31_per-entity-status-classifier-unmeasured-vs-measured-null.md`
 - [2026-05-28] Retrospective ad-performance analysis must include removed ads and verify score↔performance linkage before correlating — reusable_diagnostic — `diagnostics/2026-05-28_removed-ads-retain-history-join-scope-mismatch-retrospective-analysis.md`
 - [2026-05-28] FastAPI shared response_model silently strips handler-specific fields — reusable_diagnostic — `diagnostics/2026-05-28_fastapi-shared-response-model-silently-strips-handler-fields.md`
 - [2026-05-26] PHP 8 array_combine throws ValueError — @ suppression does NOT catch it — reusable_diagnostic — `diagnostics/2026-05-26_php8-array-combine-throws-valueerror-suppression-doesnt-catch.md`
@@ -166,6 +180,9 @@ type: index
 
 ### Methodologies
 
+- [2026-06-10] KF semver lives on three surfaces — module version, kf.yaml system version, platform binding version — and they bump independently — reusable_diagnostic — `methodologies/2026-06-10_kf-semver-three-surfaces-module-system-binding.md`
+- [2026-06-09] Read the bead's own status before implementing — "design only / defer until X" is a stop signal — methodology — `methodologies/2026-06-09_read-bead-status-before-claiming-verify-explicit-deferral.md`
+- [2026-05-30] Verify which API code path actually runs before quoting per-call cost or making cadence decisions — new_pattern — `methodologies/2026-05-30_verify-api-code-path-before-cost-cadence-decisions.md`
 - [2026-05-29] Dormant-subsystem forensics — check the supervision layer before the subsystem code — reusable_diagnostic — `methodologies/2026-05-29_dormant-subsystem-forensics-check-supervision-first.md`
 - [2026-05-29] Deterministic-first debugging — exhaust deterministic checks before invoking LLM judgment — transferable_framework — `methodologies/2026-05-29_deterministic-first-debugging.md`
 - [2026-05-28] Feasibility-gate a validation thesis on data power before building the harness; defer-don't-kill when untestable — transferable_framework — `methodologies/2026-05-28_feasibility-gate-validation-thesis-defer-untestable.md`
@@ -206,6 +223,7 @@ type: index
 
 ### Migrations
 
+- [2026-05-30] Two-phase destructive-migration pattern — validation before coercion — transferable_framework — `migrations/2026-05-30_two-phase-destructive-migration-validation-before-coercion.md`
 - [2026-05-24] Safe one-shot backfill script architecture — dry-run default + idempotent + skip-no-improvement — reusable_pattern — `migrations/2026-05-24_safe-one-shot-backfill-script-dry-run-idempotent-no-improvement-skip.md`
 - [2026-05-21] Expand-contract column rename — two-commit SQLite migration with commit-boundary discipline — new_pattern — `migrations/2026-05-21_expand-contract-column-rename-sqlite-commit-boundary.md`
 - [2026-05-21] Cross-DB bead migration with external-ref provenance tracking — transferable_framework — `migrations/2026-05-21_cross-db-bead-migration-external-ref-provenance.md`
@@ -229,9 +247,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 146
-- **Entry types:** new_pattern (45), transferable_framework (36), reusable_diagnostic (60), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1)
-- **Domains:** patterns (32), architecture (10), orchestration (10), infrastructure (24), compiler (3), diagnostics (32), methodologies (27), migrations (5), strategy (3), integration (2)
+- **Total entries:** 158
+- **Entry types:** new_pattern (49), transferable_framework (39), reusable_diagnostic (66), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
+- **Domains:** patterns (35), architecture (10), orchestration (14), infrastructure (24), compiler (4), diagnostics (34), methodologies (29), migrations (5), strategy (3), integration (2)
 - **Avg grounding score:** 0.84 (across grounded entries)
-- **Staleness risk distribution:** stable (143), slow_decay (1), fast_decay (1)
+- **Staleness risk distribution:** stable (154), slow_decay (3), fast_decay (1)
 
