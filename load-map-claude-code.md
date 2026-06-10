@@ -1,6 +1,6 @@
 # KnowledgeForge Load Map — `claude-code`
 
-**Version:** `7.4.0`  **Compiled:** `2026-06-10T17:28:25.529065+00:00`
+**Version:** `7.5.0`
 
 Each row shows one compiled output and the exact source section it was extracted from.
 Click the source link to jump directly to that section in the module file.
