@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Knowledge Accretion
-  version: 7.0.6
+  version: 7.1.0
   purpose: Cross-cutting detection-and-routing behavior that recognizes when mode outputs contain knowledge worth persisting and either auto-files it (Claude Code) or surfaces it as a compilation candidate (Claude Projects)
   topics: [knowledge-persistence, compile-query-enhance, wiki-generation, accretion-signals, knowledge-base-maintenance]
   contexts: [all-mode-execution, knowledge-management, session-outputs, persistent-storage]
@@ -13,6 +13,17 @@ module:
   related: [07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 02_Builder_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model]
   added_in: "6.2"
   changelog:
+    7.1.0:
+      date: 2026-06-10
+      driver: knowledgeforge-core-poz
+      spec: docs/planning/2026-06-10_module-21-activation-profile-spec.md
+      changes:
+        - Added activation_profile block to accretion_candidate metadata (trigger, decidability, miss_cost, native, path_globs)
+        - Added native:true as a third gate clause alongside novelty + reuse value
+        - v1 ships native in deferred-activation mode (default false, no auto-emission) — gate envelope unchanged
+        - Added step_2c_activation_profile (assignment) and step_3c_profile_cross_validate (scope cross-cut) to the claude_code_runtime filing protocol
+        - Profile is substrate-agnostic; downstream dispatchers consume it (Module 22, future cc rules/hook emitters per Phase 2 spec 5fd)
+        - Backwards-compatibility: existing modes do not auto-emit native:true; no behavioral change to v7.0.x gate yield
     7.0.6:
       date: 2026-05-24
       driver: knowledgeforge-core-8xq
@@ -99,10 +110,15 @@ KnowledgeForge modes produce valuable outputs — patterns, diagnostics, framewo
 
 ## The Accretion Signal
 
-During any mode's execution, flag output as `ACCRETION_CANDIDATE` when it meets two conditions:
+During any mode's execution, flag output as `ACCRETION_CANDIDATE` when it meets three conditions:
 
 1. **Novelty:** The output contains knowledge not already present in the existing knowledge base.
 2. **Reuse value:** The knowledge would benefit future queries beyond the current session.
+3. **Non-native:** The model does not already exhibit this behavior natively (v1: default false; see activation policy below).
+
+Failing any condition → not a candidate. Drop silently for conditions 1 and 2 (no surfacing, no metadata generation, no filing). For condition 3 (native suppression), append a suppression event to `compile.md` with the candidate body and `suppressed_by: native` reason so over-suppression is detectable in linter health checks.
+
+**v1 activation policy for the `native` clause:** The `native` field defaults to `false`. No mode auto-emits `native: true` at v1. The clause is structurally present (third condition) but practically inert because the only assignment source at v1 is human review via the `importance_source: inferred → human_set` lifecycle. Mode self-evaluation of "is this thing I just produced something I produce natively?" is circular; auto-evaluation criteria are deferred to a separate calibration bead (see `knowledgeforge-core-och`).
 
 ### Detection by Source Mode
 
@@ -328,6 +344,64 @@ accretion_candidate:
   # stable: Knowledge unlikely to change (design patterns, mathematical relationships, architectural principles)
   # slow_decay: Knowledge valid for months/years but eventually superseded (best practices, tool recommendations, API patterns)
   # fast_decay: Knowledge valid for weeks/months (version-specific behavior, current pricing, active bug workarounds)
+
+  # ---------------------------------------------------------------------------
+  # Activation profile — added 7.1.0
+  # ---------------------------------------------------------------------------
+  #
+  # Substrate-agnostic metadata describing HOW a downstream dispatcher should
+  # surface this candidate. Computed in core, consumed by downstream routers.
+  # The profile is dispatch-input only — except `native`, which is gate-input
+  # (see Three-Condition Test above). The profile NEVER references substrate
+  # concepts like "is there a rules dir" or "settings.json exists" — those
+  # are downstream-target concerns, not core concerns.
+  #
+  activation_profile:
+    trigger: invariant | path_bound | task_bound
+      # invariant: applies regardless of which files the session touches
+      # path_bound: applies only when files matching path_globs are read
+      # task_bound: applies only when a specific mode/skill is invoked
+      #
+      # Trigger is descriptive metadata about WHEN this knowledge is relevant.
+      # Downstream dispatchers map it onto substrate (e.g., cc maps
+      # invariant→unscoped rule, path_bound→path-scoped rule, task_bound→skill).
+
+    decidability: true | false
+      # Does a mechanical predicate exist for "this rule was applied / violated"?
+      # true  → eligible for hook-class enforcement downstream
+      # false → advisory only; downstream may only render as guidance
+      # Dispatch input. Not consulted at the gate.
+
+    miss_cost: low | medium | high
+      # If this knowledge is not surfaced when relevant, what is the cost?
+      # low    → minor inefficiency, easy correction
+      # medium → recurring rework, possible quality regression
+      # high   → defect class, lost data, broken deploy, customer-visible bug
+      # Dispatch input. Selects between tiers; not consulted at the gate.
+
+    native: true | false
+      # Does the model already exhibit this behavior natively?
+      # true  → SUPPRESS at gate (third condition; do not persist)
+      # false → proceed to filing protocol
+      # Codifies the KF meta-principle: patch weaknesses, do not scaffold
+      # strengths. See `~/.claude/rules/kf-meta.md` and Module 13 commentary.
+      # Gate input. The one gate-clause field in this block.
+      # v1: default false; no mode auto-emits true; criteria deferred to
+      # follow-up calibration bead (knowledgeforge-core-och).
+
+    path_globs: [string]      # optional; required only when trigger == path_bound
+      # Glob patterns identifying the files for which this knowledge is relevant.
+      # Substrate-agnostic shape (string globs). Downstream cc target uses these
+      # verbatim as the `paths:` frontmatter on a generated rule file.
+      # Constraints:
+      #   - Repo-specific by nature → travels ONLY with project-scoped candidates
+      #     (scope=project per step_3 classification). Global-scoped candidates
+      #     with trigger==path_bound are an error; reject at step_3c.
+      #   - Empty list with trigger==path_bound triggers downgrade to task_bound.
+      #   - Provenance: at v1, populated only when producing mode authors explicit
+      #     globs in accretion_note. Entity→path resolver deferred to follow-up
+      #     bead (knowledgeforge-core-8gp). Expected distribution at v1:
+      #     ~90% invariant / ~10% task_bound / <1% path_bound.
 ```
 
 ---
@@ -345,6 +419,54 @@ claude_code_runtime:
     - Check existing wiki/ directories for duplicate or superseding entries
 
   filing:
+    step_2c_activation_profile:
+      # Added 7.1.0. Runs after the three-condition gate, before step_3 scope classification.
+      # Assigns trigger/decidability/miss_cost/native. Does NOT validate scope cross-cuts.
+      compute:
+        trigger:
+          # Inferred from the mode that produced the candidate + the candidate's content shape.
+          # Lookup table:
+          #   Synthesizer (new_pattern), Strategist (transferable_framework) → default invariant
+          #   Builder (template_candidate), Calibrator (template_candidate)  → default invariant
+          #   Critic linter (contradiction)                                  → default invariant
+          #   Expert (reusable_analysis)                                     → invariant unless ERA emitted entity-scoped filters → path_bound
+          #   Debugger (reusable_diagnostic)                                 → path_bound if filename/path appears in candidate body; else task_bound
+          # Modes may override the default by emitting trigger explicitly in their accretion_note.
+
+        decidability:
+          # Heuristic: does the candidate body include a mechanical predicate?
+          #   true  if body contains imperative + observable predicate
+          #         ("Run X before Y", "All Z must include W")
+          #   false otherwise
+          # Modes may override.
+
+        miss_cost:
+          # Heuristic: rough mapping from novelty_type + grounding.
+          # Default table:
+          #   contradiction             → high
+          #   reusable_diagnostic       → medium
+          #   reusable_analysis         → medium
+          #   transferable_framework    → medium
+          #   new_pattern               → low
+          #   template_candidate        → low
+          # Boost by one tier if grounding ≥ 0.85.
+          # Modes may override.
+
+        native:
+          # v1: always false (see Three-Condition Test activation policy). The gate clause
+          # still fires when native==true, but v1 has no auto-emission of native==true.
+
+        path_globs:
+          # Populated only when trigger == path_bound AND the producing mode authored explicit globs.
+          # At v1, ERA→path-glob resolver is deferred (bead knowledgeforge-core-8gp); expect <1% of candidates to populate this field.
+
+      partial_validate:
+        - If trigger == path_bound AND path_globs is empty → downgrade trigger to task_bound; log downgrade in compile_log
+        - If trigger != path_bound AND path_globs is non-empty → strip path_globs (log warning)
+        # NOTE: path_bound+global cross-cut is NOT evaluated here — see step_3c below.
+
+      next: step_3_scope_classification
+
     step_3_scope_classification:
       question: "Would this help someone working on a DIFFERENT project?"
       yes → global:
@@ -370,6 +492,17 @@ claude_code_runtime:
         - Create {wiki_root} directory
         - Create {wiki_root}/compile.md with header "# Knowledge Accretion Log\n\n"
         - "Do not create index.md or subdirectories — those are created on first filing"
+
+    step_3c_profile_cross_validate:
+      # Added 7.1.0. Runs after step_3 (scope known) and step_3b (bootstrap done), before step_4a (taxonomy).
+      # Validates the cross-cuts between activation_profile and scope.
+      validate:
+        - If trigger == path_bound AND scope == global → reject candidate
+          reason: "path_globs are repo-specific; cannot travel with a global-scoped wiki entry"
+          log_to: compile_log_format with reason "scope_glob_cross_cut"
+        # Future cross-cuts (when added in subsequent revisions) attach here.
+
+      next: step_4a_taxonomy_gate
 
     step_4a_taxonomy_gate:
       action: "Validate entry.domain, entry.topic, and all entry.tags against Module 23 controlled vocabulary"
@@ -902,7 +1035,7 @@ Grounding gate: 0.6 — at threshold. Filed with note: "Benchmark data is versio
 
 **Failure example:** Debugger resolves a typo in a config file. The fix is flagged as `reusable_diagnostic` and filed to the wiki. Six months later, the knowledge base has hundreds of trivial fixes alongside genuinely reusable diagnostic patterns, and nobody can find the useful ones.
 
-**Instead:** Apply the two-condition test strictly. Novelty alone isn't enough — the knowledge must also have reuse value for future queries beyond the current session. A typo fix is novel but not reusable.
+**Instead:** Apply the three-condition test strictly. Novelty alone isn't enough — the knowledge must also have reuse value for future queries beyond the current session AND not codify a behavior the model exhibits natively. A typo fix is novel but not reusable. A reminder to "use a clear variable name" is reusable but native.
 
 ### Anti-Pattern 2: Knowledge Amnesia (Under-Accretion)
 
@@ -1029,13 +1162,16 @@ A downstream router that re-applies its own novelty or grounding check on alread
 
 Detect when a mode's output contains knowledge worth persisting to the knowledge base.
 
-## Two-Condition Test
+## Three-Condition Test
 
-Flag as `ACCRETION_CANDIDATE` when BOTH are met:
+Flag as `ACCRETION_CANDIDATE` when ALL THREE are met:
 1. **Novelty:** Knowledge not already present in the existing knowledge base.
 2. **Reuse value:** Would benefit future queries beyond the current session.
+3. **Non-native:** The model does not already exhibit this behavior natively (v1: default false, see activation policy below).
 
-Novelty alone is not enough. A unique observation with no transferable value is not a candidate.
+Novelty alone is not enough. A unique observation with no transferable value is not a candidate. A reusable observation that the model already exhibits without instruction is also not a candidate (suppressed at the gate; logged to compile.md for audit).
+
+**v1 activation policy:** `native` defaults to `false`. No mode auto-emits `native: true` at v1. The gate clause is structurally present but practically inert; auto-evaluation criteria are deferred to bead `knowledgeforge-core-och`.
 
 ## Triggers by Source Mode
 
@@ -1063,7 +1199,28 @@ accretion_candidate:
   knowledge_target: [specific wiki section]
   staleness_risk: stable | slow_decay | fast_decay
   created: [ISO date]
+  activation_profile:
+    trigger: invariant | path_bound | task_bound
+    decidability: true | false
+    miss_cost: low | medium | high
+    native: true | false      # v1: always false (deferred-activation; see full schema in main body)
+    path_globs: [string]      # required only when trigger == path_bound
 ```
+
+## Activation Profile
+
+Computed at `step_2c` after the three-condition gate. Carries dispatch-time signals for downstream routers; does not affect gate eligibility (except `native`, which is gate input). Full schema in main body. Common shapes:
+
+| Mode | Default trigger | Default decidability | Default miss_cost |
+|---|---|---|---|
+| Synthesizer | invariant | varies | low |
+| Strategist  | invariant | varies | medium |
+| Builder / Calibrator | invariant | varies | low |
+| Critic linter | invariant | true | high |
+| Expert | invariant (path_bound if ERA + author globs) | varies | medium |
+| Debugger | path_bound if filename in body else task_bound | true | medium |
+
+At v1, `trigger: path_bound` is sparse (<1% expected) because the entity→path resolver is deferred to bead `knowledgeforge-core-8gp`. Designs that depend on a balanced trigger distribution should wait.
 
 ## Grounding Gate
 
@@ -1079,6 +1236,10 @@ grounding < 0.6 → Surface with caveat; do not auto-file
 **Gate 4b (Duplicate check, M22 Phase 1):** AFTER disk write (PostToolUse), `mempalace-wiki-mine.py` calls `tool_check_duplicate(content, threshold=0.9)` via direct Python import from `mempalace.mcp_server`. This is **detect-and-warn**, not block — the file is already on disk by the time the hook fires. On `is_duplicate=true`: emit `[Module 22] near-duplicate detected for <path>` to stderr. On MemPalace unavailable: emit `[Module 22 FALLBACK]` and proceed. The mining run proceeds regardless of the dup result.
 
 Filing to disk is Step 5, gated only by 4a. Gate 4b runs post-write and is informational. Phase 2 (M22 v7.4+, deferred) will add a pre-write embedding gate.
+
+**Step 2c (Activation profile assignment):** Between gate and step_3, assign `trigger / decidability / miss_cost / native` per mode lookup tables. Populate `path_globs` only when mode authors them. Partial validation only (no scope cross-cut yet).
+
+**Step 3c (Profile cross-validation):** After step_3 scope is known, reject `trigger: path_bound + scope: global` candidates (path_globs are repo-local). Log rejection to compile.md.
 
 ## Over-Accretion Warning
 

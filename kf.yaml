@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.3.1
+version: 7.4.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -33,6 +33,32 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.4.0
+    date: 2026-06-10
+    driver: knowledgeforge-core-poz
+    spec: docs/planning/2026-06-10_module-21-activation-profile-spec.md
+    note: |
+      Module 21 Phase 1 — activation_profile on accretion candidate metadata.
+
+      Adds activation_profile block (trigger, decidability, miss_cost, native,
+      path_globs) to the accretion_candidate schema. Adds native:true as a third
+      gate clause alongside novelty + reuse value. v1 ships native in
+      deferred-activation mode (default false, no auto-emission) so the gate
+      envelope is unchanged for existing modes.
+
+      Adds step_2c_activation_profile (assignment) and step_3c_profile_cross_validate
+      (scope cross-cut) to the claude_code_runtime filing protocol. Profile is
+      substrate-agnostic; downstream dispatchers consume it (Module 22, future
+      cc rules/hook emitters per Phase 2 spec 5fd).
+
+      Backwards-compatibility: existing modes do not auto-emit native:true; no
+      behavioral change to v7.3.x gate yield.
+
+      Phase 2 (cc rules + hook emitters, spec at docs/planning/2026-06-10_cc-rules-and-hook-emitter-spec.md)
+      is queued; impl bead is knowledgeforge-core-261.
+    changes:
+      - Module 21 (7.0.6 → 7.1.0) — activation_profile schema added to candidate metadata; three-condition gate; step_2c + step_3c added to filing protocol; CC Doc patches in parallel.
+      - knowledgeforge-core-poz closed (P2 → CLOSED).
   - version: 7.3.1
     date: 2026-05-25
     driver: knowledgeforge-core-rk4
