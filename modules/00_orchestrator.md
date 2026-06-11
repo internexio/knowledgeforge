@@ -4,14 +4,22 @@
 
 ```yaml
 module:
-  title: KnowledgeForge 7.3.0 Agent Instructions
-  version: 7.3.0
+  title: KnowledgeForge 7.4.0 Agent Instructions
+  version: 7.4.0
   purpose: Orchestrate all KF modes and infrastructure modules through behavioral prompt instructions — classify, route, execute, verify, deliver
   topics: [orchestration, routing, decision-classification, mode-selection, quality-enforcement, prompt-architecture, knowledge-accretion, infrastructure-planning, entity-relationship-analysis, routing-audit-log, mode-selection-accuracy]
   contexts: [all-interactions, session-management, mode-transitions, routing-correctness-tracking]
   difficulty: foundational
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 06_Quick_Reference, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 23_Taxonomy_Enforcement, 24_Verbatim_History_Mining, 25_Entity_Relationship_Analysis]
   changelog:
+    7.4.0:
+      date: 2026-06-11
+      driver: knowledgeforge-core-ev4
+      changes:
+        - Added "Always-On Behavioral Patches" section to CC Rules — 4 principles (Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution) borrowed from Karpathy-inspired skills (multica-ai/andrej-karpathy-skills).
+        - Rationale — KF's selective-activation philosophy leaves many turns mode-less, missing behavioral patches that Karpathy-style always-on rules provide. Three Critic-caught bugs in the 2026-06-10 session would have been prevented in the original Builder pass with these rules in place.
+        - Cost — ~25 lines / ~300 tokens added to always-loaded kf-meta.md. ROI verified against this session's failure modes.
+        - Patches Claude's weakness (over-engineering, scope creep, missing assumptions) — does not violate the KF meta-principle since these are weakness-patches, not strength-scaffolding.
     7.3.0:
       date: 2026-05-24
       driver: knowledgeforge-core-8xq
@@ -854,3 +862,12 @@ On every request, before responding:
 4. Evaluative+ output produced? → Check novelty + reuse value. If both conditions met, flag as ACCRETION_CANDIDATE. Skip for reckonings and routine outputs.
 
 Ozymandias Test: If a yes/no question needs multi-paragraph reasoning, it's not a reckoning. Upgrade.
+
+## Always-On Behavioral Patches
+
+These apply on every turn that produces code, specs, or other artifacts — regardless of whether a KF mode is active. They patch failure modes that selective-activation misses.
+
+1. **Think Before Coding.** State assumptions explicitly. Surface multiple interpretations rather than silently choosing. Push back when a simpler approach exists.
+2. **Simplicity First.** Minimum code that solves the problem. No speculative features, abstractions for single-use code, or error handling for impossible scenarios.
+3. **Surgical Changes.** Touch only what's required. Don't refactor working code or improve adjacent style. Remove only what your changes orphaned.
+4. **Goal-Driven Execution.** Define success criteria before acting. Brief plan with verify steps; loop until criteria met.

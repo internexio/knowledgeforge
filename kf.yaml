@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.6.0
+version: 7.7.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -33,6 +33,35 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.7.0
+    date: 2026-06-11
+    driver: knowledgeforge-core-ev4
+    note: |
+      M00 — 4 always-on behavioral patches borrowed from Karpathy-inspired skills.
+
+      Adds an "Always-On Behavioral Patches" section to M00's CC Rules
+      (compiled to ~/.claude/rules/kf-meta.md). Four principles:
+        1. Think Before Coding — state assumptions, surface interpretations, push back
+        2. Simplicity First — minimum code, no speculative features
+        3. Surgical Changes — touch only what's required
+        4. Goal-Driven Execution — define success criteria, verify
+
+      Rationale — KF's selective-activation philosophy leaves many turns
+      mode-less. The 2026-06-10 session had 3 Critic-caught bugs that
+      Karpathy principles would have prevented in the original Builder
+      pass (Phase 1 version-bump optimism, Phase 2 non-idempotent merge,
+      e0x speculative topic enumeration). Each Critic spawn costs ~100K
+      tokens; the 300 always-loaded tokens pay for themselves on the
+      first prevention.
+
+      Patches Claude's weakness (over-engineering, scope creep, missing
+      assumptions) — does not violate the KF meta-principle since these
+      are weakness-patches, not strength-scaffolding.
+
+      Source: multica-ai/andrej-karpathy-skills (CLAUDE.md).
+    changes:
+      - Module 00 (7.3.0 → 7.4.0) — Always-On Behavioral Patches section in CC Rules.
+      - knowledgeforge-core-ev4 closed (P3 → CLOSED).
   - version: 7.6.0
     date: 2026-06-10
     driver: knowledgeforge-core-e0x
