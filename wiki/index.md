@@ -9,6 +9,7 @@ type: index
 
 ### Patterns
 
+- [2026-06-12] Downgrade-vs-reject pattern for cross-cut validation rules — transferable_framework — `patterns/2026-06-12_downgrade-vs-reject-multi-source-validation-rules.md`
 - [2026-06-10] Idempotent merge of tool-managed fragments into hand-editable config via sidecar manifest — transferable_framework — `patterns/2026-06-10_idempotent-sidecar-manifest-config-merge.md`
 - [2026-06-10] Verify MCP tool response shape live before writing parsing code — spec assumption costs revision passes — reusable_diagnostic, transferable_framework — `patterns/2026-06-10_mcp-tool-response-shape-live-verification-before-parsing.md`
 - [2026-06-09] MCP-over-SSE Starlette routing — use class-based ASGI endpoint, not function — new_pattern — `patterns/2026-06-09_mcp-sse-starlette-class-based-asgi-endpoint.md`
@@ -74,6 +75,8 @@ type: index
 
 ### Orchestration
 
+- [2026-06-12] Stale-base PR conflicts after batched core pushes — resolve via workflow_dispatch — reusable_diagnostic — `orchestration/2026-06-12_stale-base-pr-conflicts-batched-pushes-workflow-dispatch.md`
+- [2026-06-12] Parallel-spec + parallel-critic pattern for independent beads — new_pattern — `orchestration/2026-06-12_parallel-spec-parallel-critic-pattern-independent-beads.md`
 - [2026-05-30] Force-closing a bd epic with an intentionally-deferred child — when --force is acceptable and how to document it — reusable_diagnostic — `orchestration/2026-05-30_force-close-epic-deferred-child-pattern.md`
 - [2026-05-30] Pre-flight cred-gap detection in /bead-build — halt + checklist or decompose, never ship dead-code stubs — workflow_pattern — `orchestration/2026-05-30_preflight-cred-gap-detection-bead-build-halt-decompose.md`
 - [2026-05-30] Parallel-agent triage for backlog reconciliation — new_pattern — `orchestration/2026-05-30_parallel-agent-triage-backlog-reconciliation.md`
@@ -94,6 +97,9 @@ type: index
 
 ### Infrastructure
 
+- [2026-06-12] Explicit heartbeat file beats log-mtime as a liveness signal for processes that log only on errors — new_pattern — `infrastructure/2026-06-12_explicit-heartbeat-file-liveness-signal-sparse-loggers.md`
+- [2026-06-10] macOS tmp_cleaner silently deletes /tmp files held open by long-running daemons — keep StandardOutPath outside /tmp — reusable_diagnostic — `infrastructure/2026-06-10_macos-tmp-cleaner-daemon-stdout-deletion.md`
+- [2026-06-10] Dual opt-in pattern for elevated subprocess capability — require both producer dispatch AND consumer allowlist to agree — new_pattern, transferable_framework — `infrastructure/2026-06-10_dual-opt-in-pattern-elevated-subprocess-capability.md`
 - [2026-06-10] launchd-spawned subprocess cannot resolve shell aliases — always invoke the underlying binary — reusable_diagnostic — `infrastructure/2026-06-10_launchd-subprocess-shell-alias-resolution-gotcha.md`
 - [2026-05-29] Telegram getUpdates exclusivity — single-bridge architecture for multi-consumer apps — transferable_framework — `infrastructure/2026-05-29_telegram-getupdates-single-bridge-architecture.md`
 - [2026-05-28] Docker Compose env vars need 3 coordinated layers to reach a container and survive deploys — reusable_diagnostic — `infrastructure/2026-05-28_docker-compose-env-vars-three-coordinated-layers.md`
@@ -135,6 +141,7 @@ type: index
 
 ### Diagnostics
 
+- [2026-06-12] Count by the refreshed field, not the preserved one, when measuring producer liveness on a dedup-in-place queue — transferable_framework — `diagnostics/2026-06-12_count-by-refreshed-field-dedup-liveness-detection.md`
 - [2026-06-10] Refresh-in-place dedup creates false-positive silence alarms — pin first_seen_at separately from enqueued_at — reusable_diagnostic, new_pattern — `diagnostics/2026-06-10_refresh-in-place-dedup-false-positive-silence-alarms.md`
 - [2026-05-31] Per-entity status classifiers must distinguish "unmeasured" from "measured-null" — reusable_diagnostic — `diagnostics/2026-05-31_per-entity-status-classifier-unmeasured-vs-measured-null.md`
 - [2026-05-28] Retrospective ad-performance analysis must include removed ads and verify score↔performance linkage before correlating — reusable_diagnostic — `diagnostics/2026-05-28_removed-ads-retain-history-join-scope-mismatch-retrospective-analysis.md`
@@ -180,6 +187,8 @@ type: index
 
 ### Methodologies
 
+- [2026-06-10] Test cards for AI-coder-config migrations — baseline + per-step + cumulative verification with version-controlled outcome log — transferable_framework, reusable_diagnostic — `methodologies/2026-06-10_test-cards-ai-coder-config-migration-baseline-step-cumulative.md`
+- [2026-06-10] Canary test for filesystem-loaded AI-coder-config conventions — verify the auto-load before depending on it — reusable_diagnostic, transferable_framework — `methodologies/2026-06-10_canary-test-ai-coder-config-auto-load-conventions.md`
 - [2026-06-10] KF semver lives on three surfaces — module version, kf.yaml system version, platform binding version — and they bump independently — reusable_diagnostic — `methodologies/2026-06-10_kf-semver-three-surfaces-module-system-binding.md`
 - [2026-06-09] Read the bead's own status before implementing — "design only / defer until X" is a stop signal — methodology — `methodologies/2026-06-09_read-bead-status-before-claiming-verify-explicit-deferral.md`
 - [2026-05-30] Verify which API code path actually runs before quoting per-call cost or making cadence decisions — new_pattern — `methodologies/2026-05-30_verify-api-code-path-before-cost-cadence-decisions.md`
@@ -234,6 +243,7 @@ type: index
 
 ### Strategy
 
+- [2026-06-10] Drop the dependent tier when a critic surfaces that an architecture's loading mechanism is more constrained than the spec assumed — transferable_framework, reusable_diagnostic — `strategy/2026-06-10_drop-dependent-tier-constrained-loader-reclassification.md`
 - [2026-05-29] Pricing LLM-wrapper APIs against the DIY-floor constraint — transferable_framework — `strategy/2026-05-29_llm-wrapper-api-pricing-diy-floor-calibration.md`
 - [2026-05-21] Vendor selection — calibration uncertainty is the bottleneck, not measurement precision — transferable_framework — `strategy/2026-05-21_vendor-selection-calibration-uncertainty-dominance.md`
 - [2026-05-18] Terse-by-design — orchestrators add overhead only when patching known LLM failure modes — new_pattern — `strategy/2026-05-18_terse-by-design-orchestrator-overhead-only-patches-failure-modes.md`
@@ -247,9 +257,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 158
-- **Entry types:** new_pattern (49), transferable_framework (39), reusable_diagnostic (66), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
-- **Domains:** patterns (35), architecture (10), orchestration (14), infrastructure (24), compiler (4), diagnostics (34), methodologies (29), migrations (5), strategy (3), integration (2)
+- **Total entries:** 163
+- **Entry types:** new_pattern (52), transferable_framework (42), reusable_diagnostic (67), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
+- **Domains:** patterns (36), architecture (10), orchestration (15), infrastructure (26), compiler (4), diagnostics (34), methodologies (30), migrations (5), strategy (3), integration (2)
 - **Avg grounding score:** 0.84 (across grounded entries)
-- **Staleness risk distribution:** stable (154), slow_decay (3), fast_decay (1)
+- **Staleness risk distribution:** stable (157), slow_decay (3), fast_decay (1)
 
