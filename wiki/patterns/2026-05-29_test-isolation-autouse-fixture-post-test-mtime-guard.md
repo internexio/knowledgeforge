@@ -148,8 +148,8 @@ def _isolate_state_paths(tmp_path, monkeypatch):
 ## Cross-References
 
 - [[deterministic-first-debugging]] — the post-test guard *is* a deterministic check: same input → same output, falsifying by design.
-- [[subprocess-test-isolation-env-vars]] — complementary pattern for child processes; the guard catches env-override misses.
-- [[autouse-fake-stages-fixture]] — autouse pattern for subprocess logic stubs; this pattern extends it to shared file state.
+- [[subprocess-test-isolation-env-vars-sandbox-all-paths]] — complementary pattern for child processes; the guard catches env-override misses.
+- [[autouse-fake-stages-fixture-subprocess-pipeline-tests]] — autouse pattern for subprocess logic stubs; this pattern extends it to shared file state.
 - The pattern composes with the schema-evolution "additive optional fields + tolerant reads" approach (when adding new path constants, both `_STATE_PATHS` and `_PROD_*` watchlists are additive — old tests stay valid).
 
 ## Source Context

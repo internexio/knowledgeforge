@@ -232,6 +232,7 @@ type: index
 
 ### Migrations
 
+- [2026-06-12] Schema evolution via additive optional fields + tolerant reads — transferable_framework — `migrations/2026-06-12_schema-evolution-additive-optional-fields.md`
 - [2026-05-30] Two-phase destructive-migration pattern — validation before coercion — transferable_framework — `migrations/2026-05-30_two-phase-destructive-migration-validation-before-coercion.md`
 - [2026-05-24] Safe one-shot backfill script architecture — dry-run default + idempotent + skip-no-improvement — reusable_pattern — `migrations/2026-05-24_safe-one-shot-backfill-script-dry-run-idempotent-no-improvement-skip.md`
 - [2026-05-21] Expand-contract column rename — two-commit SQLite migration with commit-boundary discipline — new_pattern — `migrations/2026-05-21_expand-contract-column-rename-sqlite-commit-boundary.md`
