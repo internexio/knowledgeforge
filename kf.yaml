@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.8.0
+version: 7.9.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -33,6 +33,35 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.9.0
+    date: 2026-06-12
+    driver: knowledgeforge-core-8zt
+    spec: docs/planning/2026-06-12_module-21-linter-violation-counter-spec.md
+    note: |
+      M21 Knowledge Base Linter gains a violation-event counter for hook
+      graduation. Unblocks the Phase 2 cc_hooks emitter (currently inert
+      at v1 because no graduation mechanism existed).
+
+      Storage in .kf/linter/ (already gitignored via .kf/ pattern). Event
+      log + JSON snapshot hybrid. Snapshot is the contract surface for
+      cc_hooks emitter consumption; event log is operational state with
+      no external contract.
+
+      cc_hooks emitter now gates emission on a three-check pass:
+      snapshot freshness (rejects stale snapshots older than window_days),
+      numeric re-derivation (recomputes eligibility from stored counts —
+      catches snapshot tampering), source_rule existence.
+
+      linter_check.kind restricted at v1 to stateless artifact patterns.
+      Session-event-ordering patterns deferred to a follow-up bead that
+      will specify either canonical session log format or PostToolUse hook
+      approach.
+
+      Adversarial-critic pass surfaced 5 findings (1 CRITICAL), all
+      absorbed before gate.
+    changes:
+      - Module 21 (7.1.4 → 7.2.0) — Knowledge Base Linter event counter, dotfile-exclusion scan rule, graduation candidates output section. Existing wiki/.linter_offset moved to .kf/linter/offset.
+      - knowledgeforge-core-8zt closed (P3 → CLOSED).
   - version: 7.8.0
     date: 2026-06-12
     driver: knowledgeforge-core-8gp

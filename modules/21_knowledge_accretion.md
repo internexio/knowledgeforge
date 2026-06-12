@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Knowledge Accretion
-  version: 7.1.4
+  version: 7.2.0
   purpose: Cross-cutting detection-and-routing behavior that recognizes when mode outputs contain knowledge worth persisting and either auto-files it (Claude Code) or surfaces it as a compilation candidate (Claude Projects)
   topics: [knowledge-persistence, compile-query-enhance, wiki-generation, accretion-signals, knowledge-base-maintenance]
   contexts: [all-mode-execution, knowledge-management, session-outputs, persistent-storage]
@@ -13,6 +13,18 @@ module:
   related: [07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 02_Builder_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model]
   added_in: "6.2"
   changelog:
+    7.2.0:
+      date: 2026-06-12
+      driver: knowledgeforge-core-8zt
+      spec: docs/planning/2026-06-12_module-21-linter-violation-counter-spec.md
+      changes:
+        - Added violation-event counter to Knowledge Base Linter. Linter gains two new responsibilities — event recording (append to .kf/linter/events.log) and snapshot aggregation (write .kf/linter/counter.json keyed by rule filename). Storage in .kf/linter/ avoids wiki contamination (already gitignored via .kf/ pattern).
+        - Counter window — 30 days. Graduation threshold — ≥3 events across ≥2 distinct sessions (per Phase 2 spec 5fd Section 5).
+        - linter_check.kind restricted at v1 to stateless artifact patterns — frontmatter_field_missing, frontmatter_field_value_disallowed, body_pattern_present, body_pattern_absent. Temporal-ordering kinds (e.g., "event X preceded event Y in session") require session log infrastructure deferred to follow-up bead.
+        - Added dotfile-exclusion to linter scan (step 6.5) — prevents linter from checking its own state files against wiki schema rules.
+        - Existing wiki/.linter_offset state file moved to .kf/linter/offset for consistency (per-machine operational state out of wiki partition).
+        - cc_hooks emitter consumes graduation snapshot at compile time with three-check gate — snapshot freshness (rejects snapshots older than window_days), numeric re-derivation (catches snapshot tampering by recomputing eligibility from stored counts), and source_rule existence check.
+        - Semver — minor bump justified — event log has no external contract surface; snapshot is the contract and is rebuilt-not-rotated. Section 3a of spec defends in detail.
     7.1.4:
       date: 2026-06-12
       driver: knowledgeforge-core-8gp
@@ -705,7 +717,7 @@ linter_behavior:
   trigger: "Health check the knowledge base" or "Lint the wiki" or periodic scheduling
   
   protocol:
-    1. Scan all entries in the knowledge base (wiki/ or project knowledge files)
+    1. Scan all entries in the knowledge base (wiki/ or project knowledge files), EXCLUDING dotfiles (added 7.2.0 — prevents linter from checking its own state files against wiki schema rules)
     2. For each entry, check:
        - Staleness: Has staleness_risk window expired? Flag entries past their expected lifetime.
        - Contradiction: Does this entry contradict any other entry? Flag both with specific conflict.
@@ -719,6 +731,9 @@ linter_behavior:
        - HIGH: Stale entries with fast_decay past window (actively misleading); post-v6.6.0 entries with missing or invalid domain/topic schema
        - MEDIUM: Redundant entries (noise, not harm); possible-backdated-entry findings
        - LOW: Orphan references, minor formatting issues
+    4. Record violation events (added 7.2.0 — bead 8zt): for each cc_rules entry with a linter_check block whose kind is in {frontmatter_field_missing, frontmatter_field_value_disallowed, body_pattern_present, body_pattern_absent}, evaluate the pattern against wiki entries matching linter_check.target_files. Append matches to .kf/linter/events.log (tab-separated: ISO_timestamp\tsession_id\trule_filename\tevent_type). Temporal-ordering kinds (e.g., "event X preceded event Y in session") are NOT supported at v1 — deferred to follow-up bead.
+    5. Aggregate graduation snapshot (added 7.2.0): after scanning, rotate events older than 30 days from .kf/linter/events.log. Compute per-rule counts (events, distinct session_ids, first/last seen, eligibility — eligible_for_graduation = event_count ≥ 3 AND len(session_ids) ≥ 2). Write .kf/linter/counter.json (overwriting). Snapshot is the source of truth for cc_hooks emitter graduation decisions.
+    6. Add new "Graduation candidates" finding section to output — rules that crossed the threshold this run; recommendation includes the cc_hooks frontmatter stub the module author would add (the linter recommends the structure, but the author decides command, matcher, and source_rule wiring per their domain knowledge).
     
   output_format:
     ```
