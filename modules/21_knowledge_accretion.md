@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Knowledge Accretion
-  version: 7.1.2
+  version: 7.1.3
   purpose: Cross-cutting detection-and-routing behavior that recognizes when mode outputs contain knowledge worth persisting and either auto-files it (Claude Code) or surfaces it as a compilation candidate (Claude Projects)
   topics: [knowledge-persistence, compile-query-enhance, wiki-generation, accretion-signals, knowledge-base-maintenance]
   contexts: [all-mode-execution, knowledge-management, session-outputs, persistent-storage]
@@ -13,6 +13,13 @@ module:
   related: [07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 02_Builder_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model]
   added_in: "6.2"
   changelog:
+    7.1.3:
+      date: 2026-06-12
+      driver: knowledgeforge-core-3ym
+      changes:
+        - step_5_file path formula corrected — was {wiki_root}/{domain}/{topic}.md (one file per topic), now {wiki_root}/{domain}/{YYYY-MM-DD}_{slug}.md (one file per entry) to match established convention. 218 entries on disk already followed this pattern; the spec was the stale party. Pre-existing bug surfaced by e0x Critic finding [5].
+        - Added slug derivation rule (kebab-case from title), domain-field reference (with grandfather fallback per M23), and same-day collision suffixing (-2, -3...).
+        - No behavior change for actual writes — every wiki entry written in the last 18 months used the corrected formula. Spec-vs-reality alignment only.
     7.1.2:
       date: 2026-06-10
       driver: knowledgeforge-core-e0x
@@ -541,10 +548,18 @@ claude_code_runtime:
       rebuild_trigger: "No manual rebuild needed — mempalace-wiki-mine maintains the index incrementally on every Write/Edit/MultiEdit. If MemPalace's index is lost, run `python -m mempalace mine <wiki_dir>` to re-index from disk."
 
     step_5_file:
-      - Write compiled markdown to {wiki_root}/{domain}/{topic}.md
+      # Path formula updated 7.1.3 (bead 3ym) — was {wiki_root}/{domain}/{topic}.md
+      # (one file per topic), which conflicted with the established
+      # one-file-per-entry convention used on disk (218 entries follow
+      # YYYY-MM-DD_<slug>.md across all wiki/ subdirs).
+      - Write compiled markdown to {wiki_root}/{domain}/{YYYY-MM-DD}_{slug}.md
+      - slug = kebab-case of title (lowercase; non-alphanumeric → hyphen; collapse runs; trim leading/trailing hyphens)
+      - {domain} comes from the entry's domain: field (M23 controlled vocabulary; grandfathered entries may legitimately lack this field — see M23 Grandfathering section); when absent, derive from the directory hint in knowledge_target
+      - {YYYY-MM-DD} is the entry's created: date (filing time, not authoring time of the source material)
       - Include metadata header (yaml frontmatter with accretion_candidate fields)
       - Update {wiki_root}/index.md with new entry (title, path, novelty_type, created date)
       - Append accretion event to {wiki_root}/compile.md log
+      - Filename collisions on same-day same-slug — suffix with `-2`, `-3`, etc. before the .md extension
 
     step_5b_emit_path_gated_rule:
       # Added 7.1.1 (Phase 2 spec 5fd). Runs after step_5 wiki write, before user_surface.
