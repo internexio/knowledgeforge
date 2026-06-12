@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Knowledge Accretion
-  version: 7.1.3
+  version: 7.1.4
   purpose: Cross-cutting detection-and-routing behavior that recognizes when mode outputs contain knowledge worth persisting and either auto-files it (Claude Code) or surfaces it as a compilation candidate (Claude Projects)
   topics: [knowledge-persistence, compile-query-enhance, wiki-generation, accretion-signals, knowledge-base-maintenance]
   contexts: [all-mode-execution, knowledge-management, session-outputs, persistent-storage]
@@ -13,6 +13,15 @@ module:
   related: [07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 02_Builder_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model]
   added_in: "6.2"
   changelog:
+    7.1.4:
+      date: 2026-06-12
+      driver: knowledgeforge-core-8gp
+      spec: docs/planning/2026-06-12_module-25-entity-path-glob-resolver-spec.md
+      changes:
+        - step_2c_activation_profile.compute.path_globs gains a new lookup path — for ERA-consuming modes (Builder, Coordinator, Expert, Strategist, Critic), join era.entity_paths values into a flat deduped list. If >5 globs, keep 5 most-specific per the M25 7.1.0 glob comparison function.
+        - step_3c_profile_cross_validate gains a downgrade rule — when ERA produced the globs (path_globs_meta entry has source: era) AND scope == global, DOWNGRADE trigger to task_bound and clear path_globs (instead of rejecting). Reason: ERA commonly produces globs for architectural patterns that are also global-scoped; silent rejection would make the M25 resolver invisible. Log to compile.md as era_global_glob_downgrade.
+        - Manually-authored path_globs (no path_globs_meta entry) still reject on global scope per Phase 1 rule. Distinguishing source is via the new optional path_globs_meta sidecar.
+        - Backwards-compatible — when ERA absent OR no entity_paths produced, existing Phase 1 logic applies unchanged.
     7.1.3:
       date: 2026-06-12
       driver: knowledgeforge-core-3ym
@@ -419,13 +428,24 @@ accretion_candidate:
       # verbatim as the `paths:` frontmatter on a generated rule file.
       # Constraints:
       #   - Repo-specific by nature → travels ONLY with project-scoped candidates
-      #     (scope=project per step_3 classification). Global-scoped candidates
-      #     with trigger==path_bound are an error; reject at step_3c.
+      #     for manually-authored globs. ERA-resolver-produced globs on
+      #     global-scope candidates DOWNGRADE to task_bound at step_3c
+      #     (7.1.4+) instead of rejecting.
       #   - Empty list with trigger==path_bound triggers downgrade to task_bound.
-      #   - Provenance: at v1, populated only when producing mode authors explicit
-      #     globs in accretion_note. Entity→path resolver deferred to follow-up
-      #     bead (knowledgeforge-core-8gp). Expected distribution at v1:
+      #   - Provenance: populated by ERA's entity → path-glob resolver (M25 7.1.0+)
+      #     OR by producing mode emitting explicit globs in accretion_note.
+      #     See path_globs_meta below for source distinction. Expected
+      #     post-resolver distribution: ~60% invariant / ~25% task_bound /
+      #     ~15% path_bound (calibrate post-ship). Pre-resolver baseline was:
       #     ~90% invariant / ~10% task_bound / <1% path_bound.
+
+    path_globs_meta: [object]     # optional sidecar to path_globs (added 7.1.4, bead 8gp)
+      # Per-glob metadata: source provenance. Only ERA-resolver-produced
+      # globs need an entry; manually-authored globs may omit their entry
+      # (treated as source: manual for the purpose of step_3c logic).
+      # Shape: [{glob: <string>, source: era|manual}, ...]
+      # Used by step_3c to distinguish ERA-driven downgrades from
+      # manual-author rejections on global scope.
 ```
 
 ---
@@ -521,8 +541,13 @@ claude_code_runtime:
       # Added 7.1.0. Runs after step_3 (scope known) and step_3b (bootstrap done), before step_4a (taxonomy).
       # Validates the cross-cuts between activation_profile and scope.
       validate:
-        - If trigger == path_bound AND scope == global → reject candidate
-          reason: "path_globs are repo-specific; cannot travel with a global-scoped wiki entry"
+        # Updated 7.1.4 (bead 8gp) — split into two sub-rules based on path_globs source.
+        - If trigger == path_bound AND scope == global AND all path_globs entries have a path_globs_meta sidecar with source: era → DOWNGRADE candidate (do NOT reject)
+          action: "Set trigger to task_bound; clear path_globs; clear path_globs_meta"
+          reason: "ERA-resolved globs commonly appear on globally-scoped candidates (architectural patterns spanning multiple repos); task_bound is the correct semantic for cross-repo entity-anchored knowledge"
+          log_to: compile_log_format with reason "era_global_glob_downgrade"
+        - If trigger == path_bound AND scope == global AND any path_globs entry lacks an era-source sidecar (manually-authored) → reject candidate
+          reason: "manually-authored path_globs are repo-specific; cannot travel with a global-scoped wiki entry"
           log_to: compile_log_format with reason "scope_glob_cross_cut"
         # Future cross-cuts (when added in subsequent revisions) attach here.
 

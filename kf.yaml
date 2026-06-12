@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.7.1
+version: 7.8.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -33,6 +33,29 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.8.0
+    date: 2026-06-12
+    driver: knowledgeforge-core-8gp
+    spec: docs/planning/2026-06-12_module-25-entity-path-glob-resolver-spec.md
+    note: |
+      M25 entity → path-glob resolver. Closes the <1% path_bound bottleneck
+      from Phase 1 (y4b Section 4).
+
+      Adds entity_paths to ERA output, populated by a GitNexus-primary +
+      session-cached-grep-fallback resolver. M21 step_2c reads entity_paths
+      into activation_profile.path_globs; step_3c handles the
+      ERA-globs-on-global-scope case via downgrade (not rejection) to keep
+      the resolver visible.
+
+      Adversarial-critic pass surfaced 5 findings, all absorbed. Key fixes
+      in revision: step_3c interaction protocol (downgrade vs reject),
+      deterministic glob comparison function (literal-char prefix +
+      lex tiebreak), repo-scoped grep cache key, resolver_source demoted
+      to diagnostic metadata, M25 version read empirically (7.0.3 → 7.1.0).
+    changes:
+      - Module 25 (7.0.3 → 7.1.0) — entity_paths field, glob derivation rules, comparison function, resolver shape.
+      - Module 21 (7.1.3 → 7.1.4) — step_2c entity_paths lookup, step_3c ERA-globs-on-global-scope downgrade rule, path_globs_meta sidecar field.
+      - knowledgeforge-core-8gp closed (P3 → CLOSED).
   - version: 7.7.1
     date: 2026-06-12
     driver: knowledgeforge-core-3ym

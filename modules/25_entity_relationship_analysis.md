@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Entity Relationship Analysis
-  version: 7.0.3
+  version: 7.1.0
   purpose: Extract entities and their relationships from queries and context to improve routing accuracy, multi-hop reasoning, and memory retrieval — single-entity analysis misses relational complexity that changes which mode and chain is correct
   topics: [entity-extraction, relationship-mapping, routing-signals, multi-hop, graph-analysis]
   contexts: [decision-classification, mode-routing, memory-retrieval, coordinator-planning]
@@ -13,6 +13,17 @@ module:
   related: [13_Decision_Classification, 19_Memory_Architecture, 22_Semantic_Wiki_Search, 03_Coordination_Patterns, 18_Salience_Allocation, 10_Strategist_Agent]
   added_in: "6.5"
   changelog:
+    7.1.0:
+      date: 2026-06-12
+      driver: knowledgeforge-core-8gp
+      spec: docs/planning/2026-06-12_module-25-entity-path-glob-resolver-spec.md
+      changes:
+        - Added entity_paths resolver — ERA now produces entity_paths dict (glob patterns keyed by entity) alongside the existing memory_filter.
+        - Recommended resolver shape — GitNexus-primary with session-cached grep fallback. Cache key is (entity_name, repo_root) to prevent multi-repo session contamination.
+        - Glob derivation rules — single-file, N-in-dir, N-across-dirs, max-5-cap. Comparison function specified deterministically (literal-character prefix count + lexicographic tiebreak).
+        - Added resolver_source diagnostic metadata — records which resolver (gitnexus, grep, or none) produced the entity_paths. No current consumer; future drift-detection bead may read it.
+        - Forward-compatible — existing ERA consumers (M22 Phase 2, M24, downstream modes) ignore the new field cleanly; M21 path_globs lookup is the only currently-active consumer.
+        - Closes the <1% path_bound bottleneck identified in Phase 1 spec (y4b) Section 4.
     7.0.3:
       date: 2026-05-24
       driver: knowledgeforge-core-8xq
@@ -223,7 +234,55 @@ era:
     entities: [API gateway, session store, rate limit policy]
     domain: architecture
     topic: distributed-systems
+  # Added 7.1.0 (bead 8gp). Maps entity name → list of glob patterns
+  # identifying files where that entity is relevant. Empty list = resolver
+  # found no matching files; this is a valid outcome (correct behavior
+  # for Concept and State entities that often have no concrete file home).
+  # Consumed by M21 step_2c_activation_profile.compute.path_globs.
+  entity_paths:
+    "API gateway": ["src/api/**/*.ts", "src/gateway/**/*.ts"]
+    "session store": ["src/storage/session*.ts", "config/redis.yaml"]
+    "rate limit policy": []
+  resolver_source:
+    # DIAGNOSTIC METADATA only — no current consumer module reads this.
+    # When a future drift-detection bead lands, this comment updates to
+    # name the consumer. Useful for post-hoc debugging in the meantime.
+    primary: gitnexus  # one of: gitnexus | grep | none
+    gitnexus_attempted: true
+    grep_attempted: false
 ```
+
+### Resolver shape (added 7.1.0)
+
+ERA's entity → path-glob resolver uses a two-source strategy:
+
+**Primary path: GitNexus.** When `gitnexus_context` or `gitnexus_query` is available in the session (KF's global CLAUDE.md mandates GitNexus usage when indexed), ERA delegates entity-name lookup to GitNexus. GitNexus returns file paths for symbols; ERA wraps those paths as globs (per the Glob Derivation Rules below).
+
+**Fallback path: session-cached grep.** When GitNexus is unavailable (e.g., fresh repo not yet `npx gitnexus analyze`-d):
+
+1. On first ERA call against a given repo in a session, scan the repo for entity-candidate paths using `git grep -l` against the entity name plus common variations (kebab-case, snake_case, camelCase, PascalCase).
+2. Cache the result keyed by `(entity_name, repo_root)` where `repo_root = git rev-parse --show-toplevel`. Multi-repo sessions get separate cache scopes.
+3. Subsequent ERA calls in the same session-and-same-repo read from cache.
+4. Cache invalidates at session end (M19 Tier 2 lifecycle).
+
+**Hybrid strategy:** try GitNexus first; on failure (tool unavailable OR returns empty), fall back to grep cache. Both paths feed the same `entity_paths` output shape.
+
+### Glob derivation rules (added 7.1.0)
+
+When the resolver returns a list of file paths, it converts them to globs:
+
+- **Single file:** the path itself becomes the glob.
+- **N files in a single directory:** `dirname/*.ext` if all share an extension; `dirname/**/*` otherwise.
+- **N files across directories:** `**/*.ext` only if all share an extension AND span enough directories to be a wildcard win; otherwise keep individual paths.
+- **Max 5 globs per entity** — cap to the 5 most-specific globs per the comparison function below; emit a LOW finding via the Knowledge Base Linter (M21) for the over-match.
+
+### Glob comparison function (deterministic — added 7.1.0)
+
+When ranking globs for the "5 most-specific" cap:
+
+1. **Primary key — literal-character count of the pre-wildcard prefix.** Extract the prefix up to the first wildcard character (`*`, `?`, `[`). The character count of that prefix is the score. Examples: `src/api/auth.ts` → 15; `src/api/**/*.ts` → 8; `**/*.ts` → 0.
+2. **Tiebreak — lexicographic order of the full glob.** Same prefix score → alphabetical, ascending.
+3. **No semantic prefix interpretation.** The function does NOT distinguish `src/` from `tests/` by meaning; both are literal-character prefixes. Designers wanting semantic ranking should embed it in the resolver path (e.g., grep filter to exclude `tests/` paths before glob derivation), not in the comparison function.
 
 ---
 
