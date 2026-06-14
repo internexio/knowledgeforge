@@ -4,14 +4,22 @@
 
 ```yaml
 module:
-  title: KnowledgeForge 7.4.0 Agent Instructions
-  version: 7.4.0
+  title: KnowledgeForge 7.5.0 Agent Instructions
+  version: 7.5.0
   purpose: Orchestrate all KF modes and infrastructure modules through behavioral prompt instructions — classify, route, execute, verify, deliver
   topics: [orchestration, routing, decision-classification, mode-selection, quality-enforcement, prompt-architecture, knowledge-accretion, infrastructure-planning, entity-relationship-analysis, routing-audit-log, mode-selection-accuracy]
   contexts: [all-interactions, session-management, mode-transitions, routing-correctness-tracking]
   difficulty: foundational
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 06_Quick_Reference, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 23_Taxonomy_Enforcement, 24_Verbatim_History_Mining, 25_Entity_Relationship_Analysis]
   changelog:
+    7.5.0:
+      date: 2026-06-13
+      driver: knowledgeforge-core-f8a
+      spec: docs/planning/2026-06-13_spec-1-verifier-promotion.md
+      changes:
+        - Chain-syntax token update — legacy `@critic` with parenthetical-adversarial qualifier replaced with `@adversarial-critic` at three chain example sites (lines 744 ERA chain, 759 ML-infra chain, 763 entity audit chain) plus inline reference in Automatic Adversarial Verification block. Matches the agent name compiled out of Module 07 ## CC Agent (Adversarial Variant) (canonical post-SPEC-1).
+        - Line 814 cross-cutting prose ("embedded in each mode — not separate agents") left unchanged — refers to infrastructure modules 12–25, not the Critic/adversarial-critic split.
+        - No behavior change for the orchestrator's routing; reference-name alignment only.
     7.4.0:
       date: 2026-06-11
       driver: knowledgeforge-core-ev4
@@ -741,7 +749,7 @@ Common chains:
 - Hosting audit + prioritize: `@critic (audit) → @strategist`
 - Model deployment planning: `@expert (ML infra) → @strategist → @builder`
 - Moat analysis: `@expert (architecture) → @strategist`
-- Entity Relationship Analysis: `@expert (ERA) → @builder (ERA Specification Template) → AUTO: @critic (adversarial)`
+- Entity Relationship Analysis: `@expert (ERA) → @builder (ERA Specification Template) → AUTO: @adversarial-critic`
 
 **Auto-chain detection:** When a request contains verbs from two different mode groups and the second intent depends on the first's output, chain them automatically. Do not ask — declare the chain and execute.
 
@@ -756,11 +764,11 @@ Common chains:
 | "Design for production" / "deep dive then plan" | `@expert → @strategist` |
 | "Audit the knowledge base and fix what you find" | `@critic (linter) → @builder` |
 | "Audit infrastructure and design architecture" | `@critic (audit) → @expert (infra) → @builder` |
-| "Plan model deployment and validate" | `@expert (ML infra) → @strategist → @builder → @critic (adversarial)` |
+| "Plan model deployment and validate" | `@expert (ML infra) → @strategist → @builder → @adversarial-critic` |
 | "Design for competitive moat" | `@expert (architecture) → @strategist` |
 | "Inventory and decompose" | `@critic (audit) → @strategist → @builder` |
 | "Size hardware for models" | `@expert (ML infra) → @strategist` |
-| "Map entities / audit dependencies / model contracts" | `@expert (ERA) → @builder → @critic (adversarial)` |
+| "Map entities / audit dependencies / model contracts" | `@expert (ERA) → @builder → @adversarial-critic` |
 
 **Chain indicator phrases:** "and then", "then", "after that", "once you", "first… then", "and tell me what to do", "and fix it", "and implement", "and prioritize".
 
@@ -770,7 +778,7 @@ Chain only when the first mode's output is genuinely needed as input to the seco
 
 ## Automatic Adversarial Verification
 
-When a mode chain produces a specification, strategy recommendation, or diagnostic conclusion at evaluative decision type or higher, the chain automatically includes an adversarial @critic pass before delivery.
+When a mode chain produces a specification, strategy recommendation, or diagnostic conclusion at evaluative decision type or higher, the chain automatically includes an @adversarial-critic pass before delivery.
 
 **Auto-verification fires on:**
 - Builder output in a chain (specifications)

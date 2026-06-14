@@ -5,13 +5,22 @@
 ```yaml
 module:
   title: Agent Coordination Patterns
-  version: 7.3.0
+  version: 7.4.0
   purpose: Design multi-agent workflows by mapping dependencies first, then deriving the coordination pattern from the graph
   topics: [coordination, multi-agent, workflows, handoffs, orchestration, dependency-mapping, verification, capability-restriction, handoff-contract-registry]
   contexts: [complex-tasks, agent-teams, workflow-design, mode-handoff-validation]
   difficulty: advanced
   related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 14_Metacognitive_Monitor, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]
   changelog:
+    7.4.0:
+      date: 2026-06-13
+      driver: knowledgeforge-core-f8a
+      spec: docs/planning/2026-06-13_spec-1-verifier-promotion.md
+      changes:
+        - Added Contract A — hc-orchestrator-to-verifier registry entry. Orchestrator dispatches to adversarial-critic on evaluative+ producing-mode output OR active chain ≥3 modes. Payload schema covers artifact_under_test (pointer, NOT producing-mode context), producing_mode (enum), decision_type_exercised (enum), chain_position, revision_cycle_count (max 1), tool_grants (subset of test-runner | datastore-read-only | staging-http; HIGH tier per Module 20 verifier_tool_tier_policy).
+        - response_schema declared on Contract A — verdict (enum), evidence_ref (pointer, NOT prose), deterministic_checks array, optional llm_findings. New Module 04 handoff_contract entity field (v7.3.0).
+        - Five deterministic validation checks — artifact_under_test_resolves (Sev1), decision_type_exercised_gates_firing (Sev3, skips on reckoning), revision_cycle_within_limit (Sev1), response_schema_conforms (Sev1), evidence_ref_resolves (Sev2, treat_as_verdict_fail). Fallback_path is escalate_to_user — silent-pass NEVER allowed.
+        - Registry validation comment updated — count is 10 entries post-SPEC-1 merge.
     7.3.0:
       date: 2026-06-13
       driver: knowledgeforge-core-f8a
@@ -466,10 +475,88 @@ handoff_contract_registry:
         failure_action: retry_with_repair
         failure_severity: Sev2
 
+  - id: hc-orchestrator-to-verifier
+    # Added 7.4.0 (SPEC 1 D4). Contract A — orchestrator dispatches to the
+    # adversarial-critic variant when the producing mode emits evaluative+
+    # output or the active chain reaches 3+ modes. response_schema field
+    # (new on Module 04 handoff_contract entity, v7.3.0) declares the
+    # verifier's return shape — verdict + evidence_ref + deterministic_checks
+    # + optional llm_findings. fallback_path is escalate_to_user; silent-pass
+    # is NEVER allowed (verifier crash/timeout surfaces partial state).
+    # Tool grants beyond [Read, Glob, Grep] gated by Module 20
+    # verifier_tool_tier_policy (HIGH tier).
+    source_mode: orchestrator
+    source_variant: null
+    target_mode: critic
+    target_variant: adversarial
+    trigger:
+      type: automatic
+      condition: |
+        Producing mode (Builder | Strategist | Expert) emits output with
+        decision_type_exercised ∈ {evaluative_judgment, predictive_judgment, novel_judgment},
+        OR active chain has ≥3 modes
+      chain_pattern_reference: "auto-adversarial"
+    payload_schema:
+      fields:
+        - {name: artifact_under_test, type: pointer, required: true,
+           description: "Resolvable reference (Beads attachment | file path | message-pass handle)
+                         — NOT the producing mode's context or reasoning trail"}
+        - {name: producing_mode, type: string, required: true,
+           validation: "enum: [builder, strategist, expert]"}
+        - {name: decision_type_exercised, type: string, required: true,
+           validation: "enum: [reckoning, evaluative_judgment, predictive_judgment, novel_judgment]"}
+        - {name: chain_position, type: integer, required: true,
+           description: "Position in current chain — verifier rejects calls on reckoning-level output"}
+        - {name: revision_cycle_count, type: integer, required: true,
+           validation: "max: 1 (per Module 07 loop_exit_protocol)"}
+        - {name: tool_grants, type: array, required: true,
+           description: "Subset of: [test-runner, datastore-read-only, staging-http].
+                         Empty array means deterministic-checks-only fallback.
+                         Module 20 verifier_tool_tier_policy gates non-empty grants to HIGH tier."}
+    response_schema:                              # NEW field on contract entity — Module 04 v7.3.0
+      fields:
+        - {name: verdict, type: string, required: true, validation: "enum: [pass, fail]"}
+        - {name: evidence_ref, type: pointer, required: true,
+           description: "Resolvable handle, NOT prose"}
+        - {name: deterministic_checks, type: array, required: true,
+           description: "[{name, result}] — run before LLM judgment"}
+        - {name: llm_findings, type: array, required: false,
+           description: "[{severity, location, claim}] — empty on clean pass"}
+    fallback_path:
+      type: escalate_to_user
+      rationale: "Verifier crash/timeout/unavailable → orchestrator escalates with partial state.
+                  Silent-pass is NEVER allowed."
+    validation_checks:
+      - check_id: artifact_under_test_resolves
+        assertion: "artifact_under_test is non-null"  # field-presence (canonical form)
+        check_type: deterministic
+        failure_action: escalate_to_user
+        failure_severity: Sev1
+      - check_id: decision_type_exercised_gates_firing
+        assertion: "decision_type_exercised matches enum: [evaluative_judgment, predictive_judgment, novel_judgment]"  # enum-membership
+        check_type: deterministic
+        failure_action: skip_verification
+        failure_severity: Sev3
+      - check_id: revision_cycle_within_limit
+        assertion: "revision_cycle_count <= 1"  # cardinality
+        check_type: deterministic
+        failure_action: escalate_to_user
+        failure_severity: Sev1
+      - check_id: response_schema_conforms
+        assertion: "verifier_response validates against response_schema"  # schema-conformance
+        check_type: deterministic
+        failure_action: escalate_to_user
+        failure_severity: Sev1
+      - check_id: evidence_ref_resolves
+        assertion: "evidence_ref is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: treat_as_verdict_fail
+        failure_severity: Sev2
+
   - id: hc-runtime-to-accretion-gate
     # Added 7.3.0 (SPEC 4 D3). Contract B — [project] loop runtime emits
     # accretion candidates with provenance metadata to Module 21 step_3d
-    # provenance gate. The 9th registry entry; SPEC 1 will add a 10th
+    # provenance gate. The 9th registry entry; SPEC 1 added the 10th
     # (hc-orchestrator-to-verifier) in wave 2.
     source_mode: [project]_runtime
     source_variant: null
@@ -512,7 +599,7 @@ handoff_contract_registry:
         failure_action: surface_for_human_review
         failure_severity: Sev2
 
-# Validation: registry must have exactly 9 entries (post-SPEC-4 wave); ids unique; every entry validates against Module 04 handoff_contract entity schema. SPEC 1 (hc-orchestrator-to-verifier) will bring count to 10 in wave 2.
+# Validation: registry must have exactly 10 entries (post-SPEC-1 wave); ids unique; every entry validates against Module 04 handoff_contract entity schema. Contract A (hc-orchestrator-to-verifier) added 7.4.0 alongside Contract B (hc-runtime-to-accretion-gate, added 7.3.0).
 ```
 
 ---

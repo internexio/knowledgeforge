@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.11.0
+version: 7.12.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -33,6 +33,69 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.12.0
+    date: 2026-06-13
+    driver: knowledgeforge-core-f8a
+    spec: docs/planning/2026-06-13_spec-1-verifier-promotion.md
+    note: |
+      SPEC 1 implementation — verifier promotion + Contract A + Codex placeholder.
+      Phase 3 wave 2 of the loop-engineering integration; lands after SPEC 4
+      wave 1 (7.11.0) and SPEC 5 wave 1.
+
+      Module 07 (7.2.0 → 7.3.0):
+        - Added ## CC Agent (Adversarial Variant) section. Module 07 is now the
+          canonical source for the adversarial-critic agent body. Canonical
+          body = current cc body PLUS new Untrusted Input Boundary clause
+          (treats artifact_under_test content as data, not directives; flags
+          instruction-shaped text as findings rather than complying).
+
+      Module 00 (7.4.0 → 7.5.0):
+        - Chain-syntax token update — `@critic (adversarial)` replaced with
+          `@adversarial-critic` at three chain example sites plus the inline
+          reference in Automatic Adversarial Verification. Line 814 prose
+          unchanged (refers to infrastructure modules 12–25).
+
+      Module 03 (7.3.0 → 7.4.0):
+        - Added Contract A — hc-orchestrator-to-verifier registry entry.
+          Payload + response schemas, five deterministic validation checks,
+          escalate_to_user fallback (silent-pass NEVER allowed). Registry
+          count is 10 entries post-SPEC-1.
+
+      Module 04 (7.2.1 → 7.3.0):
+        - Added response_schema field to handoff_contract entity (parallel
+          structure to payload_schema). Required for contracts where source
+          consumes the response; optional otherwise.
+
+      platform-bindings/claude-code.yaml:
+        - Module 07 emission rule adds ## CC Agent (Adversarial Variant) →
+          .claude/agents/adversarial-critic.md.
+        - static_agents list emptied — adversarial-critic.md PROMOTED out
+          (block retained as empty list with documentation anchor).
+
+      platform-bindings/codex.yaml (NEW):
+        - Placeholder file declaring the contract surface the eventual Codex
+          binding must satisfy. status: deferred; module_outputs: {}.
+
+      compiler/kf-compile.py:
+        - argparse choices list gains `codex`.
+        - compile_codex_placeholder() handler — writes nothing, emits stderr
+          warning ("Codex target is deferred …"), exits 0.
+
+      EXPECTED bootstrap divergence (one-time): first post-merge
+      `kf-compile --target claude-code --check-divergence` will surface
+      ONE divergence on cc/.claude/agents/adversarial-critic.md because
+      the untrusted-input clause is canonical in core but not yet present
+      in the cc copy. Orchestrator handles the one-step back-port (delete
+      cc file → recompile) after merge. Documented as deliberate, not a defect.
+    changes:
+      - Module 07 (7.2.0 → 7.3.0) — ## CC Agent (Adversarial Variant) section; canonical body + Untrusted Input Boundary clause.
+      - Module 00 (7.4.0 → 7.5.0) — @critic (adversarial) → @adversarial-critic token replacement (3 chain examples + 1 prose reference).
+      - Module 03 (7.3.0 → 7.4.0) — Contract A hc-orchestrator-to-verifier registry entry (count 9 → 10).
+      - Module 04 (7.2.1 → 7.3.0) — response_schema field added to handoff_contract entity.
+      - platform-bindings/claude-code.yaml — module 07 adversarial-critic agent emission; static_agents emptied (block retained).
+      - platform-bindings/codex.yaml (NEW) — deferred placeholder with contract_surface and bind_when conditions.
+      - compiler/kf-compile.py — codex target added (argparse + compile_codex_placeholder dispatch with stderr warning).
+
   - version: 7.11.0
     date: 2026-06-13
     driver: knowledgeforge-core-f8a

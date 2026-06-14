@@ -108,6 +108,9 @@ module_outputs:
       - type: agent
         path: ".claude/agents/critic.md"
         section: "CC Agent"
+      - type: agent                                  # NEW 7.4.0 (SPEC 1 D2)
+        path: ".claude/agents/adversarial-critic.md"
+        section: "CC Agent (Adversarial Variant)"
 
   "08":  # Synthesizer
     mode: synthesizer
@@ -288,8 +291,13 @@ special_outputs:
   # core/modules/21_knowledge_accretion.md "## CC Agent (Knowledge Librarian)"
   # section is now canonical; the cc copy is compiled output. See module_outputs."21"
   # for the new emission rule.
-  static_agents:
-    - ".claude/agents/adversarial-critic.md"
+  #
+  # 7.4.0 (SPEC 1 D2): adversarial-critic.md PROMOTED out of static_agents —
+  # core/modules/07_critic_agent.md "## CC Agent (Adversarial Variant)" section
+  # is now canonical; the cc copy is compiled output. See module_outputs."07"
+  # for the new emission rule. Block now empty; retained as documentation
+  # anchor for future static agents that need to be inventoried.
+  static_agents: []
 
   # Commands — hand-maintained in knowledgeforge-cc, NOT in core.
   # Same ownership rule as static_agents above. cc/install.sh copies
