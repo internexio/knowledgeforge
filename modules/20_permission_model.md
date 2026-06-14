@@ -5,15 +5,24 @@
 ```yaml
 module:
   title: Permission Model
-  version: 7.0.1
+  version: 7.1.0
   purpose: Layered permission system that classifies action risk, enforces capability restrictions per sub-agent, and gates autonomous behavior with human checkpoints
-  topics: [permissions, risk-classification, capability-restriction, autonomous-governance, sub-agent-safety, accretion-permissions]
-  contexts: [autonomous-deployment, sub-agent-architecture, mode-chains, production-safety]
+  topics: [permissions, risk-classification, capability-restriction, autonomous-governance, sub-agent-safety, accretion-permissions, verifier-tool-grants]
+  contexts: [autonomous-deployment, sub-agent-architecture, mode-chains, production-safety, separate-agent-verification]
   difficulty: advanced
-  related: [03_Coordination_Patterns, 04_Specification_Templates, 13_Decision_Classification, 14_Metacognitive_Monitor, 16_Operational_Bounds, 19_Memory_Architecture, 21_Knowledge_Accretion]
+  related: [03_Coordination_Patterns, 04_Specification_Templates, 07_Critic_Agent, 13_Decision_Classification, 14_Metacognitive_Monitor, 16_Operational_Bounds, 19_Memory_Architecture, 21_Knowledge_Accretion]
   added_in: "6.1"
   implements: "Directive 5 (Layered Permission Model), Directive 6 (Fork-Join Capabilities)"
   changelog:
+    7.1.0:
+      date: 2026-06-13
+      driver: knowledgeforge-core-f8a
+      spec: docs/planning/2026-06-13_spec-1-verifier-promotion.md + docs/planning/2026-06-13_spec-4-accretion-vetting-gate.md
+      changes:
+        - Added verifier_tool_tier_policy — gates separate-agent verifier (adversarial-critic) tool grants beyond Read/Glob/Grep by HIGH tier with explicit bind-side requirements (sandbox, read-replica, network-isolation). Cross-spec dependency for SPEC 1 verifier promotion.
+        - Added accretion_candidate_tier_policy — novel/predictive-derived accretion candidates surface for human review at HIGH tier regardless of target scope (project or cross-cutting). Annotation tags do not satisfy HIGH-tier confirmation. Cross-spec dependency for SPEC 4 vetting gate.
+        - Both policies fit the existing risk_escalation block shape (rule/trigger/action). No behavioral revolution; additive rules with explicit Module 07 + Module 21 integration points.
+        - Phase 3-prep PR landing before SPEC 1 and SPEC 4 implementation; eliminates documentation drift from specs referencing a Module 20 surface that does not exist yet.
     7.0.1:
       date: 2026-04-29
       changes:
@@ -99,7 +108,7 @@ risk_escalation:
     mapping:
       single_mode_reckoning: LOW
       single_mode_evaluative: MEDIUM
-      single_mode_predictive: MEDIUM
+      single_mode_predictive: MEDIUM  # base tier for predictive output; see accretion_candidate_tier_policy for accretion persistence of predictive-derived candidates
       single_mode_novel: HIGH
       two_mode_chain: max(terminal_tier, MEDIUM)
       three_plus_mode_chain: max(terminal_tier, MEDIUM) — review for HIGH
@@ -123,6 +132,57 @@ risk_escalation:
     rule: "Knowledge base accretion to customer-facing knowledge bases is always HIGH."
     trigger: Accretion candidate targets a knowledge base that feeds customer-facing products (Science Advisor evidence tiers, COS claims, ODS scoring)
     action: Set to HIGH — bad knowledge in production bases propagates to customer output
+
+  verifier_tool_tier_policy:                     # NEW 7.1.0 — SPEC 1 cross-spec dep
+    rule: "Separate-agent verifier (adversarial-critic) tool grants beyond Read/Glob/Grep are HIGH-tier and require explicit bind-side isolation."
+    rationale: |
+      A verifier that can run code on staging, query a datastore, or hit HTTP endpoints
+      is a verifier that can be redirected by a compromised artifact-under-test. The
+      verifier prompt's untrusted-input clause (Module 07 ## CC Agent Adversarial Variant)
+      handles prompt-level defense; this policy handles capability-surface defense.
+    tool_tier_table:
+      read_glob_grep:
+        tier: MEDIUM
+        bind_side_requirement: none
+        note: "Default tool surface — file-system read-only access; no escalation needed"
+      test_runner:
+        tier: HIGH
+        bind_side_requirement: "Sandbox: ephemeral container, no persistent FS, no network egress to non-allowlisted hosts"
+      datastore_read_only:
+        tier: HIGH
+        bind_side_requirement: "Read-replica binding only; writes impossible at the infrastructure layer (not policy layer)"
+      staging_http:
+        tier: HIGH
+        bind_side_requirement: "Network-isolated; explicit host allowlist; no production TLDs reachable"
+    enforcement:
+      - "Tool grants are declared in Contract A (Module 03 hc-orchestrator-to-verifier) payload"
+      - "Tier classification happens at orchestrator dispatch time, before verifier spawn"
+      - "Bind-side requirements are [project] responsibility — KF spec declares the contract; downstream runtime enforces sandbox"
+    action: "Tool grant ∈ {test-runner, datastore-read-only, staging-http} → require HIGH-tier human confirmation on first session use; cache confirmation for session scope"
+
+  accretion_candidate_tier_policy:               # NEW 7.1.0 — SPEC 4 cross-spec dep
+    rule: "Accretion candidates derived from novel or predictive decisions inherit HIGH tier regardless of target scope."
+    rationale: |
+      Module 13 maps decision_type to base risk tier: novel → HIGH. An accretion candidate
+      carries the decision type that produced it. Filing such a candidate to a wiki — project
+      OR cross-cutting — is a HIGH-risk persistence action. Annotation tags (`unvetted: true`)
+      are metadata, not checkpoints; they do not satisfy HIGH-tier human-confirmation requirement.
+    trigger: Module 21 step_3d_provenance_gate evaluates candidate with provenance.decision_tag ∈ {novel_judgment, predictive_judgment}
+    action: |
+      Surface candidate for human review via Module 21 surface_for_human_review_protocol.
+      User options: file_to_project (with unvetted tag), file_to_global_with_override (HIGH-tier
+      confirmation logged), discard. NEVER auto-file at MEDIUM tier with annotation alone.
+    override:
+      base_tier_conflict: "Supersedes single_mode_predictive: MEDIUM from chain_length_escalation when candidate.provenance.decision_tag == predictive_judgment. Accretion persistence is a distinct action class from the predictive judgment itself — the judgment may be MEDIUM-tier ephemeral output, but committing it to a wiki promotes the persistence action to HIGH regardless."
+      base_tier_match: "Aligned with single_mode_novel: HIGH for novel_judgment — no override needed; novel judgments already inherit HIGH tier from the base table."
+    interaction_with_accretion_escalation:
+      - "accretion_escalation gates by TARGET kb (customer-facing → HIGH)"
+      - "accretion_candidate_tier_policy gates by ORIGIN decision type (novel/predictive → HIGH)"
+      - "Both can fire on the same candidate; both must clear before filing proceeds"
+    enforcement:
+      - "Gate runs at Module 21 step_3d, upstream of librarian invocation"
+      - "Contract B (Module 03 hc-runtime-to-accretion-gate) payload requires provenance.decision_tag"
+      - "Provenance-missing candidates default to surface_for_human_review (never silent-file)"
 ```
 
 ---
@@ -485,11 +545,14 @@ Classify every action by risk tier and frame outputs accordingly.
 ```
 Single mode, reckoning: LOW
 Single mode, evaluative: MEDIUM
+Single mode, predictive: MEDIUM (base tier — see accretion_candidate_tier_policy for predictive-derived accretion)
 Single mode, novel: HIGH
 Two-mode chain: max(terminal_tier, MEDIUM)
 Three+ mode chain: max(terminal_tier, MEDIUM) → review for HIGH
 Confidence < 0.5: escalate tier by one level
 Adversarial finding severity 2+: escalate to HIGH regardless
+Verifier tool grant ∈ {test-runner, datastore-read-only, staging-http}: HIGH — require human confirmation (first session use; cached for session scope)
+Accretion candidate with decision_tag ∈ {novel_judgment, predictive_judgment}: HIGH — surface for human review; never auto-file at MEDIUM with annotation alone
 ```
 
 ## Capability Profile (Mode Restrictions)

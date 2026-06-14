@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.9.0
+version: 7.10.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -33,6 +33,30 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.10.0
+    date: 2026-06-13
+    driver: knowledgeforge-core-f8a
+    spec: docs/planning/2026-06-13_spec-1-verifier-promotion.md + docs/planning/2026-06-13_spec-4-accretion-vetting-gate.md
+    note: |
+      Phase 3-prep PR for loop-engineering integration: Module 20 gains two new
+      sub-policies — verifier_tool_tier_policy (SPEC 1 cross-spec dep) and
+      accretion_candidate_tier_policy (SPEC 4 cross-spec dep). Lands ahead of
+      the three locked specs so SPEC 1 and SPEC 4 don't reference a Module 20
+      surface that doesn't exist.
+
+      verifier_tool_tier_policy gates separate-agent verifier tool grants
+      (test-runner, datastore-read-only, staging-http) by HIGH tier with
+      explicit [project]-side sandbox requirements. Cross-references Module 07
+      ## CC Agent (Adversarial Variant) untrusted-input clause from SPEC 1.
+
+      accretion_candidate_tier_policy gates novel/predictive-derived accretion
+      candidates at HIGH tier regardless of target scope. Annotation tags do
+      not satisfy HIGH-tier confirmation. Interacts with existing
+      accretion_escalation: both can fire on the same candidate (origin
+      decision type AND target kb).
+
+      Module 20 bumped 7.0.1 → 7.1.0 (minor — additive rules).
+
   - version: 7.9.0
     date: 2026-06-12
     driver: knowledgeforge-core-8zt
