@@ -77,6 +77,7 @@ type: index
 
 - [2026-06-12] Stale-base PR conflicts after batched core pushes — resolve via workflow_dispatch — reusable_diagnostic — `orchestration/2026-06-12_stale-base-pr-conflicts-batched-pushes-workflow-dispatch.md`
 - [2026-06-12] Parallel-spec + parallel-critic pattern for independent beads — new_pattern — `orchestration/2026-06-12_parallel-spec-parallel-critic-pattern-independent-beads.md`
+- [2026-06-12] Split-by-blocking-axis — refactor monolithic tasks so framework parts ship while external blockers persist — transferable_framework — `orchestration/2026-06-12_split-by-blocking-axis-task-decomposition.md`
 - [2026-05-30] Force-closing a bd epic with an intentionally-deferred child — when --force is acceptable and how to document it — reusable_diagnostic — `orchestration/2026-05-30_force-close-epic-deferred-child-pattern.md`
 - [2026-05-30] Pre-flight cred-gap detection in /bead-build — halt + checklist or decompose, never ship dead-code stubs — workflow_pattern — `orchestration/2026-05-30_preflight-cred-gap-detection-bead-build-halt-decompose.md`
 - [2026-05-30] Parallel-agent triage for backlog reconciliation — new_pattern — `orchestration/2026-05-30_parallel-agent-triage-backlog-reconciliation.md`
@@ -97,6 +98,8 @@ type: index
 
 ### Infrastructure
 
+- [2026-06-13] Bundle-check pre-commit hook — defense against AI agents doing broad git add — transferable_framework — `infrastructure/2026-06-13_bundle-check-pre-commit-hook-ai-agents.md`
+- [2026-06-13] plistlib vs plutil — strict vs lenient XML parsing of `--` in launchd plist comments — reusable_diagnostic — `infrastructure/2026-06-13_plistlib-vs-plutil-xml-parser-divergence.md`
 - [2026-06-12] Explicit heartbeat file beats log-mtime as a liveness signal for processes that log only on errors — new_pattern — `infrastructure/2026-06-12_explicit-heartbeat-file-liveness-signal-sparse-loggers.md`
 - [2026-06-10] macOS tmp_cleaner silently deletes /tmp files held open by long-running daemons — keep StandardOutPath outside /tmp — reusable_diagnostic — `infrastructure/2026-06-10_macos-tmp-cleaner-daemon-stdout-deletion.md`
 - [2026-06-10] Dual opt-in pattern for elevated subprocess capability — require both producer dispatch AND consumer allowlist to agree — new_pattern, transferable_framework — `infrastructure/2026-06-10_dual-opt-in-pattern-elevated-subprocess-capability.md`
@@ -141,6 +144,8 @@ type: index
 
 ### Diagnostics
 
+- [2026-06-13] tmux display-message #{pane_pid} race after new-session — single-sample checks false-positive — reusable_diagnostic — `diagnostics/2026-06-13_tmux-display-message-pane-pid-race-after-new-session.md`
+- [2026-06-12] Bash $? is clobbered by $(...) substitutions that run first in the same argument — reusable_diagnostic — `diagnostics/2026-06-12_bash-dollar-question-clobbered-command-substitution.md`
 - [2026-06-12] Count by the refreshed field, not the preserved one, when measuring producer liveness on a dedup-in-place queue — transferable_framework — `diagnostics/2026-06-12_count-by-refreshed-field-dedup-liveness-detection.md`
 - [2026-06-10] Refresh-in-place dedup creates false-positive silence alarms — pin first_seen_at separately from enqueued_at — reusable_diagnostic, new_pattern — `diagnostics/2026-06-10_refresh-in-place-dedup-false-positive-silence-alarms.md`
 - [2026-05-31] Per-entity status classifiers must distinguish "unmeasured" from "measured-null" — reusable_diagnostic — `diagnostics/2026-05-31_per-entity-status-classifier-unmeasured-vs-measured-null.md`
@@ -251,6 +256,7 @@ type: index
 
 ### Integration
 
+- [2026-06-12] Operationalizing Claude Code skill intent in non-CC runtimes by embedding guidance into prompts — new_pattern — `integration/2026-06-12_embedding-skill-intent-into-runtime-prompts.md`
 - [2026-05-21] Vendor-in decision framework for flat-script Python projects — transferable_framework — `integration/2026-05-21_vendor-in-decision-framework-flat-script-python.md`
 - [2026-05-21] Wayback Machine CDX API recipe — earliest snapshot in date range — reusable_diagnostic — `integration/2026-05-21_wayback-machine-cdx-api-date-range-recipe.md`
 
@@ -258,9 +264,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 163
-- **Entry types:** new_pattern (52), transferable_framework (42), reusable_diagnostic (67), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
-- **Domains:** patterns (36), architecture (10), orchestration (15), infrastructure (26), compiler (4), diagnostics (34), methodologies (30), migrations (5), strategy (3), integration (2)
+- **Total entries:** 165
+- **Entry types:** new_pattern (52), transferable_framework (42), reusable_diagnostic (69), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
+- **Domains:** patterns (36), architecture (10), orchestration (15), infrastructure (26), compiler (4), diagnostics (36), methodologies (30), migrations (5), strategy (3), integration (2)
 - **Avg grounding score:** 0.84 (across grounded entries)
-- **Staleness risk distribution:** stable (157), slow_decay (3), fast_decay (1)
+- **Staleness risk distribution:** stable (158), slow_decay (3), fast_decay (1)
 
