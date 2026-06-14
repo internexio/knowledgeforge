@@ -1058,6 +1058,35 @@ def compile_plugin_bundle(binding: dict, output_root: Path, dry_run: bool,
     return manifest
 
 
+def compile_codex_placeholder(binding: dict, output_root: Path, dry_run: bool,
+                               diff_mode: bool, version: str,
+                               check_divergence: bool = False) -> list[dict]:
+    """
+    Codex target — DEFERRED placeholder (SPEC 1 D7).
+
+    The Codex agent schema (TOML) authoritative reference is not yet in core,
+    so we cannot emit valid agent files. This handler writes nothing and
+    returns an empty manifest with a stderr warning. Recommended exit code 0
+    so CI dry-runs and inventory scans don't false-fail on a known-deferred
+    target.
+
+    When the binding's `status` field flips from "deferred" to "active" AND
+    `module_outputs` becomes non-empty, this function will be replaced by a
+    real compile_codex(...) that mirrors compile_claude_code(...) but emits
+    TOML instead of markdown.
+
+    Decision-tag: evaluative (parallels existing compile_* dispatch shape;
+    writes no files but returns the expected list[dict] manifest type).
+    """
+    status = (binding or {}).get("status", "unknown")
+    sys.stderr.write(
+        "[kf-compile] Codex target is deferred "
+        "(see platform-bindings/codex.yaml). Bind schema then re-run. "
+        f"(binding status: {status})\n"
+    )
+    return []
+
+
 def compile_claude_projects(binding: dict, output_root: Path, dry_run: bool,
                               diff_mode: bool, version: str,
                               check_divergence: bool = False) -> list[dict]:
@@ -1282,7 +1311,7 @@ def main():
     parser.add_argument(
         "--target",
         required=True,
-        choices=["claude-code", "claude-projects", "cowork", "vscode", "plugin-bundle"],
+        choices=["claude-code", "claude-projects", "cowork", "vscode", "plugin-bundle", "codex"],
         help="Platform target to compile for",
     )
     parser.add_argument(
@@ -1354,6 +1383,13 @@ def main():
         )
     elif args.target == "plugin-bundle":
         manifest = compile_plugin_bundle(
+            binding, output_root, args.dry_run, args.diff, version,
+            check_divergence=args.check_divergence,
+        )
+    elif args.target == "codex":
+        # SPEC 1 D7 — Codex binding is deferred; placeholder emits no files,
+        # writes a stderr warning, and exits 0 so CI/dry-runs don't false-fail.
+        manifest = compile_codex_placeholder(
             binding, output_root, args.dry_run, args.diff, version,
             check_divergence=args.check_divergence,
         )

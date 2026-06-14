@@ -5,13 +5,21 @@
 ```yaml
 module:
   title: Specification Templates
-  version: 7.2.1
+  version: 7.3.0
   purpose: Provide complete, reusable templates for agents, processes, and coordination
   topics: [templates, specifications, formats, schemas, capability-profiles, risk-tiers, infrastructure-architecture, hosting-audit, era-specification, handoff-contracts, trigger-disambiguation]
   contexts: [agent-creation, process-design, documentation, infrastructure-planning, entity-modeling, mode-routing, chain-handoffs]
   difficulty: intermediate
   related: [00_Orchestrator, 02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.3.0:
+      date: 2026-06-13
+      driver: knowledgeforge-core-f8a
+      spec: docs/planning/2026-06-13_spec-1-verifier-promotion.md
+      changes:
+        - Added response_schema field to handoff_contract entity template — parallel structure to payload_schema (fields[] with name/type/required/description/validation). Declares the shape target_mode returns to source_mode. Required for contracts where the source consumes the response (e.g., hc-orchestrator-to-verifier in Module 03 v7.4.0); optional for fire-and-forget contracts.
+        - Same canonical assertion forms apply to response_schema validation_checks (field-presence, enum-membership, cardinality, schema-conformance, cross-field per P2-Δ1).
+        - Editorial-only addition; no behavior change to existing contracts whose response is implicit. The 9 payload-schema-only contracts in Module 03 (pre-SPEC-1 count, post-SPEC-4) remain valid; only the new Contract A (hc-orchestrator-to-verifier) populates the response_schema field at v7.4.0.
     7.2.1:
       date: 2026-05-11
       changes:
@@ -1011,6 +1019,21 @@ handoff_contract:
         description: [string]
         validation: [optional rule, e.g., enum, pattern, min/max]
         grounding_score_minimum: [0.0–1.0]   # Optional, per Module 15
+
+  # RESPONSE SCHEMA (NEW 7.3.0)
+  # Declares the shape the target_mode returns to the source_mode. Same field
+  # structure as payload_schema. Required for contracts where the source needs
+  # to consume the response (e.g., hc-orchestrator-to-verifier: orchestrator
+  # acts on verdict + findings). Optional for fire-and-forget contracts.
+  # Same canonical assertion forms apply (field-presence, enum-membership,
+  # cardinality, schema-conformance, cross-field).
+  response_schema:
+    fields:
+      - name: [field_name]
+        type: string | number | boolean | object | array
+        required: true | false
+        description: [string]
+        validation: [optional rule, e.g., enum, pattern, min/max]
 
   # FALLBACK PATH
   fallback_path:
