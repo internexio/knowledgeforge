@@ -5,13 +5,20 @@
 ```yaml
 module:
   title: Agent Coordination Patterns
-  version: 7.2.0
+  version: 7.3.0
   purpose: Design multi-agent workflows by mapping dependencies first, then deriving the coordination pattern from the graph
   topics: [coordination, multi-agent, workflows, handoffs, orchestration, dependency-mapping, verification, capability-restriction, handoff-contract-registry]
   contexts: [complex-tasks, agent-teams, workflow-design, mode-handoff-validation]
   difficulty: advanced
   related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 14_Metacognitive_Monitor, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]
   changelog:
+    7.3.0:
+      date: 2026-06-13
+      driver: knowledgeforge-core-f8a
+      spec: docs/planning/2026-06-13_spec-4-accretion-vetting-gate.md
+      changes:
+        - Added Contract B — hc-runtime-to-accretion-gate registry entry. [project] loop runtime emits accretion candidates with provenance (loop_id, run_id, decision_tag enum, source_mode, signals[]) to Module 21 step_3d_provenance_gate. Three deterministic validation checks (provenance_present Sev1, provenance_decision_tag_enum Sev1, candidate_body_schema_conforms Sev2). Fallback_path: surface_for_human_review (never silent-promote to cross-cutting tier).
+        - Registry validation comment updated — count is 9 entries post-SPEC-4 merge. SPEC 1 (hc-orchestrator-to-verifier) will bring count to 10 in wave 2; both bumps land in the same Phase 3 wave window.
     7.2.0:
       date: 2026-05-10
       changes:
@@ -459,7 +466,53 @@ handoff_contract_registry:
         failure_action: retry_with_repair
         failure_severity: Sev2
 
-# Validation: registry must have exactly 8 entries; ids unique; every entry validates against Module 04 handoff_contract entity schema.
+  - id: hc-runtime-to-accretion-gate
+    # Added 7.3.0 (SPEC 4 D3). Contract B — [project] loop runtime emits
+    # accretion candidates with provenance metadata to Module 21 step_3d
+    # provenance gate. The 9th registry entry; SPEC 1 will add a 10th
+    # (hc-orchestrator-to-verifier) in wave 2.
+    source_mode: [project]_runtime
+    source_variant: null
+    target_mode: accretion_gate          # Module 21 step_3d
+    target_variant: null
+    trigger:
+      type: automatic
+      condition: "Loop run completes AND produces accretion candidate at evaluative+ depth"
+      chain_pattern_reference: "runtime-accretion-emission"
+    payload_schema:
+      fields:
+        - {name: candidate_body, type: object, required: true,
+           description: "Per Module 21 accretion_candidate schema"}
+        - {name: provenance, type: object, required: true}
+        - {name: provenance.loop_id, type: string, required: true}
+        - {name: provenance.run_id, type: string, required: true}
+        - {name: provenance.decision_tag, type: string, required: true,
+           validation: "enum: [reckoning, evaluative_judgment, predictive_judgment, novel_judgment]"}
+        - {name: provenance.source_mode, type: string, required: true}
+        - {name: provenance.signals, type: array, required: false}
+    fallback_path:
+      type: surface_for_human_review
+      rationale: "Incomplete provenance → user decides destination. Never silent-promote
+                  to cross-cutting tier. Never silent-file to project tier when decision
+                  type is novel/predictive."
+    validation_checks:
+      - check_id: provenance_present
+        assertion: "provenance is non-null AND provenance.decision_tag is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: surface_for_human_review
+        failure_severity: Sev1
+      - check_id: provenance_decision_tag_enum
+        assertion: "provenance.decision_tag matches enum"  # enum-membership
+        check_type: deterministic
+        failure_action: surface_for_human_review
+        failure_severity: Sev1
+      - check_id: candidate_body_schema_conforms
+        assertion: "candidate_body validates against Module 21 accretion_candidate schema"  # schema-validation
+        check_type: deterministic
+        failure_action: surface_for_human_review
+        failure_severity: Sev2
+
+# Validation: registry must have exactly 9 entries (post-SPEC-4 wave); ids unique; every entry validates against Module 04 handoff_contract entity schema. SPEC 1 (hc-orchestrator-to-verifier) will bring count to 10 in wave 2.
 ```
 
 ---

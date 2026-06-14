@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.10.0
+version: 7.11.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -33,6 +33,46 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.11.0
+    date: 2026-06-13
+    driver: knowledgeforge-core-f8a
+    spec: docs/planning/2026-06-13_spec-4-accretion-vetting-gate.md
+    note: |
+      SPEC 4 implementation — accretion vetting gate + Contract B + librarian
+      promotion. Phase 3 wave 1 of the loop-engineering integration; SPEC 1 and
+      SPEC 5 land in subsequent waves.
+
+      Module 21 (7.2.0 → 7.3.0):
+        - step_3d_provenance_gate inserted between step_3c_profile_cross_validate
+          and step_4a_taxonomy_gate. Consumes Contract B provenance; cross-cutting
+          + novel/predictive without verifier_signoff or human_review_signal in
+          signals[] surfaces for human review. Project + novel/predictive surfaces
+          regardless. Reckoning/evaluative paths unchanged.
+        - accretion_candidate schema gains provenance sub-object (loop_id, run_id,
+          decision_tag, source_mode, signals[]); top-level source_mode moves into
+          provenance. Accessor shim + grandfather rule (created < 2026-07-01) +
+          90-day sunset cover the transition.
+        - ## CC Agent (Knowledge Librarian) section added. Module 21 is now
+          canonical source for the librarian agent; cc copy becomes compile-output.
+
+      Module 03 (7.2.0 → 7.3.0):
+        - Handoff Contract Registry gains hc-runtime-to-accretion-gate (Contract B);
+          count is 9 entries post-SPEC-4 (SPEC 1 brings it to 10 in wave 2).
+
+      platform-bindings/claude-code.yaml:
+        - Module 21 emission rule adds ## CC Agent (Knowledge Librarian) →
+          .claude/agents/knowledge-librarian.md.
+        - static_agents loses knowledge-librarian.md entry (adversarial-critic
+          remains for SPEC 1).
+
+      Cross-spec note: kf.yaml 7.10.0 entry referenced SPEC 4 path because Module 20
+      v7.1.0 prep landed in that bump. 7.11.0 is the implementation bump; SPEC 5
+      worktree may also bump kf.yaml — orchestrator should renumber on merge if so.
+    changes:
+      - Module 21 (7.2.0 → 7.3.0) — step_3d_provenance_gate, provenance schema, librarian CC section.
+      - Module 03 (7.2.0 → 7.3.0) — Contract B hc-runtime-to-accretion-gate registry entry (count 8 → 9).
+      - platform-bindings/claude-code.yaml — module 21 librarian agent emission; static_agents librarian entry removed.
+
   - version: 7.10.0
     date: 2026-06-13
     driver: knowledgeforge-core-f8a
