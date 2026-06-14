@@ -1,6 +1,6 @@
 # KnowledgeForge Load Map — `claude-code`
 
-**Version:** `7.11.0`
+**Version:** `7.12.0`
 
 Each row shows one compiled output and the exact source section it was extracted from.
 Click the source link to jump directly to that section in the module file.
@@ -18,6 +18,7 @@ Click the source link to jump directly to that section in the module file.
 | ✓ | `.claude/agents/expert.md` | [`05_expert_agent.md`](modules/05_expert_agent.md#cc-agent) | `CC Agent` |
 | ✓ | `.claude/skills/kf/critic.md` | [`07_critic_agent.md`](modules/07_critic_agent.md#cc-skill) | `CC Skill` |
 | ✓ | `.claude/agents/critic.md` | [`07_critic_agent.md`](modules/07_critic_agent.md#cc-agent) | `CC Agent` |
+| ✓ | `.claude/agents/adversarial-critic.md` | [`07_critic_agent.md`](modules/07_critic_agent.md#cc-agent-adversarial-variant) | `CC Agent (Adversarial Variant)` |
 | ✓ | `.claude/skills/kf/synthesizer.md` | [`08_synthesizer_agent.md`](modules/08_synthesizer_agent.md#cc-skill) | `CC Skill` |
 | ✓ | `.claude/agents/synthesizer.md` | [`08_synthesizer_agent.md`](modules/08_synthesizer_agent.md#cc-agent) | `CC Agent` |
 | ✓ | `.claude/skills/kf/debugger.md` | [`09_debugger_agent.md`](modules/09_debugger_agent.md#cc-skill) | `CC Skill` |

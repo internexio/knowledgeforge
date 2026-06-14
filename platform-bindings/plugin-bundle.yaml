@@ -60,7 +60,7 @@ module_outputs:
       - {type: agent, path: "agents/critic.md", section: "CC Agent"}
       - {type: agent, path: "agents/adversarial-critic.md",
          section: "CC Agent (Adversarial Variant)",
-         requires_module_version: ">=7.5.0"}    # SPEC 1 land gate
+         requires_module_version: ">=7.3.0"}    # SPEC 1 landed at Module 07 v7.3.0
 
   "08":
     outputs:
@@ -82,7 +82,7 @@ module_outputs:
     outputs:
       - {type: agent, path: "agents/knowledge-librarian.md",
          section: "CC Agent (Knowledge Librarian)",
-         requires_module_version: ">=7.5.0"}    # SPEC 4 land gate
+         requires_module_version: ">=7.3.0"}    # SPEC 4 landed at Module 21 v7.3.0
 
 # --------------------------------------------------------------------------
 # MCP connectors
