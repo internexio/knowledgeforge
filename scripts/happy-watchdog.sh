@@ -12,7 +12,7 @@ PAUSE_FILE="/tmp/happy-paused"
 BACKOFF_DIR="/tmp/happy-backoff-state"
 BACKOFF_FILE="$BACKOFF_DIR/$SESSION"
 
-export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
+export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export HAPPY_SERVER_URL="https://happy.semalytics.io"
 export HAPPY_WEBAPP_URL="https://happy-app.semalytics.io"
 
@@ -52,17 +52,38 @@ fi
 if tmux has-session -t "$SESSION" 2>/dev/null; then
     pane_pid=$(tmux list-panes -t "$SESSION" -F '#{pane_pid}' 2>/dev/null | head -1)
     if [[ -n "$pane_pid" ]] && kill -0 "$pane_pid" 2>/dev/null; then
-        output=$(tmux capture-pane -t "$SESSION" -p -S -5 2>/dev/null || true)
-        if echo "$output" | grep -qiE "401|403|token expired|unauthorized|auth.*error"; then
-            log "Auth error detected, recording failure"
-            echo "fail:$(date +%s)" >> "$BACKOFF_FILE"
+        # Claude-liveness check ([project]-g27n): when Claude exits, the tmux
+        # session + pane process persist (pane drops to a shell), so has-session
+        # and kill -0 both pass and we'd wrongly report healthy. Two signals must
+        # agree: pane foreground command is a shell AND the last non-blank pane
+        # line is a shell prompt. Both-required avoids false-restarting a session
+        # transiently running a Bash tool (pane_cmd shell, but last line is TUI).
+        pane_cmd=$(tmux list-panes -t "$SESSION" -F '#{pane_current_command}' 2>/dev/null | head -1)
+        last_line=$(tmux capture-pane -t "$SESSION" -p 2>/dev/null | grep -v '^$' | tail -1)
+        claude_dead=0
+        case "$pane_cmd" in
+            zsh|-zsh|bash|-bash|sh|-sh|fish|-fish|dash)
+                if echo "$last_line" | grep -qE '^[A-Za-z0-9._-]+@[A-Za-z0-9._-]+ .+[%$#][[:space:]]*$'; then
+                    claude_dead=1
+                fi
+                ;;
+        esac
+        if [[ "$claude_dead" == "1" ]]; then
+            log "Claude exited to shell (pane_cmd=$pane_cmd), restarting $SESSION (g27n)"
             tmux kill-session -t "$SESSION" 2>/dev/null || true
         else
-            if [[ -f "$BACKOFF_FILE" ]]; then
-                rm -f "$BACKOFF_FILE"
-                log "Backoff cleared — session healthy"
+            output=$(tmux capture-pane -t "$SESSION" -p -S -5 2>/dev/null || true)
+            if echo "$output" | grep -qiE "401|403|token expired|unauthorized|auth.*error"; then
+                log "Auth error detected, recording failure"
+                echo "fail:$(date +%s)" >> "$BACKOFF_FILE"
+                tmux kill-session -t "$SESSION" 2>/dev/null || true
+            else
+                if [[ -f "$BACKOFF_FILE" ]]; then
+                    rm -f "$BACKOFF_FILE"
+                    log "Backoff cleared — session healthy"
+                fi
+                exit 0
             fi
-            exit 0
         fi
     else
         log "Session exists but process dead, cleaning up"
@@ -73,7 +94,7 @@ fi
 # Start new session
 log "Starting $SESSION in $PROJECT_DIR"
 tmux new-session -d -s "$SESSION" -c "$PROJECT_DIR"
-tmux send-keys -t "$SESSION" "export PATH=$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin HAPPY_SERVER_URL=https://happy.semalytics.io HAPPY_WEBAPP_URL=https://happy-app.semalytics.io; cd $PROJECT_DIR && happy --yolo" Enter
+tmux send-keys -t "$SESSION" "export PATH=$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin HAPPY_SERVER_URL=https://happy.semalytics.io HAPPY_WEBAPP_URL=https://happy-app.semalytics.io; cd $PROJECT_DIR && happy --yolo" Enter
 
 # Verify it started
 sleep 5
