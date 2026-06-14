@@ -1,6 +1,6 @@
 # KnowledgeForge Load Map — `claude-code`
 
-**Version:** `7.12.1`
+**Version:** `7.12.0`
 
 Each row shows one compiled output and the exact source section it was extracted from.
 Click the source link to jump directly to that section in the module file.
@@ -14,6 +14,8 @@ Click the source link to jump directly to that section in the module file.
 | ✓ | `.claude/agents/navigator.md` | [`01_navigator.md`](modules/01_navigator.md#cc-agent) | `CC Agent` |
 | ✓ | `.claude/skills/kf/builder.md` | [`02_builder.md`](modules/02_builder.md#cc-skill) | `CC Skill` |
 | ✓ | `.claude/agents/builder.md` | [`02_builder.md`](modules/02_builder.md#cc-agent) | `CC Agent` |
+| ✓ | `.claude/skills/kf/coordinator.md` | [`03_coordination_patterns.md`](modules/03_coordination_patterns.md#cc-skill) | `CC Skill` |
+| ✓ | `.claude/agents/coordinator.md` | [`03_coordination_patterns.md`](modules/03_coordination_patterns.md#cc-agent) | `CC Agent` |
 | ✓ | `.claude/skills/kf/expert.md` | [`05_expert_agent.md`](modules/05_expert_agent.md#cc-skill) | `CC Skill` |
 | ✓ | `.claude/agents/expert.md` | [`05_expert_agent.md`](modules/05_expert_agent.md#cc-agent) | `CC Agent` |
 | ✓ | `.claude/skills/kf/critic.md` | [`07_critic_agent.md`](modules/07_critic_agent.md#cc-skill) | `CC Skill` |

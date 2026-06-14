@@ -89,6 +89,16 @@ module_outputs:
         path: ".claude/agents/builder.md"
         section: "CC Agent"
 
+  "03":  # Coordinator
+    mode: coordinator
+    outputs:
+      - type: skill
+        path: ".claude/skills/kf/coordinator.md"
+        section: "CC Skill"
+      - type: agent
+        path: ".claude/agents/coordinator.md"
+        section: "CC Agent"
+
   "05":  # Expert
     mode: expert
     outputs:
@@ -232,17 +242,12 @@ module_outputs:
 # --------------------------------------------------------------------------
 special_outputs:
 
-  # Coordinator: ENH-006 — no numbered module yet; compiled from enh spec
-  coordinator:
-    outputs:
-      - type: skill
-        path: ".claude/skills/kf/coordinator.md"
-        source: "enhancements/enh-006-spec-drift-checkpoint.md"
-        section: "CC Skill"
-      - type: agent
-        path: ".claude/agents/coordinator.md"
-        source: "enhancements/enh-006-spec-drift-checkpoint.md"
-        section: "CC Agent"
+  # Coordinator: promoted to module_outputs["03"] (2026-06-14). Previous
+  # binding pointed at enhancements/enh-006-spec-drift-checkpoint.md, which
+  # never contained ## CC Skill / ## CC Agent sections — coordinator output
+  # was silently skipped by the compiler. Canonical body now lives in
+  # modules/03_coordination_patterns.md, emitted via the regular module_outputs
+  # mechanism. enh-006 retained as historical design rationale.
 
   # Hooks scripts — NOT compiled (unchanged from prior policy).
   # As of 2026-05-19, knowledgeforge-cc is the authoritative source for

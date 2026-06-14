@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.12.1
+version: 7.12.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -33,31 +33,6 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
-  - version: 7.12.1
-    date: 2026-06-14
-    driver: knowledgeforge-core (cp reconciliation)
-    note: |
-      Internal-consistency patch surfaced by knowledgeforge-cp integrity audit.
-      No behavior change — content/consistency defects only.
-
-      Module 00 (7.5.0 → 7.5.1):
-        - Identity string realigned from "KnowledgeForge 7.2.1 orchestrator"
-          to "KnowledgeForge 7.5.1 orchestrator". Identity had stalled at
-          7.2.1 across the 7.2.1 → 7.3.0 → 7.4.0 → 7.5.0 changelog entries
-          that didn't re-bump it.
-        - Module Reference row for Module 03 — "Handoff Contract Registry —
-          8 contracts (7.2.0)" → "10 contracts (7.4.0)". Reflects Contract A
-          (hc-orchestrator-to-verifier, 7.4.0/SPEC-1) and Contract B
-          (hc-runtime-to-accretion-gate, 7.3.0/SPEC-4) already landed in M03
-          but absent from the orchestrator's summary row. Matches M03's own
-          validation comment ("exactly 10 entries").
-
-      cp reconciliation (separate from this patch):
-        - M07 ## CC Agent (Adversarial Variant) + ## Untrusted Input Boundary,
-          M21 ## CC Agent (Knowledge Librarian) — all already canonical-correct
-          in this repo (7.3.0 / 7.5.0 changelog entries). Republished to cp
-          via copy_verbatim sync.
-
   - version: 7.12.0
     date: 2026-06-13
     driver: knowledgeforge-core-f8a

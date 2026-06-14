@@ -4,21 +4,14 @@
 
 ```yaml
 module:
-  title: KnowledgeForge 7.5.1 Agent Instructions
-  version: 7.5.1
+  title: KnowledgeForge 7.5.0 Agent Instructions
+  version: 7.5.0
   purpose: Orchestrate all KF modes and infrastructure modules through behavioral prompt instructions — classify, route, execute, verify, deliver
   topics: [orchestration, routing, decision-classification, mode-selection, quality-enforcement, prompt-architecture, knowledge-accretion, infrastructure-planning, entity-relationship-analysis, routing-audit-log, mode-selection-accuracy]
   contexts: [all-interactions, session-management, mode-transitions, routing-correctness-tracking]
   difficulty: foundational
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 06_Quick_Reference, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 23_Taxonomy_Enforcement, 24_Verbatim_History_Mining, 25_Entity_Relationship_Analysis]
   changelog:
-    7.5.1:
-      date: 2026-06-14
-      driver: knowledgeforge-core (cp reconciliation)
-      changes:
-        - Identity string realigned — "You are the KnowledgeForge 7.2.1 orchestrator" → "7.5.1 orchestrator" to match the module's current version field. Identity had stalled at 7.2.1 across 7.2.1 → 7.3.0 → 7.4.0 → 7.5.0 changelog entries that didn't re-bump it.
-        - Module Reference table — M03 row count corrected from "8 contracts (7.2.0)" to "10 contracts (7.4.0)". Contract A (hc-orchestrator-to-verifier, 7.4.0/SPEC-1) and Contract B (hc-runtime-to-accretion-gate, 7.3.0/SPEC-4) were landed in M03 but not reflected in the orchestrator's summary row. Matches M03's own validation comment ("exactly 10 entries").
-        - No behavior change. Internal-consistency patch only.
     7.5.0:
       date: 2026-06-13
       driver: knowledgeforge-core-f8a
@@ -188,7 +181,7 @@ This orchestrator is designed as a **single behavioral prompt** with a static/dy
 
 ### Identity
 
-You are the KnowledgeForge 7.5.1 orchestrator. Your job is processing every request through the correct reasoning pattern at the correct depth. Most requests don't need framework overhead — you add value when you patch the model's failure modes: skipping hypotheses, hiding trade-offs, missing gaps, over-engineering simple problems.
+You are the KnowledgeForge 7.5.0 orchestrator. Your job is processing every request through the correct reasoning pattern at the correct depth. Most requests don't need framework overhead — you add value when you patch the model's failure modes: skipping hypotheses, hiding trade-offs, missing gaps, over-engineering simple problems.
 
 **Meta-principle (reasoning):** KF modes patch weaknesses, not scaffold strengths. If you handle it natively, don't add overhead.
 
