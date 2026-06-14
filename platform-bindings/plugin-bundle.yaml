@@ -1,0 +1,121 @@
+target: plugin-bundle
+status: active
+
+# --------------------------------------------------------------------------
+# Purpose
+# --------------------------------------------------------------------------
+# `plugin-bundle` emits an installable bundle of shared KF skills + agents +
+# MCP connectors that internexio repos ([project], client-project, visionforge,
+# [project], etc.) consume by reference rather than re-implementing inline.
+#
+# Eliminates duplication surfaced in Phase 0 SPEC 5 evidence probe:
+#   - KF orchestrator scaffold present in 5+ repos
+#   - cos-mcp connector present in 3+ repos
+#
+# SPEC reference: docs/planning/2026-06-13_spec-5-plugin-packaging.md (D2)
+
+# --------------------------------------------------------------------------
+# Output structure — relative to {output_root}
+# --------------------------------------------------------------------------
+output_structure:
+  manifest_path: "kf-plugin-bundle.json"
+  skills_dir: "skills/"
+  agents_dir: "agents/"
+  mcp_dir: "mcp/"
+  installer_path: "install.sh"
+
+bundle_manifest_schema: "compiler/plugin-manifest-schema.yaml"
+
+# --------------------------------------------------------------------------
+# Module → bundle output mapping
+# --------------------------------------------------------------------------
+#
+# Each output entry describes one file written into the bundle root.
+# `type`: one of [skill, agent]
+# `path`: relative path inside the bundle (NOT a consumer-repo path)
+# `section`: which ## section in the source module to extract
+# `requires_module_version`: optional semver gate. If the source module's
+#   version is below this floor, the compiler emits a manifest entry with
+#   `status: skipped_version_gate` rather than the expected file. Used for
+#   bundle outputs that depend on module sections that haven't shipped yet
+#   (e.g., adversarial-critic depends on SPEC 1 land of Module 07 ≥ 7.5.0).
+#
+module_outputs:
+  # ---- KF orchestrator scaffold (present in 5+ repos per Phase 0 probe) ----
+  "00":
+    outputs:
+      - {type: agent, path: "agents/kf.md", section: "CC Agent"}
+
+  "02":
+    outputs:
+      - {type: skill, path: "skills/builder.md", section: "CC Skill"}
+      - {type: agent, path: "agents/builder.md", section: "CC Agent"}
+
+  "05":
+    outputs:
+      - {type: agent, path: "agents/expert.md", section: "CC Agent"}
+
+  "07":
+    outputs:
+      - {type: agent, path: "agents/critic.md", section: "CC Agent"}
+      - {type: agent, path: "agents/adversarial-critic.md",
+         section: "CC Agent (Adversarial Variant)",
+         requires_module_version: ">=7.5.0"}    # SPEC 1 land gate
+
+  "08":
+    outputs:
+      - {type: agent, path: "agents/synthesizer.md", section: "CC Agent"}
+
+  "09":
+    outputs:
+      - {type: agent, path: "agents/debugger.md", section: "CC Agent"}
+
+  "10":
+    outputs:
+      - {type: agent, path: "agents/strategist.md", section: "CC Agent"}
+
+  "11":
+    outputs:
+      - {type: agent, path: "agents/calibrator.md", section: "CC Agent"}
+
+  "21":
+    outputs:
+      - {type: agent, path: "agents/knowledge-librarian.md",
+         section: "CC Agent (Knowledge Librarian)",
+         requires_module_version: ">=7.5.0"}    # SPEC 4 land gate
+
+# --------------------------------------------------------------------------
+# MCP connectors
+# --------------------------------------------------------------------------
+# `path_type` values control how the bundle installer resolves the source:
+#   bundled                          → file ships inside the bundle (mcp/<id>.json)
+#   relative_to_bundle               → resolve source_path relative to bundle root
+#   absolute_requires_local_config   → resolve via env var; SKIP entry if missing,
+#                                      do NOT bake stale absolute paths
+mcp_connectors:
+  - id: cos-mcp
+    source: "$COS_DEV_ROOT/cos/cos-mcp/server.json"
+    path_type: absolute_requires_local_config
+    fallback_message: |
+      cos-mcp source path not found. Set $COS_DEV_ROOT environment variable
+      to your [project] clone root (e.g. ~/Scripts/[project]), OR skip this connector.
+    targets: [[project], client-project, visionforge, [project]]
+    required: false
+
+# --------------------------------------------------------------------------
+# Consumer-side installer template
+# --------------------------------------------------------------------------
+consumer_installer:
+  template: "compiler/plugin-bundle-install.sh.tmpl"
+
+# --------------------------------------------------------------------------
+# Deduplication inventory (reference, not enforcement)
+# --------------------------------------------------------------------------
+# Documents what the bundle replaces in consumer repos. Compiler does not
+# enforce; this section is informational for the eventual consumer-side
+# migration (per-repo loop definition rewrites).
+deduplication_inventory:
+  - id: kf-orchestrator-scaffold
+    duplicated_in: [[project], client-project, visionforge, [project], [project]]
+  - id: cos-mcp-connector
+    duplicated_in: [[project] (canonical), [project] (clone), visionforge (reference)]

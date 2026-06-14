@@ -1,0 +1,85 @@
+# KF Plugin Bundle — Manifest Schema
+#
+# This file describes the structure of `kf-plugin-bundle.json` emitted by
+# `compiler/kf-compile.py --target plugin-bundle`. The schema is reference
+# documentation for bundle consumers; the compiler is the canonical writer
+# and the installer (`install.sh`) is the canonical reader.
+#
+# SPEC reference: docs/planning/2026-06-13_spec-5-plugin-packaging.md (D3)
+#
+# Versioning:
+# - `version` tracks `kf.yaml` system version (the KF release that built the bundle).
+# - `bundle_version` is bumped on bundle composition change (added/removed
+#   skill, agent, or connector). At v1 both are the same; they diverge once
+#   bundle composition can change independent of kf.yaml releases.
+
+plugin_manifest:
+
+  # ----- Top-level identity -----
+  version: string                # tracks kf.yaml `version` field
+  bundle_id: string              # canonical: "kf-plugin-bundle"
+  bundle_version: semver         # bumped on bundle composition change
+  compiled_at: ISO8601           # UTC timestamp of compile run
+  source: string                 # canonical: "knowledgeforge-core"
+
+  # ----- Skills -----
+  # Compiled skill files emitted into skills/. Each entry corresponds to
+  # one `skills/<name>.md` file in the bundle root.
+  skills:
+    - name: string                            # e.g. "builder"
+      path: string                            # relative to bundle root, e.g. "skills/builder.md"
+      module_source: string                   # e.g. "02_builder.md"
+      module_version: string                  # e.g. "7.0.1"
+      min_consumer_bundle_version: semver     # OPTIONAL — gate for consumer loop defs
+      status: string                          # written | skipped_version_gate | missing_section
+      requires_module_version: string         # OPTIONAL — semver gate that produced skip
+      bytes: integer                          # OPTIONAL — size of written file
+
+  # ----- Agents -----
+  # Compiled agent files emitted into agents/. Same shape as skills.
+  agents:
+    - name: string
+      path: string
+      module_source: string
+      module_version: string
+      tools_required: array                   # OPTIONAL — informational only
+      min_consumer_bundle_version: semver     # OPTIONAL
+      status: string
+      requires_module_version: string         # OPTIONAL
+      bytes: integer                          # OPTIONAL
+
+  # ----- MCP connectors -----
+  # Each connector entry describes ONE MCP server registration.
+  #
+  # `path_type` discipline (D3b) governs how the installer resolves the source:
+  #
+  #   bundled                          → file ships inside bundle at `bundle_path`.
+  #                                      Installer copies into target `.mcp.json`.
+  #                                      Always succeeds.
+  #
+  #   relative_to_bundle               → resolve `source_path` relative to bundle root.
+  #                                      Installer copies into target.
+  #
+  #   absolute_requires_local_config   → resolve `source_path` via env var.
+  #                                      Installer MUST check existence; if missing
+  #                                      it emits `fallback_message` AND SKIPS THIS ENTRY.
+  #                                      It MUST NOT write a stale absolute path
+  #                                      into the target `.mcp.json`.
+  mcp_connectors:
+    - id: string                              # e.g. "cos-mcp"
+      path_type: string                       # bundled | relative_to_bundle | absolute_requires_local_config
+      source_path: string                     # present when path_type != bundled
+      bundle_path: string                     # present when path_type == bundled
+      fallback_message: string                # REQUIRED when path_type == absolute_requires_local_config
+      required: boolean
+      install_command: string                 # OPTIONAL — command suggestion for the installer
+
+  # ----- Install protocol -----
+  # Steps the consumer-side installer (install.sh) runs in order. Steps are
+  # reference documentation, not configuration — the installer hard-codes
+  # this sequence. Listed here so consumers can audit what install does.
+  install_protocol:
+    - step: copy_skills_to_target_repo                    # → {target}/.claude/skills/kf/
+    - step: copy_agents_to_target_repo                    # → {target}/.claude/agents/
+    - step: register_mcp_connectors_in_target_settings    # → {target}/.mcp.json (strip-then-add by signature)
+    - step: emit_install_receipt                          # → {target}/.kf-bundle-install.json
