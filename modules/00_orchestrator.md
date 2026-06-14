@@ -57,7 +57,7 @@ module:
     7.0.6:
       date: 2026-04-30
       changes:
-        - Module Reference table updated for M14 (6.6: vision principle drift detection), M17 (7.0.2: planning artifact staleness predicate), M21 (7.0.5: roadmap_phase_completed trigger; vision/roadmap non-triggers)
+        - 'Module Reference table updated for M14 (6.6: vision principle drift detection), M17 (7.0.2: planning artifact staleness predicate), M21 (7.0.5: roadmap_phase_completed trigger; vision/roadmap non-triggers)'
         - No orchestrator behavior change. Version tracks downstream module updates.
     7.0.5:
       date: 2026-04-29
@@ -74,7 +74,7 @@ module:
     7.0.3:
       date: 2026-04-18
       changes:
-        - Knowledge Accretion cross-cutting concern updated to two-tier filing: {project_root}/wiki/ for project-scoped, ~/.claude/wiki/ for cross-cutting. Decision rule and bootstrapping documented.
+        - 'Knowledge Accretion cross-cutting concern updated to two-tier filing: {project_root}/wiki/ for project-scoped, ~/.claude/wiki/ for cross-cutting. Decision rule and bootstrapping documented.'
         - Runtime behavior line updated to reflect two-tier accretion
     7.0.2:
       date: 2026-04-17

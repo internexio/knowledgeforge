@@ -41,7 +41,7 @@ module:
       spec: docs/planning/2026-06-12_module-25-entity-path-glob-resolver-spec.md
       changes:
         - step_2c_activation_profile.compute.path_globs gains a new lookup path — for ERA-consuming modes (Builder, Coordinator, Expert, Strategist, Critic), join era.entity_paths values into a flat deduped list. If >5 globs, keep 5 most-specific per the M25 7.1.0 glob comparison function.
-        - step_3c_profile_cross_validate gains a downgrade rule — when ERA produced the globs (path_globs_meta entry has source: era) AND scope == global, DOWNGRADE trigger to task_bound and clear path_globs (instead of rejecting). Reason: ERA commonly produces globs for architectural patterns that are also global-scoped; silent rejection would make the M25 resolver invisible. Log to compile.md as era_global_glob_downgrade.
+        - 'step_3c_profile_cross_validate gains a downgrade rule — when ERA produced the globs (path_globs_meta entry has source: era) AND scope == global, DOWNGRADE trigger to task_bound and clear path_globs (instead of rejecting). Reason: ERA commonly produces globs for architectural patterns that are also global-scoped; silent rejection would make the M25 resolver invisible. Log to compile.md as era_global_glob_downgrade.'
         - Manually-authored path_globs (no path_globs_meta entry) still reject on global scope per Phase 1 rule. Distinguishing source is via the new optional path_globs_meta sidecar.
         - Backwards-compatible — when ERA absent OR no entity_paths produced, existing Phase 1 logic applies unchanged.
     7.1.3:

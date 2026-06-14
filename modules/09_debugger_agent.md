@@ -16,7 +16,7 @@ module:
       date: 2026-04-29
       changes:
         - Expanded CI Failure Feedback Loop — added fingerprint comparison logic (same/different/subset), trigger condition, determinism note
-        - Missing from 7.0.0 initial implementation: what to do when fingerprint changes (new issue introduced) or partially changes (subset). Source: plans/agent-orchestrator-integration.md ([project]-swd.11)
+        - 'Missing from 7.0.0 initial implementation: what to do when fingerprint changes (new issue introduced) or partially changes (subset). Source: plans/agent-orchestrator-integration.md ([project]-swd.11)'
     7.0.0:
       date: 2026-04-14
       changes:

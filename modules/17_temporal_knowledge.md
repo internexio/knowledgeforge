@@ -15,7 +15,7 @@ module:
     7.0.2:
       date: 2026-04-30
       changes:
-        - Added Planning Artifact Staleness section — vision (half_life_days: 60) and roadmap (half_life_days: 30) staleness gates with per-artifact severity calibration. In-progress phase stagnation signal added (> 2× expected duration). Aligns with /kf-vision and /kf-roadmap command staleness review modes.
+        - 'Added Planning Artifact Staleness section — vision (half_life_days: 60) and roadmap (half_life_days: 30) staleness gates with per-artifact severity calibration. In-progress phase stagnation signal added (> 2× expected duration). Aligns with /kf-vision and /kf-roadmap command staleness review modes.'
     7.0.1:
       date: 2026-04-29
       changes:

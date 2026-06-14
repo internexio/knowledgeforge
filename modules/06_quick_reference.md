@@ -16,7 +16,8 @@ module:
       date: 2026-05-24
       driver: knowledgeforge-core-8xq
       changes:
-        - Four locations updated for M22 / M25 Phase 1 reality (initial pass missed three; caught by third critic pass):
+        - |-
+          Four locations updated for M22 / M25 Phase 1 reality (initial pass missed three; caught by third critic pass):
           * Infrastructure Modules table (line 192) — M22 row: "metadata-gated semantic search" → Phase 1 dup-check gate; Phase 2 deferred
           * Infrastructure Modules table (line 205) — M25 row: entity-scoped filters qualified — Tier 0 (M22) Phase 2 Deferred, Tier 3 (M24) active
           * Module Reference Table — M22 row (line 604) and M25 row (line 607) qualified

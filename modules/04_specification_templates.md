@@ -31,7 +31,7 @@ module:
         - Added Trigger Disambiguator Specification Template (resolves ERA F1 + F6 from chain-log-01-tool-calling)
         - Added Handoff Contract Specification Template (resolves ERA F2 + F5)
         - Handoff Contract validation_checks[].assertion must reduce to one of five canonical forms — field-presence, enum-membership, cardinality, schema-conformance, cross-field (P2-Δ1 from chain-log-04)
-        - Usage Notes: "Handoff" row renamed to "Handoff Contract"; Trigger Disambiguator row added; legacy Handoff row preserved for backward reference
+        - 'Usage Notes: "Handoff" row renamed to "Handoff Contract"; Trigger Disambiguator row added; legacy Handoff row preserved for backward reference'
         - KF 7.2 field summary table added
         - Source: docs/planning/Typed_Mode_Calling/ chain-logs 01–04 (tool-calling audit, Track C)
     6.6.0: |

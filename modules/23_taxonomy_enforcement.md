@@ -26,15 +26,19 @@ module:
         - Added Grandfathering section after Vocabulary Extension Protocol — entries with
           creation timestamp before 2026-06-10 are NOT retroactively required to carry
           domain/topic fields. New entries strict; existing entries lazy-migrate.
-        - Creation timestamp resolution order — created: frontmatter → git first-commit date
+        - |-
+          Creation timestamp resolution order — created: frontmatter → git first-commit date
           → file mtime. Git fallback covers the 3 entries identified during Phase 0 audit
           that lack created: entirely.
-        - Forgery resistance — linter MEDIUM finding on ±1 day created: vs git first-commit
+        - |-
+          Forgery resistance — linter MEDIUM finding on ±1 day created: vs git first-commit
           divergence. Cultural norm, not cryptographic enforcement.
-        - Deprecated patterns/orchestration topic (collision with new orchestration domain).
+        - |-
+          Deprecated patterns/orchestration topic (collision with new orchestration domain).
           DEPRECATED-not-deleted — still validates on grandfathered entries; new entries
           should use the new orchestration domain.
-        - Extension event counting interpretation locked: one bead = one Vocabulary
+        - |-
+          Extension event counting interpretation locked: one bead = one Vocabulary
           Extension Protocol invocation = one event (regardless of how many domains added).
           This bead consumes 1 of v6.x's 5-event budget; 4 remain.
     6.5.2: |
