@@ -9,6 +9,7 @@ type: index
 
 ### Patterns
 
+- [2026-06-14] Cross-module summary-row drift — referencing module's count claim desyncs when referenced module bumps entities — reusable_diagnostic, transferable_framework — `patterns/2026-06-14_cross-module-summary-row-count-drift.md`
 - [2026-06-12] Downgrade-vs-reject pattern for cross-cut validation rules — transferable_framework — `patterns/2026-06-12_downgrade-vs-reject-multi-source-validation-rules.md`
 - [2026-06-10] Idempotent merge of tool-managed fragments into hand-editable config via sidecar manifest — transferable_framework — `patterns/2026-06-10_idempotent-sidecar-manifest-config-merge.md`
 - [2026-06-10] Verify MCP tool response shape live before writing parsing code — spec assumption costs revision passes — reusable_diagnostic, transferable_framework — `patterns/2026-06-10_mcp-tool-response-shape-live-verification-before-parsing.md`
@@ -270,9 +271,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 165
-- **Entry types:** new_pattern (52), transferable_framework (42), reusable_diagnostic (69), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
-- **Domains:** patterns (36), architecture (10), orchestration (15), infrastructure (26), compiler (4), diagnostics (36), methodologies (30), migrations (5), strategy (3), integration (2)
+- **Total entries:** 166
+- **Entry types:** new_pattern (52), transferable_framework (43), reusable_diagnostic (70), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
+- **Domains:** patterns (37), architecture (10), orchestration (15), infrastructure (26), compiler (4), diagnostics (36), methodologies (30), migrations (5), strategy (3), integration (2)
 - **Avg grounding score:** 0.84 (across grounded entries)
 - **Staleness risk distribution:** stable (158), slow_decay (3), fast_decay (1)
 
