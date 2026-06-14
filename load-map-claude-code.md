@@ -1,6 +1,6 @@
 # KnowledgeForge Load Map — `claude-code`
 
-**Version:** `7.9.0`
+**Version:** `7.11.0`
 
 Each row shows one compiled output and the exact source section it was extracted from.
 Click the source link to jump directly to that section in the module file.
@@ -36,6 +36,7 @@ Click the source link to jump directly to that section in the module file.
 | ✓ | `.claude/docs/knowledgeforge/19_memory_architecture.md` | [`19_memory_architecture.md`](modules/19_memory_architecture.md#cc-doc) | `CC Doc` |
 | ✓ | `.claude/docs/knowledgeforge/20_permission_model.md` | [`20_permission_model.md`](modules/20_permission_model.md#cc-doc) | `CC Doc` |
 | ✓ | `.claude/docs/knowledgeforge/21_knowledge_accretion.md` | [`21_knowledge_accretion.md`](modules/21_knowledge_accretion.md#cc-doc) | `CC Doc` |
+| ✓ | `.claude/agents/knowledge-librarian.md` | [`21_knowledge_accretion.md`](modules/21_knowledge_accretion.md#cc-agent-knowledge-librarian) | `CC Agent (Knowledge Librarian)` |
 | ✓ | `.claude/docs/knowledgeforge/22_semantic_wiki_search.md` | [`22_semantic_wiki_search.md`](modules/22_semantic_wiki_search.md#cc-doc) | `CC Doc` |
 | ✓ | `.claude/docs/knowledgeforge/23_taxonomy_enforcement.md` | [`23_taxonomy_enforcement.md`](modules/23_taxonomy_enforcement.md#cc-doc) | `CC Doc` |
 | ✓ | `.claude/docs/knowledgeforge/24_verbatim_history_mining.md` | [`24_verbatim_history_mining.md`](modules/24_verbatim_history_mining.md#cc-doc) | `CC Doc` |

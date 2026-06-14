@@ -200,6 +200,9 @@ module_outputs:
       - type: doc
         path: ".claude/docs/knowledgeforge/21_knowledge_accretion.md"
         section: "CC Doc"
+      - type: agent                                  # NEW 7.3.0 (SPEC 4 D4)
+        path: ".claude/agents/knowledge-librarian.md"
+        section: "CC Agent (Knowledge Librarian)"
   "22":
     outputs:
       - type: doc
@@ -280,9 +283,13 @@ special_outputs:
   # core has never owned these files; the compiler does not read or write
   # them. cc/install.sh copies cc/.claude/agents/*.md → ~/.claude/agents/
   # at install time. Listed here purely as inventory; pathway is informational.
+  #
+  # 7.3.0 (SPEC 4 D4): knowledge-librarian.md PROMOTED out of static_agents —
+  # core/modules/21_knowledge_accretion.md "## CC Agent (Knowledge Librarian)"
+  # section is now canonical; the cc copy is compiled output. See module_outputs."21"
+  # for the new emission rule.
   static_agents:
     - ".claude/agents/adversarial-critic.md"
-    - ".claude/agents/knowledge-librarian.md"
 
   # Commands — hand-maintained in knowledgeforge-cc, NOT in core.
   # Same ownership rule as static_agents above. cc/install.sh copies

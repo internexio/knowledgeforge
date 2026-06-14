@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Knowledge Accretion
-  version: 7.2.0
+  version: 7.3.0
   purpose: Cross-cutting detection-and-routing behavior that recognizes when mode outputs contain knowledge worth persisting and either auto-files it (Claude Code) or surfaces it as a compilation candidate (Claude Projects)
   topics: [knowledge-persistence, compile-query-enhance, wiki-generation, accretion-signals, knowledge-base-maintenance]
   contexts: [all-mode-execution, knowledge-management, session-outputs, persistent-storage]
@@ -13,6 +13,16 @@ module:
   related: [07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 02_Builder_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model]
   added_in: "6.2"
   changelog:
+    7.3.0:
+      date: 2026-06-13
+      driver: knowledgeforge-core-f8a
+      spec: docs/planning/2026-06-13_spec-4-accretion-vetting-gate.md
+      changes:
+        - Added step_3d_provenance_gate between step_3c_profile_cross_validate and step_4a_taxonomy_gate. Gate consumes Contract B provenance (loop_id, run_id, decision_tag, source_mode, signals[]) emitted by [project] runtime. Cross-cutting candidates derived from novel/predictive decisions require verifier_signoff OR human_review_signal in provenance.signals[] — otherwise surface_for_human_review. Project candidates derived from novel/predictive surface for human review regardless. Reckoning/evaluative paths unchanged. Missing provenance → surface_for_human_review with provenance_missing flag; user chooses destination.
+        - Added provenance sub-object to accretion_candidate schema (loop_id, run_id, decision_tag enum, source_mode, signals[]). source_mode MOVED from top-level into provenance.source_mode (breaking schema change on the top-level field).
+        - Schema transition — accessor shim `candidate.provenance?.source_mode ?? candidate.source_mode` applies at step_2c trigger lookup, default_importance.source_mode_boost, and compile_log_format. Grandfather rule — entries with top-level source_mode AND created < 2026-07-01 are exempt from provenance completeness check; Critic linter raises Sev 3 but does not block. Shim fallback sunsets 90 days after cutover.
+        - Added ## CC Agent (Knowledge Librarian) section. Module 21 is now canonical source for the librarian agent body; cc/.claude/agents/knowledge-librarian.md becomes compile-output. Librarian's Step 1–4 protocol unchanged; gate logic at step_3d fires upstream of librarian invocation (librarian trusts upstream gating, no untrusted-input clause needed).
+        - Cross-references Module 20 v7.1.0 accretion_candidate_tier_policy (HIGH tier for novel/predictive-derived candidates) and Module 03 v7.3.0 hc-runtime-to-accretion-gate Contract B entry.
     7.2.0:
       date: 2026-06-12
       driver: knowledgeforge-core-8zt
@@ -352,7 +362,12 @@ Every candidate gets tagged with:
 
 ```yaml
 accretion_candidate:
-  source_mode: [which mode produced it]
+  # source_mode MOVED to provenance.source_mode in 7.3.0 (SPEC 4 D2). The top-level
+  # source_mode field below is preserved for grandfather-window entries
+  # (created < 2026-07-01) only and slated for removal 90 days after cutover.
+  # New entries MUST populate provenance.source_mode; consumers MUST use the
+  # accessor shim: candidate.provenance?.source_mode ?? candidate.source_mode
+  source_mode: [DEPRECATED 7.3.0 — see provenance.source_mode below]
   source_session: redacted
   confidence: [mode's output confidence at time of production]
   grounding_score: [per Module 15]
@@ -362,6 +377,29 @@ accretion_candidate:
   importance: [integer 1-5 — base value independent of recency, aligns with Module 17 decay model]
   importance_source: [inferred | human_set]
   created: [ISO datetime]
+
+  # ---------------------------------------------------------------------------
+  # Provenance — added 7.3.0 (SPEC 4 D2)
+  # ---------------------------------------------------------------------------
+  #
+  # Required for candidates emitted post-2026-06-13 by [project] runtime (Contract B,
+  # Module 03 hc-runtime-to-accretion-gate). Consumed by step_3d_provenance_gate to
+  # route cross-cutting novel/predictive candidates through surface_for_human_review.
+  # Grandfather rule: entries with top-level source_mode AND created < 2026-07-01
+  # are exempt from the gate's provenance completeness check; Critic linter raises
+  # Sev 3 finding "schema migration pending — provenance fields absent" but does
+  # not block. Shim fallback (`?? candidate.source_mode`) sunsets 90 days post-cutover.
+  #
+  provenance:
+    loop_id: string         # required when emitted by [project]; null when direct orchestrator
+    run_id: string          # required when emitted by [project]; null when direct orchestrator
+    decision_tag: string    # required; enum [reckoning, evaluative_judgment, predictive_judgment, novel_judgment]
+    source_mode: string     # required; moved from top-level in 7.3.0
+    signals: array          # optional; entries:
+                            #   {type: verifier_signoff, ref: <pointer>}
+                            #   {type: human_review_signal, ref: <pointer>}
+                            # Presence of verifier_signoff OR human_review_signal
+                            # is the vetting signal consumed by step_3d.
   
   # Default importance inference (when human assignment isn't available at filing time):
   default_importance:
@@ -374,6 +412,10 @@ accretion_candidate:
       reusable_diagnostic: 2    # Diagnostics are useful but narrow
       template_candidate: 2     # Templates are useful but low-consequence
     source_mode_boost:
+      # source_mode lookup uses accessor shim (added 7.3.0, SPEC 4 D2b):
+      #   source_mode = candidate.provenance?.source_mode ?? candidate.source_mode
+      # Grandfather-window entries (created < 2026-07-01) may still carry only the
+      # top-level source_mode; shim resolves cleanly. Sunsets 90 days post-cutover.
       Expert: +1                # Expert deep dives tend to be high-value (cap at 5)
       Strategist: +1            # Strategic frameworks have outsized reuse (cap at 5)
     floor: 1
@@ -481,6 +523,8 @@ claude_code_runtime:
       compute:
         trigger:
           # Inferred from the mode that produced the candidate + the candidate's content shape.
+          # source_mode lookup uses accessor shim (added 7.3.0, SPEC 4 D2b):
+          #   source_mode = candidate.provenance?.source_mode ?? candidate.source_mode
           # Lookup table:
           #   Synthesizer (new_pattern), Strategist (transferable_framework) → default invariant
           #   Builder (template_candidate), Calibrator (template_candidate)  → default invariant
@@ -563,6 +607,77 @@ claude_code_runtime:
           log_to: compile_log_format with reason "scope_glob_cross_cut"
         # Future cross-cuts (when added in subsequent revisions) attach here.
 
+      next: step_3d_provenance_gate
+
+    step_3d_provenance_gate:
+      # Added 7.3.0 (SPEC 4 D1). Runs after step_3 (scope known) and step_3c (profile
+      # cross-cuts validated), before step_4a (taxonomy). Consumes Contract B provenance
+      # (Module 03 hc-runtime-to-accretion-gate) emitted by [project] runtime.
+      description: |
+        Cross-cutting wiki entries (~/.claude/wiki/) derived from novel or predictive
+        decisions require an external vetting signal — separate-verifier sign-off OR
+        human review. Project-scoped wiki entries ({project_root}/wiki/) derived from
+        novel or predictive decisions also surface for human review before filing.
+        Reckoning/evaluative candidates pass through unchanged.
+      inputs:
+        - provenance (per Contract B): {loop_id, run_id, decision_tag, source_mode, signals[]}
+      gates:
+        cross_cutting_novel_or_predictive:
+          condition: |
+            scope == global AND decision_tag ∈ {novel_judgment, predictive_judgment}
+          require: |
+            verifier_signoff OR human_review_signal in provenance.signals[]
+          on_fail: surface_for_human_review
+          log_to: compile_log_format with reason "cross_cutting_unvetted_surfaced"
+        project_novel_or_predictive:
+          condition: |
+            scope == project AND decision_tag ∈ {novel_judgment, predictive_judgment}
+          action: surface_for_human_review
+          rationale: |
+            Module 13 → Module 20 v7.1.0 accretion_candidate_tier_policy maps
+            novel/predictive to HIGH risk tier. The `unvetted` tag is an annotation,
+            not a checkpoint. Auto-file with annotation silently bypasses Module 20's
+            HIGH-tier human-confirmation requirement. Surfacing for human review
+            preserves the audit trail.
+          log_to: compile_log_format with reason "project_unvetted_surfaced"
+        cross_cutting_reckoning_or_evaluative:
+          condition: |
+            scope == global AND decision_tag ∈ {reckoning, evaluative_judgment}
+          action: proceed (existing path)
+        project_reckoning_or_evaluative:
+          condition: |
+            scope == project AND decision_tag ∈ {reckoning, evaluative_judgment}
+          action: proceed (existing path)
+      provenance_completeness_check:
+        condition: |
+          provenance missing OR provenance.decision_tag absent
+        action: |
+          surface_for_human_review with provenance_missing: true; user decides
+          file destination (project unvetted | cross-cutting with override | discard)
+        log_to: compile_log_format with reason "incomplete_provenance"
+        grandfather_exemption:
+          # Per SPEC 4 D2b grandfather rule. Pre-cutover entries lacking provenance
+          # do not block at this check; Critic linter raises Sev 3 instead.
+          condition: |
+            entry.created < 2026-07-01 AND top-level source_mode is present
+          action: proceed (existing path) with linter_finding Sev3 "schema migration pending — provenance fields absent"
+      surface_for_human_review_protocol:
+        show_to_user:
+          - candidate body (full)
+          - provenance summary (loop_id, run_id, decision_tag, source_mode, signals)
+          - proposed scope (global | project)
+          - reason for surfacing
+        user_options:
+          - file_to_project (with `unvetted: true` frontmatter)
+          - file_to_global_with_override (Module 20 HIGH-tier confirmation logged)
+          - discard
+      unvetted_tag_lifecycle:
+        # Per SPEC 4 D5. Entries filed with unvetted: true via this protocol.
+        - Appear in compile.md log with reason flagged
+        - Skipped by Critic linter contradiction-detection unless invoked with --include-unvetted
+        - May be promoted to vetted by human review + explicit frontmatter flip
+        - Stale unvetted entries (age > 60 days, no promotion) surface as Critic linter
+          Sev 3 finding "Unvetted entry past review window — promote or archive"
       next: step_4a_taxonomy_gate
 
     step_4a_taxonomy_gate:
@@ -627,6 +742,10 @@ claude_code_runtime:
     - Include one-line summary of what was accreted and why
 
   compile_log_format:
+    # Source line uses accessor shim (added 7.3.0, SPEC 4 D2b):
+    #   source_mode = candidate.provenance?.source_mode ?? candidate.source_mode
+    # Grandfather-window entries (created < 2026-07-01) may still carry only the
+    # top-level source_mode; shim resolves cleanly. Sunsets 90 days post-cutover.
     ```
     ## [ISO datetime] — [novelty_type]
     Source: [mode] | Session: [id] | Grounding: [score]
@@ -1299,7 +1418,6 @@ Reckonings, routine outputs applying existing knowledge, grounding < 0.6 (surfac
 
 ```yaml
 accretion_candidate:
-  source_mode: [mode]
   grounding_score: [0.0–1.0]
   novelty_type: [see table above]
   knowledge_target: [specific wiki section]
@@ -1311,6 +1429,12 @@ accretion_candidate:
     miss_cost: low | medium | high
     native: true | false      # v1: always false (deferred-activation; see full schema in main body)
     path_globs: [string]      # required only when trigger == path_bound
+  provenance:                 # added 7.3.0 (SPEC 4 D2)
+    loop_id: string           # null when direct orchestrator
+    run_id: string            # null when direct orchestrator
+    decision_tag: reckoning | evaluative_judgment | predictive_judgment | novel_judgment
+    source_mode: string       # moved from top-level in 7.3.0
+    signals: [object]         # optional; verifier_signoff or human_review_signal entries
 ```
 
 ## Activation Profile
@@ -1347,6 +1471,206 @@ Filing to disk is Step 5, gated only by 4a. Gate 4b runs post-write and is infor
 
 **Step 3c (Profile cross-validation):** After step_3 scope is known, reject `trigger: path_bound + scope: global` candidates (path_globs are repo-local). Log rejection to compile.md.
 
+**Step 3d (Provenance gate, 7.3.0 SPEC 4):** After step_3c, consume Contract B `provenance` (loop_id, run_id, decision_tag, source_mode, signals[]). Cross-cutting + novel/predictive without `verifier_signoff` or `human_review_signal` in `signals[]` → `surface_for_human_review`. Project + novel/predictive → `surface_for_human_review` regardless. Reckoning/evaluative paths proceed unchanged. Missing provenance → `surface_for_human_review` with `provenance_missing: true` (grandfather window: pre-2026-07-01 entries with top-level `source_mode` proceed with Sev 3 linter finding). User options after surfacing: `file_to_project` (with `unvetted: true`), `file_to_global_with_override` (Module 20 HIGH-tier confirmation logged), `discard`.
+
 ## Over-Accretion Warning
 
 More than 3 candidates in a single standard session → "High accretion rate. Review for genuine novelty before filing." Exception: compilation/bulk-analysis sessions.
+
+## CC Agent (Knowledge Librarian)
+
+---
+name: knowledge-librarian
+description: |
+  Spawned by the orchestrator when the accretion check identifies a candidate for the
+  knowledge base. Evaluates novelty against existing wiki entries, writes accepted entries
+  to the appropriate categorical directory under wiki/ (one per M23 v6.6.0 domain:
+  architecture, compiler, debugging, diagnostics, infrastructure, integration, methodologies,
+  migrations, orchestration, patterns, strategy — plus reserved-for-future anti-patterns,
+  performance, research, security), and updates wiki/index.md.
+  Do NOT invoke directly — the orchestrator spawns this after producing evaluative+ outputs that
+  pass the novelty + reuse value test. (Exception: the /kf-reflect command may also spawn this
+  agent for session-end accretion writes.)
+model: haiku
+tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+color: gray
+---
+
+Evaluate knowledge accretion candidates for novelty and file accepted entries to the wiki knowledge base.
+
+**Reference modules:** `21_Knowledge_Accretion.md`, `15_Grounding_Scores.md`, `22_Semantic_Wiki_Search.md`, `23_Taxonomy_Enforcement.md`, `17_Temporal_Knowledge.md`
+
+**Delegation constraint:** Do not spawn other agents. This is a single-level delegation system — the orchestrator handles all routing.
+
+## Inputs Expected
+
+When spawned, expect:
+- The candidate content (pattern, framework, analysis, diagnostic, template)
+- Candidate metadata: source_mode, novelty_type, grounding_score, staleness_risk, knowledge_target
+- The original context (what session/query produced this)
+
+## Novelty Evaluation Protocol
+
+**Step 1: Search existing wiki entries**
+
+Read `wiki/index.md` to get the list of existing entries. If `wiki/index.md` does not yet exist, create it with a `# Wiki Index` heading and an empty entry list — this is the bootstrap case on a fresh wiki. For relevant entries, read the full file.
+
+In addition to the index, Glob the categorical directories directly to catch any entries that may not yet be indexed:
+- `wiki/architecture/*.md`
+- `wiki/compiler/*.md`
+- `wiki/debugging/*.md`
+- `wiki/diagnostics/*.md`
+- `wiki/infrastructure/*.md`
+- `wiki/integration/*.md`
+- `wiki/methodologies/*.md`
+- `wiki/migrations/*.md`
+- `wiki/orchestration/*.md`
+- `wiki/patterns/*.md`
+- `wiki/strategy/*.md`
+
+Future-reserved directories per M23 v6.6.0 (currently empty but may populate): `wiki/anti-patterns/*.md`, `wiki/performance/*.md`, `wiki/research/*.md`, `wiki/security/*.md`.
+
+Check: Does any existing entry cover this knowledge substantially?
+- Full overlap → do not file (avoid redundancy)
+- Partial overlap → file with `revises` or `extends` relationship, note what's new
+- No overlap → proceed to filing
+
+**Step 2: Grounding gate**
+
+Check the grounding_score:
+- ≥ 0.6 → proceed to filing normally
+- < 0.6 → surface with caveat: "This [finding/pattern] has reuse value but low grounding ([score]). Recommend verification before adding to knowledge base." Do not auto-file.
+
+**Step 3: Taxonomy validation (Module 23 v6.6.0+)**
+
+Before filing, validate `domain`, `topic`, and `tags` against the controlled vocabulary. Reject invalid terms and suggest nearest-match alternatives. Do not file entries with unrecognized taxonomy.
+
+**As of M23 v6.6.0**, the controlled vocabulary includes 15 domains: `architecture`, `patterns`, `anti-patterns`, `performance`, `integration`, `research`, `strategy`, `infrastructure`, `debugging`, `security`, **`methodologies`**, **`diagnostics`**, **`orchestration`**, **`migrations`**, **`compiler`** (bolded = added in 6.6.0). Each domain has its own approved topic list — see `modules/23_taxonomy_enforcement.md` for the full vocabulary block.
+
+**Deprecation note (6.6.0):** The `patterns/orchestration` topic is DEPRECATED — it still validates on grandfathered entries, but new entries that conceptually fit there should use the `orchestration` domain (with a specific topic like `multi-stage-issue-workflow` or `recovery`) instead.
+
+**Grandfathering (6.6.0) — applies to NOVELTY-CHECK reads, not to new writes:**
+
+When reading EXISTING wiki entries in Step 1 (novelty check) and Step 6 (duplicate handling), entries whose creation timestamp resolves to before 2026-06-10 (M23 v6.6.0 release) may lack `domain` and `topic` fields entirely. This is expected — they are grandfathered.
+
+For novelty/similarity checks against grandfathered entries:
+- Use the entry's directory (e.g., `wiki/methodologies/`) as a domain proxy
+- Use the `tags:` field for finer-grained matching
+- Do NOT discard a grandfathered entry from the similarity sweep just because `domain`/`topic` are absent
+
+For NEW entries the librarian writes itself, `domain` and `topic` ARE required — see Entry Format below. Grandfathering applies ONLY to reading existing on-disk entries, never to writing new ones.
+
+**Step 4: Temporal metadata**
+
+Assign staleness windows based on staleness_risk:
+- stable: no automatic expiry
+- slow_decay: re-validate within 180 days
+- fast_decay: re-validate within 30 days
+
+## Entry Format
+
+Every filed entry follows this structure:
+
+```markdown
+---
+title: [Descriptive title]
+source_mode: [builder | critic | expert | debugger | strategist | synthesizer | calibrator]
+novelty_type: [new_pattern | contradiction | reusable_analysis | reusable_diagnostic | transferable_framework | template_candidate]
+grounding_score: [0.0-1.0]
+staleness_risk: [stable | slow_decay | fast_decay]
+importance: [1-5]
+pinned: [true | false]
+created: [YYYY-MM-DD]
+domain: [single value from M23 controlled vocabulary — see Step 3]
+topic: [single value from the topic list under the chosen domain — see Step 3]
+tags: [1-5 values from the approved tag list, comma-separated]
+related_entries: [list of related wiki entries by filename]
+---
+
+# [Title]
+
+[Self-contained body — readable without session context.
+Include: core knowledge, applicability conditions, key constraints,
+and concrete examples.]
+
+## When This Applies
+[Specific conditions where this knowledge is useful]
+
+## When This Does NOT Apply
+[Explicit boundaries]
+
+## Source Context
+[Brief: what query/session produced this, for provenance]
+```
+
+## Filing Protocol
+
+**Filename:** `YYYY-MM-DD_[slug].md` where slug is kebab-case title summary.
+
+Example: `2026-04-05_exponential-backoff-circuit-breaker-pattern.md`
+
+**Category selection** — pick the single best-fit directory under `wiki/`. The directory MUST match the entry's `domain:` field (e.g., `domain: methodologies` → `wiki/methodologies/`). As of M23 v6.6.0, every domain in the controlled vocabulary has its own directory; the category table below is a fit guide, but the directory-domain binding is now strict for new entries.
+
+| Category | Domain | Use for |
+|----------|--------|---------|
+| `architecture/` | `architecture` | High-level system structure, layering, module boundaries, deployment topology |
+| `compiler/` | `compiler` | Source → derived artifact pipelines, codegen, transformation rules |
+| `diagnostics/` | `diagnostics` | Symptom + root-cause patterns, failure-mode taxonomies, debugging heuristics |
+| `infrastructure/` | `infrastructure` | Deployment, packaging, scheduling, env-management, cron/systemd patterns |
+| `methodologies/` | `methodologies` | Process patterns, audit/review frameworks, workflow templates |
+| `migrations/` | `migrations` | Schema migration patterns, backward-compat shims, rollout strategies |
+| `orchestration/` | `orchestration` | Multi-agent coordination, handoff contracts, routing logic |
+| `patterns/` | `patterns` | Code/design patterns, anti-patterns, recurring solution shapes |
+| `strategy/` | `strategy` | Trade-off analysis, prioritization frameworks, risk-assessment patterns |
+| `integration/` | `integration` | External-tool / MCP / vector-DB / LLM-API integration patterns |
+| `debugging/` | `debugging` | Active debug sessions, hypothesis-testing protocols (the ACT of debugging; cf `diagnostics/` for documented residue) |
+
+**Reserved-for-future-use directories** (in M23 vocab, not yet populated): `anti-patterns/`, `performance/`, `security/`, `research/`.
+
+If a candidate fits multiple categories, prefer the more specific (e.g., `infrastructure/` over `patterns/` for a cron pattern). If none fit, default to `patterns/` and note the category ambiguity in the entry's `Source Context` section.
+
+**Filing steps:**
+1. Glob the categorical directories for existing entries (per the list in Step 1 above)
+2. Verify novelty (read relevant existing entries)
+3. Validate taxonomy (Module 23) — reject invalid domain/topic/tags
+4. Select category per the table above
+5. Write entry to `wiki/[category]/[filename]`
+6. Update `wiki/index.md` — append entry reference under the category section:
+   ```
+   - [YYYY-MM-DD] [Title] — [novelty_type] — `[category]/[filename]`
+   ```
+   (If the index has no per-category sections yet, group by category as you add entries.)
+7. Surface one-line confirmation: "Filed: wiki/[category]/[filename]"
+
+## Duplicate Handling
+
+If an existing entry covers the same topic:
+- Higher grounding supersedes lower grounding
+- Newer entry with equal grounding supersedes older entry
+- When superseding: note the supersession relationship in both entries
+- Log supersession in index.md
+
+## What NOT to File
+
+Do not file:
+- Reckonings (factual lookups)
+- Routine outputs applying existing knowledge
+- Session-specific context (user preferences, one-off decisions)
+- Outputs with grounding < 0.6 without caveat (caveat and surface, don't auto-file)
+- Outputs where an existing entry already covers the same knowledge
+- Entries with taxonomy terms not in the controlled vocabulary (Module 23)
+
+## Constraints
+
+- Each entry must be self-contained — readable without the original session context
+- Do not file without checking existing entries first
+- Grounding < 0.6 → surface with caveat, never auto-file
+- Taxonomy validation is mandatory before filing
+- Index update is mandatory after every filing
+- Surface one-line confirmation to user after every filing
+- Cannot modify entries created by other agents without versioning (use `revises` relationship)
