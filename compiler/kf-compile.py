@@ -762,6 +762,302 @@ def compile_vscode(binding: dict, output_root: Path, dry_run: bool,
     return manifest
 
 
+# ---------------------------------------------------------------------------
+# Plugin bundle compiler (SPEC 5)
+# ---------------------------------------------------------------------------
+
+_SEMVER_RE = re.compile(r"^\s*(\d+)\.(\d+)\.(\d+)")
+
+
+def _parse_semver(s: str) -> tuple[int, int, int] | None:
+    """Parse a semver string to a (major, minor, patch) tuple.
+
+    Returns None if the string doesn't match major.minor.patch. Only the
+    leading numeric triple is used; pre-release/build suffixes are ignored.
+    """
+    if not s:
+        return None
+    m = _SEMVER_RE.match(str(s))
+    if not m:
+        return None
+    return (int(m.group(1)), int(m.group(2)), int(m.group(3)))
+
+
+def _semver_satisfies(module_version: str, required: str) -> bool:
+    """Return True if `module_version` satisfies a `>=X.Y.Z` constraint.
+
+    SPEC 5 only uses the `>=` form for `requires_module_version`. This helper
+    intentionally implements that subset and refuses other operators (they
+    return False, surfacing a parsable-but-unmet gate rather than crashing).
+    """
+    req = required.strip()
+    if not req.startswith(">="):
+        return False
+    floor = _parse_semver(req[2:])
+    have = _parse_semver(module_version)
+    if floor is None or have is None:
+        return False
+    return have >= floor
+
+
+def _bundle_version_stamp(out_type: str, name: str, bundle_version: str,
+                           source_module: str, module_version: str) -> str:
+    """Build the kf-bundle HTML-comment header (SPEC 5 D2b).
+
+    Format:
+      <!-- kf-bundle: skill=builder | bundle_version=1.2.3 | source_module=02_builder.md | module_version=7.4.0 -->
+    """
+    return (
+        f"<!-- kf-bundle: {out_type}={name} | bundle_version={bundle_version} | "
+        f"source_module={source_module} | module_version={module_version} -->\n"
+    )
+
+
+def compile_plugin_bundle(binding: dict, output_root: Path, dry_run: bool,
+                           diff_mode: bool, version: str,
+                           check_divergence: bool = False) -> list[dict]:
+    """
+    Compile for the plugin-bundle target (SPEC 5).
+
+    Emits a self-contained installable bundle at output_root:
+      kf-plugin-bundle.json   bundle manifest
+      skills/                 compiled skill files (kf-compile + kf-bundle stamps)
+      agents/                 compiled agent files (kf-compile + kf-bundle stamps)
+      mcp/                    connector descriptors (path-validated at install)
+      install.sh              consumer-side installer (from .tmpl + version stamp)
+
+    `requires_module_version` is a per-output semver gate (D2): when the
+    source module's version is below the floor, the manifest entry shows
+    `status: skipped_version_gate` and no file is written. Used for outputs
+    that depend on module sections not yet shipped (e.g., adversarial-critic
+    depends on SPEC 1 land of Module 07 ≥ 7.5.0).
+
+    bundle_version is currently pinned to the kf.yaml system version (D2b).
+    Future composition-only bumps may decouple this.
+
+    Decision-tag: evaluative (parallels existing compile_claude_code patterns;
+    extends them with semver gating + bundle-version stamping).
+    """
+    manifest: list[dict] = []
+    bundle_version = version  # at v1, bundle version tracks kf.yaml version
+
+    # Output structure paths (from binding) — bundle-relative
+    out_struct = binding.get("output_structure", {})
+    skills_dirname = out_struct.get("skills_dir", "skills/").rstrip("/")
+    agents_dirname = out_struct.get("agents_dir", "agents/").rstrip("/")
+    mcp_dirname = out_struct.get("mcp_dir", "mcp/").rstrip("/")
+    manifest_filename = out_struct.get("manifest_path", "kf-plugin-bundle.json")
+    installer_filename = out_struct.get("installer_path", "install.sh")
+
+    def emit_bundle_file(source: str, out_path: Path, content: str, section: str,
+                          extra: dict | None = None) -> None:
+        entry = {
+            "source": source,
+            "output": str(out_path.relative_to(output_root)),
+            "section": section,
+        }
+        if extra:
+            entry.update(extra)
+        if diff_mode:
+            existing = out_path.read_text(encoding="utf-8") if out_path.exists() else ""
+            entry["status"] = "unchanged" if content == existing else "changed"
+        elif dry_run:
+            entry["status"] = "would_write"
+        else:
+            if check_divergence:
+                reason = detect_divergence(out_path, content)
+                if reason:
+                    entry["status"] = "diverged"
+                    entry["diverged_reason"] = reason
+                    entry["bytes"] = len(content.encode())
+                    manifest.append(entry)
+                    return
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            out_path.write_text(content, encoding="utf-8")
+            entry["status"] = "written"
+        entry["bytes"] = len(content.encode())
+        manifest.append(entry)
+
+    # ----- Per-module outputs (skills + agents) -----
+    module_outputs = binding.get("module_outputs", {})
+    for module_num, module_spec in module_outputs.items():
+        filename, module_content = load_module(module_num)
+        if module_content is None:
+            sys.stderr.write(
+                f"[kf-compile] Module {module_num} not found — skipping\n"
+            )
+            continue
+
+        # Extract module version from metadata block for stamps + gates
+        metadata = parse_module_metadata(module_content)
+        module_meta = metadata.get("module") if isinstance(metadata, dict) else None
+        module_version_str = ""
+        if isinstance(module_meta, dict):
+            module_version_str = str(module_meta.get("version", "")).strip()
+
+        for output_def in module_spec.get("outputs", []):
+            out_type = output_def["type"]                  # "skill" | "agent"
+            out_rel = output_def["path"]                   # e.g. "agents/builder.md"
+            section = output_def.get("section")
+            requires = output_def.get("requires_module_version")
+            out_path = output_root / out_rel
+
+            # ---- Version gate (D2) ----
+            if requires and not _semver_satisfies(module_version_str, requires):
+                manifest.append({
+                    "source": filename,
+                    "output": out_rel,
+                    "section": section or "full",
+                    "status": "skipped_version_gate",
+                    "requires_module_version": requires,
+                    "module_version": module_version_str,
+                })
+                continue
+
+            # ---- Section extraction ----
+            extracted = extract_section(module_content, section) if section else module_content
+            if section and extracted is None:
+                sys.stderr.write(
+                    f"[kf-compile] WARNING: section '## {section}' not found "
+                    f"in {filename} — skipping {out_rel}\n"
+                )
+                manifest.append({
+                    "source": filename,
+                    "output": out_rel,
+                    "section": section,
+                    "status": "missing_section",
+                })
+                continue
+
+            # ---- Stamp: kf-compile sentinel + kf-bundle stamp ----
+            content = add_compile_header(extracted, filename, out_type, version)
+            # Derive a short name from out_rel for the stamp (e.g., "builder")
+            name = Path(out_rel).stem
+            stamp = _bundle_version_stamp(out_type, name, bundle_version,
+                                           filename, module_version_str or "unknown")
+            # Insert stamp on the second line so kf-compile header stays at line 1
+            header_line, body = content.split("\n", 1)
+            content = f"{header_line}\n{stamp}{body}"
+
+            emit_bundle_file(
+                filename, out_path, content, section or "full",
+                extra={"module_version": module_version_str,
+                       "bundle_version": bundle_version},
+            )
+
+    # ----- MCP connectors -----
+    # Compiler writes a small descriptor per connector into mcp/ describing
+    # how the installer should resolve the connector. The actual server JSON
+    # is loaded at install time (per D3b path_type discipline).
+    mcp_connectors = binding.get("mcp_connectors", []) or []
+    for connector in mcp_connectors:
+        cid = connector.get("id", "<unknown>")
+        descriptor_path = output_root / mcp_dirname / f"{cid}.json"
+        descriptor = {
+            "id": cid,
+            "path_type": connector.get("path_type", "bundled"),
+            "source": connector.get("source"),
+            "source_path": connector.get("source_path"),
+            "bundle_path": connector.get("bundle_path"),
+            "fallback_message": connector.get("fallback_message", ""),
+            "targets": connector.get("targets", []),
+            "required": bool(connector.get("required", False)),
+        }
+        # Strip Nones for a cleaner descriptor
+        descriptor = {k: v for k, v in descriptor.items() if v is not None}
+        descriptor_content = json.dumps(descriptor, indent=2) + "\n"
+        emit_bundle_file(
+            f"platform-bindings/plugin-bundle.yaml#mcp:{cid}",
+            descriptor_path,
+            descriptor_content,
+            "mcp_descriptor",
+        )
+
+    # ----- Installer (install.sh) from template -----
+    consumer_installer = binding.get("consumer_installer", {}) or {}
+    template_rel = consumer_installer.get("template")
+    if template_rel:
+        template_path = CORE_ROOT / template_rel
+        if template_path.exists():
+            template_content = template_path.read_text(encoding="utf-8")
+            installed_at = datetime.now(timezone.utc).isoformat()
+            installer_content = (
+                template_content
+                .replace("{{BUNDLE_VERSION}}", bundle_version)
+                .replace("{{BUNDLE_TIMESTAMP}}", installed_at)
+            )
+            installer_path = output_root / installer_filename
+            emit_bundle_file(
+                template_rel,
+                installer_path,
+                installer_content,
+                "installer_template",
+            )
+            # chmod +x for real writes (best-effort; ignore on filesystems
+            # without exec bit semantics).
+            if not dry_run and not diff_mode and installer_path.exists():
+                try:
+                    installer_path.chmod(0o755)
+                except OSError:
+                    pass
+        else:
+            sys.stderr.write(
+                f"[kf-compile] Installer template not found: {template_path}\n"
+            )
+
+    # ----- Bundle manifest (kf-plugin-bundle.json) -----
+    # Distinct from .kf-compile-manifest.json: this is the install-time
+    # contract that install.sh reads (skills, agents, mcp_connectors).
+    skills_entries = []
+    agents_entries = []
+    for entry in manifest:
+        section = entry.get("section", "")
+        if section == "mcp_descriptor" or section == "installer_template":
+            continue
+        out_rel = entry.get("output", "")
+        name = Path(out_rel).stem if out_rel else ""
+        is_skill = out_rel.startswith(skills_dirname + "/")
+        is_agent = out_rel.startswith(agents_dirname + "/")
+        if not (is_skill or is_agent):
+            continue
+        target = skills_entries if is_skill else agents_entries
+        target.append({
+            "name": name,
+            "path": out_rel,
+            "module_source": entry.get("source", ""),
+            "module_version": entry.get("module_version", ""),
+            "status": entry.get("status", ""),
+            **({"requires_module_version": entry["requires_module_version"]}
+               if "requires_module_version" in entry else {}),
+        })
+
+    bundle_manifest = {
+        "version": version,
+        "bundle_id": "kf-plugin-bundle",
+        "bundle_version": bundle_version,
+        "compiled_at": datetime.now(timezone.utc).isoformat(),
+        "source": "knowledgeforge-core",
+        "skills": skills_entries,
+        "agents": agents_entries,
+        "mcp_connectors": mcp_connectors,
+        "install_protocol": [
+            {"step": "copy_skills_to_target_repo"},
+            {"step": "copy_agents_to_target_repo"},
+            {"step": "register_mcp_connectors_in_target_settings"},
+            {"step": "emit_install_receipt"},
+        ],
+    }
+    manifest_content = json.dumps(bundle_manifest, indent=2) + "\n"
+    emit_bundle_file(
+        "kf-compile.py#compile_plugin_bundle",
+        output_root / manifest_filename,
+        manifest_content,
+        "bundle_manifest",
+    )
+
+    return manifest
+
+
 def compile_claude_projects(binding: dict, output_root: Path, dry_run: bool,
                               diff_mode: bool, version: str,
                               check_divergence: bool = False) -> list[dict]:
@@ -986,7 +1282,7 @@ def main():
     parser.add_argument(
         "--target",
         required=True,
-        choices=["claude-code", "claude-projects", "cowork", "vscode"],
+        choices=["claude-code", "claude-projects", "cowork", "vscode", "plugin-bundle"],
         help="Platform target to compile for",
     )
     parser.add_argument(
@@ -1053,6 +1349,11 @@ def main():
         )
     elif args.target == "vscode":
         manifest = compile_vscode(
+            binding, output_root, args.dry_run, args.diff, version,
+            check_divergence=args.check_divergence,
+        )
+    elif args.target == "plugin-bundle":
+        manifest = compile_plugin_bundle(
             binding, output_root, args.dry_run, args.diff, version,
             check_divergence=args.check_divergence,
         )
