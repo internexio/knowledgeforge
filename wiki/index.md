@@ -75,6 +75,7 @@ type: index
 
 ### Orchestration
 
+- [2026-06-14] Compile-pipeline PR supersedence — close intermediates, regenerate latest at current upstream HEAD — transferable_framework — `orchestration/2026-06-14_compile-pipeline-pr-supersedence-snapshot-merge-pattern.md`
 - [2026-06-12] Stale-base PR conflicts after batched core pushes — resolve via workflow_dispatch — reusable_diagnostic — `orchestration/2026-06-12_stale-base-pr-conflicts-batched-pushes-workflow-dispatch.md`
 - [2026-06-12] Parallel-spec + parallel-critic pattern for independent beads — new_pattern — `orchestration/2026-06-12_parallel-spec-parallel-critic-pattern-independent-beads.md`
 - [2026-06-12] Split-by-blocking-axis — refactor monolithic tasks so framework parts ship while external blockers persist — transferable_framework — `orchestration/2026-06-12_split-by-blocking-axis-task-decomposition.md`
@@ -137,6 +138,7 @@ type: index
 
 ### Compiler
 
+- [2026-06-14] Bootstrap divergence is INTENTIONAL on static-to-compiled promotions — document, don't fix — reusable_diagnostic — `compiler/2026-06-14_bootstrap-divergence-intentional-on-static-to-compiled-promotion.md`
 - [2026-06-10] extract_section() in kf-compile.py stops only at CC markers — non-CC headings cause silent over-extraction — reusable_diagnostic — `compiler/2026-06-10_extract-section-cc-marker-stop-condition-over-extraction.md`
 - [2026-05-13] Trailing-newline divergence between Python triple-quoted strings and Jinja2 default rendering — new_pattern — `compiler/2026-05-13_trailing-newline-divergence-python-jinja2.md`
 - [2026-05-12] ES2020/ES2021 lib divergence — local tsc green, CI tsc red on String.replaceAll — reusable_diagnostic — `compiler/2026-05-12_es2020-es2021-lib-divergence-string-replacall.md`
@@ -144,6 +146,8 @@ type: index
 
 ### Diagnostics
 
+- [2026-06-14] YAML plain-scalar list items with embedded colon-space fail safe_load silently — reusable_diagnostic — `diagnostics/2026-06-14_yaml-plain-scalar-colon-space-safe-load-silent-fail.md`
+- [2026-06-14] Worktree-isolated subagents cannot spawn other subagents — apply protocol inline as fallback — reusable_diagnostic — `diagnostics/2026-06-14_worktree-isolated-subagent-cannot-spawn-other-subagents.md`
 - [2026-06-13] tmux display-message #{pane_pid} race after new-session — single-sample checks false-positive — reusable_diagnostic — `diagnostics/2026-06-13_tmux-display-message-pane-pid-race-after-new-session.md`
 - [2026-06-12] Bash $? is clobbered by $(...) substitutions that run first in the same argument — reusable_diagnostic — `diagnostics/2026-06-12_bash-dollar-question-clobbered-command-substitution.md`
 - [2026-06-12] Count by the refreshed field, not the preserved one, when measuring producer liveness on a dedup-in-place queue — transferable_framework — `diagnostics/2026-06-12_count-by-refreshed-field-dedup-liveness-detection.md`
@@ -192,6 +196,8 @@ type: index
 
 ### Methodologies
 
+- [2026-06-14] Phased probe-first arc for risky multi-spec refactors (Probe → ERA → Strategist → Builder → Critic → Phase 3) — new_pattern — `methodologies/2026-06-14_probe-era-builder-critic-arc-multi-spec-refactor.md`
+- [2026-06-14] Disjoint-file-surface check via comm -12 as pre-parallelize gate for worktree feasibility — reusable_diagnostic — `methodologies/2026-06-14_disjoint-file-surface-check-parallel-worktree-feasibility.md`
 - [2026-06-10] Test cards for AI-coder-config migrations — baseline + per-step + cumulative verification with version-controlled outcome log — transferable_framework, reusable_diagnostic — `methodologies/2026-06-10_test-cards-ai-coder-config-migration-baseline-step-cumulative.md`
 - [2026-06-10] Canary test for filesystem-loaded AI-coder-config conventions — verify the auto-load before depending on it — reusable_diagnostic, transferable_framework — `methodologies/2026-06-10_canary-test-ai-coder-config-auto-load-conventions.md`
 - [2026-06-10] KF semver lives on three surfaces — module version, kf.yaml system version, platform binding version — and they bump independently — reusable_diagnostic — `methodologies/2026-06-10_kf-semver-three-surfaces-module-system-binding.md`
