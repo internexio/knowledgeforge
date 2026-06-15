@@ -49,6 +49,13 @@ HOOKS_DIR = CORE_ROOT / "hooks"
 # are passed through unchanged.
 CC_SECTION_MARKERS = frozenset({"CC Skill", "CC Doc", "CC Agent", "CC Rules"})
 
+# Sections to STRIP from -CP output. Superset of CC_SECTION_MARKERS plus
+# "Section-Load Map" — the latter only ever appears as a compile-side back-
+# reference inside a CC body, but the strip filter names it explicitly as a
+# safety net against future canonical drift (if it ever moves outside a CC
+# block, it must still be stripped from -CP).
+CP_STRIP_MARKERS = CC_SECTION_MARKERS | frozenset({"Section-Load Map"})
+
 
 def extract_section(content: str, section_name: str) -> str | None:
     """
@@ -627,27 +634,152 @@ def compile_claude_code(binding: dict, output_root: Path, dry_run: bool,
                 "status": "would_write" if dry_run else "diff_skipped",
             })
 
+    # Item C3 fail-closed -CC guard — only runs on real writes (dry_run / diff
+    # don't produce on-disk artifacts to inspect).
+    if not dry_run and not diff_mode:
+        assert_cc_invariants(binding, output_root)
+
     return manifest
+
+
+# Routable agents that DON'T derive from a `@delegate` token in the M00
+# routing table — they are emitted bodies but never appear as @-tokens.
+#   kf.md                = the orchestrator's own body (no self-delegation)
+#   knowledge-librarian  = utility agent dispatched by the accretion pipeline,
+#                          not by the routing table
+CC_NON_ROUTABLE_AGENTS = frozenset({"kf", "knowledge-librarian"})
+
+
+def assert_cc_invariants(binding: dict, output_root: Path) -> None:
+    """Fail-closed -CC guard (Item C3).
+
+    Three invariants enforced after a real write:
+    (a) Every mode-agent module declared in module_outputs that emits an agent
+        artifact actually produced .claude/agents/<name>.md on disk.
+    (b) adversarial-critic.md contains the 'Untrusted Input Boundary' clause
+        (SPEC 1 prompt-level defense — see Module 07 ## CC Agent (Adversarial
+        Variant), Module 00 ## Automatic Adversarial Verification, Module 20
+        verifier_tool_tier_policy).
+    (c) The set of `@delegate` tokens in the orchestrator routing table
+        (Module 00) is exactly the set of routable agent bodies on disk
+        (.claude/agents/*.md minus CC_NON_ROUTABLE_AGENTS). No orphans either
+        direction.
+
+    Raises RuntimeError naming the failing invariant + missing artifact.
+    """
+    agents_dir = output_root / binding["output_structure"]["agents_dir"]
+
+    # (a) Every declared agent output for a mode module exists on disk.
+    for mod_id, mod_spec in binding.get("module_outputs", {}).items():
+        for out_spec in mod_spec.get("outputs", []):
+            if out_spec.get("type") != "agent":
+                continue
+            rel = out_spec["path"]
+            target = output_root / rel
+            if not target.exists():
+                raise RuntimeError(
+                    f"[kf-compile][-CC guard] Module '{mod_id}' declared agent "
+                    f"output {rel} but no file was written. Check whether the "
+                    f"module's ## {out_spec.get('section')} section exists and "
+                    f"non-empty."
+                )
+
+    # (b) adversarial-critic must carry the Untrusted Input Boundary clause.
+    adv = agents_dir / "adversarial-critic.md"
+    if not adv.exists():
+        raise RuntimeError(
+            "[kf-compile][-CC guard] adversarial-critic.md missing — SPEC 1 "
+            "verifier-promotion did not land. Re-author Module 07 ## CC Agent "
+            "(Adversarial Variant)."
+        )
+    if "Untrusted Input Boundary" not in adv.read_text(encoding="utf-8"):
+        raise RuntimeError(
+            "[kf-compile][-CC guard] adversarial-critic.md is missing the "
+            "'Untrusted Input Boundary' clause. The prompt-level defense for "
+            "the adversarial verifier is required by SPEC 1; re-author the "
+            "clause in Module 07 ## CC Agent (Adversarial Variant)."
+        )
+
+    # (c) Delegates ↔ routable agents bijection (no orphans).
+    m00 = next(MODULES_DIR.glob("00_*.md"), None)
+    if m00 is None:
+        raise RuntimeError("[kf-compile][-CC guard] Module 00 not found.")
+    m00_body = m00.read_text(encoding="utf-8")
+    delegates = set(re.findall(r"@([a-z][a-z-]+)", m00_body))
+    routable_bodies = {
+        p.stem for p in agents_dir.glob("*.md")
+        if p.stem not in CC_NON_ROUTABLE_AGENTS
+    }
+    missing_bodies = delegates - routable_bodies
+    if missing_bodies:
+        raise RuntimeError(
+            f"[kf-compile][-CC guard] Delegate(s) in M00 routing table without "
+            f"a compiled agent body: {sorted(missing_bodies)}. Either author "
+            f"the ## CC Agent section in the corresponding module, or remove "
+            f"the @delegate from the routing table."
+        )
+    orphan_bodies = routable_bodies - delegates
+    if orphan_bodies:
+        raise RuntimeError(
+            f"[kf-compile][-CC guard] Compiled agent body without a matching "
+            f"@delegate in M00 routing table: {sorted(orphan_bodies)}. Either "
+            f"add the @delegate to M00 (if the agent is user-routable) or add "
+            f"the agent name to CC_NON_ROUTABLE_AGENTS (utility/self body)."
+        )
 
 
 def strip_cc_sections(content: str) -> str:
     """
     Remove CC compilation sections from module content before writing to CP.
 
-    The embed script always appends CC sections at the end of modules, so
-    everything from the first ## CC * marker to EOF is compilation content.
-    Strip it entirely — CP gets clean module content without compilation anchors.
+    Cuts the file at the first occurrence of any marker in CP_STRIP_MARKERS
+    (## CC Skill / ## CC Doc / ## CC Agent / ## CC Rules / ## Section-Load Map,
+    plus titled variants like '## CC Agent (Adversarial Variant)' or
+    '## CC Skill — KF Fit Check'). The embed script appends CC sections at
+    the end of modules so a single forward cut is sound; the Section-Load Map
+    addition is defense-in-depth against canonical drift.
     """
     lines = content.split("\n")
     cut_at = len(lines)
 
     for i, line in enumerate(lines):
-        if line.startswith("## ") and line[3:].strip() in CC_SECTION_MARKERS:
+        if not line.startswith("## "):
+            continue
+        section_id = line[3:].strip()
+        if section_id in CP_STRIP_MARKERS or any(
+            section_id.startswith(m + " ") or section_id.startswith(m + " (")
+            for m in CP_STRIP_MARKERS
+        ):
             cut_at = i
             break
 
     stripped = "\n".join(lines[:cut_at]).rstrip("\n") + "\n"
     return stripped
+
+
+def assert_cp_clean(out_path: Path, content: str) -> None:
+    """Fail-closed -CP guard (Item B3).
+
+    Scan content for any forbidden compilation-section heading. Raises
+    RuntimeError naming the offending file + line if one slips through.
+    Called from compile_claude_projects() after each file write so the
+    -CP publish reliably rejects CC leakage even if strip_cc_sections
+    misses a future variant.
+    """
+    for lineno, line in enumerate(content.split("\n"), start=1):
+        if not line.startswith("## "):
+            continue
+        section_id = line[3:].strip()
+        if section_id in CP_STRIP_MARKERS or any(
+            section_id.startswith(m + " ") or section_id.startswith(m + " (")
+            for m in CP_STRIP_MARKERS
+        ):
+            raise RuntimeError(
+                f"[kf-compile][-CP guard] FORBIDDEN section leaked into "
+                f"{out_path.name} at line {lineno}: '{line.rstrip()}'. "
+                f"strip_cc_sections did not catch it. Fix the strip filter "
+                f"before re-publishing."
+            )
 
 
 def compile_vscode(binding: dict, output_root: Path, dry_run: bool,
@@ -1108,6 +1240,8 @@ def compile_claude_projects(binding: dict, output_root: Path, dry_run: bool,
 
         content = strip_cc_sections(src.read_text(encoding="utf-8"))
         out_path = output_root / cp_name
+        # Item B3 fail-closed -CP guard — never silently publish a leak.
+        assert_cp_clean(out_path, content)
 
         entry = {"source": core_name, "output": cp_name, "section": "full"}
 
@@ -1311,7 +1445,7 @@ def main():
     parser.add_argument(
         "--target",
         required=True,
-        choices=["claude-code", "claude-projects", "cowork", "vscode", "plugin-bundle", "codex"],
+        choices=["claude-code", "claude-projects", "vscode", "plugin-bundle", "codex"],
         help="Platform target to compile for",
     )
     parser.add_argument(

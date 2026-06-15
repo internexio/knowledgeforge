@@ -20,8 +20,16 @@ variants:
     note: Compiled from core via kf-compile --target claude-code
   knowledgeforge-cw:
     role: Cowork variant
-    status: drifting
+    status: deprecated
     repo: git@github.com:internexio/knowledgeforge-cw.git
+    note: |
+      DEPRECATED 2026-06-15. Export path removed (platform-bindings/cowork.yaml
+      deleted; kf-compile.py --target cowork removed from argparse choices).
+      The shared/leaky -CP↔-CC strip behaviour traced back to a generic
+      pre-target export path that originated when -CW was also a target —
+      removing -CW lets the export filter be per-target and fail-closed.
+      No new compiles will be produced for this variant; existing artifacts
+      in the -CW repo are frozen at their last-shipped state.
   knowledgeforge-web:
     role: Web agents variant
     status: future
