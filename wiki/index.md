@@ -256,6 +256,7 @@ type: index
 
 ### Strategy
 
+- [2026-06-14] Substrate-migration triage — port/drop a dormant subsystem's backlog against the live substitute, never revive the corpse — transferable_framework — `strategy/2026-06-14_substrate-migration-triage.md`
 - [2026-06-10] Drop the dependent tier when a critic surfaces that an architecture's loading mechanism is more constrained than the spec assumed — transferable_framework, reusable_diagnostic — `strategy/2026-06-10_drop-dependent-tier-constrained-loader-reclassification.md`
 - [2026-05-29] Pricing LLM-wrapper APIs against the DIY-floor constraint — transferable_framework — `strategy/2026-05-29_llm-wrapper-api-pricing-diy-floor-calibration.md`
 - [2026-05-21] Vendor selection — calibration uncertainty is the bottleneck, not measurement precision — transferable_framework — `strategy/2026-05-21_vendor-selection-calibration-uncertainty-dominance.md`
@@ -271,9 +272,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 166
-- **Entry types:** new_pattern (52), transferable_framework (43), reusable_diagnostic (70), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
-- **Domains:** patterns (37), architecture (10), orchestration (15), infrastructure (26), compiler (4), diagnostics (36), methodologies (30), migrations (5), strategy (3), integration (2)
+- **Total entries:** 167
+- **Entry types:** new_pattern (52), transferable_framework (44), reusable_diagnostic (70), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
+- **Domains:** patterns (37), architecture (10), orchestration (15), infrastructure (26), compiler (4), diagnostics (36), methodologies (30), migrations (5), strategy (4), integration (2)
 - **Avg grounding score:** 0.84 (across grounded entries)
-- **Staleness risk distribution:** stable (158), slow_decay (3), fast_decay (1)
+- **Staleness risk distribution:** stable (159), slow_decay (3), fast_decay (1)
 
