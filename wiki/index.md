@@ -9,6 +9,7 @@ type: index
 
 ### Patterns
 
+- [2026-06-15] Fail-closed publish guards for multi-target compilers — invariants enforced at emit-time — transferable_framework — `patterns/2026-06-15_fail-closed-publish-guards-multi-target-compiler.md`
 - [2026-06-14] Cross-module summary-row drift — referencing module's count claim desyncs when referenced module bumps entities — reusable_diagnostic, transferable_framework — `patterns/2026-06-14_cross-module-summary-row-count-drift.md`
 - [2026-06-12] Downgrade-vs-reject pattern for cross-cut validation rules — transferable_framework — `patterns/2026-06-12_downgrade-vs-reject-multi-source-validation-rules.md`
 - [2026-06-10] Idempotent merge of tool-managed fragments into hand-editable config via sidecar manifest — transferable_framework — `patterns/2026-06-10_idempotent-sidecar-manifest-config-merge.md`
@@ -147,6 +148,7 @@ type: index
 
 ### Diagnostics
 
+- [2026-06-15] Deprecating a target requires removing the shared infrastructure — the orphaned generic path becomes a leak vector — reusable_diagnostic — `diagnostics/2026-06-15_deprecated-target-shared-path-leak-vector.md`
 - [2026-06-14] YAML plain-scalar list items with embedded colon-space fail safe_load silently — reusable_diagnostic — `diagnostics/2026-06-14_yaml-plain-scalar-colon-space-safe-load-silent-fail.md`
 - [2026-06-14] Worktree-isolated subagents cannot spawn other subagents — apply protocol inline as fallback — reusable_diagnostic — `diagnostics/2026-06-14_worktree-isolated-subagent-cannot-spawn-other-subagents.md`
 - [2026-06-13] Green daemon, zero output — suspect a status field that silently excludes work — reusable_diagnostic — `diagnostics/2026-06-13_green-daemon-zero-output-status-field-silently-excludes-work.md`
@@ -198,6 +200,7 @@ type: index
 
 ### Methodologies
 
+- [2026-06-15] Cross-machine accretion routing — write candidates to the live-clone session, not the dirty-clone session that produced them — transferable_framework — `methodologies/2026-06-15_cross-machine-accretion-routing.md`
 - [2026-06-14] Phased probe-first arc for risky multi-spec refactors (Probe → ERA → Strategist → Builder → Critic → Phase 3) — new_pattern — `methodologies/2026-06-14_probe-era-builder-critic-arc-multi-spec-refactor.md`
 - [2026-06-14] Disjoint-file-surface check via comm -12 as pre-parallelize gate for worktree feasibility — reusable_diagnostic — `methodologies/2026-06-14_disjoint-file-surface-check-parallel-worktree-feasibility.md`
 - [2026-06-10] Test cards for AI-coder-config migrations — baseline + per-step + cumulative verification with version-controlled outcome log — transferable_framework, reusable_diagnostic — `methodologies/2026-06-10_test-cards-ai-coder-config-migration-baseline-step-cumulative.md`
@@ -273,9 +276,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 168
-- **Entry types:** new_pattern (52), transferable_framework (44), reusable_diagnostic (71), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
-- **Domains:** patterns (37), architecture (10), orchestration (15), infrastructure (26), compiler (4), diagnostics (37), methodologies (30), migrations (5), strategy (4), integration (2)
+- **Total entries:** 171
+- **Entry types:** new_pattern (52), transferable_framework (46), reusable_diagnostic (72), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
+- **Domains:** patterns (38), architecture (10), orchestration (15), infrastructure (26), compiler (4), diagnostics (38), methodologies (31), migrations (5), strategy (4), integration (2)
 - **Avg grounding score:** 0.84 (across grounded entries)
-- **Staleness risk distribution:** stable (160), slow_decay (3), fast_decay (1)
+- **Staleness risk distribution:** stable (163), slow_decay (3), fast_decay (1)
 
