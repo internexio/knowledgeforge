@@ -149,6 +149,7 @@ type: index
 
 - [2026-06-14] YAML plain-scalar list items with embedded colon-space fail safe_load silently — reusable_diagnostic — `diagnostics/2026-06-14_yaml-plain-scalar-colon-space-safe-load-silent-fail.md`
 - [2026-06-14] Worktree-isolated subagents cannot spawn other subagents — apply protocol inline as fallback — reusable_diagnostic — `diagnostics/2026-06-14_worktree-isolated-subagent-cannot-spawn-other-subagents.md`
+- [2026-06-13] Green daemon, zero output — suspect a status field that silently excludes work — reusable_diagnostic — `diagnostics/2026-06-13_green-daemon-zero-output-status-field-silently-excludes-work.md`
 - [2026-06-13] tmux display-message #{pane_pid} race after new-session — single-sample checks false-positive — reusable_diagnostic — `diagnostics/2026-06-13_tmux-display-message-pane-pid-race-after-new-session.md`
 - [2026-06-12] Bash $? is clobbered by $(...) substitutions that run first in the same argument — reusable_diagnostic — `diagnostics/2026-06-12_bash-dollar-question-clobbered-command-substitution.md`
 - [2026-06-12] Count by the refreshed field, not the preserved one, when measuring producer liveness on a dedup-in-place queue — transferable_framework — `diagnostics/2026-06-12_count-by-refreshed-field-dedup-liveness-detection.md`
@@ -272,9 +273,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 167
-- **Entry types:** new_pattern (52), transferable_framework (44), reusable_diagnostic (70), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
-- **Domains:** patterns (37), architecture (10), orchestration (15), infrastructure (26), compiler (4), diagnostics (36), methodologies (30), migrations (5), strategy (4), integration (2)
+- **Total entries:** 168
+- **Entry types:** new_pattern (52), transferable_framework (44), reusable_diagnostic (71), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
+- **Domains:** patterns (37), architecture (10), orchestration (15), infrastructure (26), compiler (4), diagnostics (37), methodologies (30), migrations (5), strategy (4), integration (2)
 - **Avg grounding score:** 0.84 (across grounded entries)
-- **Staleness risk distribution:** stable (159), slow_decay (3), fast_decay (1)
+- **Staleness risk distribution:** stable (160), slow_decay (3), fast_decay (1)
 
