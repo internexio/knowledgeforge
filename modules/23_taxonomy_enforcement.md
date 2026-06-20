@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Taxonomy Enforcement
-  version: 6.7.0
+  version: 6.7.1
   purpose: Fixed controlled vocabulary for wiki entry domain/topic/tags, enforced at write time — prevents taxonomy drift, maintains Module 22 metadata filter reliability, and ensures cross-session consistency of knowledge classification
   topics: [taxonomy, controlled-vocabulary, knowledge-classification, write-time-validation, metadata-quality]
   contexts: [knowledge-accretion, wiki-filing, accretion-gate, linter-runs]
@@ -13,6 +13,14 @@ module:
   related: [21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 19_Memory_Architecture, 17_Temporal_Knowledge]
   added_in: "6.5"
   changelog:
+    6.7.1:
+      date: 2026-06-20
+      driver: knowledgeforge-core-a05
+      changes:
+        - Fix YAML parse warning surfaced during kf-cc compile — 6.7.0
+          changelog had a bullet starting with a backtick (`` `seo-strategy`...``)
+          which YAML rejects as a non-token. Rephrased to start with a word.
+          No semantic change; vocab unchanged.
     6.7.0:
       date: 2026-06-20
       driver: knowledgeforge-core-a05
@@ -26,8 +34,8 @@ module:
           new SEO entries can no longer accrete into KF-core under these topics.
         - Total methodologies topic count 21 → 18. Total diagnostics topic count
           28 → 26. Summary tables at end of doc updated to match.
-        - `seo-strategy` domain (never in vocab; grandfathered) and its 7 entries
-          remain in place until the move bead executes — see -56c for plan.
+        - The seo-strategy domain (never in vocab; grandfathered) and its 7
+          entries remain in place until the move bead executes — see -56c for plan.
     6.6.0:
       date: 2026-06-10
       driver: knowledgeforge-core-e0x
