@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Taxonomy Enforcement
-  version: 6.6.0
+  version: 6.7.0
   purpose: Fixed controlled vocabulary for wiki entry domain/topic/tags, enforced at write time — prevents taxonomy drift, maintains Module 22 metadata filter reliability, and ensures cross-session consistency of knowledge classification
   topics: [taxonomy, controlled-vocabulary, knowledge-classification, write-time-validation, metadata-quality]
   contexts: [knowledge-accretion, wiki-filing, accretion-gate, linter-runs]
@@ -13,6 +13,21 @@ module:
   related: [21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 19_Memory_Architecture, 17_Temporal_Knowledge]
   added_in: "6.5"
   changelog:
+    6.7.0:
+      date: 2026-06-20
+      driver: knowledgeforge-core-a05
+      changes:
+        - Pruned 5 SEO-domain leakage topics flagged in 6.6.0 — `keyword-repositioning`,
+          `keyword-research-methodology`, `keyword-selection` from methodologies;
+          `google-ads`, `serp-ranking-diagnosis` from diagnostics. The four entries
+          actually using these topics (plus 3 more under the orphan `seo-strategy`
+          domain) belong in sem-tools/wiki/, not KF-core — relocation tracked by
+          successor bead knowledgeforge-core-56c. M23 vocab cleanup lands now so
+          new SEO entries can no longer accrete into KF-core under these topics.
+        - Total methodologies topic count 21 → 18. Total diagnostics topic count
+          28 → 26. Summary tables at end of doc updated to match.
+        - `seo-strategy` domain (never in vocab; grandfathered) and its 7 entries
+          remain in place until the move bead executes — see -56c for plan.
     6.6.0:
       date: 2026-06-10
       driver: knowledgeforge-core-e0x
@@ -196,9 +211,6 @@ taxonomy:
       - deployment-sequencing
       - experiment-design
       - gate-design
-      - keyword-repositioning            # SEO-domain leakage — candidate for pruning (bead a05)
-      - keyword-research-methodology     # SEO-domain leakage — candidate for pruning (bead a05)
-      - keyword-selection                # SEO-domain leakage — candidate for pruning (bead a05)
       - measurement-methodology
       - prioritization
       - propagation-discipline
@@ -221,7 +233,6 @@ taxonomy:
       - data-validation
       - error-classification
       - error-handling
-      - google-ads                       # SEO-domain leakage — candidate for pruning (bead a05)
       - hypothesis-testing
       - intent-vs-execution
       - issue-tracking
@@ -234,7 +245,6 @@ taxonomy:
       - reporting
       - retrospective-analysis
       - root-cause-analysis
-      - serp-ranking-diagnosis           # SEO-domain leakage — candidate for pruning (bead a05)
       - server-configuration
       - test-isolation
       - testing
@@ -577,8 +587,8 @@ All three levels required. Missing any → rejection.
 | `infrastructure` | deployment, ops, ci-cd, observability, server-configuration |
 | `debugging` | root-cause-analysis, regression-detection, hypothesis-testing, error-classification |
 | `security` | threat-model, access-control, data-isolation, attack-surface |
-| `methodologies` | acceptance-criteria, artifact-discipline, bead-triage-workflow, conflict-recovery, decision-framework, deployment-sequencing, experiment-design, gate-design, keyword-repositioning, keyword-research-methodology, keyword-selection, measurement-methodology, prioritization, propagation-discipline, quality-gate, risk-assessment, scope-management, staged-rollout, trade-off-analysis, validation |
-| `diagnostics` | api-design, calibration, classification, data-integrity, data-quality, data-validation, error-classification, error-handling, google-ads, hypothesis-testing, intent-vs-execution, issue-tracking, liveness, measurement-logic, multi-repo-workflows, ops, queue-observability-pitfall, refactoring, reporting, retrospective-analysis, root-cause-analysis, serp-ranking-diagnosis, server-configuration, test-isolation, testing, threshold-tuning, watchdog, workflow-discipline |
+| `methodologies` | acceptance-criteria, artifact-discipline, bead-triage-workflow, conflict-recovery, decision-framework, deployment-sequencing, experiment-design, gate-design, measurement-methodology, prioritization, propagation-discipline, quality-gate, risk-assessment, scope-management, staged-rollout, trade-off-analysis, validation |
+| `diagnostics` | api-design, calibration, classification, data-integrity, data-quality, data-validation, error-classification, error-handling, hypothesis-testing, intent-vs-execution, issue-tracking, liveness, measurement-logic, multi-repo-workflows, ops, queue-observability-pitfall, refactoring, reporting, retrospective-analysis, root-cause-analysis, server-configuration, test-isolation, testing, threshold-tuning, watchdog, workflow-discipline |
 | `orchestration` | epic-closure-workflow, multi-stage-issue-workflow, orchestration (deprecated), recovery |
 | `migrations` | error-classification |
 | `compiler` | ci-cd, version-incompatibility |

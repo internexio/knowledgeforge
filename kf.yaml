@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.12.0
+version: 7.12.1
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,22 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.12.1
+    date: 2026-06-20
+    driver: knowledgeforge-core-a05
+    note: |
+      M23 vocab cleanup — dropped 5 SEO-domain leakage topics flagged in 6.6.0:
+      keyword-repositioning, keyword-research-methodology, keyword-selection
+      (methodologies); google-ads, serp-ranking-diagnosis (diagnostics).
+
+      Module 23 (6.6.0 → 6.7.0). Patch-level system bump since the change is
+      vocab pruning only; no module behavior change, no other modules touched.
+
+      Successor bead -56c tracks the file-relocation half of a05 (7 entries
+      under orphan domain seo-strategy move from KF-core/wiki/ to
+      sem-tools/wiki/). Move deferred to when sem-tools is clean and bridge
+      pointers can be wired in one pass.
+
   - version: 7.12.0
     date: 2026-06-13
     driver: knowledgeforge-core-f8a
