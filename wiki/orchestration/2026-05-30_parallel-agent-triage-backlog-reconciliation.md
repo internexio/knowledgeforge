@@ -6,8 +6,8 @@ novelty_type: new_pattern
 grounding_score: 0.85
 staleness_risk: stable
 importance: 4
-domain: patterns
-topic: orchestration
+domain: orchestration
+topic: parallel-workflow
 tags: [delegation, routing, quality-gate, throughput, empirical]
 related_entries:
   - orchestration/context-manager-protocol.md
