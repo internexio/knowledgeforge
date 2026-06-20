@@ -8,7 +8,7 @@ staleness_risk: stable
 importance: 4
 created: 2026-06-12
 domain: orchestration
-topic: multi-stage-issue-workflow
+topic: parallel-workflow
 tags: [adversarial, chain, routing, quality-gate, throughput]
 related_entries:
   - orchestration/2026-05-30_parallel-agent-triage-backlog-reconciliation.md

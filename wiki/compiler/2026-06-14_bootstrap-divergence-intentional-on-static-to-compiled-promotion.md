@@ -8,7 +8,7 @@ staleness_risk: stable
 importance: 4
 created: 2026-06-14
 domain: compiler
-topic: ci-cd
+topic: bootstrap-divergence
 tags: [empirical, deployment, packaging]
 related_entries:
   - compiler/2026-06-10_extract-section-cc-marker-stop-condition-over-extraction.md

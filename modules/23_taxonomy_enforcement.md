@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Taxonomy Enforcement
-  version: 6.8.0
+  version: 6.9.0
   purpose: Fixed controlled vocabulary for wiki entry domain/topic/tags, enforced at write time — prevents taxonomy drift, maintains Module 22 metadata filter reliability, and ensures cross-session consistency of knowledge classification
   topics: [taxonomy, controlled-vocabulary, knowledge-classification, write-time-validation, metadata-quality]
   contexts: [knowledge-accretion, wiki-filing, accretion-gate, linter-runs]
@@ -13,6 +13,36 @@ module:
   related: [21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 19_Memory_Architecture, 17_Temporal_Knowledge]
   added_in: "6.5"
   changelog:
+    6.9.0:
+      date: 2026-06-20
+      driver: knowledgeforge-core-sd3
+      changes:
+        - |-
+          Compiler vocab expansion — added bootstrap-divergence (covers
+          static-to-compiled-promotion divergence patterns) and
+          multi-repo-pipeline (covers compile pipelines crossing
+          source-and-derived repos). Re-topicked 2 entries:
+          diagnostics/2026-05-23_compile-pipelines-complete-tracked-work-
+          invisibly issue-tracking -> multi-repo-pipeline; and
+          compiler/2026-06-14_bootstrap-divergence-intentional-on-static-
+          to-compiled-promotion ci-cd -> bootstrap-divergence. Compiler
+          topic count 2 -> 4.
+        - |-
+          Orchestration vocab expansion (minimum-3 set) — added
+          queue-pattern, parallel-workflow, task-decomposition. Removed
+          deprecated self-referential `orchestration` topic — both entries
+          that used it migrated to queue-pattern (coalesce-at-enqueue,
+          append-only-queue). Two further entries split out of the generic
+          multi-stage-issue-workflow bucket: parallel-spec-parallel-critic
+          -> parallel-workflow; split-by-blocking-axis -> task-decomposition.
+          Orchestration topic count 4 -> 6 (added 3, removed 1 deprecated).
+        - The patterns-domain deprecated `orchestration` topic (line 118) is
+          a separate deprecation and remains; one entry (parallel-agent-
+          triage-backlog-reconciliation) still uses it. Out of sd3 scope —
+          may be handled by a future bead.
+        - Summary tables at end of doc updated for both domains.
+        - Closes sd3 entirely (all 3 sub-tasks done — migrations in 6.8.0,
+          compiler + orchestration in 6.9.0).
     6.8.0:
       date: 2026-06-20
       driver: knowledgeforge-core-sd3
@@ -284,8 +314,11 @@ taxonomy:
     topics:
       - epic-closure-workflow
       - multi-stage-issue-workflow
-      - orchestration                    # DEPRECATED 6.6.0 — self-referential; pick a specific topic
+      - parallel-workflow                # added 6.9.0 — parallel-agent / parallel-spec patterns
+      - queue-pattern                    # added 6.9.0 — queue coalescing, dedup, fingerprint patterns
       - recovery
+      - task-decomposition               # added 6.9.0 — decomposing monolithic tasks along blocking axes
+      # `orchestration` topic (self-referential, DEPRECATED 6.6.0) removed 6.9.0 — both entries that used it migrated to queue-pattern (coalesce-at-enqueue, append-only-queue). The patterns-domain `orchestration` topic at line 118 is a separate deprecation; one out-of-scope entry (parallel-agent-triage-backlog-reconciliation) still uses it.
 
   migrations:
     # State transitions, schema migrations, vendor swaps, data backfills.
@@ -298,7 +331,9 @@ taxonomy:
   compiler:
     # KF-internal infrastructure — kf-compile.py and platform-binding shapes.
     topics:
+      - bootstrap-divergence             # added 6.9.0 — static-to-compiled-promotion divergence patterns
       - ci-cd
+      - multi-repo-pipeline               # added 6.9.0 — compile pipelines crossing source-and-derived repos
       - version-incompatibility
 ```
 
@@ -615,9 +650,9 @@ All three levels required. Missing any → rejection.
 | `security` | threat-model, access-control, data-isolation, attack-surface |
 | `methodologies` | acceptance-criteria, artifact-discipline, bead-triage-workflow, conflict-recovery, decision-framework, deployment-sequencing, experiment-design, gate-design, measurement-methodology, prioritization, propagation-discipline, quality-gate, risk-assessment, scope-management, staged-rollout, trade-off-analysis, validation |
 | `diagnostics` | api-design, calibration, classification, data-integrity, data-quality, data-validation, error-classification, error-handling, hypothesis-testing, intent-vs-execution, issue-tracking, liveness, measurement-logic, multi-repo-workflows, ops, queue-observability-pitfall, refactoring, reporting, retrospective-analysis, root-cause-analysis, server-configuration, test-isolation, testing, threshold-tuning, watchdog, workflow-discipline |
-| `orchestration` | epic-closure-workflow, multi-stage-issue-workflow, orchestration (deprecated), recovery |
+| `orchestration` | epic-closure-workflow, multi-stage-issue-workflow, parallel-workflow, queue-pattern, recovery, task-decomposition |
 | `migrations` | error-classification, schema-evolution |
-| `compiler` | ci-cd, version-incompatibility |
+| `compiler` | bootstrap-divergence, ci-cd, multi-repo-pipeline, version-incompatibility |
 
 **Grandfathering (6.6.0):** Entries with creation timestamp before 2026-06-10 are exempt from `domain`/`topic` requirement. See main body for full grandfathering policy. The `patterns/orchestration` topic is DEPRECATED — new entries should use the `orchestration` domain instead.
 

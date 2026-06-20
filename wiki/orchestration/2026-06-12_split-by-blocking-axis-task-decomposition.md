@@ -9,7 +9,7 @@ importance: 4
 pinned: false
 created: 2026-06-12
 domain: orchestration
-topic: multi-stage-issue-workflow
+topic: task-decomposition
 tags: routing, classification, quality-gate, throughput
 related_entries:
   - wiki/orchestration/2026-05-30_bead-tracker-workflow-pipeline-triage-decisions-build-deploy.md

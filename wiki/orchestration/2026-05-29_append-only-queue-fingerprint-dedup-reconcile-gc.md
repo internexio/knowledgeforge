@@ -10,7 +10,7 @@ importance: 5
 pinned: true
 created: 2026-05-29
 domain: orchestration
-topic: orchestration
+topic: queue-pattern
 tags: append-only-queue, fingerprint, dedup, garbage-collection, idempotent-producer, declarative-reconcile, jsonl, fcntl, observability, schema-evolution
 related_entries: [orchestration/2026-05-13_coalesce-at-enqueue-every-coalesce-gets-a-row.md, orchestration/2026-05-13_one-reconciliation-pipeline-called-twice.md, infrastructure/2026-05-13_posix-append-pipe-buf-concurrent-jsonl-writers.md, methodologies/2026-05-29_deterministic-first-debugging.md]
 ---

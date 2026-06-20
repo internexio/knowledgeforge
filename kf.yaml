@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.14.0
+version: 7.15.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,23 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.15.0
+    date: 2026-06-20
+    driver: knowledgeforge-core-sd3
+    note: |
+      M23 vocab expansion — compiler + orchestration sub-tasks of sd3.
+
+      Compiler domain: added bootstrap-divergence + multi-repo-pipeline.
+      Re-topicked 2 entries off ci-cd and issue-tracking.
+
+      Orchestration domain: added queue-pattern + parallel-workflow +
+      task-decomposition (minimum-3 set per operator). Removed deprecated
+      self-referential orchestration topic; migrated 2 entries to
+      queue-pattern. Split 2 further entries out of generic
+      multi-stage-issue-workflow bucket.
+
+      Module 23 (6.8.0 -> 6.9.0). Closes sd3 entirely.
+
   - version: 7.14.0
     date: 2026-06-20
     driver: knowledgeforge-core-sd3

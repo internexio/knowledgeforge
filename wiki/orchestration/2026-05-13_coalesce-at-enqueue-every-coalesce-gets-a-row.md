@@ -10,7 +10,7 @@ importance: 4
 pinned: false
 created: 2026-05-13
 domain: orchestration
-topic: orchestration
+topic: queue-pattern
 tags: routing, classification, latency, tier-0, empirical, stable
 related_entries: [orchestration/2026-05-13_one-reconciliation-pipeline-called-twice.md]
 ---
