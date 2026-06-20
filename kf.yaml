@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.12.1
+version: 7.13.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,31 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.13.0
+    date: 2026-06-20
+    driver: knowledgeforge-core-5lj
+    note: |
+      Per-Turn Mode Telemetry — KF agent emits a single-line HTML-comment marker
+      as the LAST line of every response recording mode and decision classification:
+
+        <!-- KF-MODE: <mode> | DECISION: <class> | ADVERSARIAL: <0|1> -->
+
+      Reckonings emit "KF-MODE: reckoning" — first-class value, not absence.
+      Marker is observability-only; explicitly forbids any tuning of mode selection,
+      decision classification, response content, or budget.
+
+      Module 00 (7.5.0 → 7.6.0):
+        - Added Per-Turn Mode Telemetry section to CC Rules (compiles to
+          ~/.claude/rules/kf-meta.md). Specifies format, placement contract
+          (LAST line of response; FINAL ANSWER comes first if present, then
+          blank line, then marker), and what the directive does NOT change.
+        - Identity string + title bumped 7.5.0 → 7.6.0 (auto-enforced by
+          scripts/check-identity-drift.py pre-commit hook landed in -3kk).
+
+      kf-bench consumer side tracked separately — orchestra art_dc14c0cc
+      pushed to mini-claude to file a kf-bench bead for parse_modes.py +
+      aggregator updates once this design lands.
+
   - version: 7.12.1
     date: 2026-06-20
     driver: knowledgeforge-core-a05
