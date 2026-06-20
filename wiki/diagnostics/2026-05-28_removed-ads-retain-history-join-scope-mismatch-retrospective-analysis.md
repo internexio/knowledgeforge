@@ -8,7 +8,7 @@ importance: 3
 pinned: false
 created: 2026-05-28
 domain: data-analysis
-topic: retrospective-analysis, google-ads, data-integrity
+topic: retrospective-analysis
 tags: google-ads, gaql, data-pipeline, retrospective-analysis, correlation, data-integrity, diagnostic-pattern
 related_entries:
   - diagnostics/2026-05-25_vendor-accepts-parameter-upstream-returns-zeros.md

@@ -8,7 +8,7 @@ importance: 3
 pinned: false
 created: 2026-05-31
 domain: data-quality
-topic: classification, reporting, measurement-logic
+topic: measurement-logic
 tags: patterns, diagnostics, data-quality, reporting, classification, three-valued-logic, measurement-validation
 related_entries:
   - diagnostics/2026-05-28_removed-ads-retain-history-join-scope-mismatch-retrospective-analysis.md

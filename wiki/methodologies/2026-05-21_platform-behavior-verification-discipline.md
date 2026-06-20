@@ -9,7 +9,7 @@ importance: 5
 pinned: false
 created: 2026-05-21
 domain: operations
-topic: quality-gate, artifact-discipline
+topic: quality-gate
 tags: methodology, validation, verification, quality-gate, platform-behavior, commitment-discipline
 related_entries:
   - methodologies/2026-05-20_primary-source-vendor-guidance-reanchor.md

@@ -9,7 +9,7 @@ importance: 4
 pinned: false
 created: 2026-05-16
 domain: infrastructure
-topic: watchdog, liveness, observability
+topic: watchdog
 tags: diagnostics, watchdog, liveness, false-positive, observability, empirical
 related_entries:
   - infrastructure/2026-05-13_content-diff-mtime-inversion-idle-systems.md

@@ -9,7 +9,7 @@ importance: 4
 pinned: false
 created: 2026-05-14
 domain: methodologies
-topic: gate-design, staged-rollout
+topic: gate-design
 tags: methodologies, diagnostics, gate-design, empirical, threshold-tuning, escalation-design
 related_entries:
   - infrastructure/2026-05-13_deployment-gap-audit-shadow-mode-patterns.md

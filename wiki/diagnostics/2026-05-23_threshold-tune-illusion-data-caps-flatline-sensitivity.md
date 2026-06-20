@@ -8,7 +8,7 @@ importance: 3
 pinned: false
 created: 2026-05-23
 domain: diagnostics
-topic: calibration, data-quality, threshold-tuning
+topic: threshold-tuning
 tags: diagnostics, data-analysis, calibration, methodology, debugging
 related_entries:
   - methodologies/2026-05-14_healthy-system-gate-trap-empirical-thresholds.md

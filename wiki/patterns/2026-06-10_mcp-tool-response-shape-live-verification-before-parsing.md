@@ -8,7 +8,7 @@ importance: 4
 pinned: false
 created: 2026-06-10
 domain: integration
-topic: mcp, spec, defensive-coding, integration, verification
+topic: mcp
 tags: mcp, integration, parsing, verification, spec, defensive-coding, empirical, live-testing, shape-discovery
 related_entries:
   - patterns/2026-05-22_spec-to-implementation-gap-distinct-review-pass.md

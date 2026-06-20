@@ -9,7 +9,7 @@ importance: 3
 pinned: false
 created: 2026-05-13
 domain: infrastructure
-topic: watchdog, liveness, ops
+topic: watchdog
 tags: patterns, diagnostics, empirical, stable
 related_entries:
   - infrastructure/2026-05-12_self-watchdog-autonomous-fix-cycles.md

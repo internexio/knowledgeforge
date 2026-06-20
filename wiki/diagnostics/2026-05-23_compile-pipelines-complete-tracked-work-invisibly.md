@@ -10,7 +10,7 @@ pinned: false
 created: 2026-05-23
 tags: multi-repo, compile-pipeline, codegen, issue-tracking, diagnostic, knowledgeforge
 domain: compiler
-topic: issue-tracking, multi-repo-workflows
+topic: issue-tracking
 related_entries:
   - compiler/multi-repo-artifact-placement.md
   - architecture/2026-05-21_cross-project-capability-audit-structured-repo-agent-prompts.md
