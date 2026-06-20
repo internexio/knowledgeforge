@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Taxonomy Enforcement
-  version: 6.7.1
+  version: 6.8.0
   purpose: Fixed controlled vocabulary for wiki entry domain/topic/tags, enforced at write time — prevents taxonomy drift, maintains Module 22 metadata filter reliability, and ensures cross-session consistency of knowledge classification
   topics: [taxonomy, controlled-vocabulary, knowledge-classification, write-time-validation, metadata-quality]
   contexts: [knowledge-accretion, wiki-filing, accretion-gate, linter-runs]
@@ -13,6 +13,23 @@ module:
   related: [21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 19_Memory_Architecture, 17_Temporal_Knowledge]
   added_in: "6.5"
   changelog:
+    6.8.0:
+      date: 2026-06-20
+      driver: knowledgeforge-core-sd3
+      changes:
+        - |-
+          Added schema-evolution topic to migrations domain. Migrated the one
+          existing migrations entry (2026-06-12_schema-evolution-additive-
+          optional-fields.md) off the self-referential migrations -> migrations
+          topic to migrations -> schema-evolution. Same anti-pattern as the
+          deprecated orchestration self-topic; this resolves it for the
+          migrations domain.
+        - |-
+          Total migrations topic count 1 -> 2 (error-classification +
+          schema-evolution). Summary table at end of doc updated to match.
+        - Partial close of sd3 (migrations sub-task). Compiler + orchestration
+          sub-tasks still open — they need operator decisions on re-topic vs
+          re-domain (compiler) and minimum-vs-full new topic set (orchestration).
     6.7.1:
       date: 2026-06-20
       driver: knowledgeforge-core-a05
@@ -276,6 +293,7 @@ taxonomy:
     # Vocabulary Extension Protocol when new topics are needed.
     topics:
       - error-classification
+      - schema-evolution
 
   compiler:
     # KF-internal infrastructure — kf-compile.py and platform-binding shapes.
@@ -598,7 +616,7 @@ All three levels required. Missing any → rejection.
 | `methodologies` | acceptance-criteria, artifact-discipline, bead-triage-workflow, conflict-recovery, decision-framework, deployment-sequencing, experiment-design, gate-design, measurement-methodology, prioritization, propagation-discipline, quality-gate, risk-assessment, scope-management, staged-rollout, trade-off-analysis, validation |
 | `diagnostics` | api-design, calibration, classification, data-integrity, data-quality, data-validation, error-classification, error-handling, hypothesis-testing, intent-vs-execution, issue-tracking, liveness, measurement-logic, multi-repo-workflows, ops, queue-observability-pitfall, refactoring, reporting, retrospective-analysis, root-cause-analysis, server-configuration, test-isolation, testing, threshold-tuning, watchdog, workflow-discipline |
 | `orchestration` | epic-closure-workflow, multi-stage-issue-workflow, orchestration (deprecated), recovery |
-| `migrations` | error-classification |
+| `migrations` | error-classification, schema-evolution |
 | `compiler` | ci-cd, version-incompatibility |
 
 **Grandfathering (6.6.0):** Entries with creation timestamp before 2026-06-10 are exempt from `domain`/`topic` requirement. See main body for full grandfathering policy. The `patterns/orchestration` topic is DEPRECATED — new entries should use the `orchestration` domain instead.

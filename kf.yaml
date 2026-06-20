@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.13.0
+version: 7.14.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,22 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.14.0
+    date: 2026-06-20
+    driver: knowledgeforge-core-sd3
+    note: |
+      M23 vocab extension — added schema-evolution topic to migrations domain.
+      Migrated the one existing migrations entry off the self-referential
+      migrations -> migrations topic. Same anti-pattern as the deprecated
+      orchestration self-topic; this resolves it for migrations.
+
+      Module 23 (6.7.1 -> 6.8.0). Minor bump — vocab extension is protocol
+      extension per project versioning rules.
+
+      Partial close of sd3 (migrations sub-task). Compiler + orchestration
+      sub-tasks still open — they need operator decisions on re-topic vs
+      re-domain (compiler) and minimum-vs-full new topic set (orchestration).
+
   - version: 7.13.0
     date: 2026-06-20
     driver: knowledgeforge-core-5lj

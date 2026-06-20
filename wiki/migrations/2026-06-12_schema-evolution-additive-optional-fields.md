@@ -8,7 +8,7 @@ grounding_source: "Verified repeatedly in [project] iteration_loop across four i
 staleness_risk: stable
 importance: 4
 domain: migrations
-topic: migrations
+topic: schema-evolution
 tags: [schema-evolution, backward-compatibility, optional-fields, tolerant-reader, jsonl, state-files, zero-migration, versioning, additive-change]
 related_entries:
   - orchestration/2026-05-29_append-only-queue-fingerprint-dedup-reconcile-gc.md
