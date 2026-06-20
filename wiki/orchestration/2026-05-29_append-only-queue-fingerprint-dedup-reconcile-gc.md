@@ -108,4 +108,4 @@ Implementation: `iteration_loop/orchestra.py` got `_proposal_fingerprint`, `_env
 - [[deterministic-first-debugging]] — the diagnostic process that traced the 6 stale lines to the precise accumulation+persistence mechanism rather than the easier-but-wrong "the linter must be re-detecting" hypothesis.
 - [[coalesce-at-enqueue-every-coalesce-gets-a-row]] — related pattern for dedup *at enqueue time* when multiple triggers fire close together (complementary: coalesce handles in-flight duplication, fingerprint handles across-run accumulation).
 - [[one-reconciliation-pipeline-called-twice]] — related pattern for idempotent reconciliation; this pattern is narrower (queue GC only) but shares the "safe to run repeatedly" discipline.
-- [[schema-evolution-additive-optional-fields]] — the envelope-field addition pattern used for backward-compatible fingerprint introduction.
+- [[2026-06-12_schema-evolution-additive-optional-fields]] — the envelope-field addition pattern used for backward-compatible fingerprint introduction.

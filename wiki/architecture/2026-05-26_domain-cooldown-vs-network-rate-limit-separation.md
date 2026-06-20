@@ -96,4 +96,4 @@ Grounded in [project] week 2 stale-audit (2026-05-26). A deliberate code investi
 
 ## Cross-References
 
-Pairs with rate-limiting architecture patterns generally (no dedicated entry yet). Success-conditional recording is an idempotency-adjacent technique (no dedicated idempotency-patterns entry yet). The diagnostic move ("verify before migrating") is also an instance of [[deterministic-scan-before-claiming-refactor-audit-beads]].
+Pairs with rate-limiting architecture patterns generally (no dedicated entry yet). Success-conditional recording is an idempotency-adjacent technique (no dedicated idempotency-patterns entry yet). The diagnostic move ("verify before migrating") is also an instance of [[2026-05-26_deterministic-scan-before-claiming-refactor-audit-beads]].
