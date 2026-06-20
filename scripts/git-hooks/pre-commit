@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# KF pre-commit: identity-string drift check on staged modules/*.md files.
+#
+# Operates on the working tree (matches staged content in the common
+# focused-commit workflow). If you stage a partial fix and have unrelated
+# unstaged edits to the same module, run the check manually after a stash:
+#   python3 scripts/check-identity-drift.py
+set -e
+
+staged=$(git diff --cached --name-only --diff-filter=ACM \
+  | grep -E '^modules/[0-9]+_.*\.md$' || true)
+
+if [ -z "$staged" ]; then
+  exit 0
+fi
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+exec python3 "$REPO_ROOT/scripts/check-identity-drift.py" $staged

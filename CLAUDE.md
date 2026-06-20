@@ -221,6 +221,7 @@ docs(plans): Add cc-drift-audit from Phase 0 analysis
 
 - [ ] Module version bumped if module content changed
 - [ ] `kf.yaml` changelog updated
+- [ ] Embedded version strings in `modules/*.md` match each module's own `version:` field — auto-enforced by `.git/hooks/pre-commit` on staged module files (install once with `scripts/install-git-hooks.sh`; run `python3 scripts/check-identity-drift.py` manually any time)
 - [ ] No hardcoded paths in Python scripts
 - [ ] Hook scripts exit 0 on non-critical failures
 - [ ] Wiki entries have valid taxonomy fields
