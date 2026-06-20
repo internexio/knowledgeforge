@@ -9,6 +9,13 @@ type: index
 
 ### Patterns
 
+- [2026-06-20] Pre-commit hook three-piece structure — standalone checker + thin wrapper + manual installer — new_pattern — `patterns/2026-06-20_pre-commit-hook-three-piece-structure.md`
+- [2026-06-19] Cross-project credential resolution — read API keys from a sibling project's existing .env rather than duplicating into every environment — new_pattern — `patterns/2026-06-19_cross-project-credential-resolution-sibling-env-single-source.md`
+- [2026-06-19] Brand asset generation system — 4-layer architecture (spec / sanitize / wrap / chain) for repeatable on-brand visual output — transferable_framework — `patterns/2026-06-19_brand-asset-generation-4-layer-system.md`
+- [2026-06-16] Pareto pass as purpose discovery — the cut criterion becomes the principle — transferable_framework — `patterns/2026-06-16_pareto-pass-as-purpose-discovery.md`
+- [2026-06-16] Anthropic model-EOL incident response is a 3-phase fix, not a 1-line change — transferable_framework — `patterns/2026-06-16_anthropic-model-eol-incident-response-three-phase-fix.md`
+- [2026-06-16] Lock LLM JSON output with an explicit schema example in the prompt — transferable_framework — `patterns/2026-06-16_lock-llm-json-output-with-explicit-schema-example.md`
+- [2026-06-16] Markdown-fence JSON regex must match between fences, not between braces — new_pattern — `patterns/2026-06-16_fence-pair-json-regex-not-brace-pair.md`
 - [2026-06-15] Fail-closed publish guards for multi-target compilers — invariants enforced at emit-time — transferable_framework — `patterns/2026-06-15_fail-closed-publish-guards-multi-target-compiler.md`
 - [2026-06-14] Cross-module summary-row drift — referencing module's count claim desyncs when referenced module bumps entities — reusable_diagnostic, transferable_framework — `patterns/2026-06-14_cross-module-summary-row-count-drift.md`
 - [2026-06-12] Downgrade-vs-reject pattern for cross-cut validation rules — transferable_framework — `patterns/2026-06-12_downgrade-vs-reject-multi-source-validation-rules.md`
@@ -101,6 +108,7 @@ type: index
 
 ### Infrastructure
 
+- [2026-06-18] PyPI trusted-publishing fails silently with `invalid-publisher` — three recovery paths (configure publisher, convert to token, manual twine) — reusable_diagnostic — `infrastructure/2026-06-18_pypi-trusted-publishing-invalid-publisher-recovery-paths.md`
 - [2026-06-13] Bundle-check pre-commit hook — defense against AI agents doing broad git add — transferable_framework — `infrastructure/2026-06-13_bundle-check-pre-commit-hook-ai-agents.md`
 - [2026-06-13] plistlib vs plutil — strict vs lenient XML parsing of `--` in launchd plist comments — reusable_diagnostic — `infrastructure/2026-06-13_plistlib-vs-plutil-xml-parser-divergence.md`
 - [2026-06-12] Explicit heartbeat file beats log-mtime as a liveness signal for processes that log only on errors — new_pattern — `infrastructure/2026-06-12_explicit-heartbeat-file-liveness-signal-sparse-loggers.md`
@@ -116,7 +124,7 @@ type: index
 - [2026-05-25] GitHub PAT rotation hygiene + verify-via-rerun — reusable_diagnostic — `infrastructure/2026-05-25_github-pat-rotation-hygiene-verify-via-rerun.md`
 - [2026-05-25] CI auth failure presents as "compilation/deploy failing" — check workflows before chasing local state — reusable_diagnostic — `infrastructure/2026-05-25_ci-auth-failure-workflow-diagnosis-before-chasing-local-state.md`
 - [2026-05-25] Hook installed-vs-source drift after direct ~/.claude/ edits — reusable_diagnostic — `infrastructure/2026-05-25_hook-installed-vs-source-drift-direct-edits.md`
-- [2026-05-20] Static-site rsync excludes — internal-artifact leak prevention — new_pattern — `infrastructure/2026-05-20_static-site-rsync-excludes-leak-prevention.md`
+- [2026-05-20] Static-site rsync excludes — internal-artifact leak prevention (2026-06-18 addendum: `--delete-excluded` self-healing + CI/docs workflow drift) — new_pattern — `infrastructure/2026-05-20_static-site-rsync-excludes-leak-prevention.md`
 - [2026-05-19] git -C /abs/path for CWD-unstable Claude Code Bash harness — reusable_diagnostic — `infrastructure/2026-05-19_git-dash-c-cwd-stability-claude-code-bash.md`
 - [2026-05-19] sem-tools Google Ads Keyword Planner wrapper — canonical reference location + setup — template_candidate — `infrastructure/2026-05-19_sem-tools-google-ads-keyword-planner-wrapper.md`
 - [2026-05-18] Editable-venv install for MCP servers — Python version floors + dependency major bumps — reusable_diagnostic — `infrastructure/2026-05-18_editable-venv-mcp-server-installation.md`
@@ -148,6 +156,12 @@ type: index
 
 ### Diagnostics
 
+- [2026-06-20] Linters scoped to git's tracked-file set miss filesystem state — false-positive and false-negative orphan claims — reusable_diagnostic — `diagnostics/2026-06-20_linter-tracked-file-scope-misses-filesystem-state.md`
+- [2026-06-19] COS MCP endpoint auth/timeout — fall back to local cos-personality + cos-copy skills — reusable_diagnostic — `diagnostics/2026-06-19_cos-mcp-auth-timeout-fallback-to-local-skills.md`
+- [2026-06-17] Audience-mismatch engagement-farm — detection rule for founder outreach (prestige label in unrelated domain + template-warm reciprocity request = bait, regardless of profile credentials) — reusable_diagnostic — `diagnostics/2026-06-17_audience-mismatch-engagement-farm-founder-outreach.md`
+- [2026-06-17] AI Fingerprint Patterns — 7 recurring tells in marketing prose (tricolon-punchline, "X is not Y", "Most teams" weasel, header restatement, marketing-deck phrases, self-referential tic, closing summary) — reusable_diagnostic — `diagnostics/2026-06-17_ai-fingerprint-patterns-seven-recurring-tells-marketing-prose.md`
+- [2026-06-16] The Demonstration Gap diagnostic — frameworks explained but never shown — reusable_diagnostic — `diagnostics/2026-06-16_demonstration-gap-framework-explained-never-shown.md`
+- [2026-06-16] Moat-Left-Offstage diagnostic for evidence-grounded brand copy — proof asset stays implicit while mechanism is explained — reusable_diagnostic — `diagnostics/2026-06-16_moat-left-offstage-evidence-grounded-brand-copy.md`
 - [2026-06-15] Deprecating a target requires removing the shared infrastructure — the orphaned generic path becomes a leak vector — reusable_diagnostic — `diagnostics/2026-06-15_deprecated-target-shared-path-leak-vector.md`
 - [2026-06-14] YAML plain-scalar list items with embedded colon-space fail safe_load silently — reusable_diagnostic — `diagnostics/2026-06-14_yaml-plain-scalar-colon-space-safe-load-silent-fail.md`
 - [2026-06-14] Worktree-isolated subagents cannot spawn other subagents — apply protocol inline as fallback — reusable_diagnostic — `diagnostics/2026-06-14_worktree-isolated-subagent-cannot-spawn-other-subagents.md`
@@ -200,6 +214,13 @@ type: index
 
 ### Methodologies
 
+- [2026-06-20] Pre-flight scope expansion — close the in-scope minimum, file successors for the rest — transferable_framework — `methodologies/2026-06-20_preflight-scope-expansion-close-minimum-file-successors.md`
+- [2026-06-19] Operator review gate in semi-automated workflows — preserve human approval points between automated generation and irreversible publication — transferable_framework — `methodologies/2026-06-19_operator-review-gate-in-semi-automated-workflows.md`
+- [2026-06-18] Cross-scope search blindness — sweep all instances on first "not found", treat operator insistence as broaden-search signal — new_pattern — `methodologies/2026-06-18_cross-scope-search-blindness-operator-insistence-as-broaden-signal.md`
+- [2026-06-17] Reddit-reputation as link-precondition — value-first comments build the history that lets later link drops land — transferable_framework — `methodologies/2026-06-17_reddit-reputation-as-link-precondition.md`
+- [2026-06-17] Cluster content launch — kf-strategist for vocabulary + forward-link discipline — transferable_framework — `methodologies/2026-06-17_cluster-content-launch-vocabulary-and-forward-link-discipline.md`
+- [2026-06-17] Tracker-state drift at session boundary — sync conversation artifacts to the source-of-truth tracker — new_pattern — `methodologies/2026-06-17_tracker-state-drift-at-session-boundary.md`
+- [2026-06-16] Lane discipline via data classification — tag strategic lanes before pulling volumes — transferable_framework — `methodologies/2026-06-16_lane-discipline-via-data-classification.md`
 - [2026-06-15] Cross-machine accretion routing — write candidates to the live-clone session, not the dirty-clone session that produced them — transferable_framework — `methodologies/2026-06-15_cross-machine-accretion-routing.md`
 - [2026-06-14] Phased probe-first arc for risky multi-spec refactors (Probe → ERA → Strategist → Builder → Critic → Phase 3) — new_pattern — `methodologies/2026-06-14_probe-era-builder-critic-arc-multi-spec-refactor.md`
 - [2026-06-14] Disjoint-file-surface check via comm -12 as pre-parallelize gate for worktree feasibility — reusable_diagnostic — `methodologies/2026-06-14_disjoint-file-surface-check-parallel-worktree-feasibility.md`
@@ -276,9 +297,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 171
-- **Entry types:** new_pattern (52), transferable_framework (46), reusable_diagnostic (72), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
-- **Domains:** patterns (38), architecture (10), orchestration (15), infrastructure (26), compiler (4), diagnostics (38), methodologies (31), migrations (5), strategy (4), integration (2)
+- **Total entries:** 178
+- **Entry types:** new_pattern (53), transferable_framework (49), reusable_diagnostic (75), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
+- **Domains:** patterns (39), architecture (10), orchestration (15), infrastructure (27), compiler (4), diagnostics (40), methodologies (34), migrations (5), strategy (4), integration (2)
 - **Avg grounding score:** 0.84 (across grounded entries)
-- **Staleness risk distribution:** stable (163), slow_decay (3), fast_decay (1)
+- **Staleness risk distribution:** stable (165), slow_decay (6), fast_decay (1)
 
