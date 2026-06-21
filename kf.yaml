@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.16.0
+version: 7.17.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,35 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.17.0
+    date: 2026-06-21
+    driver: knowledgeforge-core-rgs
+    note: |
+      Per-Turn Mode Telemetry — extended for tool-calling / agentic contexts.
+
+      τ²-bench Phase-1 probes (Mac Mini, ~/Mini/kf-bench) exposed a structural
+      gap: ~20% of mode-active turns were untagged because the directive's
+      "LAST line of every response" phrasing assumed every assistant turn ends
+      in text. In LiteLLM-driven tool-orchestration loops, most turns end in
+      a tool_use content block — there is no "last line" to attach the marker
+      to. A single n=1 KF cell on 2026-06-21 14:39 solved its task in 49.7s
+      with reward=1.0 but emitted ZERO markers.
+
+      Placement rule rewritten as three cases — text-only, text+tool-call,
+      and tool-only — with explicit tool-turn protocol. Tool-only turns use
+      a deferred-marker carry-forward: the prior turn's mode/decision is
+      PREPENDED to the next text-bearing turn as its first line, in the
+      standard KF-MODE format. Both markers are parseable by the existing
+      regex; no parser change required for the format itself.
+
+      Reframed marker stakes — "A missing marker is a data-loss event
+      equivalent to dropping a required field in a JSON response" — to move
+      compliance from goodwill to structural correctness under tool-load.
+
+      Module 00 (7.6.0 → 7.7.0). Per-turn coverage measurement (counting
+      multiple markers per text block, attributing across tool orchestration)
+      is a separate kf-bench harness change tracked in that repo.
+
   - version: 7.16.0
     date: 2026-06-21
     driver: knowledgeforge-core-cys
