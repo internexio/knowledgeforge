@@ -7,7 +7,7 @@ staleness_risk: stable
 importance: 3
 created: 2026-05-20
 domain: patterns
-topic: orchestration
+topic: validation
 tags: validation, quality-gate, error-classification, grounding, empirical
 related_entries:
   - patterns/2026-05-20_hybrid-llm-embedding-coverage-audit-pattern.md

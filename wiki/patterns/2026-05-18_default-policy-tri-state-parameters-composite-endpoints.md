@@ -9,7 +9,7 @@ importance: 4
 pinned: false
 created: 2026-05-18
 domain: patterns
-topic: orchestration
+topic: validation
 tags: api, latency, empirical, quality-gate
 related_entries: [patterns/2026-05-18_composite-vs-atomic-mcp-tool-design.md]
 ---

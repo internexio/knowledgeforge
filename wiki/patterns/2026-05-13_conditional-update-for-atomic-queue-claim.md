@@ -9,8 +9,8 @@ staleness_risk: stable
 importance: 5
 pinned: false
 created: 2026-05-13
-domain: patterns
-topic: orchestration
+domain: orchestration
+topic: queue-pattern
 tags: quality-gate, latency, throughput, empirical, stable
 related_entries: [orchestration/2026-05-13_one-reconciliation-pipeline-called-twice.md]
 ---

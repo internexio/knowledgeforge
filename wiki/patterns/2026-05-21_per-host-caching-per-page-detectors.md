@@ -7,8 +7,8 @@ staleness_risk: stable
 importance: 3
 pinned: false
 created: 2026-05-21
-domain: patterns
-topic: orchestration
+domain: performance
+topic: cache
 tags: patterns, caching, api-cost-control, detector-design, integration, performance
 related_entries:
   - patterns/2026-05-20_per-detector-error-isolation-audit-pipelines.md

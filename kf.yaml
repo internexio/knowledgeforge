@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.15.0
+version: 7.16.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,19 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.16.0
+    date: 2026-06-21
+    driver: knowledgeforge-core-cys
+    note: |
+      M23 vocab cleanup — removed patterns-domain deprecated `orchestration`
+      topic (deprecated in 6.6.0). Migrated 4 entries that still used it:
+      2 stayed in patterns (validation), 1 to orchestration/queue-pattern,
+      1 to performance/cache. Symmetric with 6.9.0 which removed the
+      orchestration-domain self-topic.
+
+      Module 23 (6.9.0 -> 6.10.0). Both deprecated `orchestration` topics
+      now resolved.
+
   - version: 7.15.0
     date: 2026-06-20
     driver: knowledgeforge-core-sd3

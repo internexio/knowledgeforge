@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Taxonomy Enforcement
-  version: 6.9.0
+  version: 6.10.0
   purpose: Fixed controlled vocabulary for wiki entry domain/topic/tags, enforced at write time — prevents taxonomy drift, maintains Module 22 metadata filter reliability, and ensures cross-session consistency of knowledge classification
   topics: [taxonomy, controlled-vocabulary, knowledge-classification, write-time-validation, metadata-quality]
   contexts: [knowledge-accretion, wiki-filing, accretion-gate, linter-runs]
@@ -13,6 +13,26 @@ module:
   related: [21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 19_Memory_Architecture, 17_Temporal_Knowledge]
   added_in: "6.5"
   changelog:
+    6.10.0:
+      date: 2026-06-21
+      driver: knowledgeforge-core-cys
+      changes:
+        - |-
+          Removed the patterns-domain deprecated `orchestration` topic
+          (deprecated in 6.6.0). The 4 entries that still used it
+          were migrated per-entry: per-detector-error-isolation-audit-
+          pipelines (patterns / validation); conditional-update-for-
+          atomic-queue-claim (orchestration / queue-pattern — re-domain);
+          per-host-caching-per-page-detectors (performance / cache —
+          re-domain); default-policy-tri-state-parameters-composite-
+          endpoints (patterns / validation). The earlier parallel-agent-
+          triage entry was handled by e48926a.
+        - |-
+          Symmetric with the orchestration-domain self-topic removal in
+          6.9.0; both deprecated `orchestration` topics now resolved.
+          Patterns topic count 6 -> 5. Summary table updated to match.
+        - Closes cys entirely (per-entry calls done + optional M23 patch
+          to drop the deprecated topic).
     6.9.0:
       date: 2026-06-20
       driver: knowledgeforge-core-sd3
@@ -185,7 +205,7 @@ taxonomy:
       - classification
       - synthesis
       - validation
-      - orchestration   # DEPRECATED 6.6.0 — new entries should use the orchestration domain. Still validates on grandfathered entries.
+      # `orchestration` topic (patterns-domain, DEPRECATED 6.6.0) removed 6.10.0 — all 5 entries that used it migrated. Symmetric with the orchestration-domain self-topic removal in 6.9.0; both deprecated orchestration topics now resolved.
 
   anti-patterns:
     topics:
@@ -639,7 +659,7 @@ All three levels required. Missing any → rejection.
 | Domain | Topics |
 |--------|--------|
 | `architecture` | memory-systems, routing, mode-design, chain-design, knowledge-accretion, decision-classification |
-| `patterns` | retrieval, decay, classification, synthesis, validation, orchestration |
+| `patterns` | retrieval, decay, classification, synthesis, validation |
 | `anti-patterns` | over-routing, context-bloat, compression-loss, hallucination, mode-collapse |
 | `performance` | latency, throughput, token-cost, cache, index-efficiency |
 | `integration` | mcp-protocol, vector-db, llm-api, external-tools, sidecar-services |
