@@ -11,8 +11,8 @@ domain: multi-channel-marketing
 topic: deployment-sequencing
 tags: seo, ppc, google-ads, quality-score, landing-page-experience, deployment-sequencing, multi-channel, cpc, roas
 related_entries:
-  - methodologies/2026-05-21_seasonality-first-measurement-organic-seo-changes.md
-  - methodologies/2026-05-19_seo-keyword-volume-cpc-tradeoff.md
+  - sem-tools/wiki/methodologies/2026-05-21_seasonality-first-measurement-organic-seo-changes.md
+  - sem-tools/wiki/methodologies/2026-05-19_seo-keyword-volume-cpc-tradeoff.md
   - infrastructure/2026-05-19_sem-tools-google-ads-keyword-planner-wrapper.md
 ---
 
@@ -132,7 +132,7 @@ Multi-location Vietnamese restaurant chain (3 sites: La Cà Bar, La Cà Café, L
 - **Google Search Console URL Inspection API** — programmatic re-crawl request for changed URLs
 - **Combined PPC + SEO dashboard** — surface CPC, Quality Score, and organic CTR for the same URLs in one view
 - **kf-critic cross-channel review pattern** — flagging when a change affects multiple channels (the pattern that surfaced this rule in the first place)
-- **Seasonality-first SEO measurement** (`methodologies/2026-05-21_seasonality-first-measurement-organic-seo-changes.md`) — pairs with this pattern when measuring the organic lift from landing-page changes
+- **Seasonality-first SEO measurement** (`sem-tools/wiki/methodologies/2026-05-21_seasonality-first-measurement-organic-seo-changes.md`) — pairs with this pattern when measuring the organic lift from landing-page changes
 
 ## Gotchas & Edge Cases
 

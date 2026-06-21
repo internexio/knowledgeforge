@@ -9,6 +9,7 @@ type: index
 
 ### Patterns
 
+- [2026-06-20] Operator-decision-driven artifacts — separate the briefing, the bead, the field state, and the audit trail — transferable_framework — `patterns/2026-06-20_operator-decision-driven-artifacts-four-surface-separation.md`
 - [2026-06-20] Pre-commit hook three-piece structure — standalone checker + thin wrapper + manual installer — new_pattern — `patterns/2026-06-20_pre-commit-hook-three-piece-structure.md`
 - [2026-06-19] Cross-project credential resolution — read API keys from a sibling project's existing .env rather than duplicating into every environment — new_pattern — `patterns/2026-06-19_cross-project-credential-resolution-sibling-env-single-source.md`
 - [2026-06-19] Brand asset generation system — 4-layer architecture (spec / sanitize / wrap / chain) for repeatable on-brand visual output — transferable_framework — `patterns/2026-06-19_brand-asset-generation-4-layer-system.md`
@@ -108,7 +109,10 @@ type: index
 
 ### Infrastructure
 
-- [2026-06-18] PyPI trusted-publishing fails silently with `invalid-publisher` — three recovery paths (configure publisher, convert to token, manual twine) — reusable_diagnostic — `infrastructure/2026-06-18_pypi-trusted-publishing-invalid-publisher-recovery-paths.md`
+- [2026-06-20] A new GitHub Actions workflow runs but does not gate PR merges — branch protection must explicitly require the check — reusable_diagnostic + new_pattern — `infrastructure/2026-06-20_github-actions-workflow-not-gate-without-required-status-check.md`
+- [2026-06-20] Nginx rate-limit zones must distinguish credential-bearing vs read-only auth endpoints — reusable_diagnostic + new_pattern — `infrastructure/2026-06-20_nginx-rate-limit-zones-credential-vs-read-only-auth-endpoints.md`
+- [2026-06-18] PyPI trusted-publishing fails silently with `invalid-publisher` — three recovery paths (configure publisher, convert to token, manual twine) — reusable_diagnostic — `infrastructure/2026-06-18_pypi-trusted-publishing-invalid-publisher-recovery-paths.md` <!-- example: filename, not a real token -->
+
 - [2026-06-13] Bundle-check pre-commit hook — defense against AI agents doing broad git add — transferable_framework — `infrastructure/2026-06-13_bundle-check-pre-commit-hook-ai-agents.md`
 - [2026-06-13] plistlib vs plutil — strict vs lenient XML parsing of `--` in launchd plist comments — reusable_diagnostic — `infrastructure/2026-06-13_plistlib-vs-plutil-xml-parser-divergence.md`
 - [2026-06-12] Explicit heartbeat file beats log-mtime as a liveness signal for processes that log only on errors — new_pattern — `infrastructure/2026-06-12_explicit-heartbeat-file-liveness-signal-sparse-loggers.md`
@@ -191,7 +195,6 @@ type: index
 - [2026-05-20] `if key in seen: pass` — Python no-op silently breaks dedup loops — reusable_diagnostic — `diagnostics/2026-05-20_python-pass-noops-dedup-loop-intent-gap.md`
 - [2026-05-20] COS analyze_full payload size ceiling — 26K chars triggers 502, ~2.6K succeeds in 130s — reusable_diagnostic — `diagnostics/2026-05-20_cos-analyze-full-payload-ceiling-502.md`
 - [2026-05-21] Happy file-watcher ghost session_id — detection + absolute-path symlink fix — reusable_diagnostic — `diagnostics/2026-05-21_happy-filewatcher-absolute-path-symlink-fix.md` (supersedes 2026-05-18 entry)
-- [2026-05-20] Entity-definition gap diagnostic for category SEO queries — reusable_diagnostic — `diagnostics/2026-05-20_entity-definition-gap-diagnostic-category-seo-queries.md`
 - [2026-05-19] COS MCP analyze_full_comms timeout — direct curl fallback — reusable_diagnostic — `diagnostics/2026-05-19_cos-mcp-analyze-full-timeout-direct-curl-fallback.md`
 - [2026-05-18] HTTP status signatures (404 vs 405 vs 401) as positive deploy-verification signals — reusable_diagnostic — `diagnostics/2026-05-18_http-status-signatures-deploy-verification-smoke-test.md`
 - [2026-05-18] Happy CLI file-watcher binds to ghost session_id that Claude never creates — reusable_diagnostic — `diagnostics/2026-05-18_happy-cli-filewatcher-ghost-session-mismatch.md`
@@ -218,7 +221,6 @@ type: index
 - [2026-06-19] Operator review gate in semi-automated workflows — preserve human approval points between automated generation and irreversible publication — transferable_framework — `methodologies/2026-06-19_operator-review-gate-in-semi-automated-workflows.md`
 - [2026-06-18] Cross-scope search blindness — sweep all instances on first "not found", treat operator insistence as broaden-search signal — new_pattern — `methodologies/2026-06-18_cross-scope-search-blindness-operator-insistence-as-broaden-signal.md`
 - [2026-06-17] Reddit-reputation as link-precondition — value-first comments build the history that lets later link drops land — transferable_framework — `methodologies/2026-06-17_reddit-reputation-as-link-precondition.md`
-- [2026-06-17] Cluster content launch — kf-strategist for vocabulary + forward-link discipline — transferable_framework — `methodologies/2026-06-17_cluster-content-launch-vocabulary-and-forward-link-discipline.md`
 - [2026-06-17] Tracker-state drift at session boundary — sync conversation artifacts to the source-of-truth tracker — new_pattern — `methodologies/2026-06-17_tracker-state-drift-at-session-boundary.md`
 - [2026-06-16] Lane discipline via data classification — tag strategic lanes before pulling volumes — transferable_framework — `methodologies/2026-06-16_lane-discipline-via-data-classification.md`
 - [2026-06-15] Cross-machine accretion routing — write candidates to the live-clone session, not the dirty-clone session that produced them — transferable_framework — `methodologies/2026-06-15_cross-machine-accretion-routing.md`
@@ -241,19 +243,14 @@ type: index
 - [2026-05-23] Vendor swap implies semantics-recalibration audit — "same thing" rarely is — transferable_framework — `methodologies/2026-05-23_vendor-swap-semantics-recalibration-audit.md`
 - [2026-05-23] Vendor-hostile migration triggers — when token revocation forecloses the pre-cancel capture step — refinement — `methodologies/2026-05-23_vendor-hostile-migration-triggers-token-revocation.md`
 - [2026-05-23] Beads ↔ disk reconciliation discipline — reusable_diagnostic — `methodologies/2026-05-23_beads-disk-reconciliation-discipline.md`
-- [2026-05-23] Multi-pass keyword research methodology — head pass, then long-tail by validated cluster — transferable_framework — `methodologies/2026-05-23_multi-pass-keyword-research-methodology.md`
-- [2026-05-23] SEO Repositioning Pattern — Trade Failing Rank for Unranked LOW-Comp Head Term — transferable_framework — `methodologies/2026-05-23_seo-repositioning-failing-rank-for-unranked-head-term.md`
-- [2026-05-23] Audit Existing Site Content Before Re-Anchoring to a Candidate Head Term — reusable_diagnostic — `methodologies/2026-05-23_audit-site-content-before-re-anchoring-head-term.md` (amends 2026-05-23_seo-repositioning-failing-rank-for-unranked-head-term.md)
+- [2026-05-23] Audit Existing Site Content Before Re-Anchoring to a Candidate Head Term — reusable_diagnostic — `methodologies/2026-05-23_audit-site-content-before-re-anchoring-head-term.md` (amends `sem-tools/wiki/methodologies/2026-05-23_seo-repositioning-failing-rank-for-unranked-head-term.md`)
 - [2026-05-21] SaaS migration pre-cancel checklist — silent-failure config-pointer risk — transferable_framework — `methodologies/2026-05-21_saas-migration-pre-cancel-checklist-silent-failure-config-pointer-risk.md`
 - [2026-05-21] Critic verification pass — run KF Critic AGAIN on the revisions, not just on the draft — new_pattern — `methodologies/2026-05-21_critic-verification-pass-second-pass-validation.md`
 - [2026-05-21] Platform-behavior verification discipline — transferable_framework — `methodologies/2026-05-21_platform-behavior-verification-discipline.md`
-- [2026-05-21] Same-day pre-deploy snapshot as measurement anchor — new_pattern — `methodologies/2026-05-21_same-day-pre-deploy-snapshot-measurement-anchor.md`
 - [2026-05-21] Sequencing Landing-Page Changes That Affect Both PPC Quality Score and SEO — operational_pattern — `methodologies/2026-05-21_landing-page-ppc-seo-deployment-sequencing.md`
 - [2026-05-21] Keyword Data Triangulation — DataForSEO + SEMrush + GSC — operational_pattern — `methodologies/2026-05-21_keyword-data-triangulation-datasources.md`
-- [2026-05-21] Seasonality-first measurement for organic SEO changes — transferable_framework — `methodologies/2026-05-21_seasonality-first-measurement-organic-seo-changes.md`
 - [2026-05-20] Propagation-gap pattern — addenda propose downstream changes that don't get executed — reusable_diagnostic — `methodologies/2026-05-20_propagation-gap-addenda-propose-downstream-changes-that-dont-execute.md`
 - [2026-05-20] Primary-source vendor guidance reanchor — three-tier evidence stratification when vendor docs contradict industry consensus (worked example: Google AI optimization guide, May 2026) — transferable_framework — `methodologies/2026-05-20_primary-source-vendor-guidance-reanchor.md`
-- [2026-05-19] Volume-vs-CPC trade-off for emerging-category SEO keywords — transferable_framework — `methodologies/2026-05-19_seo-keyword-volume-cpc-tradeoff.md`
 - [2026-05-18] Read the validation spec, don't iterate on rejection — agent bias correction for taxonomy-gated writes — reusable_diagnostic — `methodologies/2026-05-18_read-spec-heuristic-taxonomy-gate-iteration.md`
 - [2026-05-18] Polish-as-blocker drift — when iteration cycles need an explicit ship gate — reusable_diagnostic — `methodologies/2026-05-18_polish-as-blocker-drift-explicit-ship-gate.md`
 - [2026-05-18] Reframe stated scope to actual goal before sequencing — large-scope strategist heuristic — reusable_diagnostic — `methodologies/2026-05-18_reframe-stated-scope-to-actual-goal-strategist-heuristic.md`
@@ -289,6 +286,7 @@ type: index
 
 ### Integration
 
+- [2026-06-19] Google Search Console API — three gotchas (property form mismatch, deprecated ping, contents.submitted type cast) — reusable_diagnostic + transferable_framework — `integration/2026-06-19_google-search-console-api-three-gotchas.md`
 - [2026-06-12] Operationalizing Claude Code skill intent in non-CC runtimes by embedding guidance into prompts — new_pattern — `integration/2026-06-12_embedding-skill-intent-into-runtime-prompts.md`
 - [2026-05-21] Vendor-in decision framework for flat-script Python projects — transferable_framework — `integration/2026-05-21_vendor-in-decision-framework-flat-script-python.md`
 - [2026-05-21] Wayback Machine CDX API recipe — earliest snapshot in date range — reusable_diagnostic — `integration/2026-05-21_wayback-machine-cdx-api-date-range-recipe.md`
@@ -297,9 +295,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 178
-- **Entry types:** new_pattern (53), transferable_framework (49), reusable_diagnostic (75), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
-- **Domains:** patterns (39), architecture (10), orchestration (15), infrastructure (27), compiler (4), diagnostics (40), methodologies (34), migrations (5), strategy (4), integration (2)
+- **Total entries:** 181
+- **Entry types:** new_pattern (53), transferable_framework (50), reusable_diagnostic (75), reusable_diagnostic + transferable_framework (1), reusable_diagnostic + new_pattern (1), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
+- **Domains:** patterns (40), architecture (10), orchestration (15), infrastructure (28), compiler (4), diagnostics (40), methodologies (34), migrations (5), strategy (4), integration (4)
 - **Avg grounding score:** 0.84 (across grounded entries)
-- **Staleness risk distribution:** stable (165), slow_decay (6), fast_decay (1)
+- **Staleness risk distribution:** stable (166), slow_decay (6), fast_decay (1)
 

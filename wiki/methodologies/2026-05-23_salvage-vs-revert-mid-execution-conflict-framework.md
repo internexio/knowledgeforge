@@ -12,7 +12,7 @@ domain: strategic-execution
 topic: conflict-recovery
 tags: decision-framework, recovery, conflict-resolution, mid-execution-pivot, content-strategy, sunk-cost
 related_entries:
-  - methodologies/2026-05-23_seo-repositioning-failing-rank-for-unranked-head-term.md
+  - sem-tools/wiki/methodologies/2026-05-23_seo-repositioning-failing-rank-for-unranked-head-term.md
   - methodologies/2026-05-15_pre-emptive-scope-sweep-downstream-verdict.md
 ---
 
@@ -108,7 +108,7 @@ The failure mode this framework counters is **powering through** — completing 
 
 ## Related Patterns & Tools
 
-- **SEO Repositioning Pattern** (`methodologies/2026-05-23_seo-repositioning-failing-rank-for-unranked-head-term.md`) — specific instance of salvage applied to a page-rank decision
+- **SEO Repositioning Pattern** (`sem-tools/wiki/methodologies/2026-05-23_seo-repositioning-failing-rank-for-unranked-head-term.md`) — specific instance of salvage applied to a page-rank decision
 - **Pre-emptive scope sweep** (`methodologies/2026-05-15_pre-emptive-scope-sweep-downstream-verdict.md`) — related pattern for handling downstream task re-scoping after a strategic verdict
 - **Vendor-swap semantics recalibration** (`methodologies/2026-05-23_vendor-swap-semantics-recalibration-audit.md`) — related conflict-discovery pattern when swapping dependencies
 

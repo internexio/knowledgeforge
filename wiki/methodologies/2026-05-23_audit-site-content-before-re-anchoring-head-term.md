@@ -11,7 +11,7 @@ domain: strategy
 topic: trade-off-analysis
 tags: quality-gate, adversarial, empirical, grounding
 related_entries:
-  - methodologies/2026-05-23_seo-repositioning-failing-rank-for-unranked-head-term.md
+  - sem-tools/wiki/methodologies/2026-05-23_seo-repositioning-failing-rank-for-unranked-head-term.md
 ---
 
 # Audit Existing Site Content Before Re-Anchoring to a Candidate Head Term
@@ -62,7 +62,7 @@ Two same-day commits required where one well-audited commit would have done the 
 
 ## The Amendment to the Trade-Failing-Rank Pattern
 
-The earlier pattern entry (`wiki/methodologies/2026-05-23_seo-repositioning-failing-rank-for-unranked-head-term.md`) lists four pre-conditions to confirm before applying the trade. This entry adds a FIFTH that should be checked BEFORE any of the others:
+The earlier pattern entry (`sem-tools/wiki/methodologies/2026-05-23_seo-repositioning-failing-rank-for-unranked-head-term.md`) lists four pre-conditions to confirm before applying the trade. This entry adds a FIFTH that should be checked BEFORE any of the others:
 
 **0. Audit the entire site tree for existing pages that already target the candidate head term.** If any other page leads on that term in its primary slots (title/H1/meta description), do not apply the trade-failing-rank pattern with that term. Pick a differentiated candidate or pursue 301-consolidation.
 
