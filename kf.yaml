@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.17.1
+version: 7.18.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,20 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.18.0
+    date: 2026-06-29
+    driver: knowledgeforge-core-rgs
+    note: |
+      Per-turn marker compliance tightening — closes 76.6% → 100% gap
+      measured on τ²-bench telecom (kf-bench-95k, June 22).
+
+      Two additions to Module 00 §Per-Turn Mode Telemetry placement rule:
+      Case 2 "response length does not exempt" + Case 3 "marker debt rule"
+      (k tool-only turns = k debts; next text turn needs k+1 markers).
+      Short-action-turn example added.
+
+      Module 00 (7.7.0 → 7.8.0). Closes knowledgeforge-core-rgs.
+
   - version: 7.17.1
     date: 2026-06-29
     driver: knowledgeforge-core-x8j
