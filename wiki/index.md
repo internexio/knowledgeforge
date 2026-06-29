@@ -9,6 +9,13 @@ type: index
 
 ### Patterns
 
+- [2026-06-29] Headless Chrome HTML→PNG pipeline for text-heavy social infographics — diffusion-model bypass for structured layout — transferable_framework — `patterns/2026-06-29_headless-chrome-html-png-pipeline-text-heavy-social-infographics.md`
+- [2026-06-26] Git-history content authorship classifier (EDITORIAL > TEMPLATE-FILL > MASS-SWEEP) — reusable_diagnostic — `patterns/2026-06-26_git-history-content-authorship-classifier-editorial-template-mass-sweep.md`
+- [2026-06-26] Variant axes as a temperature-substitute for content generation without sampling control — new_pattern — `patterns/2026-06-26_variant-axes-as-temperature-substitute-content-generation.md`
+- [2026-06-26] Skill-spec vs canonical-doc staleness as a recurring class of silent drift — reusable_diagnostic — `patterns/2026-06-26_skill-spec-vs-canonical-doc-staleness-silent-drift.md`
+- [2026-06-25] Agent delegation for high-volume research and scraping tasks (≥20 fetches) — transferable_framework — `patterns/2026-06-25_agent-delegation-high-volume-research-scraping-tasks.md`
+- [2026-06-25] DriveFS write safety via SIGALRM (companion to read-safety pattern) — transferable_framework — `patterns/2026-06-25_drivefs-write-safety-sigalrm-companion-to-read-pattern.md`
+- [2026-06-25] Bucket-binary audit UX silently substitutes agent URL-inference for operator per-page recall — new_pattern — `patterns/2026-06-25_bucket-binary-audit-ux-substitutes-agent-inference-for-operator-recall.md`
 - [2026-06-20] Operator-decision-driven artifacts — separate the briefing, the bead, the field state, and the audit trail — transferable_framework — `patterns/2026-06-20_operator-decision-driven-artifacts-four-surface-separation.md`
 - [2026-06-20] Pre-commit hook three-piece structure — standalone checker + thin wrapper + manual installer — new_pattern — `patterns/2026-06-20_pre-commit-hook-three-piece-structure.md`
 - [2026-06-19] Cross-project credential resolution — read API keys from a sibling project's existing .env rather than duplicating into every environment — new_pattern — `patterns/2026-06-19_cross-project-credential-resolution-sibling-env-single-source.md`
@@ -85,6 +92,7 @@ type: index
 
 ### Orchestration
 
+- [2026-06-27] Parallel-agent ID-namespace collision in append-only claim/ticket stores — reservation-first preferred, tombstone-on-collision fallback — reusable_diagnostic — `orchestration/2026-06-27_parallel-agent-id-namespace-collision-append-only-stores.md`
 - [2026-06-14] Compile-pipeline PR supersedence — close intermediates, regenerate latest at current upstream HEAD — transferable_framework — `orchestration/2026-06-14_compile-pipeline-pr-supersedence-snapshot-merge-pattern.md`
 - [2026-06-12] Stale-base PR conflicts after batched core pushes — resolve via workflow_dispatch — reusable_diagnostic — `orchestration/2026-06-12_stale-base-pr-conflicts-batched-pushes-workflow-dispatch.md`
 - [2026-06-12] Parallel-spec + parallel-critic pattern for independent beads — new_pattern — `orchestration/2026-06-12_parallel-spec-parallel-critic-pattern-independent-beads.md`
@@ -109,6 +117,7 @@ type: index
 
 ### Infrastructure
 
+- [2026-06-26] Promoting a GitHub workflow to a required status check — plan-tier 403s + paths-filter deadlock — reusable_diagnostic — `infrastructure/2026-06-26_promoting-workflow-to-required-check-plan-tier-paths-filter-gotchas.md`
 - [2026-06-20] A new GitHub Actions workflow runs but does not gate PR merges — branch protection must explicitly require the check — reusable_diagnostic + new_pattern — `infrastructure/2026-06-20_github-actions-workflow-not-gate-without-required-status-check.md`
 - [2026-06-20] Nginx rate-limit zones must distinguish credential-bearing vs read-only auth endpoints — reusable_diagnostic + new_pattern — `infrastructure/2026-06-20_nginx-rate-limit-zones-credential-vs-read-only-auth-endpoints.md`
 - [2026-06-18] PyPI trusted-publishing fails silently with `invalid-publisher` — three recovery paths (configure publisher, convert to token, manual twine) — reusable_diagnostic — `infrastructure/2026-06-18_pypi-trusted-publishing-invalid-publisher-recovery-paths.md` <!-- example: filename, not a real token -->
@@ -160,6 +169,8 @@ type: index
 
 ### Diagnostics
 
+- [2026-06-25] React-route schema/meta edits are shadowed when site/ is rsynced but a Docker container actually serves the route — reusable_diagnostic — `diagnostics/2026-06-25_react-route-shadows-rsynced-static-html-in-mixed-deploy.md`
+- [2026-06-22] HTML-unescape before JSON-LD serialization — entities ship literal to schema validators and AI engines — reusable_diagnostic — `diagnostics/2026-06-22_html-unescape-before-json-ld-serialization.md`
 - [2026-06-20] Linters scoped to git's tracked-file set miss filesystem state — false-positive and false-negative orphan claims — reusable_diagnostic — `diagnostics/2026-06-20_linter-tracked-file-scope-misses-filesystem-state.md`
 - [2026-06-19] COS MCP endpoint auth/timeout — fall back to local cos-personality + cos-copy skills — reusable_diagnostic — `diagnostics/2026-06-19_cos-mcp-auth-timeout-fallback-to-local-skills.md`
 - [2026-06-17] Audience-mismatch engagement-farm — detection rule for founder outreach (prestige label in unrelated domain + template-warm reciprocity request = bait, regardless of profile credentials) — reusable_diagnostic — `diagnostics/2026-06-17_audience-mismatch-engagement-farm-founder-outreach.md`
@@ -217,6 +228,13 @@ type: index
 
 ### Methodologies
 
+- [2026-06-29] Lock-revision cascade — file alignment discipline when a positioning lock changes mid-cycle — reusable_diagnostic — `methodologies/2026-06-29_lock-revision-cascade-file-alignment-discipline.md`
+- [2026-06-27] Hedging-language loss during migration from draft to outbound surfaces — a recurring numeric-claim failure mode — reusable_diagnostic — `methodologies/2026-06-27_hedging-language-loss-during-migration-from-draft-to-outbound.md`
+- [2026-06-26] Two corroborating secondary sources can propagate the same error — primary-source verification is not optional for numeric claims — reusable_diagnostic — `methodologies/2026-06-26_two-corroborating-secondaries-can-share-the-same-error-primary-source-verification-not-optional.md`
+- [2026-06-26] Berger-style "effective evidence base" framing for claim verification — transferable_framework — `methodologies/2026-06-26_berger-style-effective-evidence-base-framing-claim-verification.md`
+- [2026-06-25] bd cross-store sweep — extend to nested .beads stores + Dolt-state diagnostic — transferable_framework — `methodologies/2026-06-25_bd-cross-store-sweep-nested-stores-dolt-state-diagnostic.md`
+- [2026-06-25] Invoke kf-critic before any sweep work that mints operator-attestation claims at scale — transferable_framework — `methodologies/2026-06-25_invoke-kf-critic-before-sweep-minting-operator-attestation-claims.md`
+- [2026-06-22] Workaround-vs-root-cause — name the upstream owner when shipping a tarp — transferable_framework — `methodologies/2026-06-22_workaround-vs-root-cause-name-the-upstream-owner.md`
 - [2026-06-20] Pre-flight scope expansion — close the in-scope minimum, file successors for the rest — transferable_framework — `methodologies/2026-06-20_preflight-scope-expansion-close-minimum-file-successors.md`
 - [2026-06-19] Operator review gate in semi-automated workflows — preserve human approval points between automated generation and irreversible publication — transferable_framework — `methodologies/2026-06-19_operator-review-gate-in-semi-automated-workflows.md`
 - [2026-06-18] Cross-scope search blindness — sweep all instances on first "not found", treat operator insistence as broaden-search signal — new_pattern — `methodologies/2026-06-18_cross-scope-search-blindness-operator-insistence-as-broaden-signal.md`
@@ -286,6 +304,8 @@ type: index
 
 ### Integration
 
+- [2026-06-26] Allen AI Asta Scientific Corpus MCP — operational gotchas reference (7 gotchas + bib-corpus integration pattern, as of 2026-06-26) — new_pattern — `integration/2026-06-26_allen-ai-asta-scientific-corpus-mcp-operational-gotchas.md`
+- [2026-06-22] MCP Streamable-HTTP sessions are wiped on container restart — Disconnect+Reconnect is the client-side fix; Refresh tools silently fails — reusable_diagnostic — `integration/2026-06-22_mcp-streamable-http-sessions-wiped-on-container-restart.md`
 - [2026-06-19] Google Search Console API — three gotchas (property form mismatch, deprecated ping, contents.submitted type cast) — reusable_diagnostic + transferable_framework — `integration/2026-06-19_google-search-console-api-three-gotchas.md`
 - [2026-06-12] Operationalizing Claude Code skill intent in non-CC runtimes by embedding guidance into prompts — new_pattern — `integration/2026-06-12_embedding-skill-intent-into-runtime-prompts.md`
 - [2026-05-21] Vendor-in decision framework for flat-script Python projects — transferable_framework — `integration/2026-05-21_vendor-in-decision-framework-flat-script-python.md`
@@ -295,9 +315,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 181
-- **Entry types:** new_pattern (53), transferable_framework (50), reusable_diagnostic (75), reusable_diagnostic + transferable_framework (1), reusable_diagnostic + new_pattern (1), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
-- **Domains:** patterns (40), architecture (10), orchestration (15), infrastructure (28), compiler (4), diagnostics (40), methodologies (34), migrations (5), strategy (4), integration (4)
+- **Total entries:** 193
+- **Entry types:** new_pattern (56), transferable_framework (52), reusable_diagnostic (82), reusable_diagnostic + transferable_framework (1), reusable_diagnostic + new_pattern (1), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
+- **Domains:** patterns (43), architecture (10), orchestration (16), infrastructure (28), compiler (4), diagnostics (42), methodologies (38), migrations (5), strategy (4), integration (6)
 - **Avg grounding score:** 0.84 (across grounded entries)
-- **Staleness risk distribution:** stable (166), slow_decay (6), fast_decay (1)
+- **Staleness risk distribution:** stable (172), slow_decay (9), fast_decay (1)
 
