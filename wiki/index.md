@@ -228,6 +228,8 @@ type: index
 
 ### Methodologies
 
+- [2026-06-29] cos-grounding claim disposition taxonomy — five types for rebuild_needed claims — transferable_framework — `methodologies/2026-06-29_cos-grounding-claim-disposition-taxonomy-five-types.md`
+- [2026-06-29] cos-grounding co-citation rescue protocol — upgrading weak single-source claims via store-resident meta-analysis — reusable_diagnostic — `methodologies/2026-06-29_cos-grounding-co-citation-rescue-protocol-upgrading-weak-single-source.md`
 - [2026-06-29] Lock-revision cascade — file alignment discipline when a positioning lock changes mid-cycle — reusable_diagnostic — `methodologies/2026-06-29_lock-revision-cascade-file-alignment-discipline.md`
 - [2026-06-27] Hedging-language loss during migration from draft to outbound surfaces — a recurring numeric-claim failure mode — reusable_diagnostic — `methodologies/2026-06-27_hedging-language-loss-during-migration-from-draft-to-outbound.md`
 - [2026-06-26] Two corroborating secondary sources can propagate the same error — primary-source verification is not optional for numeric claims — reusable_diagnostic — `methodologies/2026-06-26_two-corroborating-secondaries-can-share-the-same-error-primary-source-verification-not-optional.md`
@@ -247,6 +249,7 @@ type: index
 - [2026-06-10] Test cards for AI-coder-config migrations — baseline + per-step + cumulative verification with version-controlled outcome log — transferable_framework, reusable_diagnostic — `methodologies/2026-06-10_test-cards-ai-coder-config-migration-baseline-step-cumulative.md`
 - [2026-06-10] Canary test for filesystem-loaded AI-coder-config conventions — verify the auto-load before depending on it — reusable_diagnostic, transferable_framework — `methodologies/2026-06-10_canary-test-ai-coder-config-auto-load-conventions.md`
 - [2026-06-10] KF semver lives on three surfaces — module version, kf.yaml system version, platform binding version — and they bump independently — reusable_diagnostic — `methodologies/2026-06-10_kf-semver-three-surfaces-module-system-binding.md`
+- [2026-06-10] Verify premise before filing a defensive/hardening bead — read the full context before claiming X is missing — behavioral_guardrail — `methodologies/2026-06-10_verify-premise-before-defensive-bead.md`
 - [2026-06-09] Read the bead's own status before implementing — "design only / defer until X" is a stop signal — methodology — `methodologies/2026-06-09_read-bead-status-before-claiming-verify-explicit-deferral.md`
 - [2026-05-30] Verify which API code path actually runs before quoting per-call cost or making cadence decisions — new_pattern — `methodologies/2026-05-30_verify-api-code-path-before-cost-cadence-decisions.md`
 - [2026-05-29] Dormant-subsystem forensics — check the supervision layer before the subsystem code — reusable_diagnostic — `methodologies/2026-05-29_dormant-subsystem-forensics-check-supervision-first.md`
@@ -315,9 +318,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 193
-- **Entry types:** new_pattern (56), transferable_framework (52), reusable_diagnostic (82), reusable_diagnostic + transferable_framework (1), reusable_diagnostic + new_pattern (1), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
-- **Domains:** patterns (43), architecture (10), orchestration (16), infrastructure (28), compiler (4), diagnostics (42), methodologies (38), migrations (5), strategy (4), integration (6)
+- **Total entries:** 195
+- **Entry types:** new_pattern (56), transferable_framework (53), reusable_diagnostic (83), reusable_diagnostic + transferable_framework (1), reusable_diagnostic + new_pattern (1), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
+- **Domains:** patterns (43), architecture (10), orchestration (16), infrastructure (28), compiler (4), diagnostics (42), methodologies (41), migrations (5), strategy (4), integration (6)
 - **Avg grounding score:** 0.84 (across grounded entries)
-- **Staleness risk distribution:** stable (172), slow_decay (9), fast_decay (1)
+- **Staleness risk distribution:** stable (174), slow_decay (9), fast_decay (1)
 
