@@ -12,6 +12,8 @@ related_entries:
   - methodologies/2026-05-13_verify-audit-claims-before-designing-fix.md
   - methodologies/2026-05-23_beads-disk-reconciliation-discipline.md
   - architecture/2026-05-18_bead-as-context-anchor-deferred-runbooks.md
+domain: methodologies
+topic: verification
 ---
 
 # Deterministic Scan Before Claiming Refactor/Audit-Doc Beads

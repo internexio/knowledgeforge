@@ -7,8 +7,8 @@ staleness_risk: stable
 importance: 3
 pinned: false
 created: 2026-05-20
-domain: code-quality
-topic: intent-vs-execution
+domain: diagnostics
+topic: refactoring
 tags: python, anti-pattern, dedup, code-review, diagnostic
 related_entries:
   - diagnostics/2026-05-15_check-exit-code-before-cli-output-parsing.md

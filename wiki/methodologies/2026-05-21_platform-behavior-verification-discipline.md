@@ -8,8 +8,8 @@ staleness_risk: stable
 importance: 5
 pinned: false
 created: 2026-05-21
-domain: operations
-topic: quality-gate
+domain: methodologies
+topic: validation
 tags: methodology, validation, verification, quality-gate, platform-behavior, commitment-discipline
 related_entries:
   - methodologies/2026-05-20_primary-source-vendor-guidance-reanchor.md

@@ -19,6 +19,8 @@ related:
 - wiki/orchestration/adversarial-filename-audit.md
 - wiki/orchestration/multi-framework-cp-composition.md
 - modules/02_builder.md
+domain: infrastructure
+topic: ops
 ---
 
 # Flat-Namespace Prefix Convention for Subdirectory-Free Environments

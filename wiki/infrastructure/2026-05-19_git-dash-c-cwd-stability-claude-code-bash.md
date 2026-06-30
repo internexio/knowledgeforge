@@ -10,6 +10,8 @@ pinned: false
 created: 2026-05-19
 tags: infrastructure, git, claude-code, bash-harness, cwd-stability, defensive-coding
 related_entries: ["infrastructure/2026-05-13_launchd-cwd-trap-relative-tool-lookups.md"]
+domain: infrastructure
+topic: ops
 ---
 
 # git -C /abs/path for CWD-Unstable Claude Code Bash Harness

@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-13
 tags: grounding, quality-gate, empirical, stable
 related_entries: []
+domain: diagnostics
+topic: error-handling
 ---
 
 # Python logging `extra=` reserved-key hazard

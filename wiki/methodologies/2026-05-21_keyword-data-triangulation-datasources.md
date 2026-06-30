@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-21
 tags: seo, keyword-research, api-integration, dataforseo, semrush, gsc, fallback-pattern, data-quality
 related_entries: []
+domain: methodologies
+topic: search-strategy
 ---
 
 # Keyword Data Triangulation — DataForSEO + SEMrush + GSC

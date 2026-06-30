@@ -7,7 +7,7 @@ staleness_risk: slow_decay
 importance: 3
 pinned: false
 created: 2026-05-28
-domain: data-analysis
+domain: diagnostics
 topic: retrospective-analysis
 tags: google-ads, gaql, data-pipeline, retrospective-analysis, correlation, data-integrity, diagnostic-pattern
 related_entries:

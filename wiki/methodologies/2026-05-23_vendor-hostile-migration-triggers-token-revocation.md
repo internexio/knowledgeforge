@@ -13,6 +13,8 @@ related_entries:
   - wiki/methodologies/2026-05-21_saas-migration-pre-cancel-checklist-silent-failure-config-pointer-risk.md
   - wiki/diagnostics/2026-05-21_server-side-state-outlives-client-fixes-saas-wrappers.md
 revises: null
+domain: methodologies
+topic: staged-rollout
 ---
 
 # Vendor-hostile migration triggers — when token revocation forecloses the pre-cancel capture step

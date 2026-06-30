@@ -21,6 +21,8 @@ related:
 - wiki/orchestration/adversarial-filename-audit.md
 - modules/02_builder.md
 - modules/07_critic_agent.md
+domain: orchestration
+topic: task-decomposition
 ---
 
 # Schema-First Elicitation Authorship Order

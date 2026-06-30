@@ -10,6 +10,8 @@ pinned: false
 created: 2026-05-18
 tags: stripe-python, webhook, integration-pitfall, empirical, stable
 related_entries: []
+domain: diagnostics
+topic: api-design
 ---
 
 # stripe.Event does not support .get() — use [] access

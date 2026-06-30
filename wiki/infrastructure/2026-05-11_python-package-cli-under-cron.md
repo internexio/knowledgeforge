@@ -10,6 +10,8 @@ pinned: false
 created: 2026-05-11
 tags: deployment, scheduling, quality-gate, adversarial, empirical
 related_entries: []
+domain: infrastructure
+topic: deployment
 ---
 
 # Python Package CLIs Under Cron — Module Form Required for Relative Imports

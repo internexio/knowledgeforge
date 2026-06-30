@@ -20,6 +20,8 @@ related:
 - wiki/orchestration/codemod-driven-big-bang-rename.md
 - modules/02_builder.md
 - modules/05_debugger.md
+domain: orchestration
+topic: multi-stage-issue-workflow
 ---
 
 # Spec-Commit-Before-Impl-Commit: Decoupling Plan from Application

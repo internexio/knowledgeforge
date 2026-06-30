@@ -12,6 +12,8 @@ related_entries:
   - wiki/migrations/2026-05-24_safe-one-shot-backfill-script-dry-run-idempotent-no-improvement-skip.md
   - wiki/diagnostics/2026-05-25_http-adapter-silent-failure-integration-test-mandatory.md
   - wiki/methodologies/2026-05-27_supervise-first-real-data-run-autonomous-loops.md
+domain: migrations
+topic: error-classification
 ---
 
 # Two-phase destructive-migration pattern — validation before coercion

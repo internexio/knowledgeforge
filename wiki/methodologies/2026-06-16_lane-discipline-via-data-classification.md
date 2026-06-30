@@ -14,6 +14,8 @@ related_entries:
   - sem-tools/wiki/methodologies/2026-05-23_multi-pass-keyword-research-methodology.md
   - sem-tools/wiki/methodologies/2026-05-19_seo-keyword-volume-cpc-tradeoff.md
   - methodologies/2026-05-21_keyword-data-triangulation-datasources.md
+domain: methodologies
+topic: prioritization
 ---
 
 # Lane discipline via data classification — tag strategic lanes before pulling volumes

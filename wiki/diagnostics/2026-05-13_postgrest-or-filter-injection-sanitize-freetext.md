@@ -10,6 +10,8 @@ pinned: false
 created: 2026-05-13
 tags: security, postgrest, supabase, sql-injection-analog, input-sanitization, defense-in-depth
 related_entries: []
+domain: diagnostics
+topic: data-validation
 ---
 
 # PostgREST or_() filter-injection — sanitize free-text before interpolation

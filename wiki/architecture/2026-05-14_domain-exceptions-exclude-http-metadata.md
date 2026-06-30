@@ -10,6 +10,8 @@ pinned: false
 created: 2026-05-14
 tags: architecture, layering, error-handling, separation-of-concerns, fastapi, audit-pushback
 related_entries: []
+domain: architecture
+topic: mode-design
 ---
 
 # Domain Exceptions Should Not Carry HTTP Metadata

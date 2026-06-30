@@ -12,6 +12,8 @@ related_entries:
   - methodologies/2026-05-15_pre-emptive-scope-sweep-downstream-verdict.md
   - methodologies/2026-05-13_find-consumer-first-before-data-migration.md
   - methodologies/2026-05-13_verify-audit-claims-before-designing-fix.md
+domain: methodologies
+topic: scope-management
 ---
 
 # Reframe stated scope to actual goal before sequencing — large-scope strategist heuristic

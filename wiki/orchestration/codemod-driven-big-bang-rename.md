@@ -21,6 +21,8 @@ related:
 - wiki/orchestration/spec-commit-before-impl-commit.md
 - modules/02_builder.md
 - modules/06_coordinator.md
+domain: orchestration
+topic: multi-stage-issue-workflow
 ---
 
 # Codemod-Driven Big-Bang Rename: Phase-0-Gated Migration Pattern

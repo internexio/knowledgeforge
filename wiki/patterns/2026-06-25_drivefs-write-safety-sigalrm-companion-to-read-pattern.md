@@ -9,6 +9,8 @@ grounding_score: 0.85
 staleness_risk: stable
 importance: 3
 tags: [drivefs, gdrive, timeout-guard, sigalrm, macos, write-safety]
+domain: patterns
+topic: retrieval
 ---
 
 # DriveFS write safety via SIGALRM (companion to read-safety pattern)

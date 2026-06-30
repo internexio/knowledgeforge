@@ -13,6 +13,8 @@ related_entries:
   - wiki/architecture/scaffolding-vs-patching-pattern.md
   - wiki/methodologies/external-source-to-kf-mapping.md
   - wiki/methodologies/2026-05-14_structural-invariant-acceptance-over-wall-clock-stubbed-paths.md
+domain: strategy
+topic: trade-off-analysis
 ---
 
 # Vendor selection — calibration uncertainty is the bottleneck, not measurement precision

@@ -11,6 +11,8 @@ tags: orchestration, reconciliation, handoff, kf-chain, methodology, probe
 related_entries:
   - methodologies/2026-05-13_critic-triage-routing-strategist-vs-defer-doc.md
   - methodologies/2026-05-13_verify-audit-claims-before-designing-fix.md
+domain: methodologies
+topic: validation
 ---
 
 # Probe-Before-Chain: Verify Handoff Inputs Before Running Multi-Mode Chains

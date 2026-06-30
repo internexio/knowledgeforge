@@ -12,6 +12,8 @@ related_entries:
   - methodologies/2026-05-26_deterministic-scan-before-claiming-refactor-audit-beads.md
   - methodologies/2026-05-13_verify-audit-claims-before-designing-fix.md
   - diagnostics/2026-05-23_beads-multi-database-working-directory-gotcha.md
+domain: methodologies
+topic: verification
 ---
 
 # Read Ground Truth, Not Surface Signals — Universal Debugging Discipline

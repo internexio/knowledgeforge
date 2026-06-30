@@ -21,6 +21,8 @@ related:
 - wiki/orchestration/codemod-driven-big-bang-rename.md
 - wiki/infrastructure/flat-namespace-prefix-convention.md
 - wiki/architecture/scaffolding-vs-patching-pattern.md
+domain: migrations
+topic: schema-evolution
 ---
 
 # Big-Bang Rename Playbook: Supabase + FastAPI + React Stack

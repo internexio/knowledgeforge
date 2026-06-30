@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-29
 tags: pricing, strategy, trade-off-analysis, api
 related_entries: []
+domain: strategy
+topic: trade-off-analysis
 ---
 
 # Pricing LLM-Wrapper APIs Against the DIY-Floor Constraint

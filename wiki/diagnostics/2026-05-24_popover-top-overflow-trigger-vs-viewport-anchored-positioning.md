@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-24
 tags: css,react,tailwind,ui-bugs,positioning,popover,modal
 related_entries: []
+domain: diagnostics
+topic: root-cause-analysis
 ---
 
 # Popover Top-Overflow — Trigger-Anchored vs Viewport-Anchored Positioning

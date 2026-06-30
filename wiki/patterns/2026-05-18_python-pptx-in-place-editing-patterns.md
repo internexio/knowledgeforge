@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-18
 tags: patterns, infrastructure, python, pptx, content-pipelines, tooling
 related_entries: []
+domain: patterns
+topic: synthesis
 ---
 
 # python-pptx in-place editing patterns for cleaning shipped decks

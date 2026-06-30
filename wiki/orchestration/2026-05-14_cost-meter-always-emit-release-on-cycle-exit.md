@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-14
 tags: observability, cost-accounting, iteration-loop, watchdog-interaction, finally-block-discipline
 related_entries: []
+domain: orchestration
+topic: queue-pattern
 ---
 
 # Cost Meter Always Emit Release on Cycle Exit, Even on Overrun

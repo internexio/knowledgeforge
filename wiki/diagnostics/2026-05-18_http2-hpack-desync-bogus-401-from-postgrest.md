@@ -10,6 +10,8 @@ pinned: false
 created: 2026-05-18
 tags: empirical, grounding, api, stable
 related_entries: [diagnostics/2026-05-18_flaky-endpoint-cluster-shared-backend-dependency.md]
+domain: diagnostics
+topic: root-cause-analysis
 ---
 
 # HTTP/2 HPACK dynamic-table desync masquerades as "Invalid API key" in PostgREST

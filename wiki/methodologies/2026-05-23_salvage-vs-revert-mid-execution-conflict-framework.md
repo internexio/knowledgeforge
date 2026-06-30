@@ -8,8 +8,8 @@ staleness_risk: stable
 importance: 3
 pinned: false
 created: 2026-05-23
-domain: strategic-execution
-topic: conflict-recovery
+domain: methodologies
+topic: decision-framework
 tags: decision-framework, recovery, conflict-resolution, mid-execution-pivot, content-strategy, sunk-cost
 related_entries:
   - sem-tools/wiki/methodologies/2026-05-23_seo-repositioning-failing-rank-for-unranked-head-term.md

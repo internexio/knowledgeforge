@@ -10,6 +10,8 @@ pinned: false
 created: 2026-05-26
 tags: architecture, rate-limiting, idempotency, patterns, distinctions, backend-patterns
 related_entries: []
+domain: architecture
+topic: mode-design
 ---
 
 # Domain Cooldown vs Network Rate-Limit — When to Keep Them Separate

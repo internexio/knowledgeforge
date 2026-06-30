@@ -12,6 +12,8 @@ related_entries:
   - methodologies/2026-05-26_deterministic-scan-before-claiming-refactor-audit-beads.md
   - methodologies/2026-05-27_read-ground-truth-not-surface-signals-universal-antipattern.md
   - methodologies/2026-05-13_verify-audit-claims-before-designing-fix.md
+domain: methodologies
+topic: decision-framework
 ---
 
 # Deterministic-First Debugging

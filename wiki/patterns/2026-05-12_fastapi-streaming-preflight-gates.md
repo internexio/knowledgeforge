@@ -9,6 +9,8 @@ importance: 4
 created: 2026-05-12
 tags: api, quality-gate, empirical
 related_entries: []
+domain: patterns
+topic: validation
 ---
 
 # FastAPI StreamingResponse Pre-Flight Gates Must Raise BEFORE Construction

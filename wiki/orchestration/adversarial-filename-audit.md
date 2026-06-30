@@ -19,6 +19,8 @@ related:
 - wiki/infrastructure/flat-namespace-prefix-convention.md
 - wiki/orchestration/multi-framework-cp-composition.md
 - modules/07_critic_agent.md
+domain: orchestration
+topic: parallel-workflow
 ---
 
 # Adversarial Filename Audit as Mandatory Bundle Gate

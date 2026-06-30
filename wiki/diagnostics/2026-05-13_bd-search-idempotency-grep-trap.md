@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-13
 tags: quality-gate, empirical, stable
 related_entries: []
+domain: diagnostics
+topic: issue-tracking
 ---
 
 # bd search idempotency grep trap — match ^Found header, not query string

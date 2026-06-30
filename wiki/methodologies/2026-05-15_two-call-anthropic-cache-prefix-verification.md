@@ -11,6 +11,8 @@ tags: anthropic, prompt-caching, verification, staging-audit, contract-tests
 related_entries:
   - methodologies/2026-05-13_verify-audit-claims-before-designing-fix.md
   - patterns/2026-05-13_content-addressed-cache-versioned-hash-prefix.md
+domain: methodologies
+topic: validation
 ---
 
 # Two-call Anthropic Cache Prefix Verification

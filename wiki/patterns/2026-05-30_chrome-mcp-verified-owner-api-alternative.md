@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-30
 tags: chrome-mcp, browser-automation, vendor-lock-in, first-party-data, scoping, api-alternatives
 related_entries: []
+domain: patterns
+topic: retrieval
 ---
 
 # Chrome MCP Automation of Verified-Owner Web Interfaces as Paid-API Alternative

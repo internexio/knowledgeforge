@@ -11,6 +11,8 @@ created: 2026-06-26
 tags: git, content-authorship, e-e-a-t, seo, schema-org, audit, classifier, methodology
 related_entries:
   - patterns/2026-05-29_fastapi-api-surface-classification-auth-dependency-extraction.md
+domain: patterns
+topic: classification
 ---
 
 # Git-history content authorship classifier

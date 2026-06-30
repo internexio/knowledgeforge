@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-13
 tags: docker, deployment, race-condition, infrastructure, ci-cd, sre
 related_entries: []
+domain: infrastructure
+topic: deployment
 ---
 
 # docker compose down/up container-name race in deploy scripts

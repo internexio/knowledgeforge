@@ -15,6 +15,8 @@ staleness_risk: stable
 importance: 4
 pinned: false
 accreted_in: 6.4.0
+domain: architecture
+topic: routing
 citation: 'Duggan et al., "The Price Is Not Right: Neuro-Symbolic Methods Outperform
   VLAs on
 

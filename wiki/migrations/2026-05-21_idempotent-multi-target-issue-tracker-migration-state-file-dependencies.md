@@ -14,6 +14,8 @@ related_entries:
   - wiki/migrations/big-bang-rename-supabase-fastapi-react.md
   - wiki/infrastructure/2026-05-14_idempotent-watchdog-producer-pattern.md
   - wiki/orchestration/2026-05-13_one-reconciliation-pipeline-called-twice.md
+domain: migrations
+topic: schema-evolution
 ---
 
 # Idempotent multi-target issue-tracker migration with state file + dependency reconstruction

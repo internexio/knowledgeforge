@@ -20,6 +20,8 @@ related_entries:
   - architecture/neuro-symbolic-pattern-validation.md
   - methodologies/2026-05-18_polish-as-blocker-drift-explicit-ship-gate.md
   - methodologies/2026-05-18_reframe-stated-scope-to-actual-goal-strategist-heuristic.md
+domain: patterns
+topic: synthesis
 ---
 
 # Pareto pass as purpose discovery — the cut criterion becomes the principle

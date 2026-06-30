@@ -7,8 +7,8 @@ staleness_risk: stable
 importance: 3
 pinned: false
 created: 2026-05-21
-domain: web-frontend
-topic: backward-compatible-refactoring
+domain: patterns
+topic: validation
 tags: html, seo, backward-compatibility, accessibility, refactoring
 related_entries: []
 ---

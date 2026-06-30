@@ -8,8 +8,8 @@ staleness_risk: stable
 importance: 3
 pinned: false
 created: 2026-05-13
-domain: refactoring
-topic: code-duplication
+domain: patterns
+topic: synthesis
 tags: [refactoring, duplication, fetch-pattern, single-source-of-truth, projection]
 related_entries: [patterns/2026-05-13_phased-god-module-split-facade-first.md]
 ---

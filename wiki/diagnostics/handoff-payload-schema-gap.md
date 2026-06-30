@@ -29,6 +29,8 @@ related:
 - modules/03_coordination_patterns.md
 - wiki/patterns/mode-variants-taxonomy.md
 - wiki/methodologies/external-source-to-kf-mapping.md
+domain: diagnostics
+topic: data-integrity
 ---
 
 # Handoff Payload Schema Gap (ERA Diagnostic Category)

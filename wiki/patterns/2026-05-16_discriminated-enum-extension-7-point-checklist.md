@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-16
 tags: [patterns, type-safety, discriminated-union, enum, refactoring, full-stack]
 related_entries: [patterns/2026-05-14_collapse-usestate-discriminated-union-reducer.md, patterns/mode-variants-taxonomy.md, migrations/big-bang-rename-supabase-fastapi-react.md]
+domain: patterns
+topic: classification
 ---
 
 # Extending a discriminated enum across the full stack — 7-point checklist

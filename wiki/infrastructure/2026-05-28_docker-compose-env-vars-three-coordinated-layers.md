@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-28
 tags: docker-compose, deployment, environment-variables, infrastructure, ci-cd, debugging
 related_entries: []
+domain: infrastructure
+topic: deployment
 ---
 
 # Docker Compose env vars need 3 coordinated layers to reach a container and survive deploys

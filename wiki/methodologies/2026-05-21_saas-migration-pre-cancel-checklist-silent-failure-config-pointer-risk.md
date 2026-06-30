@@ -13,6 +13,8 @@ related_entries:
   - wiki/methodologies/2026-05-13_find-consumer-first-before-data-migration.md
   - wiki/diagnostics/2026-05-21_server-side-state-outlives-client-fixes-saas-wrappers.md
   - wiki/methodologies/2026-05-18_read-spec-heuristic-taxonomy-gate-iteration.md
+domain: methodologies
+topic: staged-rollout
 ---
 
 # SaaS migration pre-cancel checklist — silent-failure config-pointer risk

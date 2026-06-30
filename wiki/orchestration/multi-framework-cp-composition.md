@@ -24,6 +24,8 @@ related:
 - modules/02_builder.md
 - modules/07_critic_agent.md
 - modules/10_strategist.md
+domain: orchestration
+topic: parallel-workflow
 ---
 
 # Three-Framework CP Composition Template

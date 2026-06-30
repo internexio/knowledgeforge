@@ -7,7 +7,7 @@ staleness_risk: stable
 importance: 3
 pinned: false
 created: 2026-05-21
-domain: multi-channel-marketing
+domain: methodologies
 topic: deployment-sequencing
 tags: seo, ppc, google-ads, quality-score, landing-page-experience, deployment-sequencing, multi-channel, cpc, roas
 related_entries:

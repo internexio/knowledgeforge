@@ -7,8 +7,8 @@ staleness_risk: slow_decay
 importance: 3
 pinned: false
 created: 2026-05-21
-domain: web-frameworks
-topic: laravel-cms-meta-split
+domain: patterns
+topic: synthesis
 tags: laravel, blade, filament, cms, seo, migration, multi-tenant, metadata-management
 related_entries: []
 ---

@@ -13,6 +13,8 @@ related_entries:
   - wiki/migrations/big-bang-rename-supabase-fastapi-react.md
   - wiki/orchestration/spec-commit-before-impl-commit.md
   - wiki/orchestration/codemod-driven-big-bang-rename.md
+domain: migrations
+topic: schema-evolution
 ---
 
 # Expand-contract column rename — two-commit SQLite migration with commit-boundary discipline

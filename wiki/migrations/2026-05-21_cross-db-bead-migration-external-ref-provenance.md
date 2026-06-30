@@ -12,6 +12,8 @@ tags: orchestration, deployment, empirical
 related_entries:
   - wiki/migrations/2026-05-21_idempotent-multi-target-issue-tracker-migration-state-file-dependencies.md
   - wiki/architecture/2026-05-18_bead-as-context-anchor-deferred-runbooks.md
+domain: migrations
+topic: schema-evolution
 ---
 
 # Cross-DB bead migration with external-ref provenance tracking

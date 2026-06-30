@@ -11,6 +11,8 @@ tags: security, defense-in-depth, sandboxing, subprocess, capabilities, allowlis
 related_entries:
   - patterns/2026-05-13_validator-after-ownership-gate-shared-crud-scaffolds.md
   - patterns/2026-05-18_composite-vs-atomic-mcp-tool-design.md
+domain: infrastructure
+topic: ops
 ---
 
 # Dual Opt-In Pattern for Elevated Subprocess Capability

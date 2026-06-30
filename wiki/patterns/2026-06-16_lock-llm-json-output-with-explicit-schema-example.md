@@ -7,6 +7,8 @@ grounding_score: 0.95
 staleness_risk: stable
 importance: 5
 tags: [prompt-engineering, llm, json, schema, anthropic, claude]
+domain: patterns
+topic: validation
 ---
 
 # Lock LLM JSON output with an explicit schema example in the prompt

@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-13
 tags: security, prompt-injection, write-time-validation, audit-checklist, defense-in-depth
 related_entries: [patterns/2026-05-13_validator-after-ownership-gate-shared-crud-scaffolds.md, patterns/2026-05-12_sanitization-three-pass-grep-discipline.md]
+domain: diagnostics
+topic: data-integrity
 ---
 
 # Asymmetric write-time guard coverage across parallel write paths

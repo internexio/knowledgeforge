@@ -19,6 +19,8 @@ related:
 - modules/07_critic_agent.md
 - modules/21_knowledge_accretion.md
 - wiki/architecture/scaffolding-vs-patching-pattern.md
+domain: architecture
+topic: chain-design
 ---
 
 # Pattern Extraction & Reuse Heuristic — Agent Architecture Patterns

@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-18
 tags: mcp, api, latency, token-cost, empirical
 related_entries: []
+domain: patterns
+topic: synthesis
 ---
 
 # Composite vs atomic MCP tool design for agent and CRM integrations

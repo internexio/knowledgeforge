@@ -12,6 +12,8 @@ related_entries:
   - wiki/methodologies/2026-05-23_vendor-swap-semantics-recalibration-audit.md
   - wiki/methodologies/2026-05-21_keyword-data-triangulation-datasources.md
   - wiki/strategy/2026-05-21_vendor-selection-calibration-uncertainty-dominance.md
+domain: diagnostics
+topic: data-quality
 ---
 
 # Vendor accepts parameter, upstream returns zeros — proxy-API data-availability vs. capability gap

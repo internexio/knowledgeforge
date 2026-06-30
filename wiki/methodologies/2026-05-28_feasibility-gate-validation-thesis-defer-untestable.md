@@ -7,8 +7,8 @@ staleness_risk: stable
 importance: 4
 pinned: false
 created: 2026-05-28
-domain: research-methodology
-topic: experiment-design
+domain: methodologies
+topic: gate-design
 tags: validation, experiment-design, statistical-power, decision-framework, research-methodology
 related_entries:
   - methodologies/2026-05-27_supervise-first-real-data-run-autonomous-loops.md

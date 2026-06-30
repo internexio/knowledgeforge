@@ -12,6 +12,8 @@ related_entries:
   - methodologies/2026-05-29_deterministic-first-debugging.md
   - methodologies/2026-05-27_read-ground-truth-not-surface-signals-universal-antipattern.md
   - strategy/2026-05-29_llm-wrapper-api-pricing-diy-floor-calibration.md
+domain: methodologies
+topic: verification
 ---
 
 # Verify Which API Code Path Actually Runs Before Quoting Per-Call Cost

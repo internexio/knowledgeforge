@@ -12,6 +12,8 @@ tags: methodologies, scope-management, strategic-decisions, project-management, 
 related_entries:
   - methodologies/2026-05-13_verify-audit-claims-before-designing-fix.md
   - methodologies/2026-05-13_critic-triage-routing-strategist-vs-defer-doc.md
+domain: methodologies
+topic: scope-management
 ---
 
 # Pre-emptive scope sweep of downstream tasks after a strategic verdict supersedes them

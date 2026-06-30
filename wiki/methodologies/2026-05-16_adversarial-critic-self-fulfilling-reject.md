@@ -10,6 +10,8 @@ created: 2026-05-16
 tags: prompt-engineering, orchestration, critic, llm-failure-mode, empirical, calibration
 related_entries:
   - methodologies/2026-05-13_critic-triage-routing-strategist-vs-defer-doc.md
+domain: methodologies
+topic: quality-gate
 ---
 
 # Adversarial Critic Framing → Self-Fulfilling Reject

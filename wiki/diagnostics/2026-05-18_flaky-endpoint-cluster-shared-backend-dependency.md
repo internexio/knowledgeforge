@@ -10,6 +10,8 @@ pinned: false
 created: 2026-05-18
 tags: empirical, stable, grounding, error-classification, root-cause-analysis, dependency-failure
 related_entries: []
+domain: diagnostics
+topic: root-cause-analysis
 ---
 
 # Flaky-endpoint cluster across same-parent subresources = shared backend dependency

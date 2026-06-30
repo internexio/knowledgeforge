@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-13
 tags: security, refactoring, defense-in-depth, fastapi, shared-scaffold, cross-tenant-isolation
 related_entries: []
+domain: patterns
+topic: validation
 ---
 
 # Validator-After-Ownership-Gate Pattern for Shared CRUD Scaffolds

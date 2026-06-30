@@ -12,6 +12,8 @@ related_entries:
   - infrastructure/2026-06-10_launchd-subprocess-shell-alias-resolution-gotcha.md
   - infrastructure/2026-05-14_idempotent-watchdog-producer-pattern.md
   - infrastructure/2026-05-15_silent-success-scripts-state-artifact-freshness.md
+domain: infrastructure
+topic: observability
 ---
 
 # macOS tmp_cleaner Silently Deletes Daemon Stdout Files

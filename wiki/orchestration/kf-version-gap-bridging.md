@@ -19,6 +19,8 @@ related:
 - wiki/orchestration/multi-framework-cp-composition.md
 - modules/25_era.md
 - modules/07_critic_agent.md
+domain: orchestration
+topic: multi-stage-issue-workflow
 ---
 
 # KF Version-Gap Bridging via Adapter Classification

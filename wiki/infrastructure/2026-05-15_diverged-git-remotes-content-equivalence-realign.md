@@ -10,6 +10,8 @@ pinned: false
 created: 2026-05-15
 tags: infrastructure, git, multi-remote, force-push, history-realignment, content-equivalence
 related_entries: []
+domain: infrastructure
+topic: ops
 ---
 
 # Realigning diverged git remotes via content-equivalence check + force-push

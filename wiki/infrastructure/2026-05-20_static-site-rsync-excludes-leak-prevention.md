@@ -13,6 +13,8 @@ related_entries:
   - infrastructure/2026-05-18_editable-venv-mcp-server-installation.md
   - diagnostics/2026-05-18_http-status-signatures-deploy-verification-smoke-test.md
   - methodologies/2026-05-20_propagation-gap-addenda-propose-downstream-changes-that-dont-execute.md
+domain: infrastructure
+topic: deployment
 ---
 
 # Static-site rsync excludes — internal-artifact leak prevention

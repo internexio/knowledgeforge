@@ -26,6 +26,8 @@ related:
 - wiki/methodologies/2026-05-13_verify-audit-claims-before-designing-fix.md
 - wiki/infrastructure/2026-05-19_sem-tools-google-ads-keyword-planner-wrapper.md
 - wiki/architecture/pattern-extraction-reuse-heuristic.md
+domain: methodologies
+topic: verification
 ---
 
 # Primary-source vendor guidance reanchor — SEO/GEO May 2026 baseline

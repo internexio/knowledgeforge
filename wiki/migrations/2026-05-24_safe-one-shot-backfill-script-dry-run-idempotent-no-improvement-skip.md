@@ -13,6 +13,8 @@ related_entries:
   - wiki/migrations/2026-05-20_idempotent-additive-column-sqlite-migrations.md
   - wiki/infrastructure/2026-05-14_idempotent-watchdog-producer-pattern.md
   - wiki/methodologies/2026-05-13_find-consumer-first-before-data-migration.md
+domain: migrations
+topic: schema-evolution
 ---
 
 # Safe one-shot backfill script architecture — dry-run default + idempotent + skip-no-improvement

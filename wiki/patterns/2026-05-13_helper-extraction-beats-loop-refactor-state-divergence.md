@@ -10,6 +10,8 @@ pinned: false
 created: 2026-05-13
 tags: [refactoring, code-structure, pipeline-design, state-passing, audit-feedback]
 related_entries: [patterns/2026-05-13_phased-god-module-split-facade-first.md, architecture/pattern-extraction-reuse-heuristic.md]
+domain: patterns
+topic: synthesis
 ---
 
 # Helper extraction beats loop refactor when per-step state diverges

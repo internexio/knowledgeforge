@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-21
 tags: delegation, routing, chain, grounding, accretion
 related_entries: [architecture/2026-05-18_bead-as-context-anchor-deferred-runbooks.md, orchestration/schema-first-elicitation-order.md, methodologies/2026-05-13_find-consumer-first-before-data-migration.md]
+domain: architecture
+topic: chain-design
 ---
 
 # Cross-Project Capability Audit via Structured Repo-Agent Prompt

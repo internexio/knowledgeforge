@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-29
 tags: telegram, getUpdates, callback-routing, single-poller, multi-consumer, bot-token, architecture
 related_entries: []
+domain: infrastructure
+topic: server-configuration
 ---
 
 # Telegram getUpdates Exclusivity — Single-Bridge Architecture for Multi-Consumer Apps

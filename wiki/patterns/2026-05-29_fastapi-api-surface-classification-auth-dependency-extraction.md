@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-29
 tags: api, routing, classification, validation
 related_entries: []
+domain: patterns
+topic: classification
 ---
 
 # FastAPI API-Surface Classification via openapi() + Auth-Dependency AST Extraction

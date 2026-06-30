@@ -20,6 +20,8 @@ related:
 - wiki/architecture/scaffolding-vs-patching-pattern.md
 - modules/02_builder.md
 - modules/01_kf_orchestrator.md
+domain: architecture
+topic: mode-design
 ---
 
 # Skills vs. Agents Design Boundary

@@ -10,6 +10,8 @@ pinned: false
 created: 2026-05-18
 tags: chrome-mcp, e2e-testing, react, automation, empirical, integration-pitfall
 related_entries: []
+domain: diagnostics
+topic: testing
 ---
 
 # Chrome MCP automation of React composers — Enter-to-send and onChange traps

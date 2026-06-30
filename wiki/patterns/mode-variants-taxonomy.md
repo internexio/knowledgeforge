@@ -29,6 +29,8 @@ related:
 - modules/16_operational_bounds.md
 - wiki/diagnostics/handoff-payload-schema-gap.md
 - wiki/methodologies/external-source-to-kf-mapping.md
+domain: patterns
+topic: classification
 ---
 
 # Mode-Label-with-Variants Taxonomy

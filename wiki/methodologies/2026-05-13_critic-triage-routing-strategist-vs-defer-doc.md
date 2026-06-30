@@ -12,6 +12,8 @@ related_entries:
   - orchestration/spec-commit-before-impl-commit.md
   - architecture/pattern-extraction-reuse-heuristic.md
   - methodologies/2026-05-13_verify-audit-claims-before-designing-fix.md
+domain: methodologies
+topic: decision-framework
 ---
 
 # Critic-finding triage — Strategist for spec-MUST violations, deferred-doc for forward-compat

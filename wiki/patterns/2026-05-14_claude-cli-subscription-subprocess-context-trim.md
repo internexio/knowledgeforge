@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-14
 tags: claude-cli,subprocess,context-bloat,cost-optimization,subscription-auth,cache-tokens
 related_entries: [infrastructure/2026-05-14_claude-cli-bare-disables-oauth-keychain-auth.md]
+domain: patterns
+topic: retrieval
 ---
 
 # Claude CLI Subscription Subprocess Context Trim

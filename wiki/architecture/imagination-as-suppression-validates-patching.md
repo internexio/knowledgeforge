@@ -24,6 +24,8 @@ related:
 - wiki/architecture/scaffolding-vs-patching-pattern.md
 - modules/18_salience_allocation.md
 - modules/21_knowledge_accretion.md
+domain: architecture
+topic: knowledge-accretion
 ---
 
 # Imagination as Suppression: New Evidence for the Patching Principle

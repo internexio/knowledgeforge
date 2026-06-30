@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-13
 tags: migration, jinja2, byte-exactness, prompt-engineering, snapshot-testing
 related_entries: []
+domain: compiler
+topic: multi-repo-pipeline
 ---
 
 # Trailing-Newline Divergence: Python Triple-Quoted Strings vs Jinja2 Rendering

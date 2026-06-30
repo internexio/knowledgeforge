@@ -13,6 +13,8 @@ related_entries:
   - patterns/mode-variants-taxonomy.md
   - diagnostics/2026-05-18_vary-input-smoke-runs-llm-failure-modes.md
   - diagnostics/2026-06-17_ai-fingerprint-patterns-seven-recurring-tells-marketing-prose.md
+domain: patterns
+topic: synthesis
 ---
 
 # Variant axes as a temperature-substitute for content generation without sampling control

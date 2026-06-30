@@ -11,6 +11,8 @@ created: 2026-06-17
 tags: community-engagement, reddit, distribution, link-strategy, anti-spam, founder-marketing
 related_entries:
   - methodologies/2026-06-16_lane-discipline-via-data-classification.md
+domain: methodologies
+topic: prioritization
 ---
 
 # Reddit-reputation as link-precondition — value-first comments build the history that lets later link drops land

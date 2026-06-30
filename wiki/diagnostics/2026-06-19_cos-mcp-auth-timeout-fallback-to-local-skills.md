@@ -12,6 +12,8 @@ tags: cos, mcp, fallback-pattern, skill-equivalence, diagnostic, semalytics
 related_entries:
   - diagnostics/2026-05-19_cos-mcp-analyze-full-timeout-direct-curl-fallback.md
   - diagnostics/2026-05-20_cos-analyze-full-payload-ceiling-502.md
+domain: diagnostics
+topic: liveness
 ---
 
 # COS MCP endpoint auth/timeout — fall back to local cos-personality + cos-copy skills

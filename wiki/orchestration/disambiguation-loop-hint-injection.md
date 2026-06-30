@@ -19,6 +19,8 @@ related:
 - modules/01_navigator.md
 - modules/16_circuit_breaker.md
 - wiki/architecture/scaffolding-vs-patching-pattern.md
+domain: orchestration
+topic: recovery
 ---
 
 # Disambiguation Loop Hint Injection

@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-18
 tags: diagnostics, http, deployment-verification, smoke-testing, nginx, fastapi, route-registration
 related_entries: [diagnostics/2026-05-15_rest-client-tolerance-http-status.md, diagnostics/2026-05-18_http2-hpack-desync-bogus-401-from-postgrest.md]
+domain: diagnostics
+topic: ops
 ---
 
 # HTTP status signatures (404 vs 405 vs 401) as positive deploy-verification signals

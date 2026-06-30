@@ -11,6 +11,8 @@ tags: patterns, architecture, deliberation, persona-convening, llm-aggregation, 
 related_entries:
   - architecture/2026-05-14_identity-registry-append-only-event-log-separation.md
   - patterns/2026-05-14_collapse-usestate-discriminated-union-reducer.md
+domain: patterns
+topic: synthesis
 ---
 
 # Post-deliberation per-entity aggregation pattern (synthesizer pass)

@@ -13,6 +13,8 @@ related_entries:
   - wiki/migrations/2026-05-24_safe-one-shot-backfill-script-dry-run-idempotent-no-improvement-skip.md
   - wiki/patterns/2026-05-12_dogfood-apply-undo-end-to-end-testing.md
   - wiki/methodologies/2026-05-27_supervise-first-real-data-run-autonomous-loops.md
+domain: orchestration
+topic: task-decomposition
 ---
 
 # Validate new mutation-bearing orchestration skills with --dry-run on real-but-small data

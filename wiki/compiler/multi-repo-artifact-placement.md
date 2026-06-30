@@ -12,6 +12,8 @@ importance: 3
 pinned: false
 accreted_in: "7.0.0"
 source_fingerprint: "session:2748dcca-13e3-4cf1-87a3-bf6a55ba87c7 / kf-compile load-map 2026-04-15"
+domain: compiler
+topic: multi-repo-pipeline
 ---
 
 # Multi-Repo Compile Pipeline: Artifact Placement for Human Navigation

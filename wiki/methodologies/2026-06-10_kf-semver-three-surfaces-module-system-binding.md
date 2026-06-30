@@ -11,6 +11,8 @@ tags: versioning, semver, spec-impl-discipline, kf-internal, change-management
 related_entries:
   - methodologies/2026-05-20_propagation-gap-addenda-propose-downstream-changes-that-dont-execute.md
   - methodologies/2026-05-21_critic-verification-pass-second-pass-validation.md
+domain: methodologies
+topic: propagation-discipline
 ---
 
 # KF Semver Lives on Three Surfaces — and They Bump Independently

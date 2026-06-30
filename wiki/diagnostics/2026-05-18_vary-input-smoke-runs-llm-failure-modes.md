@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-18
 tags: diagnostics, llm, empirical, smoke-testing
 related_entries: [diagnostics/2026-05-18_http-status-signatures-deploy-verification-smoke-test.md, methodologies/2026-05-15_two-call-anthropic-cache-prefix-verification.md, diagnostics/2026-05-13_fabricated-default-fallback-at-call-site.md]
+domain: diagnostics
+topic: testing
 ---
 
 # Vary input across smoke runs — different audiences expose different LLM-prompt failure modes

@@ -7,6 +7,8 @@ grounding_score: 0.95
 staleness_risk: slow_decay
 importance: 5
 tags: [anthropic, model-deprecation, incident-response, prod-debugging, llm, claude]
+domain: patterns
+topic: retrieval
 ---
 
 # Anthropic model-EOL incident response is a 3-phase fix, not a 1-line change

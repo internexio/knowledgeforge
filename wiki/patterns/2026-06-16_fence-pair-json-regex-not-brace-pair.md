@@ -7,6 +7,8 @@ grounding_score: 0.95
 staleness_risk: stable
 importance: 4
 tags: [regex, json-parsing, llm-output, anthropic, python]
+domain: patterns
+topic: synthesis
 ---
 
 # Markdown-fence JSON regex must match between fences, not between braces

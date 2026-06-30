@@ -12,6 +12,8 @@ tags: sqlite, schema-migration, idempotency, pragma-table-info, pre-production
 related_entries:
   - wiki/migrations/2026-05-16_verify-fk-target-table-remote-before-migration.md
   - wiki/migrations/big-bang-rename-supabase-fastapi-react.md
+domain: migrations
+topic: schema-evolution
 ---
 
 # Idempotent additive-column migration pattern for SQLite without a migration framework

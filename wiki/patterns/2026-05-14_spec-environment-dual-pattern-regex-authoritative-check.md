@@ -12,6 +12,8 @@ related_entries:
   - diagnostics/handoff-payload-schema-gap.md
   - orchestration/schema-first-elicitation-order.md
   - patterns/2026-05-13_conditional-update-for-atomic-queue-claim.md
+domain: patterns
+topic: validation
 ---
 
 # Spec-Environment Pattern Mismatch — Dual-Pattern Regex + Authoritative Downstream Check

@@ -12,6 +12,8 @@ related_entries:
   - diagnostics/2026-05-23_live-smoke-as-verification-gate-mocks-pass-prod-breaks.md
   - methodologies/2026-05-26_deterministic-scan-before-claiming-refactor-audit-beads.md
   - patterns/2026-05-16_discriminated-enum-extension-7-point-checklist.md
+domain: patterns
+topic: validation
 ---
 
 # Threading a New Field Through Endpoints: Enumerate ALL Request/Response Models, Not Just the Dominant One

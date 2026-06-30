@@ -10,6 +10,8 @@ pinned: false
 created: 2026-06-20
 tags: nginx, rate-limiting, oauth, jwt, frontend-backend, web-deploy, ci-cd, auth, production-incident
 related_entries: []
+domain: infrastructure
+topic: server-configuration
 ---
 
 # Nginx rate-limit zones must distinguish credential-bearing vs read-only auth endpoints

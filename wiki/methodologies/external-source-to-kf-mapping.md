@@ -29,6 +29,8 @@ related:
 - wiki/diagnostics/handoff-payload-schema-gap.md
 - wiki/architecture/scaffolding-vs-patching-pattern.md
 - modules/25_entity_relationship_analysis.md
+domain: methodologies
+topic: decision-framework
 ---
 
 # External Source → KF Mapping (Practitioner-Guide-to-Spec Translation)

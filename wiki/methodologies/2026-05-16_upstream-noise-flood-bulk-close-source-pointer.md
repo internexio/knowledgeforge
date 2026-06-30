@@ -13,6 +13,8 @@ related_entries:
   - methodologies/2026-05-15_pre-emptive-scope-sweep-downstream-verdict.md
   - infrastructure/2026-05-15_silent-success-scripts-state-artifact-freshness.md
   - infrastructure/2026-05-14_idempotent-watchdog-producer-pattern.md
+domain: methodologies
+topic: bead-triage-workflow
 ---
 
 # Surviving an upstream-noise flood in the issue tracker — close-with-source-pointer, accept recurring waves

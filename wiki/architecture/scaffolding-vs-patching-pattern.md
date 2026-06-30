@@ -30,6 +30,8 @@ related:
 - modules/07_critic_agent.md
 - modules/14_metacognitive_monitor.md
 - modules/21_knowledge_accretion.md
+domain: architecture
+topic: mode-design
 ---
 
 # Scaffolding vs. Patching: A Design Trajectory Pattern

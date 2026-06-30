@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-15
 tags: rest-api, http-status-codes, client-design, integration-patterns, error-handling
 related_entries: []
+domain: patterns
+topic: retrieval
 ---
 
 # REST client tolerance — 200 OK ≠ 201 Created ≠ failure

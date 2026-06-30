@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-13
 tags: migration, jinja2, prompt-engineering, llm, escape-syntax
 related_entries: []
+domain: patterns
+topic: synthesis
 ---
 
 # Jinja2 {% raw %} Required When Migrating .format() Templates with Literal Curly Braces

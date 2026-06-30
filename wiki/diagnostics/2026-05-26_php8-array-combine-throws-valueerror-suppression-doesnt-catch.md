@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-26
 tags: empirical, quality-gate, migrations, php, breaking-change, exception-handling
 related_entries: []
+domain: diagnostics
+topic: error-classification
 ---
 
 # PHP 8 `array_combine` throws ValueError — `@` suppression doesn't catch it

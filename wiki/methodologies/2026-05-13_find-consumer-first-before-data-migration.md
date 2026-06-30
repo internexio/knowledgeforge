@@ -13,6 +13,8 @@ related_entries:
   - wiki/migrations/big-bang-rename-supabase-fastapi-react.md
   - wiki/methodologies/2026-05-13_verify-audit-claims-before-designing-fix.md
   - wiki/patterns/2026-05-11_atomic-write-stubs-for-readwrite-pipelines.md
+domain: methodologies
+topic: verification
 ---
 
 # Find-consumer-first before designing data migrations

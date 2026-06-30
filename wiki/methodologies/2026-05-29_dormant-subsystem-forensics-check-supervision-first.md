@@ -14,6 +14,8 @@ related_entries:
   - methodologies/2026-05-27_read-ground-truth-not-surface-signals-universal-antipattern.md
   - infrastructure/2026-05-14_idempotent-watchdog-producer-pattern.md
   - infrastructure/2026-05-12_self-watchdog-autonomous-fix-cycles.md
+domain: methodologies
+topic: verification
 ---
 
 # Dormant-Subsystem Forensics — Check the Supervision Layer Before the Subsystem Code

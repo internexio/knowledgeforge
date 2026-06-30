@@ -20,6 +20,8 @@ related:
 - wiki/architecture/scaffolding-vs-patching-pattern.md
 - wiki/architecture/skills-vs-agents-design-boundary.md
 - modules/02_builder.md
+domain: architecture
+topic: mode-design
 ---
 
 # Hook Consequence Asymmetry

@@ -10,6 +10,8 @@ pinned: false
 created: 2026-05-13
 tags: diagnostics, infrastructure, debugging, empirical, stable
 related_entries: ["infrastructure/2026-05-11_python-package-cli-under-cron.md", "diagnostics/2026-05-13_bd-search-idempotency-grep-trap.md"]
+domain: infrastructure
+topic: ops
 ---
 
 # launchd CWD Trap: Jobs Run with `cwd=/`, Breaking CWD-Relative Tool Lookups

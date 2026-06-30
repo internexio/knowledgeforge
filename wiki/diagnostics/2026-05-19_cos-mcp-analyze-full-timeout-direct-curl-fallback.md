@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-19
 tags: diagnostics, mcp, cos, timeout, fallback, curl, transport-layer, api-health
 related_entries: []
+domain: diagnostics
+topic: liveness
 ---
 
 # COS MCP analyze_full_comms timeout — direct curl fallback

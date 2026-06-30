@@ -12,6 +12,8 @@ tags: empirical, quality-gate, classification, delegation, validation
 related_entries:
   - methodologies/2026-05-18_reframe-stated-scope-to-actual-goal-strategist-heuristic.md
   - methodologies/2026-05-15_pre-emptive-scope-sweep-downstream-verdict.md
+domain: methodologies
+topic: gate-design
 ---
 
 # Polish-as-blocker drift — when iteration cycles need an explicit ship gate

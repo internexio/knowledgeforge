@@ -21,6 +21,8 @@ related:
 - wiki/orchestration/multi-framework-cp-composition.md
 - modules/01_kf_orchestrator.md
 - modules/09_coordinator.md
+domain: orchestration
+topic: task-decomposition
 ---
 
 # Context-Manager Protocol

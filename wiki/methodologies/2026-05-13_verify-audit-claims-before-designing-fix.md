@@ -11,6 +11,8 @@ tags: audit-workflow, refactoring, stale-documentation, scope-creep, prior-work-
 related_entries:
   - patterns/2026-05-11_audit-log-event-vocabulary-mismatch.md
   - orchestration/adversarial-filename-audit.md
+domain: methodologies
+topic: verification
 ---
 
 # Verify Audit-Doc Structural Claims Against Current Code Before Designing the Fix

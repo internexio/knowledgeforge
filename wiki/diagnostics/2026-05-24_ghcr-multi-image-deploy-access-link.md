@@ -9,6 +9,8 @@ pinned: false
 created: 2026-05-24
 tags: ghcr, github-actions, devops, deployment, ci-cd, docker, permissions
 related_entries: []
+domain: diagnostics
+topic: ops
 ---
 
 # GHCR Multi-Image Deploy — Package-to-Repo Actions Access Link

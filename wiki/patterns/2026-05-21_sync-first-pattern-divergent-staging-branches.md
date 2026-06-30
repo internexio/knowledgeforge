@@ -10,6 +10,8 @@ pinned: false
 created: 2026-05-21
 tags: git-workflow, deploy-strategy, staging, ci-cd, branch-management
 related_entries: ["infrastructure/2026-05-19_git-dash-c-cwd-stability-claude-code-bash.md", "infrastructure/2026-05-15_diverged-git-remotes-content-equivalence-realign.md"]
+domain: patterns
+topic: synthesis
 ---
 
 # Sync-first pattern for divergent staging branches

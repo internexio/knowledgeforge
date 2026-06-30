@@ -14,6 +14,8 @@ related_entries:
   - wiki/strategy/2026-05-21_vendor-selection-calibration-uncertainty-dominance.md
   - wiki/diagnostics/2026-05-21_server-side-state-outlives-client-fixes-saas-wrappers.md
   - wiki/methodologies/2026-05-20_primary-source-vendor-guidance-reanchor.md
+domain: methodologies
+topic: trade-off-analysis
 ---
 
 # Vendor swap implies semantics-recalibration audit — "same thing" rarely is
