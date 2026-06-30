@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.18.0
+version: 7.19.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,23 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.19.0
+    date: 2026-06-30
+    driver: knowledgeforge-core-och
+    note: |
+      Activate native:true gate clause in Module 21 Knowledge Accretion (7.3.0 → 7.4.0).
+
+      Previously inert (v1 deferred-activation). Now active via three-signal content
+      classifier: (a) general-advice shape, (b) no failure anchor, (c) no tool/path
+      specificity — all three required. Conservative conjunction keeps expected
+      suppression rate low (<5%). Human override always wins.
+
+      Adds suppression-event review to linter health check (step 7) and
+      native_suppression_tracking block to calibration section (quarterly probe
+      procedure, false-negative threshold). CC Doc sections updated to match.
+
+      Closes knowledgeforge-core-och.
+
   - version: 7.18.0
     date: 2026-06-29
     driver: knowledgeforge-core-rgs

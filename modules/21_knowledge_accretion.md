@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Knowledge Accretion
-  version: 7.3.0
+  version: 7.4.0
   purpose: Cross-cutting detection-and-routing behavior that recognizes when mode outputs contain knowledge worth persisting and either auto-files it (Claude Code) or surfaces it as a compilation candidate (Claude Projects)
   topics: [knowledge-persistence, compile-query-enhance, wiki-generation, accretion-signals, knowledge-base-maintenance]
   contexts: [all-mode-execution, knowledge-management, session-outputs, persistent-storage]
@@ -13,6 +13,17 @@ module:
   related: [07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 02_Builder_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model]
   added_in: "6.2"
   changelog:
+    7.4.0:
+      date: 2026-06-30
+      driver: knowledgeforge-core-och
+      changes:
+        - Activated native:true gate clause — adds content-classifier heuristic at step_2c.compute.native. A candidate is native:true when ALL THREE signals are present simultaneously: (a) general-advice shape (no named framework, stack, or project-specific concept), (b) no failure anchor (no observed failure, error, or counterexample cited), (c) no tool/path/command specificity (no CLI, API, path, or library named). Conservative conjunction — most project-specific or empirically-grounded candidates fail at least one signal.
+        - Added assignment-source hierarchy: human_set override > content classifier > calibration probe (offline). Human override always wins.
+        - Added linter step 7: suppression-event review — reads compile.md native suppressions from current calibration window, computes suppression rate, surfaces NATIVE_GATE warning when rate > 25%, includes 5-item sample for human spot-check.
+        - Added native_suppression_tracking block to accretion_calibration: per-session logging of native_suppressions + suppression_rate, quarterly calibration probe procedure, false-negative threshold > 10%.
+        - Updated CC Doc Three-Condition Test and Candidate Metadata sections to match activated state.
+        - Semver: minor (not major) — gate structure unchanged; criteria are additive to a previously-inert field. Expected suppression rate is low (<5% of candidates based on project-specificity of typical KF accretion corpus). Future calibration bead bears re-evaluation if yield materially changes.
+        - Removes all "v1: deferred to bead knowledgeforge-core-och" references — replaced by actual specification.
     7.3.0:
       date: 2026-06-13
       driver: knowledgeforge-core-f8a
@@ -169,11 +180,22 @@ During any mode's execution, flag output as `ACCRETION_CANDIDATE` when it meets 
 
 1. **Novelty:** The output contains knowledge not already present in the existing knowledge base.
 2. **Reuse value:** The knowledge would benefit future queries beyond the current session.
-3. **Non-native:** The model does not already exhibit this behavior natively (v1: default false; see activation policy below).
+3. **Non-native:** The model does not already exhibit this behavior natively (see native auto-evaluation criteria below).
 
 Failing any condition → not a candidate. Drop silently for conditions 1 and 2 (no surfacing, no metadata generation, no filing). For condition 3 (native suppression), append a suppression event to `compile.md` with the candidate body and `suppressed_by: native` reason so over-suppression is detectable in linter health checks.
 
-**v1 activation policy for the `native` clause:** The `native` field defaults to `false`. No mode auto-emits `native: true` at v1. The clause is structurally present (third condition) but practically inert because the only assignment source at v1 is human review via the `importance_source: inferred → human_set` lifecycle. Mode self-evaluation of "is this thing I just produced something I produce natively?" is circular; auto-evaluation criteria are deferred to a separate calibration bead (see `knowledgeforge-core-och`).
+**Native auto-evaluation criteria (bead knowledgeforge-core-och):** A candidate is `native: true` if ALL THREE content signals are present simultaneously:
+
+- **(a) General-advice shape.** The body states a general reasoning or communication principle without domain specificity — no named framework, stack, project-specific concept, or product name. ("Always verify before claiming" qualifies. "Always verify Supabase migrations with `pg_tables`" does not.)
+- **(b) No failure anchor.** No section describes a specific observed failure, error message, unexpected behavior, or concrete counterexample from a real session. The candidate describes ideal behavior in the abstract only. A real failure example anchors the knowledge to an observed gap — evidence that the model does NOT exhibit the behavior natively in context.
+- **(c) No tool/path/command specificity.** No named CLI tools, API endpoints, file paths, shell commands, or library names appear in the body.
+
+All three must hold simultaneously. If any signal is absent → `native: false` (proceed to filing). This conjunction is deliberately conservative: the canonical over-accretion case — general AI best-practice extracted from a single session with no grounding — satisfies all three, while most project-specific or empirically-grounded candidates fail at least one.
+
+**Assignment source hierarchy (most to least authoritative):**
+1. Human review (`importance_source: human_set`) — overrides all heuristics. Human sets `native: true` → suppress regardless of content signals. Human sets `native: false` → bypass content classifier.
+2. Content classifier (above) — applied at `step_2c` when no human override is present.
+3. Calibration probe (offline, quarterly) — retroactive batch review of compile.md suppression events; may reinstate false-negative suppressions as filed entries. See `native_suppression_tracking` in the calibration section.
 
 ### Detection by Source Mode
 
@@ -352,6 +374,33 @@ accretion_calibration:
           "ACCRETION_GATE: may be too restrictive"
         - Otherwise: surface yield % as a health metric alongside KB health assessment
     calibration_cycle: Run after every 5 linter health checks or when yield exits healthy range.
+
+  native_suppression_tracking:
+    description: |
+      Tracks native:true suppression events separately from novelty/reuse failures.
+      Suppression events are logged to compile.md (field: suppressed_by: native).
+      The linter reads these during health checks and the calibration probe reviews
+      them quarterly for false negatives.
+    log_location:
+      claude_code: wiki/accretion-calibration.yaml (alongside existing yield_tracking)
+    log_format:
+      per_session:
+        native_suppressions: integer
+        total_candidates_flagged: integer
+        native_suppression_rate: float   # native_suppressions / total_candidates_flagged
+    rolling_window: Last 10 sessions (matching yield_tracking window)
+    healthy_range: "5% to 25%"
+    calibration_probe:
+      frequency: "Quarterly, or when native_suppression_rate exits 5–25% healthy range for 2+ consecutive linter cycles"
+      procedure: |
+        For each compile.md entry with suppressed_by: native in the last 90 days:
+          1. Extract candidate title and 1-sentence description of the behavior described
+          2. Probe: present only the described scenario to Claude at temperature 0, zero KF context
+          3. If probe response DOES exhibit the behavior described → confirmed native suppression (correct)
+          4. If probe response does NOT exhibit the behavior → false negative
+             Action: reinstate candidate as a filed wiki entry with source note "reinstated from native suppression at <date>"; flag for human review; if a pattern of false negatives emerges from the same content class, tighten classifier signal (a), (b), or (c) to reduce future misclassification
+      false_negative_threshold: ">10% of reviewed suppressions in a probe run → NATIVE_GATE: over-suppressing — tighten one or more of the three classifier signals or lower the conjunction requirement"
+      sampling: "When suppression event count > 50 in the 90-day window, sample 20 events randomly rather than reviewing all — reduces probe cost while preserving statistical signal"
 ```
 
 ---
@@ -553,8 +602,14 @@ claude_code_runtime:
           # Modes may override.
 
         native:
-          # v1: always false (see Three-Condition Test activation policy). The gate clause
-          # still fires when native==true, but v1 has no auto-emission of native==true.
+          # Content classifier (bead knowledgeforge-core-och). A candidate is native: true
+          # when ALL THREE signals are present simultaneously:
+          #   (a) General-advice shape — no named framework, stack, or project-specific concept
+          #   (b) No failure anchor — no observed failure, error message, or counterexample cited
+          #   (c) No tool/path/command specificity — no CLI, API, path, or library named
+          # All three required (conservative conjunction). Any absent → native: false → proceed to filing.
+          # Human override (importance_source: human_set) takes precedence over this classifier.
+          # Calibration probe (quarterly, offline) reviews suppression events for false negatives.
 
         path_globs:
           # Populated only when trigger == path_bound AND the producing mode authored explicit globs.
@@ -853,6 +908,11 @@ linter_behavior:
     4. Record violation events (added 7.2.0 — bead 8zt): for each cc_rules entry with a linter_check block whose kind is in {frontmatter_field_missing, frontmatter_field_value_disallowed, body_pattern_present, body_pattern_absent}, evaluate the pattern against wiki entries matching linter_check.target_files. Append matches to .kf/linter/events.log (tab-separated: ISO_timestamp\tsession_id\trule_filename\tevent_type). Temporal-ordering kinds (e.g., "event X preceded event Y in session") are NOT supported at v1 — deferred to follow-up bead.
     5. Aggregate graduation snapshot (added 7.2.0): after scanning, rotate events older than 30 days from .kf/linter/events.log. Compute per-rule counts (events, distinct session_ids, first/last seen, eligibility — eligible_for_graduation = event_count ≥ 3 AND len(session_ids) ≥ 2). Write .kf/linter/counter.json (overwriting). Snapshot is the source of truth for cc_hooks emitter graduation decisions.
     6. Add new "Graduation candidates" finding section to output — rules that crossed the threshold this run; recommendation includes the cc_hooks frontmatter stub the module author would add (the linter recommends the structure, but the author decides command, matcher, and source_rule wiring per their domain knowledge).
+    7. Suppression-event review (added 7.4.0 — bead knowledgeforge-core-och): read compile.md entries with `suppressed_by: native` from the current calibration window (last 10 sessions, matching the rolling window in `native_suppression_tracking`). Compute native suppression rate = native_suppressions / total_candidates_flagged. Surface results under a "Native Gate" subsection in health output:
+       - Rate > 25%: MEDIUM finding — "NATIVE_GATE: suppression rate is elevated ([N]%) — review recent suppressions for false negatives; native gate may be over-triggering on project-specific candidates"
+       - Rate 5–25%: healthy — log "Native suppression rate: [N]% (healthy)" in summary; no action
+       - Rate < 5%: informational — log "Native suppression rate: [N]% (low / gate under-triggering or corpus is project-specific)"; no action
+       Include a sample of up to 5 recent suppression event titles in the health output for human spot-check. Full false-negative detection deferred to quarterly calibration probe (see `native_suppression_tracking` in Accretion Calibration section).
     
   output_format:
     ```
@@ -1392,11 +1452,16 @@ Detect when a mode's output contains knowledge worth persisting to the knowledge
 Flag as `ACCRETION_CANDIDATE` when ALL THREE are met:
 1. **Novelty:** Knowledge not already present in the existing knowledge base.
 2. **Reuse value:** Would benefit future queries beyond the current session.
-3. **Non-native:** The model does not already exhibit this behavior natively (v1: default false, see activation policy below).
+3. **Non-native:** The model does not already exhibit this behavior natively (see content classifier below).
 
 Novelty alone is not enough. A unique observation with no transferable value is not a candidate. A reusable observation that the model already exhibits without instruction is also not a candidate (suppressed at the gate; logged to compile.md for audit).
 
-**v1 activation policy:** `native` defaults to `false`. No mode auto-emits `native: true` at v1. The gate clause is structurally present but practically inert; auto-evaluation criteria are deferred to bead `knowledgeforge-core-och`.
+**Native content classifier (7.4.0):** A candidate is `native: true` — and suppressed — when ALL THREE signals are present simultaneously:
+- **(a)** General-advice shape: no named framework, stack, or project-specific concept
+- **(b)** No failure anchor: no observed failure, error message, or counterexample from a real session
+- **(c)** No tool/path/command specificity: no CLI, API, path, or library named
+
+All three required. If any absent → `native: false` → proceed to filing. Human override (`importance_source: human_set`) always takes precedence.
 
 ## Triggers by Source Mode
 
@@ -1427,7 +1492,7 @@ accretion_candidate:
     trigger: invariant | path_bound | task_bound
     decidability: true | false
     miss_cost: low | medium | high
-    native: true | false      # v1: always false (deferred-activation; see full schema in main body)
+    native: true | false      # content classifier at step_2c; true suppresses at gate; see main body for criteria
     path_globs: [string]      # required only when trigger == path_bound
   provenance:                 # added 7.3.0 (SPEC 4 D2)
     loop_id: string           # null when direct orchestrator
