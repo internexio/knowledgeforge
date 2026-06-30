@@ -94,3 +94,49 @@ When leakage is discovered, server-side removal is fast (`ssh host "rm -f /var/w
 ## Source Context
 
 Discovered during 2026-05-20 COS static-site SEO audit cleanup. Post-deploy verification found internal research, audit scripts, and keyword data publicly accessible via HTTP 200 responses. Commit `8fcba05` — docs: expand rsync excludes to prevent internal-artifact deploy — records the remediation.
+
+---
+
+## Addendum 2026-06-18 — CI workflow drift + `--delete-excluded` self-healing (cos-yh03)
+
+Two refinements from the June 2026 recurrence on the same `site/` tree, this time on the GitHub Actions deploy path rather than the manual rsync recipe.
+
+### Refinement 1 — `--delete` alone does NOT clean previously-shipped excluded files
+
+`rsync --delete --exclude='X'` removes destination files **not present in source**. Excluded files are out of scope from rsync's perspective entirely — not "missing from source." So if `X` already exists on the destination from a prior deploy, adding `X` to the exclude list on a later run will NOT remove it. The file persists until something explicitly deletes it.
+
+The self-healing variant is `--delete-excluded`:
+
+```bash
+rsync -avz --delete --delete-excluded \
+  --exclude='seo-research/' \
+  --exclude='dogfood-*.py' \
+  --exclude='*.backup-*' \
+  site/ user@host:/var/www/example.com/
+```
+
+With this flag, the next deploy after adding a new exclude pattern cleans those files from the destination automatically. Subsequent deploys remain self-healing for any future exclude additions.
+
+**Caveat.** `--delete-excluded` will also wipe manually-uploaded files matching the exclude pattern. If operators paste files directly into the destination for ad-hoc reasons, this is a behavior change worth flagging before flipping the switch.
+
+**One-time cleanup of already-leaked files.** Once `--delete-excluded` is in the CI workflow, the next deploy removes them automatically. If immediate removal is required (sensitive URLs, credentials), SSH-delete first, then verify HTTP 404 — don't trust "next deploy will fix it" if content is active liability.
+
+### Refinement 2 — Docs/CI workflow drift is the actual leak source
+
+The 2026-05-20 fix expanded the **manual rsync recipe** in `site/DEPLOY.md` to include the broader exclude list above. But the CI workflows (`deploy-testing.yml`, `deploy-production.yml`) were never updated — they still rsync'd `site/` with minimal excludes (`cos/`, `blog/`, `.gitignore`, `*.bak`). So every CI deploy continued to ship the internal artifacts that the manual recipe explicitly excluded. The docs change became shelfware.
+
+**Pattern.** When two surfaces describe "how to deploy" — a docs file and a CI workflow — the CI workflow IS the deployed behavior. The docs version is irrelevant if it's not the path that actually runs in production. Reconcile both, or single-source one from the other (e.g. docs reference the workflow's exclude list, or the workflow `source`s the docs version).
+
+### Refinement 3 — Detection variant for CI-deployed surfaces
+
+For projects where the source tree is large enough that manual review of `git ls-files` is impractical, narrow the search with naming-convention heuristics:
+
+```bash
+git ls-files <site-dir>/ | grep -iE '(internal|backup|audit|research|draft|keywords|dogfood)'
+```
+
+Then verify which are HTTP-reachable with the existing curl loop. Pair both — naming convention catches what excludes miss, HTTP probe catches what naming misses.
+
+### Grounding (addendum)
+
+June 2026 [project] recurrence. Both GitHub Actions workflows shipped 16+ tracked internal files (`llms.txt.backup-2026-05-15` — which leaked a URL the team had just removed from the canonical file — plus `seo-keywords.md`, `seo-research/*.{csv,md,py}`, `dogfood-*.py/json`). Fix shipped: expanded both workflow exclude lists to mirror the manual rsync recipe, added `--delete-excluded` to both, SSH-deleted the already-leaked files. Verified 7 sample URLs returned HTTP 404 post-cleanup while real content continued to serve HTTP 200.

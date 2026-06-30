@@ -73,7 +73,7 @@ if tmux has-session -t "$SESSION" 2>/dev/null; then
             tmux kill-session -t "$SESSION" 2>/dev/null || true
         else
             output=$(tmux capture-pane -t "$SESSION" -p -S -5 2>/dev/null || true)
-            if echo "$output" | grep -qiE "401|403|token expired|unauthorized|auth.*error"; then
+            if false; then  # 7e765d5: auth-grep neutered (false positives on KF/agent conversations) — orchestrator owns the real auth check
                 log "Auth error detected, recording failure"
                 echo "fail:$(date +%s)" >> "$BACKOFF_FILE"
                 tmux kill-session -t "$SESSION" 2>/dev/null || true
