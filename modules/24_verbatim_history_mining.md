@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Verbatim History Mining
-  version: 6.5.1
+  version: 6.6.0
   purpose: Tier 3 rewrite from grep-only to semantic vector search via MemPalace sidecar — verbatim storage prevents the 12.4-point permanent recall loss caused by pre-summarization; importance-weighted exponential decay governs effective availability over time
   topics: [tier-3, verbatim, semantic-search, memory-systems, decay, retrieval]
   contexts: [cross-session-recall, history-mining, pattern-detection, decision-archaeology]
@@ -13,6 +13,19 @@ module:
   related: [19_Memory_Architecture, 22_Semantic_Wiki_Search, 23_Taxonomy_Enforcement, 21_Knowledge_Accretion, 17_Temporal_Knowledge]
   added_in: "6.5"
   changelog:
+    6.6.0:
+      date: 2026-07-01
+      driver: knowledgeforge-core-b3g
+      changes:
+        - Phase 1 / Phase 2 split applied to Retrieval Protocol — mirrors the M22 split done in bead 8xq.
+        - Phase 1 (current): MemPalace actual tool surface — mempalace_search(query, limit?, wing?, room?). No domain/topic/date_range/importance_min pre-filter parameters exist; calling with those args silently drops them (confirmed against live tool schema).
+        - Phase 2 (deferred): client-side post-filter on semantic results — apply domain/topic/date_range/importance_min after retrieval. Activates when M22 Phase 2 (bead acu) ships and cross-tier filter infrastructure is live.
+        - Fixed MCP Tools table — search_memories(query, filters, top_k) was aspirational; replaced with actual mempalace_search(query, limit?, wing?, room?) signature.
+        - Fixed Retrieval Protocol step 2 — removed fake metadata pre-filter call; added Phase 1 (wing/room filter, semantic re-rank) + Phase 2 deferred block.
+        - Fixed CC Doc Retrieval Protocol step 2 to match.
+        - Anti-pattern table updated — "Skipping metadata pre-filter" warning retained but qualified: at Phase 1, apply wing/room scope at minimum; domain/topic/importance_min are Phase 2 client-side filters.
+        - Updated M19 Tier 3 cross-refs — access_pattern and search_protocol corrected to Phase 1 reality.
+        - Closes knowledgeforge-core-b3g.
     6.5.1: |
       - Cross-tier filtering reference qualified — the Tier 0 half of cross-tier
         metadata filtering (M22) is Phase 2 Deferred per knowledgeforge-core-8xq.
@@ -59,8 +72,8 @@ The Tier 3 pipeline:
 
 [retrieval query]
   → extract metadata signals (domain, topic, date range, importance threshold)
-  → metadata pre-filter via MemPalace search_memories
-  → semantic re-rank filtered candidates
+  → scope filter: mempalace_search(query, wing=<project_wing>, room=<topic_room>, limit=20) [Phase 1]
+  → semantic re-rank returned candidates
   → apply importance-weighted decay adjustment
   → return top-K verbatim turns
 ```
@@ -99,7 +112,7 @@ MemPalace provides persistent semantic memory as an MCP tool suite. KF Tier 3 is
 | Tool | KF Usage |
 |---|---|
 | `store_memory(content, metadata)` | Store verbatim turn at session end or on importance-5 trigger |
-| `search_memories(query, filters, top_k)` | Module 24 retrieval — metadata pre-filter, then semantic rank |
+| `mempalace_search(query, limit?, wing?, room?)` | Module 24 retrieval — wing/room scope filter, then semantic rank. Phase 1: no domain/topic/date_range/importance_min params (those are Phase 2 client-side post-filters). |
 | `update_importance(memory_id, new_importance)` | Elevate importance when a turn is referenced in a subsequent session |
 | `decay_stale(threshold_days, decay_factor)` | Periodic maintenance — apply decay to entries not accessed in `threshold_days` |
 | `get_memory(memory_id)` | Direct lookup for known turn IDs (citation resolution) |
@@ -156,15 +169,26 @@ Best-effort operation. If the session ends abruptly (context window reached, tim
 
 ## Retrieval Protocol
 
+**Phase 1 (current — MemPalace actual tool surface):**
+
 1. **Extract signals from current context:** What domain/topic/tags does the current query involve? What date range is relevant? What importance threshold applies (default: ≥ 3)?
 
-2. **Metadata pre-filter:** `search_memories(filters={domain, topic, date_range, importance_min})` — same filter-first principle as Module 22.
+2. **Scope filter:** `mempalace_search(query=<query>, wing=<project_wing>, room=<topic_room>, limit=20)` — apply wing and room scope at minimum. The actual MemPalace tool signature is `(query, limit?, wing?, room?)`; no domain/topic/date_range/importance_min parameters exist at Phase 1. Passing those args silently drops them — same defect class as M22 pre-8xq. Use wing/room for coarse scoping only.
 
-3. **Semantic re-rank:** score filtered candidates against query embedding.
+3. **Semantic re-rank:** score returned candidates against query. MemPalace already returns similarity-ranked results; this step applies any additional decay or relevance weighting.
 
 4. **Decay adjustment:** multiply semantic score by `effective_importance / raw_importance` to down-rank stale items.
 
 5. **Return top-K** verbatim turns, preserving original text. Caller may request a summary of retrieved turns; summarization happens at delivery, never at storage.
+
+**Phase 2 (deferred — activates when knowledgeforge-core-acu ships):**
+
+After step 2, apply client-side post-filter on the returned result set:
+- Filter by `domain` and `topic` (M23 vocabulary fields on stored entries)
+- Filter by `date_range` (session_date against stored metadata)
+- Filter by `importance_min` (drop entries below threshold)
+
+Phase 2 does not change the MemPalace call signature — it adds a Python/in-process filter pass over the returned entries before step 3. Activates when cross-tier filter infrastructure is live (M22 Phase 2 / bead acu).
 
 ### Minimum Date Range
 
@@ -190,7 +214,7 @@ Default: assign importance during session if clear signal exists. If uncertain, 
 
 Module 19 defines Tier 3 as "grep-searchable only." This module supersedes that definition. The updated Tier 3 description:
 
-> **Tier 3 — Verbatim History:** Full verbatim conversation turns, stored via MemPalace sidecar with importance metadata. Retrieval via semantic vector search with metadata pre-filtering (Module 24). Importance-weighted exponential decay governs effective availability over time. Grep-only access is the fallback when MemPalace is unavailable.
+> **Tier 3 — Verbatim History:** Full verbatim conversation turns, stored via MemPalace sidecar with importance metadata. Retrieval via semantic vector search; Phase 1 applies wing/room scope filter via `mempalace_search(query, wing?, room?, limit?)`; domain/topic/date_range/importance_min post-filter is Phase 2 (deferred — see M24 Retrieval Protocol). Importance-weighted exponential decay governs effective availability over time. Grep-only access is the fallback when MemPalace is unavailable.
 
 ---
 
@@ -203,7 +227,7 @@ Module 19 defines Tier 3 as "grep-searchable only." This module supersedes that 
 | Grep-only retrieval over verbatim history | ~55–65% R@5 vs 96.6% (semantic) | Use MemPalace semantic search; grep is the fallback |
 | Assigning importance at retrieval time | Importance is a storage-time property; retroactive assignment loses context signal | Assign during or immediately after the session turn |
 | Storing every turn at importance 3 | Decay model cannot differentiate; everything survives or fades equally | Use the full 1–5 scale intentionally |
-| Skipping metadata pre-filter | Falls back to full-corpus semantic search; recall degrades to ~60% R@10 | Always pre-filter by date range + domain at minimum |
+| Skipping wing/room scope filter (Phase 1) | Falls back to full-corpus semantic search; recall degrades to ~60% R@10 | Apply wing and room at minimum via mempalace_search; domain/topic/importance_min filtering is Phase 2 client-side post-filter |
 | Treating MemPalace as write-through cache | Index grows without bound without `decay_stale` maintenance | Schedule periodic `decay_stale` calls |
 
 ---
@@ -312,11 +336,17 @@ Accessing a turn resets its access date. Decay does not delete.
 
 ## Retrieval Protocol
 
+**Phase 1 (current):**
+
 1. Extract domain/topic/tags and date range from current context
-2. Metadata pre-filter: `search_memories(filters={domain, topic, date_range, importance_min≥3})`
-3. Semantic re-rank filtered candidates
+2. Scope filter: `mempalace_search(query=<query>, wing=<project_wing>, room=<topic_room>, limit=20)` — wing/room scope only; no domain/topic/date_range/importance_min params exist at Phase 1
+3. Semantic re-rank returned candidates
 4. Decay adjustment: multiply semantic score by `effective_importance / raw_importance`
 5. Return top-K verbatim turns; summarize at delivery if requested — never before storage
+
+**Phase 2 (deferred — activates when knowledgeforge-core-acu ships):**
+
+After step 2, apply client-side post-filter: domain, topic, date_range, importance_min ≥ 3.
 
 ## Metadata Schema (M23 vocabulary)
 

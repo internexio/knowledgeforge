@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Memory Architecture
-  version: 7.3.0
+  version: 7.3.1
   purpose: Four-tier memory system — persistent domain knowledge (Tier 0), routing index (Tier 1), mode state (Tier 2), and archived history (Tier 3) — that maintains routing accuracy across long sessions and knowledge continuity across sessions
   topics: [memory, context-management, session-persistence, consolidation, skeptical-verification, persistent-knowledge, routing-audit-log, metric-aggregates]
   contexts: [long-sessions, mode-transitions, context-pressure, state-management, cross-session-knowledge, routing-decision-audit]
@@ -14,6 +14,13 @@ module:
   added_in: "6.1"
   implements: "Directive 2 (Three-Tier Memory Architecture), extended to four tiers in 6.2"
   changelog:
+    7.3.1:
+      date: 2026-07-01
+      driver: knowledgeforge-core-b3g
+      changes:
+        - Fixed Tier 3 body: access_pattern and search_protocol search_protocol step 2 corrected — removed stale "metadata pre-filter via search_memories" claim; replaced with Phase 1 (mempalace_search wing/room scope) / Phase 2 deferred split, matching M24 6.6.0 Retrieval Protocol.
+        - Fixed CC Doc Tier 3 description — removed aspirational "metadata pre-filtering" claim; added Phase 1/Phase 2 split note.
+        - Note: 7.3.0 changelog entry incorrectly claimed CC Doc Tier 3 was updated in gkf — that work was deferred to b3g.
     7.3.0:
       date: 2026-07-01
       driver: knowledgeforge-core-gkf
@@ -22,7 +29,7 @@ module:
         - .claude/rules/ is a compiled projection of Tier 0; activation_profile.trigger governs which compilation target is used (invariant → unscoped rule, path_bound → path-gated rule, task_bound → skill). Write-time invariant stated — manual rule edits are overwritten on next compile.
         - auto-memory (~/.claude/projects/<proj>/memory/MEMORY.md) is harness-managed scratch sitting below Tier 1 — not KF-managed, not a tier. Do not accrete to it.
         - Added comparison table: four KF tiers + auto-memory with scope and managed-by columns.
-        - Updated CC Doc Tier 0 description to note cc substrate projections. Updated CC Doc Tier 3 description to remove aspirational "metadata pre-filtering" claim (Phase 1 MemPalace has no filter params; see M24 Phase 1/Phase 2 split).
+        - Updated CC Doc Tier 0 description to note cc substrate projections.
         - No schema changes. schema_version unchanged.
     7.2.1:
       date: 2026-05-11
@@ -472,12 +479,12 @@ mode_state:
 
 ### Tier 3: Verbatim History (Semantic Retrieval via MemPalace)
 
-Full verbatim conversation turns stored with importance metadata. Accessed via semantic vector search with metadata pre-filtering — not grep. Importance-weighted exponential decay governs effective availability over time. See Module 24 for full implementation spec.
+Full verbatim conversation turns stored with importance metadata. Accessed via semantic vector search; Phase 1 applies wing/room scope filter via `mempalace_search(query, wing?, room?, limit?)`; domain/topic/date_range/importance_min post-filter is Phase 2 (deferred). Not grep. Importance-weighted exponential decay governs effective availability over time. See Module 24 for full implementation spec.
 
 ```yaml
 conversation_history:
   location: MemPalace sidecar (github.com/Drlordbasil/MemPalace) — persists across sessions
-  access_pattern: Semantic vector search with metadata pre-filter (domain, topic, date_range, importance_min)
+  access_pattern: "Semantic vector search; Phase 1 — wing/room scope via mempalace_search(query, wing?, room?, limit?); Phase 2 (deferred) — domain/topic/date_range/importance_min client-side post-filter"
   fallback: Grep-searchable when MemPalace is unavailable — log fallback; expect reduced recall
   
   recall_benchmarks:
@@ -493,7 +500,7 @@ conversation_history:
     
   search_protocol:
     1. Extract domain/topic/tag signals and date range from current query
-    2. Apply metadata pre-filter via MemPalace search_memories
+    2. Scope filter: mempalace_search(query, wing=<project_wing>, room=<topic_room>, limit=20) — Phase 1 only; no domain/topic/date_range/importance_min params exist at Phase 1
     3. Semantic re-rank filtered candidates
     4. Apply importance-weighted decay adjustment
     5. Return top-K verbatim turns; verify before using
@@ -812,7 +819,7 @@ Update after every mode completion or decision. Closed items compressed to singl
 Detailed working state for currently active mode only. One mode's state at a time. On mode exit: capture output and key decisions, update routing index.
 
 **Tier 3 — Verbatim History (Semantic Retrieval via MemPalace)**
-Full verbatim conversation turns with importance metadata. Accessed via semantic vector search with metadata pre-filtering. Store verbatim, retrieve semantically. 96.6% R@5 with verbatim + semantic; 84.2% with pre-summarized (12.4-point permanent loss). Never compress before storage.
+Full verbatim conversation turns with importance metadata. Phase 1: wing/room scope filter via `mempalace_search(query, wing?, room?, limit?)`; no domain/topic/date_range/importance_min params at Phase 1. Phase 2 (deferred): client-side post-filter on those fields. Store verbatim, retrieve semantically. 96.6% R@5 with verbatim + semantic; 84.2% with pre-summarized (12.4-point permanent loss). Never compress before storage.
 
 ## Skeptical Verification Rule
 
