@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Memory Architecture
-  version: 7.2.1
+  version: 7.3.0
   purpose: Four-tier memory system — persistent domain knowledge (Tier 0), routing index (Tier 1), mode state (Tier 2), and archived history (Tier 3) — that maintains routing accuracy across long sessions and knowledge continuity across sessions
   topics: [memory, context-management, session-persistence, consolidation, skeptical-verification, persistent-knowledge, routing-audit-log, metric-aggregates]
   contexts: [long-sessions, mode-transitions, context-pressure, state-management, cross-session-knowledge, routing-decision-audit]
@@ -14,6 +14,16 @@ module:
   added_in: "6.1"
   implements: "Directive 2 (Three-Tier Memory Architecture), extended to four tiers in 6.2"
   changelog:
+    7.3.0:
+      date: 2026-07-01
+      driver: knowledgeforge-core-gkf
+      changes:
+        - Added "cc Substrate Projections (Claude Code)" subsection — places .claude/rules/ and auto-memory in the tier model without introducing new tiers.
+        - .claude/rules/ is a compiled projection of Tier 0; activation_profile.trigger governs which compilation target is used (invariant → unscoped rule, path_bound → path-gated rule, task_bound → skill). Write-time invariant stated — manual rule edits are overwritten on next compile.
+        - auto-memory (~/.claude/projects/<proj>/memory/MEMORY.md) is harness-managed scratch sitting below Tier 1 — not KF-managed, not a tier. Do not accrete to it.
+        - Added comparison table: four KF tiers + auto-memory with scope and managed-by columns.
+        - Updated CC Doc Tier 0 description to note cc substrate projections. Updated CC Doc Tier 3 description to remove aspirational "metadata pre-filtering" claim (Phase 1 MemPalace has no filter params; see M24 Phase 1/Phase 2 split).
+        - No schema changes. schema_version unchanged.
     7.2.1:
       date: 2026-05-11
       changes:
@@ -70,6 +80,7 @@ The persistent knowledge layer survives across sessions. It is the accretion tar
 persistent_knowledge:
   location:
     claude_code: wiki/ directory on filesystem
+    claude_code_projection: ".claude/rules/*.md — compiled projection of Tier 0 entries (7.3.0). Not a separate tier — same knowledge, substrate-optimized format. See cc Substrate Projections section."
     claude_project: Project knowledge files (manually updated by user from accretion candidates)
   scope: Cross-session — persists indefinitely until archived or superseded
   
@@ -497,6 +508,62 @@ conversation_history:
 
 ---
 
+### cc Substrate Projections (Claude Code — 7.3.0)
+
+The four-tier model is substrate-agnostic. When running as Claude Code with filesystem access, two additional on-disk artifacts participate in session memory without introducing new tiers.
+
+#### .claude/rules/ — Tier 0 Compiled Projection
+
+`.claude/rules/*.md` files are compiled outputs of Tier 0 wiki entries — **not a fifth tier**. A wiki entry that has been compiled to a rules file exists in both places simultaneously: the wiki entry is the authoritative Tier 0 record; the rules file is a substrate-optimized projection of the same knowledge, auto-loaded by the Claude Code harness.
+
+The projection pathway is governed by `activation_profile.trigger` (Module 21 § Accretion Candidate Metadata):
+
+| trigger value | Compiled to | Loading behavior |
+|---|---|---|
+| `invariant` | `.claude/rules/*.md` (unscoped) | Loaded every session |
+| `path_bound` | `.claude/rules/kf-runtime/*.md` with `paths:` frontmatter | Auto-loaded when matching files are in context |
+| `task_bound` | `.claude/skills/*.md` | Loaded on demand when mode or skill is invoked |
+
+**Write-time invariant:** A wiki entry and its compiled rules file must stay in sync. If the wiki entry is updated without recompiling, the rules file is a stale projection. Manual edits to compiled rules files are overwritten on the next `kf-compile.py` run. The compiler is the canonical source; the rules file is the artifact.
+
+#### auto-memory — Below-Tier-1 Scratch
+
+`~/.claude/projects/<proj>/memory/MEMORY.md` is Claude Code's native auto-memory. It is **not a KF-managed tier** — it is a flat scratch file that the Claude Code harness maintains independently. Its lifecycle is:
+- Written by: Claude Code harness (not KF modes or Module 21)
+- Scope: Session-scoped scratch, may persist across sessions but is not content-addressed or decay-managed
+- Position in stack: sits conceptually below Tier 1, orthogonal to the KF tier model
+
+```yaml
+# Full stack for Claude Code sessions
+tier_stack:
+  tier_0:
+    location: "wiki/"
+    scope: cross-session persistent
+    managed_by: Module 21 accretion system
+  tier_1:
+    location: always in context
+    scope: session routing index
+    managed_by: orchestrator
+  tier_2:
+    location: mode state files, on demand
+    scope: active mode working state
+    managed_by: active mode
+  tier_3:
+    location: MemPalace sidecar
+    scope: verbatim history, semantic retrieval
+    managed_by: Module 24 / MemPalace
+  auto_memory:
+    location: "~/.claude/projects/<proj>/memory/MEMORY.md"
+    scope: session scratch (flat, harness-managed)
+    managed_by: Claude Code harness — NOT KF
+    note: |
+      Do not accrete to auto-memory — accretion targets Tier 0 (wiki/).
+      Do not treat auto-memory as a source of truth — verify against
+      routing index and current tool state.
+```
+
+---
+
 ## Skeptical Verification Rule
 
 Before acting on any information from the routing index or recalled state, verify it still holds.
@@ -724,6 +791,8 @@ Maintain routing accuracy across long sessions using a four-tier memory model. T
 
 **Tier 0 — Persistent Domain Knowledge (Cross-Session)**
 Location: `wiki/` directory. Contents: compiled knowledge articles, pattern catalogs, diagnostic libraries, decision frameworks. Not always loaded — loaded when relevant. Searched during accretion checks and linter runs.
+
+**cc substrate projection:** `.claude/rules/` files are compiled projections of Tier 0 entries — not a separate tier. `trigger: invariant` → unscoped rule (every session); `trigger: path_bound` → path-gated rule (matching files only); `trigger: task_bound` → skill (on demand). Auto-memory (`~/.claude/projects/<proj>/memory/`) is harness-managed scratch below Tier 1 — do not accrete to it.
 
 **Tier 1 — Routing Index (Always Loaded)**
 Orchestrator's working memory. Budget: ~150 chars per entry, max 30 entries (~4,500 chars total).

@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.19.0
+version: 7.20.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,18 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.20.0
+    date: 2026-07-01
+    driver: knowledgeforge-core-gkf
+    note: |
+      Module 19 7.2.1 → 7.3.0 — place .claude/rules/ and auto-memory in tier model.
+
+      .claude/rules/ is a compiled Tier 0 projection (not a new tier); trigger field
+      from M21 activation_profile governs which compilation target is used.
+      auto-memory is harness-managed scratch below Tier 1, not KF-managed.
+      Added full tier_stack YAML + comparison table to M19 main body and CC Doc.
+      Closes knowledgeforge-core-gkf.
+
   - version: 7.19.0
     date: 2026-06-30
     driver: knowledgeforge-core-och
