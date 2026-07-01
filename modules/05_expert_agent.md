@@ -5,13 +5,20 @@
 ```yaml
 module:
   title: Expert Agent with Adversarial Depth
-  version: 7.2.0
+  version: 7.3.0
   purpose: Provide domain-specific analysis that forces second-order reasoning Sonnet naturally skips
   topics: [expert-agent, adversarial-depth, domain-specialist, compound-failures, second-order-analysis, reusable-analysis-accretion, infrastructure-architecture, ml-infrastructure, hosting-audit, entity-relationship-analysis, variant-taxonomy]
   contexts: [agent-creation, expert-design, implementation-reference, security-review, code-review, architecture-review, infrastructure-planning, model-deployment, entity-modeling, dependency-auditing]
   difficulty: intermediate
   related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 12_Calibration_Layer, 13_Decision_Classification, 15_Grounding_Scores, 16_Operational_Bounds, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.3.0:
+      date: 2026-07-01
+      changes:
+        - Added research variant (fifth entry in variants[]) — grounded evidence retrieval with Asta/Alia Semantic Scholar MCP, composite grounding scores per claim, disposition routing (ship/soften/rebuild)
+        - runtime_dependency field declared per-variant (research only so far); degraded_mode specifies WebSearch fallback behaviour when MCP unavailable
+        - Trigger disambiguator td-research-vs-expert-regular registered in Module 04 to resolve "what does the research say" / "find evidence for" overlap with expert.regular
+        - Module 00 adds routing trigger for research variant (7.8.0 → 7.9.0)
     7.2.0:
       date: 2026-05-10
       changes:
@@ -209,6 +216,35 @@ agent:
       typical_chain_position: pre_builder (Expert ERA → Builder)
       decision_type_typical: evaluative_judgment
       risk_tier: MEDIUM
+
+    - id: research                                          # NEW 7.3.0
+      purpose: >
+        Grounded evidence retrieval — peer-reviewed source retrieval, snippet-level
+        verification for numeric claims, composite grounding score per claim, and
+        disposition routing (ship / soften / rebuild). Does NOT produce adversarial
+        depth analysis; that is Expert regular's job. Research variant is the
+        source-retrieval layer; it chains into Expert regular or Builder for downstream use.
+      trigger_phrases:
+        - find evidence for
+        - ground this claim
+        - what does the research say
+        - find supporting studies
+        - find peer-reviewed sources
+      output_format: grounded_evidence_set
+      output_template: agent output (Module 04)
+      typical_chain_position: chain_initial (Researcher → Expert | Researcher → Builder)
+      decision_type_typical: evaluative_judgment
+      risk_tier: MEDIUM
+      runtime_dependency:
+        primary: >
+          Asta / Alia Semantic Scholar corpus MCP
+          (see wiki/integration/2026-06-26_allen-ai-asta-scientific-corpus-mcp-operational-gotchas.md
+          for rate limits, chunking, title-search sensitivity, SSE parsing, and bib-corpus patterns)
+        degraded_mode: >
+          If Asta/Alia MCP unavailable — WebSearch fallback; composite grounding score capped
+          at 0.6; output flagged degraded=true; ship disposition unavailable (soften/rebuild only).
+          Log fallback to stderr; do not silently present degraded output as full-confidence.
+      disambiguator: td-research-vs-expert-regular  # Module 04 — resolves phrase overlap with Expert regular
 ```
 
 ---

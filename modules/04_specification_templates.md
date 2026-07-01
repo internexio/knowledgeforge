@@ -916,6 +916,90 @@ trigger_disambiguator:
 
 ---
 
+## Registered Trigger Disambiguators
+
+### td-research-vs-expert-regular (NEW 7.3.0 / M05 research variant)
+
+Resolves the overlap between `expert.research` (evidence retrieval) and `expert.regular` (adversarial depth analysis) when trigger phrases are ambiguous.
+
+```yaml
+trigger_disambiguator:
+  id: td-research-vs-expert-regular
+  name: Research Variant vs Expert Regular
+  version: 1.0.0
+
+  purpose: |
+    Trigger phrases like "what does the research say" or "find evidence for"
+    can plausibly match either expert.research (source retrieval, grounding
+    scores, disposition routing) or expert.regular (adversarial depth analysis
+    of an artifact or domain question). This disambiguator routes on intent:
+    evidence-seeking → research; artifact-analyzing → regular.
+
+  scope:
+    trigger_phrase: "find evidence for | ground this claim | what does the research say | find supporting studies | find peer-reviewed sources"
+    candidate_modes:
+      - mode_id: expert
+        variant_id: research
+        match_strength: exact
+      - mode_id: expert
+        variant_id: regular
+        match_strength: contextual   # phrases can land here if framed as deep-dive
+
+  predicate:
+    type: domain_specificity
+    rule: |
+      IF the user's request emphasizes:
+        - retrieving sources / citations / studies
+        - verifying a specific numeric claim against literature
+        - producing a grounding score for a claim
+        - "what does the research say about X"
+      THEN → expert.research (source retrieval, grounded_evidence_set output)
+
+      IF the user's request emphasizes:
+        - analyzing an artifact for compound failures or blast radius
+        - "deep dive on X" without a sourcing intent
+        - adversarial depth on a technical decision or system
+        - domain expertise on a known-artifact
+      THEN → expert.regular (adversarial depth, analysis_with_adversarial_depth output)
+
+      Key heuristic: does the user want SOURCES or ANALYSIS?
+        sources → research
+        analysis → regular
+    fallback: user_disambiguation
+
+  design_decisions:
+    - decision: "Output format is the cleanest discriminator"
+      decision_type: evaluative_judgment
+      locked: false
+      rationale: >
+        grounded_evidence_set (citations + grounding scores + disposition) vs.
+        analysis_with_adversarial_depth (compound failures + blast radius) are
+        structurally incompatible. A user can only want one. When intent is
+        ambiguous, ask one question: "Do you want sources you can cite, or
+        deep analysis of a system/decision?"
+    - decision: "Degraded-mode flag is mandatory in research output when MCP unavailable"
+      decision_type: reckoning
+      locked: true
+      rationale: >
+        WebSearch fallback caps grounding at 0.6 and removes the 'ship' disposition.
+        Silent degradation misleads consumers about evidence quality.
+
+  capabilities_when_subagent:
+    read: [trigger_phrase, candidate_modes, current_chain_context]
+    write: [predicate result only]
+    create: nothing
+    modify: nothing
+    escalate: when fallback fires
+    restriction: "Read-only logic; emits routing decision, no side effects"
+
+  risk_tier:
+    base_tier: LOW
+    chain_escalation: false
+    verification_required: false
+```
+
+---
+
 ## Handoff Template
 
 ```yaml
