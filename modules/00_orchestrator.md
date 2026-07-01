@@ -20,7 +20,7 @@ module:
           "ground this claim", "what does the research say", "find supporting studies",
           "find peer-reviewed sources" now route to expert.research (grounded_evidence_set output)
           rather than being absorbed into expert.regular or falling through to no-mode.
-        - Added chain example: "Ground this claim with research, then analyze it" → Expert (research) → Expert (regular)
+        - "Added chain example: Ground this claim with research, then analyze it — Expert (research) then Expert (regular)"
         - Disambiguator td-research-vs-expert-regular (M04) is the resolution predicate for overlap
           with expert.regular; registered in Module 04 § Registered Trigger Disambiguators.
     7.8.0:
