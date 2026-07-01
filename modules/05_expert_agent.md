@@ -240,10 +240,28 @@ agent:
           Asta / Alia Semantic Scholar corpus MCP
           (see wiki/integration/2026-06-26_allen-ai-asta-scientific-corpus-mcp-operational-gotchas.md
           for rate limits, chunking, title-search sensitivity, SSE parsing, and bib-corpus patterns)
+        mcp_availability_check: >
+          Before beginning retrieval, probe the MCP with a known-good DOI
+          (e.g. "DOI:10.1145/3313831.3376744"). If the probe call fails or
+          returns an error within 5 seconds, enter degraded_mode immediately.
+          For partial MCP failures (some papers found, some calls fail):
+          proceed with retrieved results; mark each failed-call claim as
+          grounding=0.0 (not 0.6 — the score is unknown, not low).
+          Aggregate composite grounding across all claims including 0.0 entries.
         degraded_mode: >
-          If Asta/Alia MCP unavailable — WebSearch fallback; composite grounding score capped
-          at 0.6; output flagged degraded=true; ship disposition unavailable (soften/rebuild only).
-          Log fallback to stderr; do not silently present degraded output as full-confidence.
+          Entry condition: MCP probe fails OR all retrieval calls fail.
+          Actions (ALL required — not optional):
+          1. Switch to WebSearch for source retrieval.
+          2. Cap composite grounding score at 0.6 for any individual claim.
+          3. Set output field degraded=true in the grounded_evidence_set.
+          4. OMIT the 'ship' disposition entirely — do NOT emit ship under any
+             circumstances in degraded mode, even if a claim scores 0.6.
+             Degraded output MUST only carry soften or rebuild dispositions.
+          5. Emit a structured stderr log entry:
+             [kf-research] DEGRADED mode: Asta MCP unavailable. WebSearch fallback active.
+             grounding_cap=0.6 ship_disposition=blocked session_id=<id>
+          Do not silently present degraded output as full-confidence. The
+          degraded=true flag in the output is the consumer-visible signal.
       disambiguator: td-research-vs-expert-regular  # Module 04 — resolves phrase overlap with Expert regular
 ```
 
