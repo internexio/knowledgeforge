@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Knowledge Accretion
-  version: 7.4.0
+  version: 7.5.0
   purpose: Cross-cutting detection-and-routing behavior that recognizes when mode outputs contain knowledge worth persisting and either auto-files it (Claude Code) or surfaces it as a compilation candidate (Claude Projects)
   topics: [knowledge-persistence, compile-query-enhance, wiki-generation, accretion-signals, knowledge-base-maintenance]
   contexts: [all-mode-execution, knowledge-management, session-outputs, persistent-storage]
@@ -13,6 +13,11 @@ module:
   related: [07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 02_Builder_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model]
   added_in: "6.2"
   changelog:
+    7.5.0:
+      date: 2026-07-02
+      driver: kf-remediation-2026-07-02
+      changes:
+        - Added at_threshold_degraded clause to grounding_gate — resolves boundary ambiguity when degraded=true research output lands at exactly 0.6. Degraded-mode cap of 0.6 is artificial (WebSearch fallback ceiling), not earned; without this clause the gate would auto-file it as normal accretion. at_threshold_degraded forces caveat + no-auto-file, consistent with M05 research variant degraded_mode (ship disposition blocked). Boundary behavior is now deterministic and stated here and in M05.
     7.4.0:
       date: 2026-06-30
       driver: knowledgeforge-core-och
@@ -1117,8 +1122,23 @@ grounding_gate:
   threshold: 0.6
   
   above_threshold:
+    condition: "grounding_score >= threshold AND NOT (grounding_score == threshold AND degraded == true)"
     action: Normal accretion — file or surface without caveat
-    
+
+  at_threshold_degraded:
+    condition: "grounding_score == threshold AND degraded == true"
+    action: Surface with explicit caveat
+    framing: "Research evidence is degraded (Asta MCP unavailable, WebSearch fallback). Grounding capped at 0.6. Recommend verification before filing."
+    auto_file: false
+    rationale: >
+      Degraded-mode cap of 0.6 lands exactly at the normal-pass threshold. Without
+      this clause, degraded output would auto-file as normal accretion. The
+      degraded=true flag signals the ceiling is artificial (WebSearch fallback),
+      not earned (peer-reviewed source retrieval). Ship disposition is already
+      blocked in M05 degraded_mode — this gate enforces the same caution for
+      accretion. Downstream modes see the degraded flag; the gate ensures the
+      knowledge base does too.
+
   below_threshold:
     action: Surface with explicit caveat
     framing: "This [finding/pattern] has reuse value but low grounding ([score]). Recommend verification before adding to knowledge base."

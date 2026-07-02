@@ -1,20 +1,19 @@
 # KnowledgeForge Core
 
-**Version:** 7.2.0 · **Status:** Active development
+**Version:** 7.22.0 · **Status:** Active development · **Modules:** 26 (00–25)
 
 Single source of truth for the KnowledgeForge reasoning framework. All platform variants compile from here.
 
-## What's New in 7.2.0
+## What's New in 7.22.0
 
-Tool-calling architecture audit (Track C) — formalizes mode handoffs as typed contracts and makes mode-selection accuracy measurable. Cascade docs in `docs/planning/Typed_Mode_Calling/chain-log-{01..04}-tool-calling.md`.
+Audit remediation batch — six findings from a 2026-07-02 Claude Projects review of the deployed Module 00 (uploaded at v7.9.0 while core was at 7.21.0). See `docs/planning/2026-07-02_kf-remediation-spec.md` for full audit report.
 
-- **Module 04** — `Handoff_Contract` and `trigger_disambiguator` entities. `validation_checks[].assertion` must reduce to one of five canonical forms (field-presence, enum-membership, cardinality, schema-conformance, cross-field). Resolves the "prose conventions for handoff payloads" gap that produced silent quality drift between modes.
-- **Module 03** — Handoff Contract Registry: 8 active mode-to-mode edges registered as typed contracts with explicit payload_schema, fallback_path, and ≥1 deterministic validation check.
-- **Module 05 / 07** — Expert and Critic now declare `variants[]` as first-class taxonomy. 4 variants each (Expert: regular / infrastructure / ml_infrastructure / era; Critic: regular / linter / audit / adversarial). Routing accuracy is now variant-aware.
-- **Module 16** — New metric #10 `mode_selection_accuracy`. Re-routing rate is the deterministic primary; weekly adversarial sampling provides calibration. Variant-aware thresholds (90% overall, 95% per-variant).
-- **Module 19** — `routing_decision_log` schema v1.0 (audit trail, separate from `routing_index` state) and `tier_2_metric_aggregates` for weekly persistence beyond the rolling window.
-- **Module 00** — Orchestrator writes a log entry on every mode activation and evaluates metric #10 thresholds at chain completion.
-- **Wiki** — Three accretion entries filed: `wiki/patterns/mode-variants-taxonomy.md`, `wiki/diagnostics/handoff-payload-schema-gap.md`, `wiki/methodologies/external-source-to-kf-mapping.md`.
+- **Module 00** — Version reconciled to 7.22.0. Always-On Behavioral Patches and Per-Turn Mode Telemetry embedded in STATIC ZONE (previously lived only in `## CC Rules`, which is stripped from CP compiled output — CP deployments lacked them).
+- **Module 16** — `expert.research` added to `per_variant` tracking list (was missing; research-variant routing errors were misattributed to `expert.regular`). 9 variants total (4 Critic + 5 Expert).
+- **Module 03** — Handoff Contract Registry expanded from 10 to 13 contracts. Three new edges: `hc-expert-to-strategist` (moat/ML-infra/security-prioritization chains), `hc-expert-research-to-expert-regular` ("ground claim then analyze"), `hc-expert-research-to-builder` ("find evidence and build report"). Research-variant payloads carry `grounded_evidence_set`, per-claim grounding scores, `degraded` flag, and `disposition` enum.
+- **Module 05** — Research variant `degraded_mode` extended: accretion boundary note (degraded output at exactly 0.6 MUST NOT auto-file) + deployment note (environments without Asta MCP operate soften/rebuild-only permanently).
+- **Module 21** — `at_threshold_degraded` clause added to `grounding_gate`. Resolves: degraded-mode cap of 0.6 = exactly the normal-pass threshold. Without the clause, degraded output would auto-file as normal accretion. `degraded=true` at threshold → surface with caveat + no auto-file.
+- **README** — Setup section and Mode Triggers table added with complete 26-file upload list and all mode triggers including Expert, Coordinator, research, infrastructure, and ERA variants.
 
 ---
 
@@ -107,6 +106,75 @@ See `IMPLEMENTATION_PLAN.md` for full detail.
 | 23 | Taxonomy Enforcement | Controlled vocabulary validation |
 | 24 | Verbatim History Mining | Conversation turn storage and recall |
 | 25 | Entity Relationship Analysis | ERA domain routing |
+
+---
+
+## Setup
+
+### Claude Project Setup
+
+> **Before re-uploading:** Delete **all** existing project knowledge files first. Claude Projects does not replace files — it appends. Duplicate filenames (e.g., `06_Quick_Reference__1_.md`) create a live contradiction source where retrieval can't distinguish canonical from stale. Clean-slate each upload cycle.
+
+1. Create (or open) a Claude Project at [claude.ai](https://claude.ai)
+2. Go to **Project Instructions** → paste the full contents of `00_Project_Instructions-Claude.md` from `knowledgeforge-cp/`
+3. Under **Project Knowledge**, upload all 25 knowledge files from `knowledgeforge-cp/` (Module 00 is already covered by step 2):
+
+**Core Agents (11 files)**
+- `01_Navigator_Agent.md` — Ambiguity detection and routing
+- `02_Builder_Agent.md` — Specification generation (PDIA method)
+- `03_Coordination_Patterns.md` — Multi-agent workflow design + Handoff Contract Registry (13 contracts)
+- `04_Specification_Templates.md` — Reusable spec formats + trigger disambiguators
+- `05_Expert_Agent_Example.md` — Deep analysis, adversarial depth (5 variants: regular / infra / ml-infra / era / research)
+- `06_Quick_Reference.md` — Routing table and signal guide
+- `07_Critic_Agent.md` — Review, validation, adversarial variant (4 variants: regular / linter / audit / adversarial)
+- `08_Synthesizer_Agent.md` — Pattern extraction and abstraction
+- `09_Debugger_Agent.md` — Hypothesis-driven root-cause diagnosis
+- `10_Strategist_Agent.md` — Trade-off evaluation, sequencing
+- `11_Calibrator_Agent.md` — Complexity-appropriate AI coder configuration
+
+**Cognitive Infrastructure (14 files)**
+- `12_Calibration_Layer.md` — Multi-pass evaluation, judge isolation
+- `13_Decision_Classification.md` — Reckoning / evaluative / predictive / novel routing
+- `14_Metacognitive_Monitor.md` — Acute failure detection (loops, overflow, confidence collapse)
+- `15_Grounding_Scores.md` — Evidence quality scoring (0.0–1.0)
+- `16_Operational_Bounds.md` — Metrics, circuit breakers, mode-selection accuracy (9 variants)
+- `17_Temporal_Knowledge.md` — Knowledge age, decay, planning artifact staleness
+- `18_Salience_Allocation.md` — Multi-task attention weighting
+- `19_Memory_Architecture.md` — Four-tier memory, routing index, routing decision log
+- `20_Permission_Model.md` — Risk tiers (LOW/MEDIUM/HIGH) and capability gates
+- `21_Knowledge_Accretion.md` — Cross-session knowledge persistence, compile-query-enhance loop
+- `22_Semantic_Wiki_Search.md` — Metadata-gated semantic search over Tier 0 wiki
+- `23_Taxonomy_Enforcement.md` — Fixed controlled vocabulary (10 domains, ~40 topics, ~55 tags)
+- `24_Verbatim_History_Mining.md` — Verbatim Tier 3 storage + MemPalace semantic retrieval
+- `25_Entity_Relationship_Analysis.md` — ERA post-routing pass: entity graph, cardinality, coupling
+
+> **Note:** Module 25 (ERA) is required. The orchestrator unconditionally runs ERA as a post-routing, pre-execution pass on Builder, Coordinator, Expert, Strategist, and Critic requests. Omitting it leaves five routing paths unguarded.
+
+> **Note:** The research variant in Module 05 (Expert) requires the Asta/Alia Semantic Scholar MCP connected to your Claude Project. Without it, research variant permanently operates in degraded mode (WebSearch fallback, grounding capped at 0.6, ship disposition unavailable). All other modes work normally without the MCP.
+
+4. Start a conversation — the system automatically classifies and routes every request.
+
+---
+
+### Mode Triggers
+
+| Signal | Mode | Notes |
+|--------|------|-------|
+| "Create", "build", "generate spec", "write", "implement", "scaffold" | **Builder** | PDIA method; auto-verify on chain output |
+| "Review", "validate", "find gaps", "audit", "sanity check", "LGTM?" | **Critic** | 4 variants: regular / linter / audit / adversarial |
+| "Health check the knowledge base", "lint the wiki" | **Critic (linter)** | Scans for staleness, contradictions, redundancy |
+| "Hosting audit", "infrastructure inventory", "SPOF analysis" | **Critic (audit)** | Decomposition readiness + extraction priority |
+| "Not working", "debug", "failing", "why is this", "root cause" | **Debugger** | Hypothesis-driven; requires >0.8 confidence |
+| "Prioritize", "trade-offs", "should I", "which option", "ROI" | **Strategist** | Explicit trade-offs + reversibility assessment |
+| "Find patterns", "extract", "what do these have in common" | **Synthesizer** | Every pattern requires ≥1 anti-pattern |
+| "Setup project", "CLAUDE.md", "AI coder config", "guardrails" | **Calibrator** | Complexity-appropriate; no over-engineering |
+| "Deep analysis", "blast radius", "threat model", "architecture review" | **Expert (regular)** | Adversarial depth; emits decision_type_exercised |
+| "Design infrastructure", "plan service topology", "GPU sizing", "model deployment" | **Expert → Builder (infra/ML)** | Expert analyzes; Builder produces architecture doc |
+| "Competitive moat", "defensibility", "hard to copy" | **Expert → Strategist** | Expert enumerates; Strategist rates durability |
+| "Find evidence for", "ground this claim", "what does the research say" | **Expert (research)** | Asta MCP required; WebSearch fallback = degraded |
+| "Map entity relationships", "audit module dependencies", "model agent contracts" | **Expert (ERA) → Builder** | Entity graph + ERA Specification Template |
+| "Workflow", "multi-agent", "orchestrate", "fan out", "delegate" | **Coordinator** | Dependency-first; derives pattern from graph |
+| Genuinely ambiguous intent (different output types for top-2 candidates) | **Navigator** | One targeted question; then routes |
 
 ---
 

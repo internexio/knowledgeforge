@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.21.0
+version: 7.22.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,35 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.22.0
+    date: 2026-07-02
+    driver: kf-remediation-2026-07-02
+    note: |
+      Audit remediation batch — six findings from 2026-07-02 Claude Projects
+      review of Module 00 (uploaded at 7.9.0 against core 7.21.0).
+
+      M00 (7.9.0 → 7.22.0): version reconciled; Always-On Behavioral Patches
+      and Per-Turn Mode Telemetry embedded in STATIC ZONE (previously stripped
+      from CP compiled output); research deployment note added; M03/M05/M16
+      Module Reference rows updated.
+
+      M16 (7.2.0 → 7.3.0): expert.research added to per_variant tracking
+      (was misattributed to expert.regular). 9 variants total.
+
+      M03 (7.4.0 → 7.5.0): Handoff Contract Registry expanded 10 → 13.
+      New: hc-expert-to-strategist (Contract C), hc-expert-research-to-expert-regular
+      (Contract D), hc-expert-research-to-builder (Contract E).
+
+      M05 (7.3.0 → 7.4.0): degraded_mode accretion boundary note + deployment
+      note for MCP-unavailable environments.
+
+      M21 (7.4.0 → 7.5.0): at_threshold_degraded clause in grounding_gate —
+      degraded output at exactly 0.6 now explicitly caveat+no-auto-file.
+
+      README: version badge updated; Setup section (26-file list, clean-reupload
+      rule, MCP note, M25 note); Mode Triggers table (all modes including Expert,
+      Coordinator, research, infra, ERA variants).
+
   - version: 7.21.0
     date: 2026-07-01
     driver: knowledgeforge-core-b3g

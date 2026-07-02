@@ -5,13 +5,21 @@
 ```yaml
 module:
   title: Agent Coordination Patterns
-  version: 7.4.0
+  version: 7.5.0
   purpose: Design multi-agent workflows by mapping dependencies first, then deriving the coordination pattern from the graph
   topics: [coordination, multi-agent, workflows, handoffs, orchestration, dependency-mapping, verification, capability-restriction, handoff-contract-registry]
   contexts: [complex-tasks, agent-teams, workflow-design, mode-handoff-validation]
   difficulty: advanced
   related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 14_Metacognitive_Monitor, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]
   changelog:
+    7.5.0:
+      date: 2026-07-02
+      driver: kf-remediation-2026-07-02
+      changes:
+        - Added Contract C — hc-expert-to-strategist. Covers the Expert→Strategist chain used in moat analysis ("Review our API security and tell me what to fix first"), ML-infra planning, and competitive moat chains. Payload carries first_order_findings, adversarial_depth, design_implications, decision_type_exercised. Three validation checks (decision_type_exercised_present, enum, adversarial_depth_present). Fallback route_to_navigator.
+        - Added Contract D — hc-expert-research-to-expert-regular. Covers the 7.9.0 chain "ground this claim with research, then analyze it". Payload carries grounded_evidence_set, composite_grounding_score, degraded flag, disposition enum. Three validation checks (grounded_evidence_set_present, degraded_ceiling_visible, per_claim_grounding_present). Fallback route_to_navigator. Research-variant payloads must carry degraded flag so downstream Expert regular knows the ceiling.
+        - Added Contract E — hc-expert-research-to-builder. Covers the 7.9.0 chain "find evidence for X and build a report". Same grounded_evidence_set payload as Contract D plus report_structure_directive. Three validation checks. Fallback route_to_navigator.
+        - Registry validation comment updated — count is 13 entries (post-7.5.0 wave: 10 prior + C/D/E).
     7.4.0:
       date: 2026-06-13
       driver: knowledgeforge-core-f8a
@@ -599,7 +607,147 @@ handoff_contract_registry:
         failure_action: surface_for_human_review
         failure_severity: Sev2
 
-# Validation: registry must have exactly 10 entries (post-SPEC-1 wave); ids unique; every entry validates against Module 04 handoff_contract entity schema. Contract A (hc-orchestrator-to-verifier) added 7.4.0 alongside Contract B (hc-runtime-to-accretion-gate, added 7.3.0).
+  - id: hc-expert-to-strategist
+    # Added 7.5.0 (Contract C). Expert→Strategist edge used in:
+    # moat analysis ("Design for competitive moat"),
+    # ML-infra chain (Expert hardware → Strategist phasing),
+    # API security chain (Expert findings → Strategist prioritization — Example 4).
+    # Carries the full Expert output payload; Strategist reads decision_type_exercised
+    # to gauge depth of trade-off analysis needed.
+    source_mode: expert
+    source_variant: any
+    target_mode: strategist
+    target_variant: null
+    trigger:
+      type: chain_pattern
+      condition: "Expert → Strategist chain pattern active (moat, ML-infra, security-prioritization)"
+      chain_pattern_reference: "expert-to-strategist"
+    payload_schema:
+      fields:
+        - {name: first_order_findings, type: array, required: true}
+        - {name: adversarial_depth, type: object, required: true}
+        - {name: design_implications, type: array, required: true}
+        - {name: decision_type_exercised, type: string, required: true,
+           validation: "enum: [reckoning, evaluative_judgment, predictive_judgment, novel_judgment]"}
+    fallback_path:
+      type: route_to_navigator
+      rationale: "Missing required field indicates upstream Expert spec failure; Navigator clarifies with user"
+    validation_checks:
+      - check_id: decision_type_exercised_present
+        assertion: "decision_type_exercised is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: route_to_navigator
+        failure_severity: Sev1
+      - check_id: decision_type_exercised_enum
+        assertion: "decision_type_exercised matches enum: [reckoning, evaluative_judgment, predictive_judgment, novel_judgment]"  # enum-membership
+        check_type: deterministic
+        failure_action: route_to_navigator
+        failure_severity: Sev1
+      - check_id: adversarial_depth_present
+        assertion: "adversarial_depth is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev2
+
+  - id: hc-expert-research-to-expert-regular
+    # Added 7.5.0 (Contract D). Expert research→Expert regular edge — the
+    # 7.9.0 "ground this claim with research, then analyze it" chain.
+    # Research variant is the source-retrieval layer; regular variant adds
+    # adversarial depth. degraded flag MUST be visible to downstream so
+    # Expert regular knows the grounding ceiling is 0.6 (artificial, not earned).
+    # disposition enum constrains what downstream modes can recommend.
+    source_mode: expert
+    source_variant: research
+    target_mode: expert
+    target_variant: regular
+    trigger:
+      type: chain_pattern
+      condition: "Expert research → Expert regular chain ('ground claim then analyze')"
+      chain_pattern_reference: "expert-research-to-expert-regular"
+    payload_schema:
+      fields:
+        - {name: grounded_evidence_set, type: object, required: true,
+           description: "Per M05 output_format: grounded_evidence_set schema"}
+        - {name: grounded_evidence_set.claims, type: array, required: true,
+           description: "Per-claim entries; each must carry grounding_score and source_refs"}
+        - {name: grounded_evidence_set.composite_grounding, type: float, required: true,
+           validation: "range: [0.0, 1.0]"}
+        - {name: grounded_evidence_set.degraded, type: boolean, required: true,
+           description: "true when MCP unavailable and WebSearch fallback was used"}
+        - {name: grounded_evidence_set.disposition, type: string, required: true,
+           validation: "enum: [ship, soften, rebuild] — 'ship' only valid when degraded=false"}
+    fallback_path:
+      type: route_to_navigator
+      rationale: "Missing grounded_evidence_set means research retrieval failed; Navigator clarifies with user before proceeding to analysis"
+    validation_checks:
+      - check_id: grounded_evidence_set_present
+        assertion: "grounded_evidence_set is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: route_to_navigator
+        failure_severity: Sev1
+      - check_id: degraded_ceiling_visible
+        assertion: "grounded_evidence_set.degraded is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev1
+      - check_id: per_claim_grounding_present
+        assertion: "grounded_evidence_set.claims[].grounding_score is non-null for each entry"  # cardinality
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev2
+
+  - id: hc-expert-research-to-builder
+    # Added 7.5.0 (Contract E). Expert research→Builder edge — the
+    # 7.9.0 "find evidence for X and build a report" chain.
+    # Same grounded_evidence_set payload as Contract D plus a report_structure_directive
+    # so Builder knows the expected output shape. degraded flag propagates to Builder
+    # which must apply M21 at_threshold_degraded gate if grounding==0.6 AND degraded.
+    source_mode: expert
+    source_variant: research
+    target_mode: builder
+    target_variant: null
+    trigger:
+      type: chain_pattern
+      condition: "Expert research → Builder chain ('find evidence and build report')"
+      chain_pattern_reference: "expert-research-to-builder"
+    payload_schema:
+      fields:
+        - {name: grounded_evidence_set, type: object, required: true,
+           description: "Per M05 output_format: grounded_evidence_set schema"}
+        - {name: grounded_evidence_set.claims, type: array, required: true}
+        - {name: grounded_evidence_set.composite_grounding, type: float, required: true,
+           validation: "range: [0.0, 1.0]"}
+        - {name: grounded_evidence_set.degraded, type: boolean, required: true}
+        - {name: grounded_evidence_set.disposition, type: string, required: true,
+           validation: "enum: [ship, soften, rebuild] — 'ship' only valid when degraded=false"}
+        - {name: report_structure_directive, type: object, required: false,
+           description: "Optional: sections, format, audience from upstream request"}
+    fallback_path:
+      type: route_to_navigator
+      rationale: "Missing grounded_evidence_set means research retrieval failed; Builder cannot produce a grounded report without evidence"
+    validation_checks:
+      - check_id: grounded_evidence_set_present
+        assertion: "grounded_evidence_set is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: route_to_navigator
+        failure_severity: Sev1
+      - check_id: degraded_ceiling_visible
+        assertion: "grounded_evidence_set.degraded is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev1
+      - check_id: composite_grounding_present
+        assertion: "grounded_evidence_set.composite_grounding is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev2
+      - check_id: degraded_ship_prohibited
+        assertion: "NOT (grounded_evidence_set.degraded == true AND grounded_evidence_set.disposition == 'ship')"  # cross-field
+        check_type: deterministic
+        failure_action: route_to_navigator
+        failure_severity: Sev1
+
+# Validation: registry must have exactly 13 entries (post-7.5.0 wave: 10 prior + C/D/E added 7.5.0); ids unique; every entry validates against Module 04 handoff_contract entity schema. Contract A (hc-orchestrator-to-verifier) added 7.4.0, Contract B (hc-runtime-to-accretion-gate) added 7.3.0, Contracts C/D/E (hc-expert-to-strategist, hc-expert-research-to-expert-regular, hc-expert-research-to-builder) added 7.5.0.
 ```
 
 ---

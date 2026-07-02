@@ -5,17 +5,27 @@
 ```yaml
 module:
   title: Operational Bounds
-  version: 7.2.0
+  version: 7.3.1
   purpose: Maintain key agent operational metrics within defined ranges and trigger corrective behavior when metrics drift
   topics: [operational-safety, metric-monitoring, bounds-checking, corrective-action, chronic-drift, cache-efficiency, circuit-breakers, mode-selection-accuracy]
   contexts: [agent-operations, quality-assurance, cost-management, reliability, routing-correctness]
   difficulty: advanced
   related: [00_Orchestrator, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 10_Strategist_Agent, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]
   changelog:
+    7.3.1:
+      date: 2026-07-02
+      driver: kf-remediation-2026-07-02-adversarial-fix
+      changes:
+        - Fixed rationale text in mode_selection_accuracy: "Expert 4 variants" → "Expert 5 variants" (was not updated when expert.research was added in 7.3.0; caught by adversarial-critic pass).
+    7.3.0:
+      date: 2026-07-02
+      driver: kf-remediation-2026-07-02
+      changes:
+        - Added expert.research to per_variant tracking list (resolves audit finding: research-variant routing errors were misattributed to expert.regular — the exact overlap td-research-vs-expert-regular exists to police). "8 Critic/Expert variants" phrasing updated to 9.
     7.2.0:
       date: 2026-05-10
       changes:
-        - Added metric #10 (mode_selection_accuracy) — primary measurement is re-routing rate (deterministic, from Module 19 routing_decision_log); weekly adversarial sampling for calibration; variant-aware tracking across 8 Critic/Expert variants (resolves ERA F1 + F4 from chain-log-01-tool-calling)
+        - Added metric #10 (mode_selection_accuracy) — primary measurement is re-routing rate (deterministic, from Module 19 routing_decision_log); weekly adversarial sampling for calibration; variant-aware tracking across 9 Critic/Expert variants (resolves ERA F1 + F4 from chain-log-01-tool-calling)
         - Healthy range — >=90% overall, >=95% per-variant; calibration drift threshold 5pp
         - Corrective Action Summary extended with 5 new rows
         - Source: docs/planning/Typed_Mode_Calling/ chain-logs 01–04 (Track C)
@@ -339,6 +349,7 @@ mode_selection_accuracy:
       - expert.infrastructure
       - expert.ml_infrastructure
       - expert.era
+      - expert.research
     rolling_average_window: 100 routing events
     aggregate_window: weekly (per Module 19 tier_2_metric_aggregates)
 
@@ -385,7 +396,7 @@ mode_selection_accuracy:
       - Trigger orchestrator prompt revision
 
   rationale: |
-    Resolves ERA findings F1 (mode-label collisions: Critic 4 variants, Expert 4
+    Resolves ERA findings F1 (mode-label collisions: Critic 4 variants, Expert 5
     variants make aggregate accuracy meaningless) and F4 (no routing-decision
     logging). Variant-level disaggregation is mandatory. Re-routing rate is the
     deterministic proxy (KF "Deterministic first" meta-principle); adversarial

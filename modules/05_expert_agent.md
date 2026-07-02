@@ -5,13 +5,19 @@
 ```yaml
 module:
   title: Expert Agent with Adversarial Depth
-  version: 7.3.0
+  version: 7.4.0
   purpose: Provide domain-specific analysis that forces second-order reasoning Sonnet naturally skips
   topics: [expert-agent, adversarial-depth, domain-specialist, compound-failures, second-order-analysis, reusable-analysis-accretion, infrastructure-architecture, ml-infrastructure, hosting-audit, entity-relationship-analysis, variant-taxonomy]
   contexts: [agent-creation, expert-design, implementation-reference, security-review, code-review, architecture-review, infrastructure-planning, model-deployment, entity-modeling, dependency-auditing]
   difficulty: intermediate
   related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 12_Calibration_Layer, 13_Decision_Classification, 15_Grounding_Scores, 16_Operational_Bounds, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.4.0:
+      date: 2026-07-02
+      driver: kf-remediation-2026-07-02
+      changes:
+        - research variant degraded_mode: added accretion boundary note — degraded output at exactly 0.6 MUST NOT auto-file (M21 v7.5.0 at_threshold_degraded clause enforces this). Downstream accretion consumers must check the degraded flag; the M21 gate does so automatically.
+        - Added deployment note under research variant: deployments without Asta/Alia Semantic Scholar MCP connected permanently operate in degraded_mode. Ship disposition is permanently unavailable; outputs are soften/rebuild-only. Document this limitation to consumers at session start if research variant is requested.
     7.3.0:
       date: 2026-07-01
       changes:
@@ -262,6 +268,23 @@ agent:
              grounding_cap=0.6 ship_disposition=blocked session_id=<id>
           Do not silently present degraded output as full-confidence. The
           degraded=true flag in the output is the consumer-visible signal.
+
+          Accretion boundary: degraded output at exactly grounding=0.6 MUST NOT
+          auto-file. M21 v7.5.0 at_threshold_degraded clause enforces this at the
+          gate. Research variant consumers must propagate the degraded flag through
+          any handoff payload (M03 hc-expert-research-to-expert-regular,
+          hc-expert-research-to-builder) so downstream modes see the ceiling.
+
+      deployment_note: >
+        Deployments without Asta/Alia Semantic Scholar MCP connected (including
+        the default Claude Projects upload set) permanently operate in
+        degraded_mode. Ship disposition is permanently unavailable; all research
+        outputs carry soften or rebuild disposition only. If a user requests the
+        research variant in a degraded-permanent deployment, surface this
+        limitation at session start:
+        "[kf-research] This environment has no Semantic Scholar MCP. Research
+        variant operates in degraded mode (WebSearch fallback, grounding capped
+        at 0.6, ship disposition unavailable)."
       disambiguator: td-research-vs-expert-regular  # Module 04 — resolves phrase overlap with Expert regular
 ```
 
