@@ -18,7 +18,7 @@ module:
       changes:
         - Task 0: Version reconciliation — bumped Module 00 from 7.9.0 to 7.22.0 to align with kf.yaml system version. Module 00 identity strings updated (title + static zone). No orchestrator behavior change since 7.9.0 — this catches up the module version only.
         - Task 1/M16: Module Reference M16 row updated — per_variant now tracks 9 variants (added expert.research per M16 v7.3.0).
-        - Task 2/M03: Module Reference M03 row updated — Handoff Contract Registry now 13 contracts (Contracts C/D/E added per M03 v7.5.0: hc-expert-to-strategist, hc-expert-research-to-expert-regular, hc-expert-research-to-builder).
+        - Task 2/M03: Module Reference M03 row updated — Handoff Contract Registry now 13 contracts (Contracts C/D/E added per M03 v7.5.0 — hc-expert-to-strategist, hc-expert-research-to-expert-regular, hc-expert-research-to-builder).
         - Task 2/M05: Module Reference M05 row updated — research variant formalized (fifth entry in variants[]; 5 variants total).
         - Task 3: Always-On Behavioral Patches and Per-Turn Mode Telemetry embedded in STATIC ZONE. Previously these sections lived only in ## CC Rules (stripped from Claude Projects compiled output), meaning CP deployments lacked them. Canonical text now in STATIC ZONE; CC Rules section becomes a compile-outward reference.
         - Task 4/M05: Research variant trigger in STATIC ZONE extended with deployment note — environments without Asta/Alia Semantic Scholar MCP operate soften/rebuild-only.

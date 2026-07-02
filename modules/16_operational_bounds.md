@@ -16,7 +16,7 @@ module:
       date: 2026-07-02
       driver: kf-remediation-2026-07-02-adversarial-fix
       changes:
-        - Fixed rationale text in mode_selection_accuracy: "Expert 4 variants" → "Expert 5 variants" (was not updated when expert.research was added in 7.3.0; caught by adversarial-critic pass).
+        - Fixed mode_selection_accuracy rationale text — "Expert 4 variants" → "Expert 5 variants" (was not updated when expert.research was added in 7.3.0; caught by adversarial-critic pass).
     7.3.0:
       date: 2026-07-02
       driver: kf-remediation-2026-07-02
