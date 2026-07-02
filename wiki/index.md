@@ -117,6 +117,7 @@ type: index
 
 ### Infrastructure
 
+- [2026-07-02] Claude Projects appends on re-upload — clean-slate required before every upload cycle — reusable_diagnostic — `infrastructure/2026-07-02_claude-projects-knowledge-upload-clean-slate-rule.md`
 - [2026-06-26] Promoting a GitHub workflow to a required status check — plan-tier 403s + paths-filter deadlock — reusable_diagnostic — `infrastructure/2026-06-26_promoting-workflow-to-required-check-plan-tier-paths-filter-gotchas.md`
 - [2026-06-20] A new GitHub Actions workflow runs but does not gate PR merges — branch protection must explicitly require the check — reusable_diagnostic + new_pattern — `infrastructure/2026-06-20_github-actions-workflow-not-gate-without-required-status-check.md`
 - [2026-06-20] Nginx rate-limit zones must distinguish credential-bearing vs read-only auth endpoints — reusable_diagnostic + new_pattern — `infrastructure/2026-06-20_nginx-rate-limit-zones-credential-vs-read-only-auth-endpoints.md`
@@ -161,6 +162,7 @@ type: index
 
 ### Compiler
 
+- [2026-07-02] Module 00 STATIC ZONE vs CC Rules — which zone reaches which deployment target — transferable_framework — `compiler/2026-07-02_module-00-static-zone-vs-cc-rules-compilation-zone-routing.md`
 - [2026-06-14] Bootstrap divergence is INTENTIONAL on static-to-compiled promotions — document, don't fix — reusable_diagnostic — `compiler/2026-06-14_bootstrap-divergence-intentional-on-static-to-compiled-promotion.md`
 - [2026-06-10] extract_section() in kf-compile.py stops only at CC markers — non-CC headings cause silent over-extraction — reusable_diagnostic — `compiler/2026-06-10_extract-section-cc-marker-stop-condition-over-extraction.md`
 - [2026-05-13] Trailing-newline divergence between Python triple-quoted strings and Jinja2 default rendering — new_pattern — `compiler/2026-05-13_trailing-newline-divergence-python-jinja2.md`
