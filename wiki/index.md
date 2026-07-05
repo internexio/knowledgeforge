@@ -9,6 +9,9 @@ type: index
 
 ### Patterns
 
+- [2026-07-05] Claude Code skills durability — source repo + install.sh pattern — transferable_framework — `patterns/2026-07-05_claude-code-skills-durability-source-repo-install-script.md`
+- [2026-07-04] Triage-tool SUPPRESSED_STORE_LABELS pattern with per-entry bead link — new_pattern — `patterns/2026-07-04_triage-tool-suppressed-store-labels-with-per-entry-bead-link.md`
+- [2026-07-03] PKCE OAuth2 test hook pattern — _inject_code + MemoryTokenStorage — new_pattern — `patterns/2026-07-03_pkce-oauth2-test-hook-pattern-inject-code-memory-token-storage.md`
 - [2026-06-29] Headless Chrome HTML→PNG pipeline for text-heavy social infographics — diffusion-model bypass for structured layout — transferable_framework — `patterns/2026-06-29_headless-chrome-html-png-pipeline-text-heavy-social-infographics.md`
 - [2026-06-26] Git-history content authorship classifier (EDITORIAL > TEMPLATE-FILL > MASS-SWEEP) — reusable_diagnostic — `patterns/2026-06-26_git-history-content-authorship-classifier-editorial-template-mass-sweep.md`
 - [2026-06-26] Variant axes as a temperature-substitute for content generation without sampling control — new_pattern — `patterns/2026-06-26_variant-axes-as-temperature-substitute-content-generation.md`
@@ -117,6 +120,7 @@ type: index
 
 ### Infrastructure
 
+- [2026-07-03] Automating Happy Claude sessions from external processes — tmux send-keys + C-m mechanism, E2E-encrypted API caveat — reusable_diagnostic + transferable_framework — `infrastructure/2026-07-03_happy-claude-external-session-nudge-tmux-send-keys-cm-e2e-caveat.md`
 - [2026-07-02] Claude Projects appends on re-upload — clean-slate required before every upload cycle — reusable_diagnostic — `infrastructure/2026-07-02_claude-projects-knowledge-upload-clean-slate-rule.md`
 - [2026-06-26] Promoting a GitHub workflow to a required status check — plan-tier 403s + paths-filter deadlock — reusable_diagnostic — `infrastructure/2026-06-26_promoting-workflow-to-required-check-plan-tier-paths-filter-gotchas.md`
 - [2026-06-20] A new GitHub Actions workflow runs but does not gate PR merges — branch protection must explicitly require the check — reusable_diagnostic + new_pattern — `infrastructure/2026-06-20_github-actions-workflow-not-gate-without-required-status-check.md`
@@ -171,6 +175,9 @@ type: index
 
 ### Diagnostics
 
+- [2026-07-05] Launchd cron-style vs persistent-daemon misread — PID `-` is not "down" — reusable_diagnostic — `diagnostics/2026-07-05_launchd-cron-style-vs-persistent-daemon-misread.md`
+- [2026-07-04] bd schema_migrations version fence + bd migrate dirty-config refusal — reusable_diagnostic — `diagnostics/2026-07-04_bd-schema-migrations-version-fence-migrate-dirty-config-refusal.md`
+- [2026-07-04] $attempts sanitization for grep-c | case shell pattern under set -euo pipefail — new_pattern — `diagnostics/2026-07-04_attempts-sanitization-grep-c-case-shell-pattern-set-euo-pipefail.md`
 - [2026-06-25] React-route schema/meta edits are shadowed when site/ is rsynced but a Docker container actually serves the route — reusable_diagnostic — `diagnostics/2026-06-25_react-route-shadows-rsynced-static-html-in-mixed-deploy.md`
 - [2026-06-22] HTML-unescape before JSON-LD serialization — entities ship literal to schema validators and AI engines — reusable_diagnostic — `diagnostics/2026-06-22_html-unescape-before-json-ld-serialization.md`
 - [2026-06-20] Linters scoped to git's tracked-file set miss filesystem state — false-positive and false-negative orphan claims — reusable_diagnostic — `diagnostics/2026-06-20_linter-tracked-file-scope-misses-filesystem-state.md`
@@ -309,6 +316,7 @@ type: index
 
 ### Integration
 
+- [2026-07-03] Orchestra dual-endpoint gotcha — local dev (localhost:8765, no auth) vs. remote prod (your-orchestra-host.example.com, Bearer) have independent state — reusable_diagnostic — `integration/2026-07-03_orchestra-dual-endpoint-local-dev-vs-remote-prod-independent-state.md`
 - [2026-06-26] Allen AI Asta Scientific Corpus MCP — operational gotchas reference (7 gotchas + bib-corpus integration pattern, as of 2026-06-26) — new_pattern — `integration/2026-06-26_allen-ai-asta-scientific-corpus-mcp-operational-gotchas.md`
 - [2026-06-22] MCP Streamable-HTTP sessions are wiped on container restart — Disconnect+Reconnect is the client-side fix; Refresh tools silently fails — reusable_diagnostic — `integration/2026-06-22_mcp-streamable-http-sessions-wiped-on-container-restart.md`
 - [2026-06-19] Google Search Console API — three gotchas (property form mismatch, deprecated ping, contents.submitted type cast) — reusable_diagnostic + transferable_framework — `integration/2026-06-19_google-search-console-api-three-gotchas.md`
@@ -320,9 +328,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 195
-- **Entry types:** new_pattern (56), transferable_framework (53), reusable_diagnostic (83), reusable_diagnostic + transferable_framework (1), reusable_diagnostic + new_pattern (1), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
-- **Domains:** patterns (43), architecture (10), orchestration (16), infrastructure (28), compiler (4), diagnostics (42), methodologies (41), migrations (5), strategy (4), integration (6)
+- **Total entries:** 199
+- **Entry types:** new_pattern (58), transferable_framework (53), reusable_diagnostic (84), reusable_diagnostic + transferable_framework (2), reusable_diagnostic + new_pattern (1), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
+- **Domains:** patterns (45), architecture (10), orchestration (16), infrastructure (29), compiler (4), diagnostics (43), methodologies (41), migrations (5), strategy (4), integration (6)
 - **Avg grounding score:** 0.84 (across grounded entries)
-- **Staleness risk distribution:** stable (174), slow_decay (9), fast_decay (1)
+- **Staleness risk distribution:** stable (176), slow_decay (10), fast_decay (1)
 
