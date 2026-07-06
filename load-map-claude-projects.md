@@ -1,6 +1,6 @@
 # KnowledgeForge Load Map — `claude-projects`
 
-**Version:** `7.22.0`
+**Version:** `7.22.1`
 
 Each row shows one compiled output and the exact source section it was extracted from.
 Click the source link to jump directly to that section in the module file.
