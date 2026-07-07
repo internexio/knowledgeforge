@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.22.1
+version: 7.23.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,30 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.23.0
+    date: 2026-07-07
+    driver: knowledgeforge-core-acu
+    note: |
+      Module 22 Phase 2 activated — semantic wiki search with metadata filter,
+      score fusion, and orchestrator context injection.
+
+      Trigger #1 fired: wiki > 100 entries AND infrastructure query returned
+      2/5 off-domain results in top-5.
+
+      Module 22 (7.3.1 → 7.4.0):
+        - Wing-derivation defect fixed in mempalace-wiki-mine.py:
+          find_wiki_root() now derives per-subdomain wings.
+          mempalace.yaml markers added to all 11 wiki subdirectories.
+        - kf_wiki_search.py created at ~/.claude/hooks/: two-phase retrieval
+          wrapper (metadata pre-filter + score fusion).
+          Weights: 0.65 cosine + 0.20 importance + 0.15 recency.
+        - kf-route.py extended: keyword-based domain inference + top-3 wiki
+          results injected as [Wiki context — M22 §2] block in updatedPrompt.
+        - Phase 2 (Deferred) heading renamed to Phase 2 Design Reference.
+        - Implementation Status table updated with 3 new Phase 2 rows.
+
+      Closes knowledgeforge-core-acu.
+
   - version: 7.22.1
     date: 2026-07-06
     driver: knowledgeforge-core-oxp

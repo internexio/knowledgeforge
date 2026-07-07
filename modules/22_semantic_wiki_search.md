@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Semantic Wiki Search
-  version: 7.3.1
+  version: 7.4.0
   purpose: Retrieval contract over the Tier 0 wiki — KF's specification on top of MemPalace's tool surface, defining how the accretion pipeline gates against duplicates and how retrieval degrades gracefully when the vector backend is unavailable
   topics: [retrieval, semantic-search, mempalace, vector-index, wiki-search, duplicate-detection]
   contexts: [knowledge-retrieval, accretion-check, linter-runs, cross-session-queries]
@@ -13,6 +13,32 @@ module:
   related: [19_Memory_Architecture, 21_Knowledge_Accretion, 23_Taxonomy_Enforcement, 24_Verbatim_History_Mining, 17_Temporal_Knowledge]
   added_in: "6.5"
   changelog:
+    7.4.0: |
+      - Phase 2 activated (knowledgeforge-core-acu, triggered 2026-07-07).
+        Trigger #1 fired: wiki > 100 entries AND infrastructure query returned
+        2/5 off-domain results in top-5.
+      - Wing-derivation defect fixed in mempalace-wiki-mine.py:
+        find_wiki_root() now derives per-subdomain wings
+        (wiki/patterns/foo.md → wing=wiki-patterns).
+        mempalace.yaml markers added to all 11 wiki subdirectories.
+        Existing 315 entries remain in wiki-kf-core (MemPalace dedup prevents
+        re-mining already-filed files; migration is optional per spec).
+      - kf_wiki_search.py created at ~/.claude/hooks/: Phase 2 wrapper around
+        tool_search implementing two-phase retrieval (metadata pre-filter +
+        score fusion). Weights: 0.65 cosine + 0.20 importance + 0.15 recency.
+        staleness_risk aliases handled (fast_decay→volatile, low→stable,
+        medium→slow_decay). Falls back to created field when last_accessed
+        absent (currently 0 entries have last_accessed populated).
+      - kf-route.py extended: after Gemini routing fires, keyword-based domain
+        inference runs on the user prompt; if domain is inferred,
+        wiki_search(query, domain, k=3) is called and top-3 results are
+        injected as [Wiki context — M22 §2] block in the updatedPrompt.
+        Injection is skipped when domain cannot be inferred (avoids noise from
+        empty-domain legacy entries in unfiltered results).
+      - Transitional state: existing wiki entries are in wiki-kf-core; new
+        entries added after 2026-07-07 are mined into wiki-{subdir} wings.
+        Phase 2 wrapper searches wiki-kf-core (full coverage) with client-side
+        domain filter (correctness). Wing-scoped search is a future optimization.
     7.3.1: |
       - Dup-check threshold recalibrated 0.9 → 0.85 based on empirical probing
         during knowledgeforge-core-rk4 hook implementation. MemPalace mines wiki
@@ -63,7 +89,7 @@ KF retrieves from the Tier 0 wiki through MemPalace, which wraps a ChromaDB vect
 
 **Phase 1 (this spec):** narrow scope — `mempalace_check_duplicate` is wired into the accretion pipeline as a detect-and-warn gate. No semantic search, no orchestrator-context retrieval, no wing/room scoping. The dup-check is wing-less by design (MemPalace's `tool_check_duplicate` signature accepts only `(content, threshold)`), so Phase 1 has zero dependency on wing derivation. Grep fallback is the retrieval surface for everything else.
 
-**Phase 2 (deferred):** wing/room pre-filter, frontmatter (`domain`/`topic`/`tags`/`importance`) filter, score fusion, and orchestrator-context retrieval are all Phase 2 work, gated by observed upgrade triggers (see "Phase 2 Upgrade Triggers"). Phase 2 also depends on fixing the wing-derivation defect in `mempalace-wiki-mine.py` (current code derives a single repo-level wing; Phase 2 needs per-subdomain wings).
+**Phase 2 (active as of v7.4.0):** wing/room pre-filter, frontmatter (`domain`/`topic`/`tags`/`importance`) filter, score fusion, and orchestrator-context retrieval are live. Implemented by: `kf_wiki_search.py` (Phase 2 wrapper), extended `kf-route.py` (context injection), fixed `mempalace-wiki-mine.py` (per-subdomain wing derivation). Wing-derivation defect fixed: new entries get per-subdomain wings (`wiki-patterns`, `wiki-infrastructure`, etc.). Existing 315 entries remain in `wiki-kf-core`; wrapper searches that wing with client-side domain filter for full coverage. Per-subdomain wing queries are a future optimization once new entries accumulate.
 
 Phase 1 is intentionally minimum-viable. The original v6.5.0 95% R@10 design intent is preserved in the Phase 2 section, not deleted.
 
@@ -79,6 +105,9 @@ Phase 1 is **fully landed** as of v7.3.1 (knowledgeforge-core-rk4).
 | M21 / M23 / M00 / M06 / M25 / M24 cross-reference updates | ✅ Landed | knowledgeforge-core-8xq |
 | `mempalace-wiki-mine.py` extension to call `tool_check_duplicate` | ✅ Landed (threshold=0.85, calibrated empirically) | knowledgeforge-core-rk4 |
 | Threshold recalibration 0.9 → 0.85 + spec v7.3.1 | ✅ Landed | knowledgeforge-core-rk4 |
+| Phase 2: kf_wiki_search.py wrapper (filter + fusion) | ✅ Landed (v7.4.0, 2026-07-07) | knowledgeforge-core-acu |
+| Phase 2: kf-route.py wiki context injection | ✅ Landed (v7.4.0, 2026-07-07) | knowledgeforge-core-acu |
+| Phase 2: find_wiki_root() per-subdomain wing derivation | ✅ Landed (v7.4.0, 2026-07-07) | knowledgeforge-core-acu |
 
 The hook calls `tool_check_duplicate` via direct Python import (`from mempalace.mcp_server import tool_check_duplicate`), guarded by `except BaseException` to catch both `KnowledgeGraph()` SQLite errors and argparse `SystemExit` on `--help`. Detect-and-warn semantics — does NOT block the mine.
 
@@ -207,9 +236,72 @@ Phase 1 explicitly does NOT measure recall, precision, R@10, or any retrieval-qu
 
 ---
 
-## Phase 2 (Deferred)
+## Implementation (Phase 2)
 
-This section preserves the v6.5.0 design intent. Implement only when one of the Phase 2 Upgrade Triggers fires.
+### Wing Derivation (mempalace-wiki-mine.py)
+
+`find_wiki_root()` now derives per-subdomain wings:
+- `wiki/patterns/foo.md` → `wing=wiki-patterns`
+- `wiki/infrastructure/bar.md` → `wing=wiki-infrastructure`
+- `wiki/index.md` (directly in wiki root) → `wing=wiki-kf-core` (legacy)
+
+`mempalace.yaml` markers exist in all 11 wiki subdirectories. Existing entries remain in `wiki-kf-core` (MemPalace dedup skips re-mining already-filed files).
+
+### Phase 2 Wrapper (kf_wiki_search.py)
+
+**Location:** `~/.claude/hooks/kf_wiki_search.py`
+
+**Entry point:** `wiki_search(query, domain, topic, tags, k, limit, wing)`
+
+**Two-phase retrieval:**
+
+```
+query + domain hint
+  → tool_search(query, limit=50, wing="wiki-kf-core")  # candidate pool
+  → deduplicate by source_file (best cosine drawer per file)
+  → Phase 2a: metadata pre-filter
+      keep if: domain matches OR (domain+topic both match)
+               OR ≥2 tag overlaps with query tags
+  → Phase 2b: score fusion
+      fusion = 0.65·norm_cosine + 0.20·norm_importance + 0.15·recency_boost
+  → return top-K sorted by fusion_score
+```
+
+**Score fusion details:**
+- `norm_cosine`: cosine similarity normalized within the candidate set [0,1]
+- `norm_importance`: `(importance - 1) / 4` maps [1,5] → [0,1]
+- `recency_boost`: `exp(-λ · days_since)` using `last_accessed` (falls back to `created`); λ from staleness_risk
+- staleness_risk aliases: `fast_decay`→`volatile`, `low`→`stable`, `medium`→`slow_decay`
+
+### Orchestrator Context Injection (kf-route.py)
+
+When kf-route.py's Gemini routing activates a mode (non-reckoning), it:
+1. Runs keyword-based domain inference on the user prompt
+2. If a domain is inferred (ambiguous queries return None — injection is skipped):
+   - Calls `wiki_search(prompt, domain, k=3, limit=50)`
+   - Formats top-3 results as a `[Wiki context — M22 §2 | domain=X]` block
+   - Injects the block into `updatedPrompt` between the skill-load hints and `---`
+
+Domain keywords mapped: infrastructure, patterns, diagnostics, methodologies, orchestration, migrations, architecture, compiler, strategy, integration.
+
+**Injection format:**
+```
+[KF-ROUTE: mode=builder | decision=evaluative | load=[M21]]
+Load skill: .claude/skills/kf/builder.md
+[Wiki context — M22 §2 | domain=infrastructure]
+1. "Nginx rate-limit zones must distinguish credential-bearing vs read-only auth endpoints" (infrastructure/server-configuration, imp:5) — Rate limits must differ between login...
+2. ...
+---
+[user prompt]
+```
+
+**Graceful degradation:** Any failure in the wiki search path emits `[M22 Phase 2 FALLBACK]` to stderr and falls through to the existing routing-only behavior. Tool search unavailability, import failures, and individual query failures are all caught.
+
+---
+
+## Phase 2 Design Reference
+
+This section preserves the v6.5.0 design intent. Phase 2 is now active (v7.4.0). The design below was implemented in `kf_wiki_search.py` and the extended `kf-route.py`.
 
 ### Prerequisites
 
