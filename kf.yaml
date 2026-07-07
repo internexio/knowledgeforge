@@ -41,6 +41,25 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.24.0
+    date: 2026-07-07
+    driver: knowledgeforge-core-xaq
+    note: |
+      Module 07 (Critic) 7.3.0 → 7.4.0: added Communications (comms) variant.
+
+      When the artifact-under-review is a communications piece (marketing/sales
+      copy, email, ad, blog draft, social post, press release), Critic now
+      delegates to COS MCP analyze_full_comms for 7-framework analysis and wraps
+      the results in standard Critic severity-ranked presentation.
+
+      Detection: explicit user labels OR implicit structure (headline+CTA,
+      persuasive register, audience targeting). Graceful degradation to native
+      Critic when COS MCP is unavailable.
+
+      Changes: agent spec variants[], main-body comms section, comparison table,
+      CC Skill Variants, CC Agent Communications Variant section, Related Modules,
+      Section-Load Map.
+
   - version: 7.23.0
     date: 2026-07-07
     driver: knowledgeforge-core-acu

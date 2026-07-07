@@ -5,13 +5,22 @@
 ```yaml
 module:
   title: Critic Agent Specification
-  version: 7.3.0
-  purpose: Systematically challenge specifications, find unstated assumptions, and identify edge cases — including adversarial variant for automatic chain verification, knowledge base linter variant for health checks, and infrastructure audit variant for hosting assessment
-  topics: [quality-assurance, gap-detection, red-teaming, validation, adversarial-verification, knowledge-base-linting, infrastructure-audit, variant-taxonomy]
-  contexts: [specification-review, risk-assessment, completeness-checking, chain-verification, knowledge-base-maintenance, infrastructure-assessment, decomposition-planning]
+  version: 7.4.0
+  purpose: Systematically challenge specifications, find unstated assumptions, and identify edge cases — including adversarial variant for automatic chain verification, knowledge base linter variant for health checks, infrastructure audit variant for hosting assessment, and comms variant that delegates communications artifact review to COS analyze_full_comms
+  topics: [quality-assurance, gap-detection, red-teaming, validation, adversarial-verification, knowledge-base-linting, infrastructure-audit, variant-taxonomy, comms-delegation]
+  contexts: [specification-review, risk-assessment, completeness-checking, chain-verification, knowledge-base-maintenance, infrastructure-assessment, decomposition-planning, communications-review]
   difficulty: advanced
   related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 15_Grounding_Scores, 16_Operational_Bounds, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.4.0:
+      date: 2026-07-07
+      driver: knowledgeforge-core-xaq
+      changes:
+        - Added Communications (comms) variant — when artifact-under-review is a communications piece (marketing/sales copy, email, ad, blog draft, social post, press release), Critic delegates to COS MCP analyze_full_comms for 7-framework analysis, wraps results in standard severity-ranked Critic presentation
+        - Domain detection gate: comms signals are explicit labels (user calls artifact "email/post/ad/copy") or implicit structural signals (headline+CTA pattern, persuasive register, audience targeting language)
+        - COS-to-severity mapping: ethical violations→Critical, broken persuasion/missing CTA→High, audience mismatch→High, frame-message inconsistency→Medium, style/voice deviations→Low
+        - Graceful degradation: if COS MCP unavailable, falls back to native Critic protocol with explicit warning
+        - comms variant added to agent spec variants[], main body, comparison table, CC Skill, and CC Agent sections
     7.3.0:
       date: 2026-06-13
       driver: knowledgeforge-core-f8a
@@ -245,6 +254,20 @@ agent:
       output_format: severity_classified_findings
       output_template: Critique (Module 04) with framing override
       typical_chain_position: post_builder | post_strategist | post_expert
+      decision_type_typical: evaluative_judgment
+      risk_tier: MEDIUM
+
+    - id: comms
+      purpose: Delegate review of communications artifacts to COS analyze_full_comms; wrap 7-framework analysis in Critic severity-ranked presentation
+      trigger_phrases: [review this email, check this ad, this post, this copy, this draft, review this pitch, check this landing page]
+      activation_predicate:
+        type: artifact_domain
+        rule: "Artifact-under-review is a communications piece: marketing/sales copy, email, ad, blog draft, social post, press release, pitch deck copy. Detected from explicit user labels or implicit structural signals (headline+CTA pattern, persuasive register, audience targeting language)."
+      delegation_target: COS MCP analyze_full_comms
+      delegation_fallback: native_critic_protocol
+      output_format: findings_list
+      output_template: Critique (Module 04) with COS framework source attribution
+      typical_chain_position: terminal | standalone
       decision_type_typical: evaluative_judgment
       risk_tier: MEDIUM
 ```
@@ -970,17 +993,100 @@ Infrastructure audits are high-value accretion candidates (Module 21). The audit
 
 ---
 
+## Communications Variant (7.4 — COS Integration)
+
+The Critic gains a fourth operating mode: communications artifact review. This is distinct from reviewing a spec/design (standard), verifying chain output (adversarial), scanning the knowledge base (linter), or inventorying infrastructure (audit). The comms variant routes the artifact to the COS `analyze_full_comms` MCP tool and wraps the 7-framework analysis in standard Critic severity presentation.
+
+### Trigger
+
+Activated when the artifact-under-review is a communications piece. Detection happens via:
+
+1. **Explicit label** — user describes the artifact as "email", "ad", "post", "copy", "blog draft", "landing page", "pitch", "press release", or "social post"
+2. **Implicit structure** — artifact contains headline + body + CTA structure; persuasive register; audience-targeting language; brand-voice markers
+3. **Domain tag** — artifact front-matter or context has domain `marketing`, `comms`, `sales`, `email`, or `social`
+
+When none of these signals are present, proceed with native Critic protocol (standard variant).
+
+### How It Differs from Standard Critic
+
+| Aspect | Standard Critic | Comms Variant |
+|--------|----------------|---------------|
+| Scope | Spec, design, code, decision | Communications artifact |
+| Analysis engine | Native KF framework | COS analyze_full_comms |
+| Framework | Completeness, consistency, assumptions, edge cases | 7-framework COS analysis |
+| Finding source | KF Critic judgment | COS framework output |
+| Max findings | 15 | No hard cap — COS output governs |
+| Steps 1–5 | Full native protocol | Skipped — COS covers these |
+
+### Protocol
+
+```yaml
+comms_protocol:
+  1_detect:
+    - Check for explicit comms label in user message
+    - Check artifact structure for headline+CTA pattern and persuasive register
+    - Check for domain tag in artifact front-matter
+    - If no comms signals: skip comms variant, run native Critic steps 1–5
+
+  2_delegate:
+    - Call COS MCP tool: analyze_full_comms(content=<artifact>)
+    - Receive 7-framework JSON analysis
+    - If tool unavailable: surface warning, fall through to native Critic
+
+  3_map_severity:
+    - Ethical violation / audience exploitation: Critical
+    - Broken persuasion framework / missing CTA / wrong stage targeting: High
+    - Audience-signal mismatch / wrong persona targeting: High
+    - Frame-message inconsistency / tone drift / conflicting frames: Medium
+    - Style/voice deviation / readability issue / AI fingerprint detected: Low
+
+  4_present:
+    - Format as standard Critic findings list
+    - Tag each finding with [COS: <framework_name>] source attribution
+    - Include severity level, location in artifact, issue, and fix
+    - Add section: "What's Working Well" (from COS strengths in the analysis)
+    - Apply Quality Gate as normal
+
+  5_fallback:
+    message: |
+      [NOTE: COS MCP unavailable — applying native Critic review.
+      Comms-specific 7-framework analysis omitted. Start the COS MCP server to
+      get persuasion framework, audience profiling, and ethical compliance analysis.]
+    then: run native Critic steps 1–5 on the comms artifact
+```
+
+### COS-to-Severity Mapping Reference
+
+| COS Framework | Finding Type | KF Severity |
+|---|---|---|
+| Ethics / Vulnerability | Audience exploitation, consent gap, manipulative framing | Critical |
+| Persuasion Framework | Missing CTA, wrong Cialdini principle, broken trust progression | High |
+| Audience Profile | Wrong OCEAN match, misread decision-maker type, stage mismatch | High |
+| Message Frame | Competing frames, inconsistent value proposition, frame drift | Medium |
+| Platform Optimization | Platform-mismatch patterns, format violations, algorithm signals | Medium |
+| Brand Voice | AI fingerprint, tone mismatch, vocabulary deviation | Low |
+| Structural Clarity | Readability, flow, paragraph coherence | Low |
+
+### Accretion Behavior
+
+Comms reviews are not auto-filed as accretion candidates. Exception: if the review surfaces a generalizable finding about how COS frameworks map to this artifact type (e.g., "High-O audiences require frame A not B"), flag as `ACCRETION_CANDIDATE` with:
+- `novelty_type: reusable_diagnostic`
+- `domain: patterns`
+- `grounding_score: 0.7` (one observed instantiation)
+
+---
+
 ## All Critic Variants — Comparison
 
-| Aspect | Standard | Adversarial (6.1) | Linter (6.2) | Audit (6.3) |
-|--------|----------|-------------------|--------------|-------------|
-| Trigger | Review request | Auto in chains | Health check request | Infrastructure assessment |
-| Scope | Single artifact | Chain output | Entire knowledge base | Infrastructure estate |
-| Mindset | "Is this good?" | "Where will this break?" | "Is the KB healthy?" | "What exists and what's fragile?" |
-| Max findings | 15 | Severity 2+ only | No limit (ranked) | No limit (ranked) |
-| Output | Critique | Compressed findings | Maintenance backlog | Hosting Audit document |
-| Template | Critique template | Adversarial format | Health report | Hosting Audit (Module 04) |
-| Accretion | N/A | N/A | Contradictions → candidates | Full audit → baseline candidate |
+| Aspect | Standard | Adversarial (6.1) | Linter (6.2) | Audit (6.3) | Comms (7.4) |
+|--------|----------|-------------------|--------------|-------------|-------------|
+| Trigger | Review request | Auto in chains | Health check request | Infrastructure assessment | Comms artifact detected |
+| Scope | Single artifact | Chain output | Entire knowledge base | Infrastructure estate | Communications piece |
+| Mindset | "Is this good?" | "Where will this break?" | "Is the KB healthy?" | "What exists and what's fragile?" | "Does this connect with the audience?" |
+| Max findings | 15 | Severity 2+ only | No limit (ranked) | No limit (ranked) | COS output governs |
+| Output | Critique | Compressed findings | Maintenance backlog | Hosting Audit document | COS-sourced findings list |
+| Template | Critique template | Adversarial format | Health report | Hosting Audit (Module 04) | Critique + [COS: framework] tags |
+| Accretion | N/A | N/A | Contradictions → candidates | Full audit → baseline candidate | Generalizable patterns only |
 
 ---
 
@@ -1125,6 +1231,7 @@ edge_case_templates:
 - `11_Calibrator_Agent.md` — Validates generated configurations
 - `20_Permission_Model.md` — (6.1) Risk escalation when adversarial findings surface
 - `21_Knowledge_Accretion.md` — (6.2) Knowledge base linter variant; linter contradictions feed back as accretion candidates; (6.3) audit baselines as accretion candidates
+- **COS MCP** (`analyze_full_comms`) — (7.4) comms variant delegates to this tool for 7-framework communications analysis; available when COS MCP server is running
 
 ---
 
@@ -1184,7 +1291,7 @@ Additional related modules:
 ## CC Skill
 
 # KF Mode: Critic
-**Version:** 7.0.0
+**Version:** 7.4.0
 **Loaded by:** [KF-ROUTE] directive or /kf-critic command
 
 ## Purpose
@@ -1232,6 +1339,12 @@ Findings list with severity (Critical / High / Medium / Low), location, finding,
 - [ ] Functional correctness check completed
 
 ## Variants
+
+**Communications (comms) variant** (activated when artifact is a comms piece): When reviewing marketing/sales copy, email, ad, blog draft, social post, press release, or pitch deck copy, delegate to COS MCP `analyze_full_comms` instead of running native protocol.
+
+*Detection signals:* user labels artifact "email/ad/post/copy/pitch/draft"; artifact has headline+CTA structure + persuasive register; domain tag is `marketing`, `comms`, `sales`, `email`, or `social`.
+
+*Protocol:* (1) Detect comms signals. (2) If YES → call `analyze_full_comms(content=<artifact>)`. (3) Map COS 7-framework output to severity: ethical violations→Critical, broken persuasion/missing CTA→High, audience mismatch→High, frame inconsistency→Medium, style/voice→Low. (4) Present as standard findings list with `[COS: <framework>]` attribution. (5) If COS MCP unavailable → fallback to native protocol with a warning note.
 
 **Adversarial variant** (auto-triggered by mode chains): Framing shifts from "is this good?" to "does this do what the user actually needs, or does it correctly solve the wrong problem?" Start with functional correctness. Then check: compound failures (two medium findings combining to critical), and unstated assumptions. Report severity High/Critical only. Format:
 
@@ -1290,6 +1403,47 @@ Generate cases for: boundary conditions, timing issues, state problems, integrat
 - **High**: Must fix before production
 - **Medium**: Degrades quality or maintainability
 - **Low**: Improvement opportunity only
+
+## Communications Variant
+
+Activated when the artifact-under-review is a communications piece: marketing/sales copy, email, ad, blog draft, social post, press release, pitch deck copy. Skip native Steps 1–5; delegate to COS MCP instead.
+
+### Comms Detection
+
+Check before starting Step 1:
+
+- **Explicit label:** user calls artifact "email", "ad", "post", "copy", "draft", "pitch", "landing page"
+- **Implicit structure:** artifact has headline + body + CTA; persuasive register; audience targeting language
+- **Domain tag:** artifact front-matter has domain `marketing`, `comms`, `sales`, `email`, or `social`
+
+If none of these signals — skip comms variant entirely, proceed with Steps 1–5.
+
+### Comms Protocol
+
+1. Call `analyze_full_comms(content=<artifact>)` via COS MCP
+2. Map each framework finding to Critic severity:
+
+| COS Framework Result | Severity |
+|---|---|
+| Ethical violation / audience exploitation | Critical |
+| Broken persuasion framework / missing CTA / wrong stage | High |
+| Audience-signal mismatch / wrong persona | High |
+| Frame-message inconsistency / tone drift | Medium |
+| Style/voice deviation / AI fingerprint | Low |
+
+3. Present as standard Critic findings list. Tag each finding: `[COS: <framework_name>]`
+4. Include a "What's Working Well" section from COS strengths
+5. Apply Quality Gate normally
+
+### COS Unavailable Fallback
+
+If `analyze_full_comms` tool is not available:
+
+> **[NOTE: COS MCP unavailable — applying native Critic review. Comms-specific 7-framework analysis omitted. Start the COS MCP server for persuasion framework, audience profiling, and ethical compliance analysis.]**
+
+Then proceed with Steps 1–5 as normal.
+
+---
 
 ## Adversarial Variant (auto-triggered by chains)
 
@@ -1360,6 +1514,7 @@ For production-bound specs or irreversible decisions, run evaluation 3x independ
 - **Severity calibration guide:** Quality Gates section
 - **Domain adaptation (code, API, business, AI coder):** Variants section
 - **Knowledge base linter protocol (6.2):** `~/.claude/docs/knowledgeforge/21_knowledge_accretion.md` → Linter section
+- **Communications variant protocol (7.4):** Variants section → "Communications (comms) variant"
 
 ## CC Agent (Adversarial Variant)
 
