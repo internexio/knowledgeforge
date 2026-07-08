@@ -1,19 +1,17 @@
 # KnowledgeForge Core
 
-**Version:** 7.22.0 · **Status:** Active development · **Modules:** 26 (00–25)
+**Version:** 7.25.0 · **Status:** Active development · **Modules:** 26 (00–25)
 
 Single source of truth for the KnowledgeForge reasoning framework. All platform variants compile from here.
 
-## What's New in 7.22.0
+## What's New in 7.25.0
 
-Audit remediation batch — six findings from a 2026-07-02 Claude Projects review of the deployed Module 00 (uploaded at v7.9.0 while core was at 7.21.0). See `docs/planning/2026-07-02_kf-remediation-spec.md` for full audit report.
+COS artifact emission for comms-domain work. Two agents now detect when they're operating in a communications context and emit COS-compatible artifacts alongside their standard KF output.
 
-- **Module 00** — Version reconciled to 7.22.0. Always-On Behavioral Patches and Per-Turn Mode Telemetry embedded in STATIC ZONE (previously lived only in `## CC Rules`, which is stripped from CP compiled output — CP deployments lacked them).
-- **Module 16** — `expert.research` added to `per_variant` tracking list (was missing; research-variant routing errors were misattributed to `expert.regular`). 9 variants total (4 Critic + 5 Expert).
-- **Module 03** — Handoff Contract Registry expanded from 10 to 13 contracts. Three new edges: `hc-expert-to-strategist` (moat/ML-infra/security-prioritization chains), `hc-expert-research-to-expert-regular` ("ground claim then analyze"), `hc-expert-research-to-builder` ("find evidence and build report"). Research-variant payloads carry `grounded_evidence_set`, per-claim grounding scores, `degraded` flag, and `disposition` enum.
-- **Module 05** — Research variant `degraded_mode` extended: accretion boundary note (degraded output at exactly 0.6 MUST NOT auto-file) + deployment note (environments without Asta MCP operate soften/rebuild-only permanently).
-- **Module 21** — `at_threshold_degraded` clause added to `grounding_gate`. Resolves: degraded-mode cap of 0.6 = exactly the normal-pass threshold. Without the clause, degraded output would auto-file as normal accretion. `degraded=true` at threshold → surface with caveat + no auto-file.
-- **README** — Setup section and Mode Triggers table added with complete 26-file upload list and all mode triggers including Expert, Coordinator, research, infrastructure, and ERA variants.
+- **Module 08 (Synthesizer)** 6.6.1 → 6.7.0 — Phase 4.5 added: 4-signal comms-domain detection after pattern extraction. When a synthesized pattern is comms-domain (≥1 signal), has ≥2 examples, and confidence ≥ 0.6: emit `cos_template_output` (COS template JSON) alongside the standard wiki entry. Field mapping and emit trigger defined in `specs/cos-template-schema.md`. Template: `templates/cos-template-emit.jinja2`. COS MCP unavailable → wiki-only with surface note.
+- **Module 11 (Calibrator)** 7.0.0 → 7.1.0 — 5-signal comms-heavy project detection at interview phase (threshold: 2+). Comms-heavy projects emit two companion files alongside CLAUDE.md: `cos-agent-profile.json` (writer personality from `profile_agent`) and `cos-audience-profile.json` (audience OCEAN from `audience_profile`). CLAUDE.md also gets a comms section embedding `style_label`, `strengths`, `blind_spots`, and audience `elm_route`. Schema refs: `specs/cos-profile-schemas.md`. Templates: `templates/cos-agent-profile.json.jinja`, `templates/cos-audience-profile.json.jinja`. COS MCP unavailable → CLAUDE.md-only with placeholder section.
+- **Templates** — Three new Jinja2 emit templates added to `templates/`: `cos-template-emit.jinja2`, `cos-agent-profile.json.jinja`, `cos-audience-profile.json.jinja`.
+- **knowledgeforge-cc** — Compiled and PR cleared. CC skills and agents updated for both modules.
 
 ---
 
@@ -45,7 +43,7 @@ Changes flow **into core first**, then compile out to variants. Never edit varia
 modules/          # 26 canonical module specs (00–25)
 plans/            # Architecture session documents
 wiki/             # Tier 0 accreted knowledge
-templates/        # Spec templates (Module 04)
+templates/        # Spec templates (Module 04) + COS emit templates (cos-template-emit, cos-agent-profile, cos-audience-profile)
 taxonomy/         # Controlled vocabulary (Module 23)
 model-profiles/   # Per-model weakness/strength maps
 platform-bindings/ # Per-platform adaptation rules
