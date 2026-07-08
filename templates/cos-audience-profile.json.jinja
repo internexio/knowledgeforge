@@ -1,0 +1,81 @@
+{#
+  cos-audience-profile.json.jinja
+  KF Calibrator → COS Audience Profile emitter.
+
+  Fired when: comms-heavy detection fires (2+ of 5 signals) AND audience_description was
+  provided during Phase 2 of the Calibrator interview.
+  Companion: cos-agent-profile.json.jinja (emitted in the same pass).
+
+  Context variables (set from COS MCP audience_profile response + Calibrator interview):
+    audience_description  (str)   Free-text from Phase 2 interview question
+    campaign_objective    (str)   From Calibrator interview (primary content goal)
+    captured_at           (str)   ISO-8601 timestamp of generation
+    ocean_scores          (dict)  {trait: float} from audience_profile.ocean_scores
+                                  Traits: openness, conscientiousness, extraversion, agreeableness, neuroticism
+    ocean_confidence      (float) From audience_profile.ocean_confidence (0.0–1.0)
+    elm_route             (str)   "central" | "peripheral" | "mixed"
+    dominant_traits       (list)  [str] from audience_profile.dominant_traits
+    trait_rationale       (str)   From audience_profile.trait_rationale
+    dominant_moral_foundations (list) [str] from audience_profile.dominant_moral_foundations
+    vulnerability_flags   (list)  [str] — if non-empty, ethics review is required before deployment
+    recommended_persuasion_principle (str) Cialdini principle to lead with
+    persuasion_rationale  (str)   From audience_profile.persuasion_rationale
+    paired_with           (str|null) Relative path to companion cos-agent-profile.json, or null
+    claude_md_path        (str)   Relative path to the generating CLAUDE.md
+
+  Schema: cos-audience-profile/v1 (specs/cos-profile-schemas.md §3)
+  Key fields for CLAUDE.md comms section: elm_route, recommended_persuasion_principle, vulnerability_flags
+
+  Warning thresholds:
+    ocean_confidence < 0.6  → add _confidence_warning + note in artifact
+    vulnerability_flags non-empty → add _ethics_review_required: true
+
+  Note: vulnerability_flags being non-empty is a STOP signal for deployment — flag visibly.
+#}
+{
+  "_schema": "cos-audience-profile/v1",
+  "_generated_by": "kf-calibrator",
+  "_captured": "{{ captured_at }}",
+  "_paired_with": {{ '"' + paired_with + '"' if paired_with else 'null' }},
+  "_claude_md": "{{ claude_md_path }}",
+  {% if ocean_confidence < 0.6 -%}
+  "_confidence_warning": "Low confidence ({{ ocean_confidence | round(2) }}) — ocean_scores are indicative only. Collect more audience data (samples, demographics, behavioral signals) before high-stakes use.",
+  {% endif -%}
+  {% if vulnerability_flags -%}
+  "_ethics_review_required": true,
+  "_vulnerability_flags": [
+    {% for f in vulnerability_flags -%}
+    "{{ f | replace('\\', '\\\\') | replace('"', '\\"') }}"{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ],
+  {% endif -%}
+  "audience_description": "{{ audience_description | replace('\\', '\\\\') | replace('"', '\\"') | replace('\n', ' ') }}",
+  "campaign_objective": "{{ campaign_objective | replace('\\', '\\\\') | replace('"', '\\"') }}",
+  "ocean_scores": {
+    "openness":          {{ ocean_scores.openness | round(2) }},
+    "conscientiousness": {{ ocean_scores.conscientiousness | round(2) }},
+    "extraversion":      {{ ocean_scores.extraversion | round(2) }},
+    "agreeableness":     {{ ocean_scores.agreeableness | round(2) }},
+    "neuroticism":       {{ ocean_scores.neuroticism | round(2) }}
+  },
+  "ocean_confidence": {{ ocean_confidence | round(2) }},
+  "elm_route": "{{ elm_route }}",
+  "dominant_traits": [
+    {% for t in dominant_traits -%}
+    "{{ t | replace('"', '\\"') }}"{% if not loop.last %},{% endif %}
+    {% endfor -%}
+  ],
+  "trait_rationale": "{{ trait_rationale | replace('\\', '\\\\') | replace('"', '\\"') | replace('\n', ' ') }}",
+  "dominant_moral_foundations": [
+    {% for f in dominant_moral_foundations -%}
+    "{{ f | replace('"', '\\"') }}"{% if not loop.last %},{% endif %}
+    {% endfor -%}
+  ],
+  "vulnerability_flags": [
+    {% for f in vulnerability_flags -%}
+    "{{ f | replace('\\', '\\\\') | replace('"', '\\"') }}"{% if not loop.last %},{% endif %}
+    {% endfor -%}
+  ],
+  "recommended_persuasion_principle": "{{ recommended_persuasion_principle | replace('\\', '\\\\') | replace('"', '\\"') }}",
+  "persuasion_rationale": "{{ persuasion_rationale | replace('\\', '\\\\') | replace('"', '\\"') | replace('\n', ' ') | replace('\r', '') }}"
+}

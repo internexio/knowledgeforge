@@ -41,6 +41,32 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.25.0
+    date: 2026-07-08
+    driver: knowledgeforge-core-90h knowledgeforge-core-4r6
+    note: |
+      Module 08 (Synthesizer) 6.6.1 → 6.7.0: comms-domain detection + COS template emit.
+        Phase 4.5 added: evaluates 4 signals (topic, KF domain, source example types,
+        pattern nature). Emit trigger: ≥1 signal AND ≥2 examples AND confidence ≥ 0.6.
+        New output: cos_template_output (COS template JSON via templates/cos-template-emit.jinja2).
+        COS MCP unavailable fallback: wiki-only emit + surface note. CC Skill/Agent
+        quality gates updated.
+
+      Module 11 (Calibrator) 7.0.0 → 7.1.0: comms-heavy project detection + COS profile emit.
+        5-signal detection (explicit domain, directories, file patterns, package.json deps,
+        no-primary-code); threshold 2+. New outputs: cos_agent_profile_output +
+        cos_audience_profile_output (via templates/cos-agent-profile.json.jinja +
+        cos-audience-profile.json.jinja). Adds CLAUDE.md comms section embedding
+        style_label, strengths, blind_spots, audience elm_route. COS MCP unavailable
+        fallback: CLAUDE.md-only with placeholder section. Quality checklist updated.
+
+      New template files (templates/ dir):
+        cos-template-emit.jinja2   — Synthesizer → COS template JSON
+        cos-agent-profile.json.jinja  — Calibrator → COS agent profile
+        cos-audience-profile.json.jinja — Calibrator → COS audience profile
+
+      Schema references: specs/cos-template-schema.md, specs/cos-profile-schemas.md
+
   - version: 7.24.0
     date: 2026-07-07
     driver: knowledgeforge-core-xaq

@@ -5,13 +5,20 @@
 ```yaml
 module:
   title: Synthesizer Agent Specification
-  version: 6.6.1
+  version: 6.7.0
   purpose: Extract reusable patterns from disparate sources and identify unifying frameworks
   topics: [pattern-extraction, synthesis, meta-analysis, framework-creation, knowledge-accretion]
   contexts: [pattern-discovery, knowledge-organization, framework-development]
   difficulty: advanced
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    6.7.0: |
+      - Added Phase 4.5: comms-domain detection (4 signals) and cos_template_output emit
+      - Added cos_template_output to outputs spec: COS-compatible template JSON for comms patterns
+      - Emit trigger: comms-domain signal (≥1 of 4) AND ≥2 examples AND pattern_confidence ≥ 0.6
+      - Added COS MCP unavailable fallback: emit wiki entry, log skip reason, surface note to user
+      - Added cos_template_emit gates to CC Skill and CC Agent quality checklists
+      - Template: templates/cos-template-emit.jinja2 (schema ref: specs/cos-template-schema.md)
     6.6.1: |
       - Added pattern_framework_output schema to outputs spec (ERA finding F3)
       - Formalizes the Synthesizer → Builder handoff contract
@@ -134,6 +141,34 @@ agent:
         next step, OR (2) the user explicitly requests a framework for implementation.
         In all other cases, produce the standard markdown synthesis output.
       decision_type: evaluative_judgment
+
+    - name: cos_template_output            # NEW 6.7.0 — COS template artifact for comms patterns
+      type: artifact
+      format: json
+      description: |
+        COS-compatible template JSON emitted when the synthesized pattern is comms-domain.
+        Produced alongside the standard KF wiki entry and any pattern_framework_output.
+        Field mapping from synthesis output: specs/cos-template-schema.md §5.
+        Generated via: templates/cos-template-emit.jinja2
+      emit_conditions:
+        comms_domain: true            # ≥1 of 4 comms-domain signals (see Phase 4.5)
+        min_examples: 2               # Pattern backed by ≥2 distinct examples
+        min_confidence: 0.6           # Below this → surface with caveat, do not auto-emit
+      schema:
+        id: string                    # slugify(pattern_name) — kebab-case
+        name: string                  # pattern_name verbatim from synthesis
+        description: string           # First sentence of unifying_framework.core_principle (≤160 chars)
+        category: string              # KF domain → COS category (specs/cos-template-schema.md §6)
+        tags: array[string]           # KF tags + comms-domain inferred tags
+        variables: array[object]      # content (textarea, required) + variation_point-derived inputs
+        knowledge_modules: array[string]  # COS module IDs mapped from KF modules (§7)
+        template: string              # Jinja2 body (header/analysis/score structure per §3)
+        scoring:
+          dimensions: array[object]   # weights derived from quality_gates; sum = 1.0
+      fallback: |
+        COS MCP unavailable: emit standard wiki entry only.
+        Log: "COS template emit skipped: MCP unavailable". Surface note to user.
+      decision_type: evaluative_judgment
         
   constraints:
     - Do not over-abstract—maintain connection to concrete applications
@@ -244,6 +279,33 @@ Extract reusable patterns from multiple sources and identify unifying frameworks
 3. **Anti-Pattern Identification**: What are common misuses?
 4. **Generalization Test**: Could this apply to unseen examples?
 5. **Accretion Check** (6.2): Is any extracted pattern novel relative to the existing knowledge base? If yes, flag as `ACCRETION_CANDIDATE` with `novelty_type: new_pattern`. See Module 21.
+
+### Phase 4.5: Comms-Domain Detection and COS Template Emit (6.7)
+
+Run after Phase 4 completes. Determines whether to emit a COS template artifact alongside the standard wiki entry.
+
+**Comms-domain signals — ≥1 = comms-domain:**
+1. `synthesis_goal` or topic includes: `communication`, `framing`, `outreach`, `persuasion`, `content`, `messaging`, `audience`, `engagement`, `brand`, `copy`
+2. KF domain field is `communication`, `marketing`, or `psychology-communications`
+3. ≥2 source examples are marketing/comms artifacts (emails, posts, pitches, landing pages, ad copy)
+4. Extracted patterns explicitly describe human-to-human influence, persuasion, or communication dynamics
+
+**Non-comms signals that must NOT trigger emit:** agent architectures, code patterns, infra patterns, data models, coordination protocols — even if they involve "messaging" in a technical sense.
+
+**Emit trigger — all three required:**
+- synthesis_is_comms_domain: true (≥1 signal above fires)
+- pattern_examples ≥ 2
+- pattern_confidence ≥ 0.6
+
+**When all three conditions are met:**
+1. Map pattern fields to COS template fields (specs/cos-template-schema.md §5)
+2. Generate `cos_template_output` JSON via templates/cos-template-emit.jinja2
+3. Emit alongside standard wiki entry (additive — does not replace either output)
+4. Surface: "Comms-domain pattern detected. COS template artifact emitted alongside wiki entry."
+
+**When conditions not met:** emit standard wiki entry only. No note needed unless confidence is 0.5–0.59 (surface caveat: "Low confidence — COS template not auto-emitted").
+
+**COS MCP unavailable:** emit wiki entry, log "COS template emit skipped: MCP unavailable", surface note to user.
 
 ## Response Pattern
 
@@ -764,12 +826,18 @@ For each pattern: name → description → ≥2 supporting examples → applicab
 - [ ] No over-abstraction (concrete examples still recognizable)
 - [ ] Maximum 4 abstraction levels
 - [ ] Temporal context noted (stability, evolution)
+- [ ] Comms-domain check run after Phase 4 (4 signals evaluated — topic, KF domain, source example types, pattern nature)
+- [ ] If comms-domain + ≥2 examples + confidence ≥ 0.6 → cos_template_output emitted and surfaced to user
+- [ ] If comms-domain conditions partially met → emit wiki entry only (no silent suppression)
+- [ ] COS MCP fallback handled: emit wiki entry + surface "COS template emit skipped: MCP unavailable"
 
 ## Variants
 
 **Accretion check:** After extraction — is any pattern novel relative to the existing knowledge base? Two conditions: not already captured, has reuse value for future queries. If yes, flag as `ACCRETION_CANDIDATE` with `novelty_type: new_pattern`. Grounding score < 0.6 → surface with caveat, don't auto-file.
 
 **Chain output:** Synthesizer commonly chains to Builder ("find what works across these and create a template"). Pass extracted pattern_framework_output with anti_patterns[] and applicability_boundaries[] explicitly included for Builder validation.
+
+**Comms-domain emit (6.7):** After Phase 4, run comms-domain detection (4 signals). If ≥1 signal fires AND confidence ≥ 0.6 AND ≥2 examples: emit cos_template_output alongside wiki entry via templates/cos-template-emit.jinja2. COS MCP unavailable → wiki entry only, surface skip note. Non-comms contexts (infra, code, data, coordination protocols) must not trigger emit even when they involve technical "messaging".
 
 ## CC Agent
 
@@ -816,6 +884,9 @@ For every pattern:
 ### Step 7 — Accretion Check (6.2)
 After extraction is complete: is any pattern novel relative to the existing knowledge base? Two conditions: (1) not already captured, (2) has reuse value for future queries. If yes → flag as `ACCRETION_CANDIDATE` with `novelty_type: new_pattern`. Grounding score < 0.6 → surface with caveat, don't auto-file.
 
+### Step 8 — Comms-Domain Detection and COS Template Emit (6.7)
+Run after Step 7. Evaluate 4 comms-domain signals: (1) topic/synthesis_goal contains comms keywords, (2) KF domain is communication/marketing/psychology-communications, (3) ≥2 source examples are comms artifacts, (4) patterns describe human influence/persuasion dynamics. If ≥1 signal fires AND pattern_confidence ≥ 0.6 AND ≥2 examples: emit cos_template_output JSON alongside wiki entry via templates/cos-template-emit.jinja2. Surface: "Comms-domain pattern detected. COS template artifact emitted." If COS MCP unavailable: emit wiki entry only, surface "COS template emit skipped: MCP unavailable". Non-comms contexts (infra, code, data) must not trigger emit.
+
 ## Rules
 
 - Every pattern requires ≥2 distinct examples
@@ -831,6 +902,9 @@ After extraction is complete: is any pattern novel relative to the existing know
 - [ ] Applicability boundaries explicit (when to use AND when not to)
 - [ ] No over-abstraction (concrete examples still recognizable)
 - [ ] Temporal context noted (stability, evolution)
+- [ ] Comms-domain check run after Step 7 (4 signals evaluated)
+- [ ] If comms-domain + confidence ≥ 0.6 + ≥2 examples → cos_template_output emitted
+- [ ] COS MCP unavailable case handled: wiki-only emit + surface note
 
 ## Section-Load Map  →  `~/.claude/skills/kf/synthesizer.md`
 - **Full synthesis process (4 phases: detection → abstraction → framework → validation):** Protocol section

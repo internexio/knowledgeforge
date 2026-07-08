@@ -1,0 +1,78 @@
+{#
+  cos-agent-profile.json.jinja
+  KF Calibrator → COS Agent Profile emitter.
+
+  Fired when: comms-heavy detection fires (2+ of 5 signals) during Calibrator interview.
+  Companion: cos-audience-profile.json.jinja (emitted in the same pass).
+
+  Context variables (set from COS MCP profile_agent response + Calibrator interview):
+    project_name      (str)   Project name from Calibrator interview
+    agent_name        (str)   Team/author name from Calibrator interview
+    captured_at       (str)   ISO-8601 timestamp of generation (e.g. "2026-07-08T14:30:00Z")
+    ocean_traits      (dict)  {trait_name: {score: float, evidence: str}} from profile_agent
+                              Traits: openness, conscientiousness, extraversion, agreeableness, neuroticism
+    style_label       (str)   From profile_agent.style_label
+    strengths         (list)  [str] from profile_agent.strengths
+    blind_spots       (list)  [str] from profile_agent.blind_spots
+    persuasion_profile (dict) {attention_hooks, trust_builders, turn_offs, effective_principles}
+    summary           (str)   From profile_agent.summary
+    paired_with       (str|null) Relative path to companion cos-audience-profile.json, or null
+    claude_md_path    (str)   Relative path to the generating CLAUDE.md
+
+  Schema: cos-agent-profile/v1 (specs/cos-profile-schemas.md §3)
+  Key fields for use: style_label, strengths, blind_spots, ocean_traits.*.score, persuasion_profile.effective_principles
+  Embed in CLAUDE.md comms section: style_label, strengths, blind_spots
+
+  Note: ocean_confidence field is not part of agent profile (it's in audience profile).
+        If profile_agent returns overall_score, it is informational only — not included here.
+#}
+{
+  "_schema": "cos-agent-profile/v1",
+  "_generated_by": "kf-calibrator",
+  "_captured": "{{ captured_at }}",
+  "_paired_with": {{ '"' + paired_with + '"' if paired_with else 'null' }},
+  "_claude_md": "{{ claude_md_path }}",
+  "project": "{{ project_name | replace('"', '\\"') }}",
+  "agent_name": "{{ agent_name | replace('"', '\\"') }}",
+  "ocean_traits": {
+    "openness":          {"score": {{ ocean_traits.openness.score | round(2) }},          "evidence": "{{ ocean_traits.openness.evidence | replace('\\', '\\\\') | replace('"', '\\"') }}"},
+    "conscientiousness": {"score": {{ ocean_traits.conscientiousness.score | round(2) }}, "evidence": "{{ ocean_traits.conscientiousness.evidence | replace('\\', '\\\\') | replace('"', '\\"') }}"},
+    "extraversion":      {"score": {{ ocean_traits.extraversion.score | round(2) }},      "evidence": "{{ ocean_traits.extraversion.evidence | replace('\\', '\\\\') | replace('"', '\\"') }}"},
+    "agreeableness":     {"score": {{ ocean_traits.agreeableness.score | round(2) }},     "evidence": "{{ ocean_traits.agreeableness.evidence | replace('\\', '\\\\') | replace('"', '\\"') }}"},
+    "neuroticism":       {"score": {{ ocean_traits.neuroticism.score | round(2) }},       "evidence": "{{ ocean_traits.neuroticism.evidence | replace('\\', '\\\\') | replace('"', '\\"') }}"}
+  },
+  "style_label": "{{ style_label | replace('"', '\\"') }}",
+  "strengths": [
+    {% for s in strengths -%}
+    "{{ s | replace('\\', '\\\\') | replace('"', '\\"') }}"{% if not loop.last %},{% endif %}
+    {% endfor -%}
+  ],
+  "blind_spots": [
+    {% for b in blind_spots -%}
+    "{{ b | replace('\\', '\\\\') | replace('"', '\\"') }}"{% if not loop.last %},{% endif %}
+    {% endfor -%}
+  ],
+  "persuasion_profile": {
+    "attention_hooks": [
+      {% for h in persuasion_profile.attention_hooks -%}
+      "{{ h | replace('\\', '\\\\') | replace('"', '\\"') }}"{% if not loop.last %},{% endif %}
+      {% endfor -%}
+    ],
+    "trust_builders": [
+      {% for t in persuasion_profile.trust_builders -%}
+      "{{ t | replace('\\', '\\\\') | replace('"', '\\"') }}"{% if not loop.last %},{% endif %}
+      {% endfor -%}
+    ],
+    "turn_offs": [
+      {% for t in persuasion_profile.turn_offs -%}
+      "{{ t | replace('\\', '\\\\') | replace('"', '\\"') }}"{% if not loop.last %},{% endif %}
+      {% endfor -%}
+    ],
+    "effective_principles": [
+      {% for p in persuasion_profile.effective_principles -%}
+      "{{ p | replace('\\', '\\\\') | replace('"', '\\"') }}"{% if not loop.last %},{% endif %}
+      {% endfor -%}
+    ]
+  },
+  "summary": "{{ summary | replace('\\', '\\\\') | replace('"', '\\"') | replace('\n', ' ') | replace('\r', '') }}"
+}

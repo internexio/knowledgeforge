@@ -1,0 +1,115 @@
+{#
+  cos-template-emit.jinja2
+  KF Synthesizer → COS Template JSON emitter.
+
+  Fired when: comms-domain detection (Phase 4.5) passes all three conditions:
+    - synthesis_is_comms_domain: true (≥1 of 4 signals)
+    - pattern_examples ≥ 2
+    - pattern_confidence ≥ 0.6
+
+  Context variables (set by Synthesizer before rendering):
+    pattern_name      (str)   Pattern name, e.g. "Authority Reframe Pattern"
+    category          (str)   COS category: framing|engagement|audience|outreach|clarity|quick
+    description       (str)   ≤160 chars from unifying_framework.core_principle (first sentence)
+    variation_points  (dict)  {name: help_text} — variation levers from pattern_framework_output
+    anti_patterns     (list)  [{name: str, failure_example: str}]
+    quality_gates     (list)  [str] — scoring criteria labels; weights auto-distributed (sum=1.0)
+    knowledge_modules (list)  [str] — COS module IDs (see specs/cos-template-schema.md §7)
+    tags              (list)  [str] — KF taxonomy tags + comms-domain inferred tags
+
+  Schema reference: specs/cos-template-schema.md §1
+  Field mapping:    specs/cos-template-schema.md §5
+  Category mapping: specs/cos-template-schema.md §6
+  Module mapping:   specs/cos-template-schema.md §7
+
+  Rendering note on nested Jinja2:
+    The COS "template" field contains a Jinja2 template body that references user-supplied
+    variables (content, etc.) at render time inside the COS system. These inner interpolations
+    are escaped via {{ '{{' }}...{{ '}}' }} so they survive outer rendering and appear
+    literally as {{ varname }} in the output JSON string.
+
+  Requirements: Jinja2 2.x+ with standard filters (lower, replace, title, round, truncate).
+    tojson filter is NOT used — arrays/strings are rendered explicitly for portability.
+#}
+{%- macro build_template_body() -%}
+## {{ pattern_name }} Analysis
+
+--- CONTENT ---
+{{ '{{' }} content {{ '}}' }}
+--- END CONTENT ---
+
+{% for vp_name in variation_points.keys() -%}
+**{{ vp_name | replace('_', ' ') | title }}:** {{ '{{' }} {{ vp_name | lower | replace(' ', '_') | replace('-', '_') }} {{ '}}' }}
+{% endfor %}
+## Pattern Analysis
+
+Apply the {{ pattern_name }} framework to the content above. For each dimension, provide specific observations — not generic commentary.
+
+{% for gate in quality_gates -%}
+**{{ gate }}:**
+[Your analysis here]
+
+{% endfor -%}
+## Anti-Pattern Check
+
+Does this content exhibit any known failure modes for this pattern?
+
+{% for ap in anti_patterns -%}
+- **{{ ap.name }}:** {{ ap.failure_example }}
+{% endfor %}
+## Recommendations
+
+[3–5 specific, actionable improvements based on the pattern analysis above]
+
+## Score
+
+{% for gate in quality_gates -%}
+- **{{ gate }}:** X/10
+{% endfor -%}
+- **Overall:** X/10
+{%- endmacro -%}
+
+{%- set slug = pattern_name | lower | replace(' ', '-') | replace('_', '-') -%}
+{%- set n = quality_gates | length if quality_gates | length > 0 else 1 -%}
+{%- set w = (1.0 / n) | round(2) -%}
+{%- set body = build_template_body() | replace('\\', '\\\\') | replace('"', '\\"') | replace('\n', '\\n') | replace('\r', '') -%}
+{
+  "id": "{{ slug }}",
+  "name": "{{ pattern_name }}",
+  "description": "{{ description | replace('\\', '\\\\') | replace('"', '\\"') | truncate(160, True, '...') }}",
+  "category": "{{ category }}",
+  "tags": [
+    {% for tag in tags -%}"{{ tag }}"{% if not loop.last %}, {% endif %}{% endfor %}
+  ],
+  "variables": [
+    {
+      "name": "content",
+      "label": "Content to Analyze",
+      "type": "textarea",
+      "required": true,
+      "placeholder": "Paste the content you want to analyze (100–500 words ideal)",
+      "help_text": "Primary input for the {{ pattern_name }} framework.",
+      "options": null
+    }{% for vp_name, vp_help in variation_points.items() %},
+    {
+      "name": "{{ vp_name | lower | replace(' ', '_') | replace('-', '_') }}",
+      "label": "{{ vp_name | replace('_', ' ') | title }}",
+      "type": "text",
+      "required": false,
+      "placeholder": "{{ vp_help | replace('"', '\\"') | truncate(80, True) }}",
+      "help_text": "Optional — context for the {{ vp_name | replace('_', ' ') }} dimension.",
+      "options": null
+    }{% endfor %}
+  ],
+  "knowledge_modules": [
+    {% for km in knowledge_modules -%}"{{ km }}"{% if not loop.last %}, {% endif %}{% endfor %}
+  ],
+  "template": "{{ body }}",
+  "scoring": {
+    "dimensions": [
+      {% for gate in quality_gates -%}
+      {"name": "{{ gate | replace('"', '\\"') | truncate(50, True) }}", "weight": {{ w }}}{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ]
+  }
+}
