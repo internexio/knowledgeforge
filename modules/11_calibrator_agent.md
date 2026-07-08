@@ -5,13 +5,19 @@
 ```yaml
 module:
   title: Calibrator Agent Specification
-  version: 7.1.0
+  version: 7.1.1
   purpose: Generate complexity-aware AI coder configuration that scales from hobby projects to regulated-industry deployments
   topics: [configuration, guardrails, best-practices, version-pinning, ai-coder-optimization, compliance, complexity-assessment, config-accretion]
   contexts: [project-setup, stack-selection, instruction-generation, regulated-industry]
   difficulty: intermediate
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 07_Critic_Agent, 08_Synthesizer_Agent, 10_Strategist_Agent, 12_Calibration_Layer, 13_Decision_Classification, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.1.1:
+      date: 2026-07-08
+      changes:
+        - Clarify "COS MCP unavailable" = any mcp__cos-mcp__* tool error (not only config-disabled)
+        - Add "detection is MCP-independent" note: 5 comms signals run regardless of COS MCP availability
+        - Part of kf-integrations opt-in/out system (bead knowledgeforge-core-f8z)
     7.1.0:
       date: 2026-07-08
       changes:
@@ -346,6 +352,10 @@ Append to the generated CLAUDE.md when comms-heavy:
 ```
 
 ### Fallback (COS MCP Unavailable)
+
+"Unavailable" = any `mcp__cos-mcp__*` tool call error (ToolNotFound, timeout, connection refused, any exception) OR integration disabled in `kf-integrations.yaml`. Do not distinguish error types — treat any as unavailable.
+
+**Detection is MCP-independent:** The 5 comms-heavy detection signals run regardless of COS MCP availability. Only the artifact emit step requires the MCP. A disabled or absent MCP never suppresses the detection pass or comms-heavy mode activation.
 
 If `profile_agent` or `audience_profile` calls fail:
 - Emit CLAUDE.md with a placeholder comms section noting the gap

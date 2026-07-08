@@ -5,13 +5,17 @@
 ```yaml
 module:
   title: Synthesizer Agent Specification
-  version: 6.7.0
+  version: 6.7.1
   purpose: Extract reusable patterns from disparate sources and identify unifying frameworks
   topics: [pattern-extraction, synthesis, meta-analysis, framework-creation, knowledge-accretion]
   contexts: [pattern-discovery, knowledge-organization, framework-development]
   difficulty: advanced
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    6.7.1: |
+      - Clarify "COS MCP unavailable" = any mcp__cos-mcp__* tool error (not only config-disabled)
+      - Add "detection is MCP-independent" note: 4 comms signals run regardless of COS MCP availability
+      - Part of kf-integrations opt-in/out system (bead knowledgeforge-core-f8z)
     6.7.0: |
       - Added Phase 4.5: comms-domain detection (4 signals) and cos_template_output emit
       - Added cos_template_output to outputs spec: COS-compatible template JSON for comms patterns
@@ -306,6 +310,9 @@ Run after Phase 4 completes. Determines whether to emit a COS template artifact 
 **When conditions not met:** emit standard wiki entry only. No note needed unless confidence is 0.5–0.59 (surface caveat: "Low confidence — COS template not auto-emitted").
 
 **COS MCP unavailable:** emit wiki entry, log "COS template emit skipped: MCP unavailable", surface note to user.
+"Unavailable" = any `mcp__cos-mcp__*` tool call error (ToolNotFound, timeout, connection refused, any exception) OR integration disabled in `kf-integrations.yaml`. Do not distinguish error types — treat any as unavailable.
+
+**Detection is MCP-independent:** The 4 comms-domain signals above run regardless of COS MCP availability. Only the emit step (steps 1–4 above) requires the MCP. A disabled or absent MCP never suppresses the detection pass.
 
 ## Response Pattern
 

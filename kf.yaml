@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.23.0
+version: 7.26.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,47 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.26.0
+    date: 2026-07-08
+    driver: knowledgeforge-core-f8z
+    note: |
+      Integration opt-in/out system (kf-integrations.yaml).
+
+      New: kf-integrations.yaml — canonical template declaring 7 integrations:
+        mempalace, cos, asta, beads, gitnexus, gemini_routing, orchestra.
+        Each has enabled flag, description, fallback, binary/MCP prefix fields.
+        Opt-out model (all enabled by default; set enabled: false to disable).
+        Install: cp kf-integrations.yaml ~/.claude/kf-integrations.yaml
+
+      New hook utility: ~/.claude/hooks/kf_integrations.py
+        is_enabled(name) — fail-open: True if config missing or parse error
+        get_config(name, key) — read per-integration config values
+        resolve_python_path() — finds python3.11/python3 for mempalace hooks
+        resolve_br_path() — finds br binary with config override support
+        Stdlib-only parser (no PyYAML dependency)
+
+      Hook updates (integration guards + hardcoded path fixes):
+        mempalace-wiki-mine.py: guard (is_enabled("mempalace") → exit 0);
+          PYTHON resolved via resolve_python_path() not hardcoded
+        kf-route.py: guard (is_enabled("gemini_routing") → exit 0 in main())
+        kf_wiki_search.py: guard (_MEMPALACE_INTEGRATION_ENABLED flag);
+          skips tool_search import when mempalace disabled
+        taskmaster-priority-awareness.py: guard (is_enabled("beads") → return 0)
+        settings.json: br prime replaced with br-prime-safe.sh wrapper (×2)
+
+      New: ~/.claude/hooks/br-prime-safe.sh — graceful br prime wrapper:
+        Reads kf-integrations.yaml beads.enabled; skips if disabled.
+        Resolves br via config override → PATH → ~/.local/bin/br.
+        Exits 0 on any failure (FileNotFoundError, non-zero exit, not found).
+
+      Module 08 (Synthesizer) 6.7.0 → 6.7.1: spec clarifications
+        "COS MCP unavailable" = any mcp__cos-mcp__* tool error, not only disabled
+        Detection signals (4) run regardless of COS MCP availability
+
+      Module 11 (Calibrator) 7.1.0 → 7.1.1: spec clarifications
+        "COS MCP unavailable" = any mcp__cos-mcp__* tool error, not only disabled
+        Detection signals (5) run regardless of COS MCP availability
+
   - version: 7.25.0
     date: 2026-07-08
     driver: knowledgeforge-core-90h knowledgeforge-core-4r6

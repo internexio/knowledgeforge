@@ -1,0 +1,110 @@
+# kf-integrations.yaml
+# KnowledgeForge optional integration declarations.
+#
+# This file documents every external tool/service KF can use.
+# Deploy a copy to ~/.claude/kf-integrations.yaml to control which
+# integrations are active on your system. Hooks read that path first;
+# this repo copy is the canonical template.
+#
+# Default: all enabled (opt-out model).
+# Set enabled: false to skip an integration entirely — hooks will not
+# attempt the tool call and will not pay timeout costs.
+#
+# Install:
+#   cp ~/Scripts/knowledgeforge-core/kf-integrations.yaml ~/.claude/kf-integrations.yaml
+#   # then edit ~/.claude/kf-integrations.yaml for your system
+#
+# After changing: no restart needed — hooks read this file on each invocation.
+
+integrations:
+
+  # ── Semantic wiki search and knowledge graph (Module 22) ─────────────────────
+  mempalace:
+    enabled: true
+    description: >
+      MemPalace MCP + Python module. Powers M22 semantic wiki search
+      (Phase 1 dup-check + Phase 2 score-fusion retrieval). Without it,
+      wiki search falls back to grep.
+    fallback: grep-based wiki search (reduced recall, no semantic ranking)
+    mcp_prefix: mcp__mempalace__
+    python_module: mempalace.mcp_server
+    # python_path: /opt/homebrew/bin/python3.11   # uncomment to override
+    # Set python_path here instead of hardcoding in hooks.
+    # Default: resolved via `python3` on PATH (or python3.11 if found).
+
+  # ── Comms-domain analysis and emit (Modules 07, 08, 11) ─────────────────────
+  cos:
+    enabled: true
+    description: >
+      COS MCP for communications optimization. Enables:
+      - M07 Critic comms variant (analyze_full_comms)
+      - M08 Synthesizer comms-domain cos_template_output emit
+      - M11 Calibrator comms-heavy profile artifact emit
+    fallback: standard KF output only — no COS template JSON or profile artifacts
+    mcp_prefix: mcp__cos-mcp__
+    detection_note: >
+      COS MCP is NOT required for comms-domain detection signals (M08/M11).
+      Detection (topic keywords, directory presence, file patterns, package.json)
+      runs regardless. Only the artifact emit step is skipped when disabled.
+    unavailable_signals:
+      - integration disabled in this config (enabled: false)
+      - MCP tool call raises any error (ToolNotFound, timeout, connection refused)
+
+  # ── Expert research variant: Asta/Alia Semantic Scholar MCP (Module 05) ──────
+  asta:
+    enabled: true
+    description: >
+      Asta/Alia Semantic Scholar MCP. Powers the Expert research variant —
+      paper retrieval, citation grounding, claim verification.
+    fallback: >
+      WebSearch fallback; grounding capped at 0.6; output flagged degraded=true;
+      ship disposition unavailable. All other Expert modes unaffected.
+    mcp_prefix: mcp__asta__
+
+  # ── Task tracking: Beads (bd) and Beads Runner (br) ─────────────────────────
+  beads:
+    enabled: true
+    description: >
+      Beads task tracker (bd CLI) and Beads Runner (br). Powers session-start
+      priority awareness, bd ready/close/update in workflows, and br prime
+      context priming before compaction.
+    fallback: >
+      No task tracking. Session close protocol still applies but bd commands
+      will be skipped. CLAUDE.md workflow guidance remains intact.
+    binary_bd: bd          # resolved via PATH
+    binary_br: br          # resolved via PATH (or br_path below)
+    # br_path: ~/.local/bin/br   # uncomment to set absolute path
+
+  # ── Code intelligence: GitNexus MCP ─────────────────────────────────────────
+  gitnexus:
+    enabled: true
+    description: >
+      GitNexus MCP for code impact analysis, call graph navigation, and
+      safe refactoring. All directives degrade to no-ops when disabled.
+    fallback: standard file/grep navigation; impact analysis skipped
+    mcp_prefix: mcp__gitnexus__
+
+  # ── Pre-prompt routing: Gemini Flash API (kf-route.py) ──────────────────────
+  gemini_routing:
+    enabled: true
+    description: >
+      Gemini Flash Lite API for UserPromptSubmit routing. Classifies the
+      user prompt and injects a [KF-ROUTE] directive so Claude loads the
+      right mode without needing semantic search over all module files.
+    fallback: >
+      No KF-ROUTE directive injected. Claude routes natively via the
+      orchestrator's built-in routing table — correct but slower to activate
+      the right mode.
+    requires_env: GEMINI_API_KEY
+
+  # ── Multi-agent coordination: Orchestra MCP ──────────────────────────────────
+  orchestra:
+    enabled: false        # opt-in — most users don't need this
+    description: >
+      Orchestra MCP for multi-agent task queuing, artifact passing, and
+      cross-machine handoffs via SSE endpoint.
+    fallback: none — all orchestra tool calls are skipped when disabled
+    mcp_prefix: mcp__orchestra__
+    note: >
+      Set enabled: true only if you have an Orchestra server running and
+      the MCP registered in your Claude Code settings.json.
