@@ -5,13 +5,20 @@
 ```yaml
 module:
   title: Critic Agent Specification
-  version: 7.4.0
+  version: 7.5.0
   purpose: Systematically challenge specifications, find unstated assumptions, and identify edge cases — including adversarial variant for automatic chain verification, knowledge base linter variant for health checks, infrastructure audit variant for hosting assessment, and comms variant that delegates communications artifact review to COS analyze_full_comms
   topics: [quality-assurance, gap-detection, red-teaming, validation, adversarial-verification, knowledge-base-linting, infrastructure-audit, variant-taxonomy, comms-delegation]
   contexts: [specification-review, risk-assessment, completeness-checking, chain-verification, knowledge-base-maintenance, infrastructure-assessment, decomposition-planning, communications-review]
   difficulty: advanced
   related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 15_Grounding_Scores, 16_Operational_Bounds, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.5.0:
+      date: 2026-07-11
+      driver: kf-vo1
+      changes:
+        - Added inverse-premise check to adversarial_framing.specific_instructions (5th item) — distinct from assumption inversion; tests whether the inverted premise produces equally confident argument, detecting prompt-derived rather than data-derived conclusions; severity 2 minimum on positive match
+        - Source: Kesler, A. "The 4-Step Test That Catches AI Errors Before They Shape Your Strategy." Search Engine Journal, 2026-07-01. Gap analysis by L1 (2026-07-06): sole actionable delta vs existing KF coverage.
+        - Updated CC Skill version and adversarial variant description; updated CC Agent adversarial framing bullets; updated CC Agent (Adversarial Variant) specific instructions.
     7.4.0:
       date: 2026-07-07
       driver: knowledgeforge-core-xaq
@@ -606,6 +613,7 @@ adversarial_framing:
     - "Check compound failures first — what happens when two individually-acceptable choices combine?"
     - "Test the assumptions the producing agent stated. Then test the assumptions they didn't state."
     - "For ODS profiles: target political mapping assumptions and constraint validity specifically."  # See ODS_04_Political_Mapper, ODS_03_Constraint_Archaeologist
+    - "Where the artifact rests on a stated premise, argue the inverted premise with equal rigor. If the inverse case lands as confident and as well-supported as the original, flag the conclusion as prompt-derived rather than data-derived — severity 2 minimum."
 ```
 
 ### Adversarial Output Format
@@ -1291,7 +1299,7 @@ Additional related modules:
 ## CC Skill
 
 # KF Mode: Critic
-**Version:** 7.4.0
+**Version:** 7.5.0
 **Loaded by:** [KF-ROUTE] directive or /kf-critic command
 
 ## Purpose
@@ -1346,7 +1354,7 @@ Findings list with severity (Critical / High / Medium / Low), location, finding,
 
 *Protocol:* (1) Detect comms signals. (2) If YES → call `analyze_full_comms(content=<artifact>)`. (3) Map COS 7-framework output to severity: ethical violations→Critical, broken persuasion/missing CTA→High, audience mismatch→High, frame inconsistency→Medium, style/voice→Low. (4) Present as standard findings list with `[COS: <framework>]` attribution. (5) If COS MCP unavailable → fallback to native protocol with a warning note.
 
-**Adversarial variant** (auto-triggered by mode chains): Framing shifts from "is this good?" to "does this do what the user actually needs, or does it correctly solve the wrong problem?" Start with functional correctness. Then check: compound failures (two medium findings combining to critical), and unstated assumptions. Report severity High/Critical only. Format:
+**Adversarial variant** (auto-triggered by mode chains): Framing shifts from "is this good?" to "does this do what the user actually needs, or does it correctly solve the wrong problem?" Start with functional correctness. Then check: compound failures (two medium findings combining to critical), unstated assumptions, and inverse-premise (if inverting the artifact's stated premise produces an equally confident argument, flag the conclusion as prompt-derived — severity 2 minimum). Report severity High/Critical only. Format:
 
 ```
 ADVERSARIAL VERIFICATION — N findings (severity High+)
@@ -1451,7 +1459,7 @@ Activated automatically when a mode chain produces a specification, strategy rec
 
 **Framing shift:** Standard mode asks "is this good?" — adversarial mode asks "where will this break?" Use this mindset: *"This output has at least one significant flaw — find it."*
 
-**Focus on compound failures first:** what happens when two individually-acceptable choices combine? Test stated assumptions, then the unstated ones.
+**Focus on compound failures first:** what happens when two individually-acceptable choices combine? Test stated assumptions, then the unstated ones. **Inverse-premise check:** where the artifact rests on a stated premise, argue the inverted premise with equal rigor — if the inverse lands as confident and as well-supported as the original, flag the conclusion as prompt-derived rather than data-derived (severity 2 minimum).
 
 **Output format (adversarial only):** Report severity High/Critical only. Use this compact format:
 
@@ -1562,6 +1570,7 @@ You ask: "What did the producing agent miss that will cause problems in producti
 - Check compound failures first — what happens when two individually-acceptable choices combine?
 - Test the assumptions the producing agent stated. Then test the assumptions they didn't state.
 - Look for what the producing agent was optimizing for — that's where they made trade-offs that create vulnerabilities
+- Where the artifact rests on a stated premise, argue the inverted premise with equal rigor. If the inverse case lands as confident and as well-supported as the original, flag the conclusion as prompt-derived rather than data-derived — severity 2 minimum.
 
 ## Four Adversarial Checks
 
