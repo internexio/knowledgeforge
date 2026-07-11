@@ -9,6 +9,12 @@ type: index
 
 ### Patterns
 
+- [2026-07-11] CSS chip-group pairing and nowrap guards for HTML infographic text rendering — new_pattern — `patterns/2026-07-11_css-chip-group-nowrap-guards-html-infographic-text-rendering.md`
+- [2026-07-11] Blog hero image pre-generation library pattern — generate all variants upfront, select retroactively — reusable_pattern — `patterns/2026-07-11_pre-generate-image-library-retroactive-selection-pattern.md`
+- [2026-07-11] Backup-in-enumerated-dir anti-pattern — plugin/skill install scripts must not back up in place — new_pattern — `patterns/2026-07-11_backup-in-enumerated-dir-anti-pattern-skill-phantom-commands.md`
+- [2026-07-07] Dual-layer false-positive suppression for lexical linters — ALLOWLIST + FOIL_MARKERS — reusable_pattern — `patterns/2026-07-07_dual-layer-false-positive-suppression-allowlist-foil-markers.md`
+- [2026-07-07] "Reduce whitespace" is a compression directive, not an aspect-change directive — new_pattern — `patterns/2026-07-07_reduce-whitespace-is-compression-not-aspect-change.md`
+- [2026-07-06] UTM 3-tier medium taxonomy for blog-driven conversion attribution — transferable_framework — `patterns/2026-07-06_utm-three-tier-medium-taxonomy-blog-conversion-attribution.md`
 - [2026-07-05] Claude Code skills durability — source repo + install.sh pattern — transferable_framework — `patterns/2026-07-05_claude-code-skills-durability-source-repo-install-script.md`
 - [2026-07-04] Triage-tool SUPPRESSED_STORE_LABELS pattern with per-entry bead link — new_pattern — `patterns/2026-07-04_triage-tool-suppressed-store-labels-with-per-entry-bead-link.md`
 - [2026-07-03] PKCE OAuth2 test hook pattern — _inject_code + MemoryTokenStorage — new_pattern — `patterns/2026-07-03_pkce-oauth2-test-hook-pattern-inject-code-memory-token-storage.md`
@@ -95,6 +101,7 @@ type: index
 
 ### Orchestration
 
+- [2026-07-06] Protocol-doc drift catch — L3 installers should verify concrete tool signatures against live schema before pasting, and push corrections UP — transferable_framework — `orchestration/2026-07-06_l3-installer-catches-l2-protocol-signature-drift-push-corrections-up.md`
 - [2026-06-27] Parallel-agent ID-namespace collision in append-only claim/ticket stores — reservation-first preferred, tombstone-on-collision fallback — reusable_diagnostic — `orchestration/2026-06-27_parallel-agent-id-namespace-collision-append-only-stores.md`
 - [2026-06-14] Compile-pipeline PR supersedence — close intermediates, regenerate latest at current upstream HEAD — transferable_framework — `orchestration/2026-06-14_compile-pipeline-pr-supersedence-snapshot-merge-pattern.md`
 - [2026-06-12] Stale-base PR conflicts after batched core pushes — resolve via workflow_dispatch — reusable_diagnostic — `orchestration/2026-06-12_stale-base-pr-conflicts-batched-pushes-workflow-dispatch.md`
@@ -120,6 +127,11 @@ type: index
 
 ### Infrastructure
 
+- [2026-07-11] nginx try_files implicit 301 for directory-style static pages — explicit location redirect not needed — reusable_diagnostic — `infrastructure/2026-07-11_nginx-try-files-implicit-directory-redirect-static-pages.md`
+- [2026-07-08] rsync exit code 23 with empty destination — source directory missing creates dir but transfers nothing — reusable_diagnostic — `infrastructure/2026-07-08_rsync-exit-code-23-empty-destination-source-missing.md`
+- [2026-07-08] GitHub Actions PAT authentication failure modes — three distinct error signatures + continue-on-error UI masking — reusable_diagnostic — `infrastructure/2026-07-08_github-actions-pat-authentication-failure-three-error-signatures-continue-on-error-masking.md`
+- [2026-07-08] GitHub Actions sparse-checkout cone mode silently breaks with trailing slash in YAML multiline block — reusable_diagnostic — `infrastructure/2026-07-08_github-actions-sparse-checkout-cone-mode-trailing-slash-silent-no-op.md`
+- [2026-07-06] Bash long-running orchestrator config arrays loaded at startup — restart required to add new sessions — reusable_diagnostic — `infrastructure/2026-07-06_bash-orchestrator-config-array-loaded-at-startup-restart-required.md`
 - [2026-07-03] Automating Happy Claude sessions from external processes — tmux send-keys + C-m mechanism, E2E-encrypted API caveat — reusable_diagnostic + transferable_framework — `infrastructure/2026-07-03_happy-claude-external-session-nudge-tmux-send-keys-cm-e2e-caveat.md`
 - [2026-07-02] Claude Projects appends on re-upload — clean-slate required before every upload cycle — reusable_diagnostic — `infrastructure/2026-07-02_claude-projects-knowledge-upload-clean-slate-rule.md`
 - [2026-06-26] Promoting a GitHub workflow to a required status check — plan-tier 403s + paths-filter deadlock — reusable_diagnostic — `infrastructure/2026-06-26_promoting-workflow-to-required-check-plan-tier-paths-filter-gotchas.md`
@@ -166,6 +178,8 @@ type: index
 
 ### Compiler
 
+- [2026-07-06] Claude Code agent loader requires `---` on line 1; Option D preserves in-file source trace after closing `---` — reusable_diagnostic — `compiler/2026-07-06_claude-code-agent-loader-line-1-frontmatter-option-d-source-trace.md`
+- [2026-07-06] When a marker moves from top-of-file to mid-file, strip regexes must re-anchor from `^`+MULTILINE to `\A` — reusable_diagnostic — `compiler/2026-07-06_python-regex-caret-multiline-vs-a-anchor-mid-file-marker-strip.md`
 - [2026-07-02] Module 00 STATIC ZONE vs CC Rules — which zone reaches which deployment target — transferable_framework — `compiler/2026-07-02_module-00-static-zone-vs-cc-rules-compilation-zone-routing.md`
 - [2026-06-14] Bootstrap divergence is INTENTIONAL on static-to-compiled promotions — document, don't fix — reusable_diagnostic — `compiler/2026-06-14_bootstrap-divergence-intentional-on-static-to-compiled-promotion.md`
 - [2026-06-10] extract_section() in kf-compile.py stops only at CC markers — non-CC headings cause silent over-extraction — reusable_diagnostic — `compiler/2026-06-10_extract-section-cc-marker-stop-condition-over-extraction.md`
@@ -175,6 +189,16 @@ type: index
 
 ### Diagnostics
 
+- [2026-07-11] Stale-signal feedback loop in log-scanning workers — 7-day recency filter pattern — reusable_diagnostic — `diagnostics/2026-07-11_stale-signal-feedback-loop-log-scanning-workers-7day-recency-filter.md`
+- [2026-07-10] AES Export MANIFEST Registration — Silent Failure When Detector Extras Are Unpopulated — reusable_diagnostic — `diagnostics/2026-07-10_aes-export-manifest-silent-failure-unpopulated-detector-extras.md`
+- [2026-07-11] Chrome headless --screenshot captures full page height, not viewport — min-height causes non-deterministic PNG dimensions — reusable_diagnostic — `diagnostics/2026-07-11_chrome-headless-screenshot-full-page-height-min-height-gotcha.md`
+- [2026-07-11] GSC impression split (URL-A down / URL-B up) with 301 in place = consolidation in progress, not a broken redirect — reusable_diagnostic — `diagnostics/2026-07-11_gsc-impression-split-url-variant-consolidation-signal.md`
+- [2026-07-11] SEO Intro Redirect Leak — Page Intro That Sends "What Is" Intent Elsewhere Leaks Head-Term Relevance Signal — reusable_diagnostic — `diagnostics/2026-07-11_seo-intro-redirect-leak-head-term-relevance-signal.md`
+- [2026-07-07] baking_pipeline dispatch=False silently discards full proposal text — reusable_diagnostic — `diagnostics/2026-07-07_baking-pipeline-dispatch-false-silently-discards-proposal-text.md`
+- [2026-07-07] Same-shape fatigue — rotate visual template structure across the week, not just content payload — reusable_diagnostic — `diagnostics/2026-07-07_same-shape-fatigue-rotate-visual-template-structure-across-week.md`
+- [2026-07-07] Min-max cosine normalization is unstable when all scores are uniformly negative — reusable_diagnostic — `diagnostics/2026-07-07_min-max-cosine-normalization-unstable-uniformly-negative-scores.md`
+- [2026-07-06] Same-shape schema, divergent history — 3-way merges fail when parallel migrations converge on identical current schema (dolt / bd / any VCS-schema tool) — reusable_diagnostic — `diagnostics/2026-07-06_same-shape-schema-divergent-history-3-way-merge-fails-parallel-migrations.md`
+- [2026-07-06] Rolled-up event instrumentation gap — a single event name across N products blocks per-product conversion measurement — reusable_diagnostic — `diagnostics/2026-07-06_rolled-up-event-instrumentation-blocks-per-product-conversion-measurement.md`
 - [2026-07-05] Launchd cron-style vs persistent-daemon misread — PID `-` is not "down" — reusable_diagnostic — `diagnostics/2026-07-05_launchd-cron-style-vs-persistent-daemon-misread.md`
 - [2026-07-04] bd schema_migrations version fence + bd migrate dirty-config refusal — reusable_diagnostic — `diagnostics/2026-07-04_bd-schema-migrations-version-fence-migrate-dirty-config-refusal.md`
 - [2026-07-04] $attempts sanitization for grep-c | case shell pattern under set -euo pipefail — new_pattern — `diagnostics/2026-07-04_attempts-sanitization-grep-c-case-shell-pattern-set-euo-pipefail.md`
@@ -235,8 +259,16 @@ type: index
 - [2026-05-13] unittest.mock.patch targets shift when a module becomes a package — reusable_diagnostic — `diagnostics/2026-05-13_unittest-mock-patch-targets-shift-module-to-package.md`
 - [2026-04-18] Handoff Payload Schema Gap — reusable_diagnostic — `diagnostics/handoff-payload-schema-gap.md`
 
+### Debugging
+
+- [2026-07-07] Chrome Extension Rendering Bug — Speculative API Shape vs Real Response Structure — reusable_diagnostic — `debugging/2026-07-07_chrome-extension-speculative-api-shape-silent-rendering-failure.md`
+- [2026-07-07] Chrome MV3 Side Panel — currentTab Staleness and the onActivated Fix — reusable_diagnostic — `debugging/2026-07-07_chrome-mv3-side-panel-currenttab-staleness-onactivated-fix.md`
+
 ### Methodologies
 
+- [2026-07-07] Fleet repo audit: 4-tier classification methodology for multi-repo codebases — reusable_diagnostic — `methodologies/2026-07-07_fleet-repo-audit-4-tier-classification-methodology.md`
+- [2026-07-06] Cross-project marker files — verify the creator lives elsewhere before flagging an empty repo-root file as stale — new_pattern — `methodologies/2026-07-06_cross-project-marker-files-verify-creator-before-flagging-stale.md`
+- [2026-07-06] Backup files timestamped near a "fix" commit are not automatically "pre-regression working reference" — cross-check backup mtime against git log — reusable_diagnostic — `methodologies/2026-07-06_backup-file-mtime-vs-git-log-cross-check-before-trusting-pre-regression-claim.md`
 - [2026-06-29] cos-grounding claim disposition taxonomy — five types for rebuild_needed claims — transferable_framework — `methodologies/2026-06-29_cos-grounding-claim-disposition-taxonomy-five-types.md`
 - [2026-06-29] cos-grounding co-citation rescue protocol — upgrading weak single-source claims via store-resident meta-analysis — reusable_diagnostic — `methodologies/2026-06-29_cos-grounding-co-citation-rescue-protocol-upgrading-weak-single-source.md`
 - [2026-06-29] Lock-revision cascade — file alignment discipline when a positioning lock changes mid-cycle — reusable_diagnostic — `methodologies/2026-06-29_lock-revision-cascade-file-alignment-discipline.md`
@@ -308,6 +340,7 @@ type: index
 
 ### Strategy
 
+- [2026-07-07] AdSense anti-pattern for professional practitioner tool audiences — transferable_framework — `strategy/2026-07-07_adsense-anti-pattern-professional-practitioner-tool-audiences.md`
 - [2026-06-14] Substrate-migration triage — port/drop a dormant subsystem's backlog against the live substitute, never revive the corpse — transferable_framework — `strategy/2026-06-14_substrate-migration-triage.md`
 - [2026-06-10] Drop the dependent tier when a critic surfaces that an architecture's loading mechanism is more constrained than the spec assumed — transferable_framework, reusable_diagnostic — `strategy/2026-06-10_drop-dependent-tier-constrained-loader-reclassification.md`
 - [2026-05-29] Pricing LLM-wrapper APIs against the DIY-floor constraint — transferable_framework — `strategy/2026-05-29_llm-wrapper-api-pricing-diy-floor-calibration.md`
@@ -316,6 +349,11 @@ type: index
 
 ### Integration
 
+- [2026-07-07] Chrome Extension MV3: CORS-free API calls via host_permissions in background service worker — new_pattern — `integration/2026-07-07_chrome-extension-mv3-cors-free-api-host-permissions.md`
+- [2026-07-07] Google Ads CSV export header detection — metadata rows precede the real header — reusable_diagnostic — `integration/2026-07-07_google-ads-csv-export-metadata-rows-precede-real-header.md`
+- [2026-07-07] MemPalace mine skips already-filed files — wing reassignment impossible — reusable_diagnostic — `integration/2026-07-07_mempalace-mine-skips-already-filed-wing-reassignment-impossible.md`
+- [2026-07-07] MemPalace search results include raw frontmatter in first drawer text — new_pattern — `integration/2026-07-07_mempalace-search-frontmatter-drawer-pattern.md`
+- [2026-07-06] Ghost Admin API — feature_image_alt hard 191-char limit validated at post-create, not image-upload — reusable_diagnostic — `integration/2026-07-06_ghost-admin-api-feature-image-alt-191-char-limit.md`
 - [2026-07-03] Orchestra dual-endpoint gotcha — local dev (localhost:8765, no auth) vs. remote prod (your-orchestra-host.example.com, Bearer) have independent state — reusable_diagnostic — `integration/2026-07-03_orchestra-dual-endpoint-local-dev-vs-remote-prod-independent-state.md`
 - [2026-06-26] Allen AI Asta Scientific Corpus MCP — operational gotchas reference (7 gotchas + bib-corpus integration pattern, as of 2026-06-26) — new_pattern — `integration/2026-06-26_allen-ai-asta-scientific-corpus-mcp-operational-gotchas.md`
 - [2026-06-22] MCP Streamable-HTTP sessions are wiped on container restart — Disconnect+Reconnect is the client-side fix; Refresh tools silently fails — reusable_diagnostic — `integration/2026-06-22_mcp-streamable-http-sessions-wiped-on-container-restart.md`
@@ -328,9 +366,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 199
-- **Entry types:** new_pattern (58), transferable_framework (53), reusable_diagnostic (84), reusable_diagnostic + transferable_framework (2), reusable_diagnostic + new_pattern (1), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
-- **Domains:** patterns (45), architecture (10), orchestration (16), infrastructure (29), compiler (4), diagnostics (43), methodologies (41), migrations (5), strategy (4), integration (6)
+- **Total entries:** 207
+- **Entry types:** new_pattern (59), transferable_framework (55), reusable_diagnostic (89), reusable_diagnostic + transferable_framework (2), reusable_diagnostic + new_pattern (1), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
+- **Domains:** patterns (46), architecture (10), orchestration (17), infrastructure (29), compiler (4), diagnostics (46), methodologies (42), migrations (5), strategy (4), integration (8), debugging (1)
 - **Avg grounding score:** 0.84 (across grounded entries)
-- **Staleness risk distribution:** stable (176), slow_decay (10), fast_decay (1)
+- **Staleness risk distribution:** stable (180), slow_decay (11), fast_decay (1)
 
