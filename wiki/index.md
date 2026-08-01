@@ -9,6 +9,11 @@ type: index
 
 ### Patterns
 
+- [2026-07-21] Substitute behavioral descriptors for OCEAN trait codes in consumer-facing infographics — transferable_framework — `patterns/2026-07-21_substitute-behavioral-descriptors-ocean-trait-codes-consumer-infographics.md`
+- [2026-07-14] Stable Error-Class Enum Alongside Freeform Reason String in Subprocess Result Types — reusable_pattern — `patterns/2026-07-14_error-class-enum-with-reason-string-subprocess-results.md`
+- [2026-07-13] pytest factory fixture pattern for parameterized stubs — reusable_pattern — `patterns/2026-07-13_pytest-factory-fixture-pattern-parameterized-stubs.md`
+- [2026-07-13] Import ordering guard pattern for compatibility shims — reusable_pattern — `patterns/2026-07-13_import-ordering-guard-pattern-compatibility-shims.md`
+- [2026-07-11] Two-layer time-gated API enforcement — inline lazy guard + nightly cron batch cleanup — transferable_framework — `patterns/2026-07-11_two-layer-time-gated-api-enforcement-lazy-guard-batch-cleanup.md`
 - [2026-07-11] CSS chip-group pairing and nowrap guards for HTML infographic text rendering — new_pattern — `patterns/2026-07-11_css-chip-group-nowrap-guards-html-infographic-text-rendering.md`
 - [2026-07-11] Blog hero image pre-generation library pattern — generate all variants upfront, select retroactively — reusable_pattern — `patterns/2026-07-11_pre-generate-image-library-retroactive-selection-pattern.md`
 - [2026-07-11] Backup-in-enumerated-dir anti-pattern — plugin/skill install scripts must not back up in place — new_pattern — `patterns/2026-07-11_backup-in-enumerated-dir-anti-pattern-skill-phantom-commands.md`
@@ -101,6 +106,9 @@ type: index
 
 ### Orchestration
 
+- [2026-08-01] Gate Placement Decision — In-Skill vs Coordinator-Level Pre-flight Checks — transferable_framework — `orchestration/2026-08-01_gate-placement-in-skill-entry-point-vs-coordinator-level.md`
+- [2026-07-14] Stop Hook Gate — Lightweight Session-End Review Tripwire — new_pattern — `orchestration/2026-07-14_stop-hook-gate-lightweight-session-end-review-tripwire.md`
+- [2026-07-11] GasTown scheduled formulas must self-GC their own step wisps to prevent accumulation — new_pattern — `orchestration/2026-07-11_gastown-scheduled-formulas-self-gc-step-wisps.md`
 - [2026-07-06] Protocol-doc drift catch — L3 installers should verify concrete tool signatures against live schema before pasting, and push corrections UP — transferable_framework — `orchestration/2026-07-06_l3-installer-catches-l2-protocol-signature-drift-push-corrections-up.md`
 - [2026-06-27] Parallel-agent ID-namespace collision in append-only claim/ticket stores — reservation-first preferred, tombstone-on-collision fallback — reusable_diagnostic — `orchestration/2026-06-27_parallel-agent-id-namespace-collision-append-only-stores.md`
 - [2026-06-14] Compile-pipeline PR supersedence — close intermediates, regenerate latest at current upstream HEAD — transferable_framework — `orchestration/2026-06-14_compile-pipeline-pr-supersedence-snapshot-merge-pattern.md`
@@ -127,6 +135,12 @@ type: index
 
 ### Infrastructure
 
+- [2026-08-01] happy-coder bundled claude binary silent failure on -p flag — reusable_diagnostic — `infrastructure/2026-08-01_happy-coder-bundled-claude-binary-silent-p-flag-failure.md`
+- [2026-08-01] Mac Mini launchd + claude -p operational pattern — reusable_diagnostic — `infrastructure/2026-08-01_mac-mini-launchd-claude-p-operational-pattern.md`
+- [2026-07-25] Ghost casper theme omits author bio from post pages — fix pattern — new_pattern — `infrastructure/2026-07-25_ghost-casper-theme-author-bio-post-rendering.md`
+- [2026-07-24] Ghost active-theme verification before SSH theme edits — reusable_diagnostic — `infrastructure/2026-07-24_ghost-active-theme-verification-before-ssh-edits.md`
+- [2026-07-14] Scheduled social post pipeline — JSON queue + Python scheduler + launchd — reusable_pattern — `infrastructure/2026-07-14_scheduled-social-post-pipeline-json-queue-python-scheduler-launchd.md`
+- [2026-07-11] macOS Gatekeeper rejects binaries SCP-copied from another Mac — build natively on target — reusable_diagnostic — `infrastructure/2026-07-11_macos-gatekeeper-rejects-scp-binaries-build-natively-on-target.md`
 - [2026-07-11] nginx try_files implicit 301 for directory-style static pages — explicit location redirect not needed — reusable_diagnostic — `infrastructure/2026-07-11_nginx-try-files-implicit-directory-redirect-static-pages.md`
 - [2026-07-08] rsync exit code 23 with empty destination — source directory missing creates dir but transfers nothing — reusable_diagnostic — `infrastructure/2026-07-08_rsync-exit-code-23-empty-destination-source-missing.md`
 - [2026-07-08] GitHub Actions PAT authentication failure modes — three distinct error signatures + continue-on-error UI masking — reusable_diagnostic — `infrastructure/2026-07-08_github-actions-pat-authentication-failure-three-error-signatures-continue-on-error-masking.md`
@@ -178,6 +192,7 @@ type: index
 
 ### Compiler
 
+- [2026-07-11] KF-MODE telemetry marker must land in first 20 lines of compiled agent files — reusable_diagnostic — `compiler/2026-07-11_kf-mode-marker-must-land-in-first-20-lines-compiled-agent-files.md`
 - [2026-07-06] Claude Code agent loader requires `---` on line 1; Option D preserves in-file source trace after closing `---` — reusable_diagnostic — `compiler/2026-07-06_claude-code-agent-loader-line-1-frontmatter-option-d-source-trace.md`
 - [2026-07-06] When a marker moves from top-of-file to mid-file, strip regexes must re-anchor from `^`+MULTILINE to `\A` — reusable_diagnostic — `compiler/2026-07-06_python-regex-caret-multiline-vs-a-anchor-mid-file-marker-strip.md`
 - [2026-07-02] Module 00 STATIC ZONE vs CC Rules — which zone reaches which deployment target — transferable_framework — `compiler/2026-07-02_module-00-static-zone-vs-cc-rules-compilation-zone-routing.md`
@@ -189,11 +204,28 @@ type: index
 
 ### Diagnostics
 
+- [2026-07-29] Ghost CMS Docker MySQL discovery — diagnosing why MySQL updates don't surface — reusable_diagnostic — `diagnostics/2026-07-29_ghost-docker-mysql-discovery-why-updates-dont-surface.md`
+- [2026-07-29] UNHEX() as shell-safe MySQL injection for complex string values — reusable_diagnostic — `diagnostics/2026-07-29_unhex-shell-safe-mysql-injection-complex-strings.md`
+- [2026-07-29] SaaS metrics exclusion — two-tier internal-account filter pattern — reusable_diagnostic — `diagnostics/2026-07-29_saas-metrics-exclusion-two-tier-internal-account-filter-pattern.md`
+- [2026-07-27] Ghost Admin API key discovery via SQLite when credentials are unknown — reusable_diagnostic — `diagnostics/2026-07-27_ghost-admin-api-key-discovery-sqlite-when-unknown.md`
+- [2026-07-24] Self-referential proposal rejection loop — pipeline friction signals blocked by the validator they critique — reusable_diagnostic — `diagnostics/2026-07-24_self-referential-proposal-rejection-loop-pipeline-friction-signals.md`
+- [2026-07-21] X API v2 returns 403 Forbidden when tweet exceeds 280 effective characters — reusable_diagnostic — `diagnostics/2026-07-21_x-api-403-effective-character-count-exceeds-280.md`
+- [2026-07-21] Use leonardo-html-infographic skill (Chrome headless) not qlmanage for HTML-to-PNG rendering — reusable_diagnostic — `diagnostics/2026-07-21_qlmanage-vs-leonardo-html-rendering-tool-choice-diagnostic.md`
+- [2026-07-24] TTL reset trap in cache-hit refresh paths makes queue entries immortal — reusable_diagnostic — `diagnostics/2026-07-24_ttl-reset-trap-cache-hit-refresh-immortal-queue-entries.md`
+- [2026-07-23] Schema maxLength caps on LLM reasoning fields cause schema_violation + retry timeout — reusable_diagnostic — `diagnostics/2026-07-23_schema-maxlength-caps-llm-reasoning-fields-silent-drop.md`
+- [2026-07-14] Shared placeholder renderer across two denial gates silently breaks test discriminability — reusable_diagnostic — `diagnostics/2026-07-14_shared-placeholder-renderer-test-discriminability-denial-gates.md`
+- [2026-07-11] post-social.py X manifest — raw URL char count, not t.co 23-char shortening — reusable_diagnostic — `diagnostics/2026-07-11_post-social-x-manifest-raw-url-char-count-gotcha.md`
+- [2026-07-11] KF CC Deployment Parity Check — 7-Check Deterministic Audit Methodology — reusable_diagnostic — `diagnostics/2026-07-11_kf-cc-deployment-parity-check-7-check-audit-methodology.md`
+- [2026-07-11] API key tier config gap — missing tier in lookup dict causes silent fallthrough to wrong quota — reusable_diagnostic — `diagnostics/2026-07-11_api-key-tier-config-gap-silent-fallthrough-wrong-quota.md`
+- [2026-07-11] HTML content audits must separately scope header hero sections from article-body — reusable_diagnostic — `diagnostics/2026-07-11_html-audit-scope-header-vs-article-body-section-coverage.md`
+- [2026-07-11] Em-dash audit requires two separate grep patterns (close-form and spaced-form) — reusable_diagnostic — `diagnostics/2026-07-11_em-dash-audit-requires-two-form-grep-patterns.md`
 - [2026-07-11] Stale-signal feedback loop in log-scanning workers — 7-day recency filter pattern — reusable_diagnostic — `diagnostics/2026-07-11_stale-signal-feedback-loop-log-scanning-workers-7day-recency-filter.md`
 - [2026-07-10] AES Export MANIFEST Registration — Silent Failure When Detector Extras Are Unpopulated — reusable_diagnostic — `diagnostics/2026-07-10_aes-export-manifest-silent-failure-unpopulated-detector-extras.md`
 - [2026-07-11] Chrome headless --screenshot captures full page height, not viewport — min-height causes non-deterministic PNG dimensions — reusable_diagnostic — `diagnostics/2026-07-11_chrome-headless-screenshot-full-page-height-min-height-gotcha.md`
 - [2026-07-11] GSC impression split (URL-A down / URL-B up) with 301 in place = consolidation in progress, not a broken redirect — reusable_diagnostic — `diagnostics/2026-07-11_gsc-impression-split-url-variant-consolidation-signal.md`
+- [2026-07-11] GSC URL Inspection "Temporary processing error" for Sitemaps is a display artifact — reusable_diagnostic — `diagnostics/2026-07-11_gsc-url-inspection-sitemap-temporary-processing-error-display-artifact.md`
 - [2026-07-11] SEO Intro Redirect Leak — Page Intro That Sends "What Is" Intent Elsewhere Leaks Head-Term Relevance Signal — reusable_diagnostic — `diagnostics/2026-07-11_seo-intro-redirect-leak-head-term-relevance-signal.md`
+- [2026-07-11] Git working-tree/HEAD divergence — grep finds nothing but user reports issue exists — reusable_diagnostic — `diagnostics/2026-07-11_git-working-tree-head-divergence-grep-finds-nothing.md`
 - [2026-07-07] baking_pipeline dispatch=False silently discards full proposal text — reusable_diagnostic — `diagnostics/2026-07-07_baking-pipeline-dispatch-false-silently-discards-proposal-text.md`
 - [2026-07-07] Same-shape fatigue — rotate visual template structure across the week, not just content payload — reusable_diagnostic — `diagnostics/2026-07-07_same-shape-fatigue-rotate-visual-template-structure-across-week.md`
 - [2026-07-07] Min-max cosine normalization is unstable when all scores are uniformly negative — reusable_diagnostic — `diagnostics/2026-07-07_min-max-cosine-normalization-unstable-uniformly-negative-scores.md`
@@ -261,6 +293,7 @@ type: index
 
 ### Debugging
 
+- [2026-07-14] pytest autouse + tmp_path_factory env-var setup is unreliable when test also uses tmp_path fixtures — patch the function directly — reusable_diagnostic — `debugging/2026-07-14_pytest-autouse-tmp-path-factory-monkeypatch-fixture-interaction.md`
 - [2026-07-07] Chrome Extension Rendering Bug — Speculative API Shape vs Real Response Structure — reusable_diagnostic — `debugging/2026-07-07_chrome-extension-speculative-api-shape-silent-rendering-failure.md`
 - [2026-07-07] Chrome MV3 Side Panel — currentTab Staleness and the onActivated Fix — reusable_diagnostic — `debugging/2026-07-07_chrome-mv3-side-panel-currenttab-staleness-onactivated-fix.md`
 
@@ -328,6 +361,7 @@ type: index
 
 ### Migrations
 
+- [2026-07-11] Config source migration requires auditing all consumer scripts, not just the primary loader — reusable_diagnostic — `migrations/2026-07-11_config-source-migration-requires-auditing-all-consumer-scripts.md`
 - [2026-06-12] Schema evolution via additive optional fields + tolerant reads — transferable_framework — `migrations/2026-06-12_schema-evolution-additive-optional-fields.md`
 - [2026-05-30] Two-phase destructive-migration pattern — validation before coercion — transferable_framework — `migrations/2026-05-30_two-phase-destructive-migration-validation-before-coercion.md`
 - [2026-05-24] Safe one-shot backfill script architecture — dry-run default + idempotent + skip-no-improvement — reusable_pattern — `migrations/2026-05-24_safe-one-shot-backfill-script-dry-run-idempotent-no-improvement-skip.md`
@@ -340,6 +374,7 @@ type: index
 
 ### Strategy
 
+- [2026-07-29] Court Lorenzini's Trust-as-GTM-Edge Framework — Three-Lens Trust Model for Early-Stage Startups — transferable_framework — `strategy/2026-07-29_court-lorenzini-trust-as-gtm-edge-framework.md`
 - [2026-07-07] AdSense anti-pattern for professional practitioner tool audiences — transferable_framework — `strategy/2026-07-07_adsense-anti-pattern-professional-practitioner-tool-audiences.md`
 - [2026-06-14] Substrate-migration triage — port/drop a dormant subsystem's backlog against the live substitute, never revive the corpse — transferable_framework — `strategy/2026-06-14_substrate-migration-triage.md`
 - [2026-06-10] Drop the dependent tier when a critic surfaces that an architecture's loading mechanism is more constrained than the spec assumed — transferable_framework, reusable_diagnostic — `strategy/2026-06-10_drop-dependent-tier-constrained-loader-reclassification.md`
@@ -349,6 +384,18 @@ type: index
 
 ### Integration
 
+- [2026-07-29] React + Supabase anonymous sessions: guard login redirect with !isAnonymous — new_pattern — `integration/2026-07-29_react-supabase-anonymous-sessions-guard-login-redirect.md`
+- [2026-07-27] WebFetch returns typographically transformed content — not safe for verbatim jobs — reusable_diagnostic — `integration/2026-07-27_webfetch-typographic-transformation-caveat-em-dashes.md`
+- [2026-07-27] Ghost canonical cross-post workflow (Substack → Ghost republish) — reusable_pattern — `integration/2026-07-27_ghost-canonical-cross-post-workflow-substack-republish.md`
+- [2026-07-14] Reviewer Sovereignty via disable-model-invocation and Verbatim Output Constraint in Claude Code Plugins — new_pattern — `integration/2026-07-14_reviewer-sovereignty-disable-model-invocation-verbatim-output-constraint.md`
+- [2026-07-14] Google Rich Results SoftwareApplication schema requirements — price string and SearchAction format — reusable_diagnostic — `integration/2026-07-14_google-rich-results-softwareapplication-schema-price-string-searchaction-format.md`
+- [2026-07-14] Ghost author page og:image requires cover_image field, not profile_image — reusable_diagnostic — `integration/2026-07-14_ghost-author-page-og-image-cover-image-field.md`
+- [2026-07-14] Ghost Casper theme tag editorial blocks via Handlebars match pattern — new_pattern — `integration/2026-07-14_ghost-casper-theme-hardcoded-tag-editorial-blocks-handlebars-match.md`
+- [2026-07-14] Ghost Admin API base path follows installation subpath — reusable_diagnostic — `integration/2026-07-14_ghost-admin-api-base-path-follows-install-subpath.md`
+- [2026-07-11] Ghost cross-post workflow — multi-instance staging with attribution and canonical URL — reusable_pattern — `integration/2026-07-11_ghost-cross-post-workflow-multi-instance-staging-canonical-attribution.md`
+- [2026-07-11] VS Code Webview — window.prompt() Blocked, Use Inline Overlay Div for Modal Text Input — reusable_diagnostic — `integration/2026-07-11_vscode-webview-inline-modal-csp-window-prompt-blocked.md`
+- [2026-07-11] KF-MODE telemetry marker client-side parsing for UI enrichment — new_pattern — `integration/2026-07-11_kf-mode-marker-client-side-parsing-ui-enrichment.md`
+- [2026-07-11] VS Code Extension Local-Server Spawn-and-Capture Auth Pattern — transferable_framework — `integration/2026-07-11_vscode-extension-local-server-spawn-capture-auth-pattern.md`
 - [2026-07-07] Chrome Extension MV3: CORS-free API calls via host_permissions in background service worker — new_pattern — `integration/2026-07-07_chrome-extension-mv3-cors-free-api-host-permissions.md`
 - [2026-07-07] Google Ads CSV export header detection — metadata rows precede the real header — reusable_diagnostic — `integration/2026-07-07_google-ads-csv-export-metadata-rows-precede-real-header.md`
 - [2026-07-07] MemPalace mine skips already-filed files — wing reassignment impossible — reusable_diagnostic — `integration/2026-07-07_mempalace-mine-skips-already-filed-wing-reassignment-impossible.md`
@@ -366,9 +413,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 207
-- **Entry types:** new_pattern (59), transferable_framework (55), reusable_diagnostic (89), reusable_diagnostic + transferable_framework (2), reusable_diagnostic + new_pattern (1), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
-- **Domains:** patterns (46), architecture (10), orchestration (17), infrastructure (29), compiler (4), diagnostics (46), methodologies (42), migrations (5), strategy (4), integration (8), debugging (1)
+- **Total entries:** 221
+- **Entry types:** new_pattern (60), transferable_framework (57), reusable_diagnostic (98), reusable_diagnostic + transferable_framework (2), reusable_diagnostic + new_pattern (1), reusable_pattern (3), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
+- **Domains:** patterns (48), architecture (10), orchestration (17), infrastructure (30), compiler (5), diagnostics (51), methodologies (42), migrations (5), strategy (4), integration (13), debugging (1)
 - **Avg grounding score:** 0.84 (across grounded entries)
-- **Staleness risk distribution:** stable (180), slow_decay (11), fast_decay (1)
+- **Staleness risk distribution:** stable (189), slow_decay (13), fast_decay (1)
 
