@@ -38,3 +38,7 @@ mempalace.yaml
 .dolt/
 *.db
 .beads-credential-key
+
+# Bead workflow state (per-machine triage artifacts)
+.bead-workflow/*
+!.bead-workflow/README.md

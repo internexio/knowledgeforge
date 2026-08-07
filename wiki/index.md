@@ -106,6 +106,7 @@ type: index
 
 ### Orchestration
 
+- [2026-08-03] TTL drain — source-lifecycle-gated proposal expiry without active cleanup — new_pattern — `orchestration/2026-08-03_ttl-drain-source-lifecycle-gated-expiry.md`
 - [2026-08-01] Gate Placement Decision — In-Skill vs Coordinator-Level Pre-flight Checks — transferable_framework — `orchestration/2026-08-01_gate-placement-in-skill-entry-point-vs-coordinator-level.md`
 - [2026-07-14] Stop Hook Gate — Lightweight Session-End Review Tripwire — new_pattern — `orchestration/2026-07-14_stop-hook-gate-lightweight-session-end-review-tripwire.md`
 - [2026-07-11] GasTown scheduled formulas must self-GC their own step wisps to prevent accumulation — new_pattern — `orchestration/2026-07-11_gastown-scheduled-formulas-self-gc-step-wisps.md`
@@ -204,6 +205,7 @@ type: index
 
 ### Diagnostics
 
+- [2026-08-04] Score calibration methodology for two-model pipelines — reusable_diagnostic — `diagnostics/2026-08-04_score-calibration-methodology-two-model-pipelines.md`
 - [2026-07-29] Ghost CMS Docker MySQL discovery — diagnosing why MySQL updates don't surface — reusable_diagnostic — `diagnostics/2026-07-29_ghost-docker-mysql-discovery-why-updates-dont-surface.md`
 - [2026-07-29] UNHEX() as shell-safe MySQL injection for complex string values — reusable_diagnostic — `diagnostics/2026-07-29_unhex-shell-safe-mysql-injection-complex-strings.md`
 - [2026-07-29] SaaS metrics exclusion — two-tier internal-account filter pattern — reusable_diagnostic — `diagnostics/2026-07-29_saas-metrics-exclusion-two-tier-internal-account-filter-pattern.md`
@@ -293,6 +295,7 @@ type: index
 
 ### Debugging
 
+- [2026-08-03] parsed_at_least_one — Boolean flag for empty-list-safe streaming JSON decode loops — new_pattern — `debugging/2026-08-03_parsed-at-least-one-boolean-empty-list-json-decode-safety.md`
 - [2026-07-14] pytest autouse + tmp_path_factory env-var setup is unreliable when test also uses tmp_path fixtures — patch the function directly — reusable_diagnostic — `debugging/2026-07-14_pytest-autouse-tmp-path-factory-monkeypatch-fixture-interaction.md`
 - [2026-07-07] Chrome Extension Rendering Bug — Speculative API Shape vs Real Response Structure — reusable_diagnostic — `debugging/2026-07-07_chrome-extension-speculative-api-shape-silent-rendering-failure.md`
 - [2026-07-07] Chrome MV3 Side Panel — currentTab Staleness and the onActivated Fix — reusable_diagnostic — `debugging/2026-07-07_chrome-mv3-side-panel-currenttab-staleness-onactivated-fix.md`
@@ -374,6 +377,7 @@ type: index
 
 ### Strategy
 
+- [2026-08-04] Trial gate placement — gate on intent not entry — transferable_framework — `strategy/2026-08-04_trial-gate-placement-gate-on-intent-not-entry.md`
 - [2026-07-29] Court Lorenzini's Trust-as-GTM-Edge Framework — Three-Lens Trust Model for Early-Stage Startups — transferable_framework — `strategy/2026-07-29_court-lorenzini-trust-as-gtm-edge-framework.md`
 - [2026-07-07] AdSense anti-pattern for professional practitioner tool audiences — transferable_framework — `strategy/2026-07-07_adsense-anti-pattern-professional-practitioner-tool-audiences.md`
 - [2026-06-14] Substrate-migration triage — port/drop a dormant subsystem's backlog against the live substitute, never revive the corpse — transferable_framework — `strategy/2026-06-14_substrate-migration-triage.md`
@@ -413,9 +417,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 221
-- **Entry types:** new_pattern (60), transferable_framework (57), reusable_diagnostic (98), reusable_diagnostic + transferable_framework (2), reusable_diagnostic + new_pattern (1), reusable_pattern (3), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
-- **Domains:** patterns (48), architecture (10), orchestration (17), infrastructure (30), compiler (5), diagnostics (51), methodologies (42), migrations (5), strategy (4), integration (13), debugging (1)
+- **Total entries:** 223
+- **Entry types:** new_pattern (61), transferable_framework (58), reusable_diagnostic (98), reusable_diagnostic + transferable_framework (2), reusable_diagnostic + new_pattern (1), reusable_pattern (3), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
+- **Domains:** patterns (48), architecture (10), orchestration (17), infrastructure (30), compiler (5), diagnostics (51), methodologies (42), migrations (5), strategy (5), integration (13), debugging (2)
 - **Avg grounding score:** 0.84 (across grounded entries)
-- **Staleness risk distribution:** stable (189), slow_decay (13), fast_decay (1)
+- **Staleness risk distribution:** stable (191), slow_decay (13), fast_decay (1)
 

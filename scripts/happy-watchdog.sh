@@ -6,15 +6,17 @@
 set -euo pipefail
 
 SESSION="knowledgeforge-core"
-PROJECT_DIR="~/Scripts/knowledgeforge-core"
-LOG="~/agent-workflow/happy-knowledgeforge-core.log"
+PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+LOG="${HAPPY_LOG:-"$HOME/agent-workflow/happy-knowledgeforge-core.log"}"
 PAUSE_FILE="/tmp/happy-paused"
 BACKOFF_DIR="/tmp/happy-backoff-state"
 BACKOFF_FILE="$BACKOFF_DIR/$SESSION"
 
 export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-export HAPPY_SERVER_URL="https://happy.semalytics.io"
-export HAPPY_WEBAPP_URL="https://happy-app.semalytics.io"
+# HAPPY_SERVER_URL and HAPPY_WEBAPP_URL must be set in the environment or launchd plist
+# Example: export HAPPY_SERVER_URL="https://your-happy-instance.example.com"
+: "${HAPPY_SERVER_URL:?HAPPY_SERVER_URL must be set}"
+: "${HAPPY_WEBAPP_URL:?HAPPY_WEBAPP_URL must be set}"
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG"; }
 
@@ -29,6 +31,10 @@ fi
 # Check backoff
 if [[ -f "$BACKOFF_FILE" ]]; then
     attempts=$(grep -c "^fail:" "$BACKOFF_FILE" 2>/dev/null || echo 0)
+    # Sanitize ([project]-encg): grep -c can under corrupt-file edge cases
+    # return non-int values that wedge the case fallthrough into wait=7200.
+    attempts=$(echo "$attempts" | head -1 | tr -cd "[:digit:]")
+    [[ -z "$attempts" ]] && attempts=0
     last_fail=$(tail -1 "$BACKOFF_FILE" | cut -d: -f2)
     now=$(date +%s)
 
@@ -94,7 +100,7 @@ fi
 # Start new session
 log "Starting $SESSION in $PROJECT_DIR"
 tmux new-session -d -s "$SESSION" -c "$PROJECT_DIR"
-tmux send-keys -t "$SESSION" "export PATH=$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin HAPPY_SERVER_URL=https://happy.semalytics.io HAPPY_WEBAPP_URL=https://happy-app.semalytics.io; cd $PROJECT_DIR && happy --yolo" Enter
+tmux send-keys -t "$SESSION" "export PATH=$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin HAPPY_SERVER_URL=$HAPPY_SERVER_URL HAPPY_WEBAPP_URL=$HAPPY_WEBAPP_URL; cd $PROJECT_DIR && happy --yolo" Enter
 
 # Verify it started
 sleep 5
