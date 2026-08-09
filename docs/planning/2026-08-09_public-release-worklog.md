@@ -219,6 +219,37 @@ Result: 15/15 pass.
 
 ---
 
+## Phase 2 — Telemetry flag (2026-08-09)
+
+### Changes
+
+**modules/00_orchestrator.md** — 7.23.0 → 7.24.0:
+- Wrapped `## Per-Turn Mode Telemetry` block in `## CC Rules` section with
+  `<!-- kf:if telemetry -->` / `<!-- kf:endif -->` (lines 1097-1169 in original).
+- The STATIC ZONE telemetry content (lines 589-658) is documentation only —
+  not compiled into any output — and was NOT wrapped.
+- Identity strings updated: 7.23.0 → 7.24.0 in title and STATIC ZONE identity line.
+- Changelog entry added.
+
+**platform-bindings/claude-code.yaml**:
+- Added `flags:` section with `telemetry: false` (public default).
+- Comment documents the flag purpose and override pattern.
+
+**kf.yaml** — 7.27.0 → 7.28.0:
+- Changelog entry added for Phase 2.
+
+### Verification
+
+- `telemetry=false` (binding default): `Per-Turn Mode Telemetry` not in kf-meta.md ✓
+- `--set telemetry=true`: `Per-Turn Mode Telemetry` present in kf-meta.md ✓
+- No `kf:if` / `kf:endif` markers leaked into compiled output ✓
+- `check-identity-drift.py`: CLEAN ✓
+- 37 CC outputs written, 0 missing sections, 0 diverged ✓
+
+**Phase 2 status: COMPLETE.**
+
+---
+
 ## Pending decisions for GATE 0
 
 | Decision | Status | Notes |

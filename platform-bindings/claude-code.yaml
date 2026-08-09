@@ -25,6 +25,18 @@ constraints:
   no_project_knowledge: true     # CC has no project knowledge files like CP
 
 # --------------------------------------------------------------------------
+# Compile-time flags (Phase 1 — conditional block support)
+# --------------------------------------------------------------------------
+# Flags gate <!-- kf:if <flag> --> ... <!-- kf:endif --> blocks in modules.
+# Override any flag per-run with --set flag=true/false on the CLI.
+#
+# telemetry: false (public default) — strips the Per-Turn Mode Telemetry
+#   directive from kf-meta.md. Set to true for internal/private builds where
+#   the KF-MODE marker compliance requirement is active.
+flags:
+  telemetry: false
+
+# --------------------------------------------------------------------------
 # Output structure — relative to target CC repo root
 # --------------------------------------------------------------------------
 output_structure:

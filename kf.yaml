@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.27.0
+version: 7.28.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,22 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.28.0
+    date: 2026-08-09
+    driver: knowledgeforge-core-public-release-phase2
+    note: |
+      Telemetry flag — conditional block wrapping for public release.
+
+      M00 (Orchestrator) 7.23.0 -> 7.24.0: Per-Turn Mode Telemetry section in
+      ## CC Rules wrapped in <!-- kf:if telemetry --> / <!-- kf:endif -->. When
+      binding flag 'telemetry: false' (new default in claude-code.yaml), the
+      telemetry directive is stripped from the compiled kf-meta.md. Internal
+      builds pass --set telemetry=true to include it.
+
+      claude-code.yaml: Added 'flags:' section with 'telemetry: false' as the
+      public default. The compiler's Phase 1 conditional block support now has
+      its first live use.
+
   - version: 7.27.0
     date: 2026-08-09
     driver: knowledgeforge-core-e49
