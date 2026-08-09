@@ -3,7 +3,7 @@
 # Run against a FRESH CLONE only. Never filter the working repo.
 # Never force-push after visibility flip.
 #
-# Updated: 2026-08-09 (Phase 6A — rehearsal)
+# Updated: 2026-08-09 (Phase 6A — rehearsal; body review — 3 new replace_text rules + 1 new remove_path)
 # GATE decisions recorded: R10=security@internexio.com, R13=github@internexio.com, R16=David Pedersen
 
 # --------------------------------------------------------------------------
@@ -43,6 +43,12 @@ replace_text:
     rationale: "Internal GTM project name. ~10 wiki files that are KEPT."
   - rule: "literal:client-project==>client-project"
     rationale: "Internal ads project name. ~10 wiki files that are KEPT."
+  - rule: "regex:(?i)[project]==>[project]"
+    rationale: "Personal project name. 108 wiki files — grounding examples, file paths, bead IDs. Case-insensitive to catch '[project]' capitalised in older entries."
+  - rule: "literal:[project]==>[project]"
+    rationale: "COS development project name. 60 wiki files — grounding examples, file paths."
+  - rule: "literal:[project]==>[project]"
+    rationale: "COS validation harness project name. 5 wiki files."
 
 # --------------------------------------------------------------------------
 # Path removals (files removed from all commits in history)
@@ -85,6 +91,13 @@ remove_paths:
   - path: wiki/strategy/2026-07-07_adsense-anti-pattern-professional-practitioner-tool-audiences.md
     reason: AdSense client-specific strategy. Not generalizable.
 
+  # Integration entry with service account name + full client portfolio list
+  - path: wiki/integration/2026-06-19_google-search-console-api-three-gotchas.md
+    reason: |
+      Contains internal GCP service account (sem-tools-gsc@semalytics-cos.iam.gserviceaccount.com),
+      full client portfolio list (tuannorthwest, lacabar, joeymasciotra, lacacafe, laca38th),
+      and internal bead IDs. Pattern content is useful but grounding is too operationally specific.
+
   # Worklog — internal release planning document with internal project name refs
   - path: docs/planning/2026-08-09_public-release-worklog.md
     reason: |
@@ -97,8 +110,9 @@ remove_paths:
 # Pre-scrub manual tasks (must complete BEFORE running filter-repo)
 # --------------------------------------------------------------------------
 pre_scrub_manual:
-  - task: "Update wiki/index.md to remove entries for all 13 REMOVED paths"
+  - task: "Update wiki/index.md to remove entries for all 14 REMOVED paths"
     reason: "filter-repo preserves wiki/index.md but won't remove dangling entry lines"
+    status: COMPLETE — 13 entries removed in Phase 6A; GSC entry removed in body-review pass
     files_to_remove_from_index:
       - wiki/diagnostics/2026-05-19_cos-mcp-analyze-full-timeout-direct-curl-fallback.md
       - wiki/diagnostics/2026-05-20_cos-analyze-full-payload-ceiling-502.md
@@ -113,13 +127,17 @@ pre_scrub_manual:
       - wiki/patterns/2026-06-29_headless-chrome-html-png-pipeline-text-heavy-social-infographics.md
       - wiki/patterns/2026-07-10_headless-chrome-html-png-pipeline-text-heavy-mobile-infographics.md
       - wiki/strategy/2026-07-07_adsense-anti-pattern-professional-practitioner-tool-audiences.md
+      - wiki/integration/2026-06-19_google-search-console-api-three-gotchas.md  # added body-review pass
 
   - task: "Body-review the ~90 wiki entries flagged in Phase 0 for semalytics/internexio refs"
     reason: "Phase 0 flagged ~90 entries for individual review. replace_text handles most; \
              but entries with deeply embedded client specifics may need targeted removal or \
              selective line removal that replace_text cannot express."
-    status: DEFERRED — Phase 6A rehearsal applies replace_text rules, \
-            manual body review is a pre-real-scrub gate
+    status: COMPLETE — body review completed 2026-08-09. Findings:
+      new_replace_text_rules_added: [[project], [project], [project]]
+      new_remove_paths_added: [wiki/integration/2026-06-19_google-search-console-api-three-gotchas.md]
+      accepted_as_ok: [semalytics.com references (public website), tuan/laca client site names (public websites)]
+      no_credentials_found: true
 
 # --------------------------------------------------------------------------
 # Post-scrub verification (run in filtered clone)
@@ -132,9 +150,13 @@ post_scrub_verify:
     - "your-orchestra-host.example.com"
     - "client-project"
     - "client-project"
+    - "[project]"      # added body-review pass — case-insensitive rule; verify both cases
+    - "[project]"
+    - "[project]"         # added body-review pass
+    - "[project]"  # added body-review pass
   patterns_allowed:
     - "internexio"   # Personal domain / GitHub org — keep
-    - "semalytics.com"  # Allowed in R7 integration context (COS MCP)
+    - "semalytics.com"  # Public website — keep per body-review decision
   author_email_must_be: github@internexio.com
   removed_paths_must_not_exist:
     - scripts/happy-watchdog.sh
@@ -151,3 +173,4 @@ post_scrub_verify:
     - wiki/patterns/2026-06-29_headless-chrome-html-png-pipeline-text-heavy-social-infographics.md
     - wiki/patterns/2026-07-10_headless-chrome-html-png-pipeline-text-heavy-mobile-infographics.md
     - wiki/strategy/2026-07-07_adsense-anti-pattern-professional-practitioner-tool-audiences.md
+    - wiki/integration/2026-06-19_google-search-console-api-three-gotchas.md  # added body-review pass
