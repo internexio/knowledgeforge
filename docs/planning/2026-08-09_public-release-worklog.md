@@ -331,6 +331,71 @@ ODS disposition: Deferred to later phase per operator decision (not Phase 3).
 
 ---
 
+## Phase 4 — Hooks curation + router hardening (2026-08-09)
+
+### Step 1: Hooks scan
+
+All hooks in `hooks/` scanned for personal/internal references:
+
+| Hook | Scan result |
+|------|-------------|
+| kf-route.py | CLEAN — no personal refs, graceful degradation, env-var API key |
+| kf_module_index.txt | CLEAN — no personal refs |
+| kf-stop-validator.py | CLEAN |
+| kf-precompact.py | CLEAN |
+| kf-postcompact.py | CLEAN |
+| kf-edit-nudge.py | CLEAN |
+| kf-session-start.py | CLEAN |
+| kf-stats.py | CLEAN |
+
+`scripts/happy-watchdog.sh` — on EXCLUDE list (Phase 0). Two comment references to
+`[project]-*` bead IDs are internal operational notes, not repo name exposures.
+File does not ship in public repo.
+
+### Step 2: SHIP list expansion
+
+`scripts/deploy-hooks.sh`: Added `kf-stats.py` to `HOOKS` array. Was present in
+`hooks/` but not deployed. Full SHIP list is now 8 files.
+
+### Step 3: Router hardening
+
+`hooks/kf-route.py`: No changes required.
+- Uses `GEMINI_API_KEY` env var (not hardcoded) ✓
+- Uses `KF_ROUTE_MODEL` env override (default `gemini-2.5-flash-lite`) ✓
+- Uses `KF_ROUTE_TIMEOUT` env override (default 10s) ✓
+- Graceful degradation on all failure paths (exit 0) ✓
+- No integration guard needed (kf_integrations.py is a personal wrapper, not in core) ✓
+- No personal paths or internexio references ✓
+
+`hooks/kf_module_index.txt`: No changes required. Clean prompt, no personal refs.
+
+### Step 4: plugin-bundle.yaml genericize
+
+Per Phase 0 scrub-manifest disposition (GENERICIZE):
+
+- Purpose comment: removed internexio consumer repo list ([project], client-project,
+  visionforge, [project]); genericized to "consumer repos" language
+- `mcp_connectors.cos-mcp.fallback_message`: removed `~/Scripts/[project]` path
+  example; replaced with description of `$COS_DEV_ROOT` variable semantics
+- `mcp_connectors.cos-mcp.targets`: `[[project], client-project, visionforge, [project]]`
+  → `[]` with operator-instruction comment
+- `deduplication_inventory.duplicated_in` (both entries): cleared to `[]` with
+  operator-instruction comments
+
+`kf.yaml`: 7.29.0 → 7.30.0 with Phase 4 changelog entry.
+
+**Verification:**
+
+```
+grep -rn "[project]|client-project|visionforge|[project]|[project]" \
+  platform-bindings/ hooks/ scripts/ compiler/
+```
+Result: Only `scripts/happy-watchdog.sh` (excluded from public repo) — CLEAN.
+
+**Phase 4 status: COMPLETE.**
+
+---
+
 ## Pending decisions for GATE 0
 
 | Decision | Status | Notes |

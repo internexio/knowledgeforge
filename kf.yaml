@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.29.0
+version: 7.30.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,28 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.30.0
+    date: 2026-08-09
+    driver: knowledgeforge-core-public-release-phase4
+    note: |
+      Hooks curation + plugin-bundle genericize for public release.
+
+      scripts/deploy-hooks.sh: kf-stats.py added to SHIP list (was present in
+      hooks/ but not deployed). All 8 hooks now shipped: kf-route.py,
+      kf_module_index.txt, kf-stop-validator.py, kf-precompact.py,
+      kf-postcompact.py, kf-edit-nudge.py, kf-session-start.py, kf-stats.py.
+
+      platform-bindings/plugin-bundle.yaml: Genericized internexio-specific
+      references per Phase 0 scrub-manifest disposition:
+        - Purpose comment: removed consumer repo name list; genericized to
+          "consumer repos" language
+        - mcp_connectors.cos-mcp.fallback_message: removed hardcoded path
+          example (~/Scripts/[project]); genericized to COS_DEV_ROOT description
+        - mcp_connectors.cos-mcp.targets: [consumer-specific list] -> []
+          with comment instructing operators to populate at install time
+        - deduplication_inventory.duplicated_in: both entries genericized
+          to [] with operator-instruction comment
+
   - version: 7.29.0
     date: 2026-08-09
     driver: knowledgeforge-core-public-release-phase3

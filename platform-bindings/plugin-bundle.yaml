@@ -5,12 +5,13 @@ status: active
 # Purpose
 # --------------------------------------------------------------------------
 # `plugin-bundle` emits an installable bundle of shared KF skills + agents +
-# MCP connectors that internexio repos ([project], client-project, visionforge,
-# [project], etc.) consume by reference rather than re-implementing inline.
+# MCP connectors that consumer repos can consume by reference rather than
+# re-implementing inline.
 #
-# Eliminates duplication surfaced in Phase 0 SPEC 5 evidence probe:
-#   - KF orchestrator scaffold present in 5+ repos
-#   - cos-mcp connector present in 3+ repos
+# Eliminates duplication when the same KF scaffold and optional MCP connectors
+# appear in multiple downstream repos:
+#   - KF orchestrator scaffold typically present in 5+ repos
+#   - Optional MCP connectors (e.g. cos-mcp) present in multiple repos
 #
 # SPEC reference: docs/planning/2026-06-13_spec-5-plugin-packaging.md (D2)
 
@@ -98,8 +99,8 @@ mcp_connectors:
     path_type: absolute_requires_local_config
     fallback_message: |
       cos-mcp source path not found. Set $COS_DEV_ROOT environment variable
-      to your [project] clone root (e.g. ~/Scripts/[project]), OR skip this connector.
-    targets: [[project], client-project, visionforge, [project]]
+      to the directory containing your cos-mcp clone, OR skip this connector.
+    targets: []  # populate with your consumer repo names at install time
     required: false
 
 # --------------------------------------------------------------------------
@@ -116,6 +117,6 @@ consumer_installer:
 # migration (per-repo loop definition rewrites).
 deduplication_inventory:
   - id: kf-orchestrator-scaffold
-    duplicated_in: [[project], client-project, visionforge, [project], [project]]
+    duplicated_in: []  # list your consumer repos here
   - id: cos-mcp-connector
-    duplicated_in: [[project] (canonical), [project] (clone), visionforge (reference)]
+    duplicated_in: []  # list your consumer repos here

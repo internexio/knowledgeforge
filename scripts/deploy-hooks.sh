@@ -29,6 +29,7 @@ HOOKS=(
   "kf-postcompact.py"
   "kf-edit-nudge.py"
   "kf-session-start.py"
+  "kf-stats.py"
 )
 
 echo "KF Hook Deploy"
