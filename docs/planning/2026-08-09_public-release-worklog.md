@@ -126,6 +126,99 @@ publishing org (acceptable per R2) or `semalytics` is the R7 reference integrati
 
 ---
 
+---
+
+## Phase 1 — Compiler extension (2026-08-09)
+
+### Step 1: process_conditional_blocks
+
+Added `process_conditional_blocks(content, flags, binding_name) -> str` to
+`compiler/kf-compile.py` (inserted before the "Compilers per platform" section).
+
+Grammar:
+- `<!-- kf:if <flag> -->` ... `<!-- kf:endif -->` (line-anchored, no nesting)
+- Truthy: remove markers, keep body
+- Falsy: remove markers AND body
+- Hard-fail on: nesting, spurious endif, unclosed at EOF, undeclared flag
+- Fast path: returns unchanged when `<!-- kf:` not in content
+
+Regex: `_KF_IF_RE = re.compile(r"^<!-- kf:if ([a-z0-9_]+) -->$")`
+       `_KF_ENDIF_RE = re.compile(r"^<!-- kf:endif -->$")`
+
+Applied after `extract_section` in `compile_claude_code` (pre-header-injection,
+pre-TOC). Applied after `strip_cc_sections` in `compile_claude_projects`.
+
+### Step 2: flags binding key + --set CLI override
+
+`flags:` is an optional top-level key in platform binding YAMLs. No existing
+binding has it yet — infrastructure is in place for Phase 2 to add
+`flags: { telemetry: false }` to claude-code.yaml.
+
+CLI: `--set FLAG=VALUE` (repeatable, action="append"). Values: true/1/yes or
+false/0/no. Parsed in `main()` after `load_binding()`; merged as
+`{**binding.get("flags", {}), **cli_flags}` and passed to compile functions as
+`flags=binding_flags` keyword argument.
+
+### Step 3: max_chars budget enforcement
+
+Per-output-entry optional field `max_chars: N`. After building final content in
+`compile_claude_code`, if `output_def.get("max_chars")` is set and
+`len(content) > max_chars`, abort with `sys.exit(1)` and a clear message.
+Never truncates. No existing binding entries have `max_chars` set (infrastructure
+only for Phase 2+).
+
+### Step 4: Determinism — sorted module iteration
+
+Changed `module_outputs.items()` to `sorted(module_outputs.items())` in both
+`compile_claude_code` and `compile_plugin_bundle`. This makes iteration order
+independent of YAML insertion order.
+
+Regression check (--diff on CC after real write to /tmp):
+- Only diff: compile header version 7.26.0 → 7.27.0 (expected from Phase 0 bump)
+- kf.md: pre-existing divergence (telemetry line in CC repo not in current M00)
+- Zero conditional block markers in any diff
+- CP: 691 non-header lines changed — all substantive module content from
+  v7.23.0-v7.27.0 updates; zero Phase 1 artifacts
+
+### Step 5: Tool-map behavior documentation
+
+Current state of tool_name_mapping:
+
+`platform-bindings/codex.yaml` has a `tool_name_mapping` field (placeholder).
+No substitution code exists in `kf-compile.py`. The `compile_codex_placeholder()`
+function writes nothing and warns. Tool-name substitution is a Phase 5 concern
+(when the Codex binding becomes active). No action required in Phase 1.
+
+When Codex binding activates: add a `apply_tool_name_mapping(content, mapping)`
+helper that does string substitution of KF tool names to Codex equivalents.
+Apply it in the (future) `compile_codex()` after section extraction and before
+emit. The substitution map lives in the binding YAML — no hardcoded tool names
+in the compiler.
+
+### Step 6: Determinism script
+
+`scripts/verify-deterministic-build.sh` — builds CC and CP twice to temp dirs
+(seeding each from the real variant repo), diffs excluding `.kf-compile-manifest.json`
+(which has a timestamp). Exits 0 if byte-identical, 1 if any target differs.
+
+Usage: `scripts/verify-deterministic-build.sh` from core root.
+
+### Step 7: Tests
+
+`tests/test_compiler_flags.py` — 15 tests (stdlib + importlib, no pytest):
+- `TestProcessConditionalBlocks`: flag on/off matrix, multiple blocks,
+  fast path, undeclared flag, nesting, unclosed, spurious endif, fixture file
+- `TestMaxCharsBudget`: field parsing, budget check logic (no sys.exit mock)
+
+`tests/fixtures/conditional_blocks_module.md` — synthetic module fixture with
+`<!-- kf:if telemetry -->` and `<!-- kf:if public -->` blocks.
+
+Result: 15/15 pass.
+
+**Phase 1 status: COMPLETE.**
+
+---
+
 ## Pending decisions for GATE 0
 
 | Decision | Status | Notes |

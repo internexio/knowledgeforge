@@ -524,18 +524,107 @@ def emit_settings_fragment(hooks_aggregate: dict, output_root: Path,
 
 
 # ---------------------------------------------------------------------------
+# Conditional block processing (Phase 1 — public release)
+# ---------------------------------------------------------------------------
+
+_KF_IF_RE = re.compile(r"^<!-- kf:if ([a-z0-9_]+) -->$")
+_KF_ENDIF_RE = re.compile(r"^<!-- kf:endif -->$")
+
+
+def process_conditional_blocks(content: str, flags: dict, binding_name: str) -> str:
+    """
+    Process <!-- kf:if <flag> --> ... <!-- kf:endif --> blocks in module content.
+
+    Grammar (line-anchored — markers must occupy their own line exactly):
+        <!-- kf:if <flag> -->
+        ...body lines...
+        <!-- kf:endif -->
+
+    Flag evaluation:
+        Truthy  — markers removed, body kept unchanged.
+        Falsy   — markers AND body removed entirely.
+
+    Hard failures (raise ValueError — compile aborts):
+        - Nesting: a second <!-- kf:if --> inside an open block.
+        - Spurious endif: <!-- kf:endif --> outside any block.
+        - Unclosed block at EOF.
+        - Undeclared flag: not present in the binding's 'flags:' dict.
+
+    If `flags` is empty and the content contains no conditional markers, this
+    function is a no-op (returns content unchanged).
+    """
+    # Fast path — avoid per-line work when no markers are present.
+    if "<!-- kf:" not in content:
+        return content
+
+    lines = content.split("\n")
+    result: list[str] = []
+    inside = False
+    include_body = False
+    open_flag = ""
+
+    for i, line in enumerate(lines, 1):
+        if_match = _KF_IF_RE.match(line)
+        endif_match = _KF_ENDIF_RE.match(line)
+
+        if if_match:
+            if inside:
+                raise ValueError(
+                    f"[kf-compile/{binding_name}] nested <!-- kf:if --> at line {i} "
+                    f"(flag: '{if_match.group(1)}'). Nesting is not supported."
+                )
+            flag = if_match.group(1)
+            if flag not in flags:
+                raise ValueError(
+                    f"[kf-compile/{binding_name}] undeclared flag '{flag}' at line {i}. "
+                    f"Declare it in the binding's 'flags:' section (or pass --set {flag}=true/false)."
+                )
+            inside = True
+            open_flag = flag
+            include_body = bool(flags[flag])
+            continue  # consume the marker line
+
+        if endif_match:
+            if not inside:
+                raise ValueError(
+                    f"[kf-compile/{binding_name}] spurious <!-- kf:endif --> at line {i} "
+                    f"(no open <!-- kf:if --> block)."
+                )
+            inside = False
+            open_flag = ""
+            include_body = False
+            continue  # consume the marker line
+
+        if inside:
+            if include_body:
+                result.append(line)
+            # else: discard — block is false
+        else:
+            result.append(line)
+
+    if inside:
+        raise ValueError(
+            f"[kf-compile/{binding_name}] unclosed <!-- kf:if {open_flag} --> block at EOF."
+        )
+
+    return "\n".join(result)
+
+
+# ---------------------------------------------------------------------------
 # Compilers per platform
 # ---------------------------------------------------------------------------
 
 def compile_claude_code(binding: dict, output_root: Path, dry_run: bool,
                          diff_mode: bool, version: str,
-                         check_divergence: bool = False) -> list[dict]:
+                         check_divergence: bool = False,
+                         flags: dict | None = None) -> list[dict]:
     """
     Compile for the claude-code platform.
 
     Returns a manifest list: [{source, output, section, status, bytes}]
     """
     manifest = []
+    effective_flags: dict = flags if flags is not None else binding.get("flags", {})
 
     def emit(source: str, out_path: Path, content: str, section: str):
         entry = {"source": source, "output": str(out_path.relative_to(output_root)),
@@ -573,7 +662,7 @@ def compile_claude_code(binding: dict, output_root: Path, dry_run: bool,
     all_written_rules: set[Path] = set()
     cc_hooks_aggregate: dict[str, list[dict]] = {}
 
-    for module_num, module_spec in module_outputs.items():
+    for module_num, module_spec in sorted(module_outputs.items()):
         filename, module_content = load_module(module_num)
         if module_content is None:
             sys.stderr.write(f"[kf-compile] Module {module_num} not found — skipping\n")
@@ -598,12 +687,25 @@ def compile_claude_code(binding: dict, output_root: Path, dry_run: bool,
                         "status": "missing_section",
                     })
                     continue
-                content = add_compile_header(extracted, filename, out_type, version,
+                processed = process_conditional_blocks(
+                    extracted, effective_flags, "claude-code"
+                )
+                content = add_compile_header(processed, filename, out_type, version,
                                              section=section)
-                content = inject_toc(content, extracted, out_type)
+                content = inject_toc(content, processed, out_type)
                 content = linkify_claude_paths(content, out_path, output_root)
             else:
                 content = module_content
+
+            # max_chars budget enforcement — hard fail, never truncate.
+            max_chars = output_def.get("max_chars")
+            if max_chars is not None and len(content) > max_chars:
+                sys.stderr.write(
+                    f"[kf-compile] BUDGET EXCEEDED: {output_def['path']} "
+                    f"({len(content)} chars, max_chars={max_chars}). "
+                    f"Trim the source section or raise the budget in the binding.\n"
+                )
+                sys.exit(1)
 
             emit(filename, out_path, content, section or "full")
 
@@ -1043,7 +1145,7 @@ def compile_plugin_bundle(binding: dict, output_root: Path, dry_run: bool,
 
     # ----- Per-module outputs (skills + agents) -----
     module_outputs = binding.get("module_outputs", {})
-    for module_num, module_spec in module_outputs.items():
+    for module_num, module_spec in sorted(module_outputs.items()):
         filename, module_content = load_module(module_num)
         if module_content is None:
             sys.stderr.write(
@@ -1268,7 +1370,8 @@ def compile_codex_placeholder(binding: dict, output_root: Path, dry_run: bool,
 
 def compile_claude_projects(binding: dict, output_root: Path, dry_run: bool,
                               diff_mode: bool, version: str,
-                              check_divergence: bool = False) -> list[dict]:
+                              check_divergence: bool = False,
+                              flags: dict | None = None) -> list[dict]:
     """
     Compile for the claude-projects platform.
 
@@ -1276,6 +1379,7 @@ def compile_claude_projects(binding: dict, output_root: Path, dry_run: bool,
     and CP filename mapping applied.
     """
     manifest = []
+    effective_flags: dict = flags if flags is not None else binding.get("flags", {})
     filename_map = binding.get("filename_map", {})
 
     for core_name, cp_name in filename_map.items():
@@ -1285,7 +1389,8 @@ def compile_claude_projects(binding: dict, output_root: Path, dry_run: bool,
             sys.stderr.write(f"[kf-compile] Module not found: {core_name} — skipping\n")
             continue
 
-        content = strip_cc_sections(src.read_text(encoding="utf-8"))
+        raw = strip_cc_sections(src.read_text(encoding="utf-8"))
+        content = process_conditional_blocks(raw, effective_flags, "claude-projects")
         out_path = output_root / cp_name
         # Item B3 fail-closed -CP guard — never silently publish a leak.
         assert_cp_clean(out_path, content)
@@ -1527,6 +1632,18 @@ def main():
             "process exits non-zero if any divergence was detected."
         ),
     )
+    parser.add_argument(
+        "--set",
+        action="append",
+        metavar="FLAG=VALUE",
+        dest="flag_overrides",
+        default=[],
+        help=(
+            "Override a binding flag: --set flag=true or --set flag=false. "
+            "Repeatable. Highest precedence — overrides the binding's 'flags:' section. "
+            "Flag names must match [a-z0-9_]+. Values: true/1/yes or false/0/no."
+        ),
+    )
     args = parser.parse_args()
 
     if args.dry_run and args.diff:
@@ -1547,15 +1664,46 @@ def main():
     version = load_version()
     binding = load_binding(args.target)
 
+    # Parse --set overrides and merge with binding flags.
+    # CLI flags take highest precedence; binding flags are the base.
+    cli_flags: dict[str, bool] = {}
+    for raw in (args.flag_overrides or []):
+        if "=" not in raw:
+            sys.stderr.write(
+                f"[kf-compile] --set requires KEY=VALUE format, got: {raw!r}\n"
+            )
+            sys.exit(1)
+        key, _, val = raw.partition("=")
+        key = key.strip()
+        val = val.strip().lower()
+        if not re.match(r"^[a-z0-9_]+$", key):
+            sys.stderr.write(
+                f"[kf-compile] --set flag name must match [a-z0-9_]+, got: {key!r}\n"
+            )
+            sys.exit(1)
+        if val in ("true", "1", "yes", "on"):
+            cli_flags[key] = True
+        elif val in ("false", "0", "no", "off"):
+            cli_flags[key] = False
+        else:
+            sys.stderr.write(
+                f"[kf-compile] --set value must be true/false/1/0/yes/no, got: {val!r}\n"
+            )
+            sys.exit(1)
+    # Merge: binding flags first, CLI overrides win.
+    binding_flags: dict = {**binding.get("flags", {}), **cli_flags}
+
     if args.target == "claude-code":
         manifest = compile_claude_code(
             binding, output_root, args.dry_run, args.diff, version,
             check_divergence=args.check_divergence,
+            flags=binding_flags,
         )
     elif args.target == "claude-projects":
         manifest = compile_claude_projects(
             binding, output_root, args.dry_run, args.diff, version,
             check_divergence=args.check_divergence,
+            flags=binding_flags,
         )
     elif args.target == "vscode":
         manifest = compile_vscode(
