@@ -5,13 +5,18 @@
 ```yaml
 module:
   title: Agent Coordination Patterns
-  version: 7.5.0
+  version: 7.6.0
   purpose: Design multi-agent workflows by mapping dependencies first, then deriving the coordination pattern from the graph
   topics: [coordination, multi-agent, workflows, handoffs, orchestration, dependency-mapping, verification, capability-restriction, handoff-contract-registry]
   contexts: [complex-tasks, agent-teams, workflow-design, mode-handoff-validation]
   difficulty: advanced
   related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 14_Metacognitive_Monitor, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]
   changelog:
+    7.6.0:
+      date: 2026-08-09
+      driver: knowledgeforge-core-e49
+      changes:
+        - Added response_schema to hc-strategist-to-builder — worked example of the upstream_invalidation signal (Module 04 7.4.0). Builder returns verdict enum plus optional upstream_invalidation populated when a discovered constraint invalidates the Strategist recommendation. Three validation checks: ui-check-1 (cross-field — all four subfields non-null when upstream_invalidation is non-null), ui-check-2 (enum-membership — severity ∈ {Sev1, Sev2, Sev3}), ui-check-3 (cross-field — Sev2/Sev3 requires evidence_ref non-null and resolves). Registry count stays 13 — no new contract added.
     7.5.0:
       date: 2026-07-02
       driver: kf-remediation-2026-07-02
@@ -331,6 +336,34 @@ handoff_contract_registry:
         - {name: sequencing, type: array, required: true}
         - {name: reversibility_per_unit, type: array, required: true}
         - {name: trade_off_matrix, type: object, required: true}
+    # RESPONSE SCHEMA (NEW 7.6.0) — Builder's response back to Strategist.
+    # Worked example of the upstream_invalidation signal (Module 04 7.4.0).
+    # Scenario: Builder discovers during spec construction that a constraint exists
+    # which invalidates the Strategist's recommendation (e.g., Strategist recommended
+    # approach X, but Builder finds a hard dependency that makes X impossible).
+    response_schema:
+      fields:
+        - name: verdict
+          type: enum
+          required: true
+          description: "Builder's ability to implement the recommendation"
+          validation: "enum: [implemented, blocked, partially_implemented]"
+        - name: artifact_ref
+          type: pointer
+          required: false
+          description: "Reference to the produced spec artifact when verdict=implemented"
+        - name: upstream_invalidation
+          type: object
+          required: false
+          description: |
+            Populated only when Builder discovers a constraint that invalidates the
+            Strategist's recommendation. Null when Builder can proceed normally.
+            Fields: invalidated_step_id (= 'strategist'), claim_invalidated (the specific
+            Strategist claim found false), evidence_ref (resolvable pointer to the
+            constraint, NOT prose), severity (Sev1|Sev2|Sev3).
+            Example: Builder finds the chosen database engine lacks a required feature —
+            evidence_ref points to the technical constraint document; severity=Sev2
+            triggers orchestrator re-entry at the Strategist step.
     fallback_path:
       type: retry_with_repair
       rationale: "Strategist output missing fields is correctable in single retry"
@@ -342,6 +375,22 @@ handoff_contract_registry:
         failure_severity: Sev2
       - check_id: trade_off_matrix_present
         assertion: "trade_off_matrix is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev2
+      # upstream_invalidation response checks (NEW 7.6.0 — Module 04 7.4.0 ui-checks):
+      - check_id: ui-check-1-subfields-complete
+        assertion: "NOT (upstream_invalidation is non-null) OR (invalidated_step_id AND claim_invalidated AND evidence_ref AND severity are all non-null)"  # cross-field
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev1
+      - check_id: ui-check-2-severity-enum
+        assertion: "upstream_invalidation.severity matches enum: [Sev1, Sev2, Sev3]"  # enum-membership
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev1
+      - check_id: ui-check-3-evidence-required-for-high-severity
+        assertion: "NOT (upstream_invalidation.severity IN [Sev2, Sev3]) OR (upstream_invalidation.evidence_ref is non-null AND resolves)"  # cross-field
         check_type: deterministic
         failure_action: retry_with_repair
         failure_severity: Sev2

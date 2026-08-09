@@ -106,6 +106,7 @@ type: index
 
 ### Orchestration
 
+- [2026-08-09] KF Governance Over Async Transport — AgentRadio open problems (interruption-worthiness, recipient selection, evidence sufficiency, cost limits, permissions, provenance) mapped to M07/M15/M18/M19/M16/M20/M00 — transferable_framework — `orchestration/2026-08-09_kf-governance-over-async-transport.md`
 - [2026-08-03] TTL drain — source-lifecycle-gated proposal expiry without active cleanup — new_pattern — `orchestration/2026-08-03_ttl-drain-source-lifecycle-gated-expiry.md`
 - [2026-08-01] Gate Placement Decision — In-Skill vs Coordinator-Level Pre-flight Checks — transferable_framework — `orchestration/2026-08-01_gate-placement-in-skill-entry-point-vs-coordinator-level.md`
 - [2026-07-14] Stop Hook Gate — Lightweight Session-End Review Tripwire — new_pattern — `orchestration/2026-07-14_stop-hook-gate-lightweight-session-end-review-tripwire.md`

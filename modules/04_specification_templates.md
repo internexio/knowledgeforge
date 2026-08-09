@@ -5,13 +5,19 @@
 ```yaml
 module:
   title: Specification Templates
-  version: 7.3.0
+  version: 7.4.0
   purpose: Provide complete, reusable templates for agents, processes, and coordination
   topics: [templates, specifications, formats, schemas, capability-profiles, risk-tiers, infrastructure-architecture, hosting-audit, era-specification, handoff-contracts, trigger-disambiguation]
   contexts: [agent-creation, process-design, documentation, infrastructure-planning, entity-modeling, mode-routing, chain-handoffs]
   difficulty: intermediate
   related: [00_Orchestrator, 02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.4.0:
+      date: 2026-08-09
+      driver: knowledgeforge-core-e49
+      changes:
+        - Added upstream_invalidation as an optional field on the handoff_contract response_schema — shape {invalidated_step_id: string, claim_invalidated: string, evidence_ref: pointer, severity: enum[Sev1|Sev2|Sev3]}. Target_mode populates this when it discovers during execution that the source_mode's premise was invalid, enabling mid-chain re-entry (Module 00 re-entry rule, 7.23.0). Three canonical validation checks — ui-check-1 (cross-field, all four subfields non-null when field is populated), ui-check-2 (enum-membership, severity ∈ {Sev1, Sev2, Sev3}), ui-check-3 (cross-field, Sev2/Sev3 requires evidence_ref non-null and resolvable). Motivated by AgentRadio convergence-failure analysis (Coral AI Labs, arXiv 2026) showing mid-execution premise discoveries not propagated upstream produce incorrect final answers with high confidence.
+        - Added KF 7.4 field summary table entry for upstream_invalidation.
     7.3.0:
       date: 2026-06-13
       driver: knowledgeforge-core-f8a
@@ -1119,6 +1125,29 @@ handoff_contract:
         description: [string]
         validation: [optional rule, e.g., enum, pattern, min/max]
 
+  # UPSTREAM INVALIDATION SIGNAL (NEW 7.4.0)
+  # When a target_mode discovers during execution that the source_mode's premise was
+  # invalid, it may include this optional object in its response. Its presence triggers
+  # the orchestrator's deterministic re-entry rule (Module 00 7.23.0, Mode Chaining Behavior).
+  #
+  # Add as an optional field in response_schema.fields[] for any contract that permits
+  # premise-invalidation signalling:
+  #
+  #   upstream_invalidation: (optional object — null when no invalidation detected)
+  #     invalidated_step_id: string   # chain step ID whose premise is invalidated
+  #     claim_invalidated:   string   # the specific claim found to be false
+  #     evidence_ref:        pointer  # resolvable pointer to disconfirming evidence (NOT prose)
+  #     severity:            enum     # Sev1 | Sev2 | Sev3
+  #
+  # Three canonical validation checks govern this field (declared in validation_checks):
+  #   ui-check-1 (cross-field):     all four subfields non-null when upstream_invalidation is non-null
+  #   ui-check-2 (enum-membership): severity ∈ {Sev1, Sev2, Sev3}
+  #   ui-check-3 (cross-field):     severity ∈ {Sev2, Sev3} → evidence_ref non-null AND resolves
+  #
+  # Orchestrator behavior on receipt (Module 00): Sev2+ halts forward chain and re-enters at
+  # invalidated_step_id carrying evidence_ref. Sev1 logs only, continues forward. Same step
+  # invalidated twice in one chain → escalate to user with both evidence refs.
+
   # FALLBACK PATH
   fallback_path:
     type: escalate_to_user | retry_with_repair | abort_chain | route_to_navigator
@@ -1149,6 +1178,22 @@ handoff_contract:
       check_type: deterministic | llm_judgment   # ≥1 deterministic per contract REQUIRED
       failure_action: [references fallback_path type]
       failure_severity: Sev1 | Sev2 | Sev3
+    # When upstream_invalidation is present in response_schema, include these three checks:
+    - check_id: ui-check-1-subfields-complete
+      assertion: "NOT (upstream_invalidation is non-null) OR (invalidated_step_id AND claim_invalidated AND evidence_ref AND severity are all non-null)"  # cross-field
+      check_type: deterministic
+      failure_action: retry_with_repair
+      failure_severity: Sev1
+    - check_id: ui-check-2-severity-enum
+      assertion: "upstream_invalidation.severity matches enum: [Sev1, Sev2, Sev3]"  # enum-membership
+      check_type: deterministic
+      failure_action: retry_with_repair
+      failure_severity: Sev1
+    - check_id: ui-check-3-evidence-required-for-high-severity
+      assertion: "NOT (upstream_invalidation.severity IN [Sev2, Sev3]) OR (upstream_invalidation.evidence_ref is non-null AND resolves)"  # cross-field
+      check_type: deterministic
+      failure_action: retry_with_repair
+      failure_severity: Sev2
 
   # DESIGN DECISIONS
   design_decisions:
@@ -1878,6 +1923,12 @@ era_specification:
 | `tier_2_metric_aggregates` | 19 (7.2) | New schema | Weekly aggregate persistence for metric #10 historical calibration |
 | `mode_selection_accuracy` (metric #10) | 16 (7.2) | New metric | Re-routing rate (deterministic) + adversarial sampling (calibration); variant-aware thresholds |
 | `handoff_contract_registry` | 03 (7.2) | New section | Per-edge instances for 8 active handoffs |
+
+**KF 7.4 field summary:**
+
+| Field | Source Module | Added To | Purpose |
+|-------|-------------|----------|---------|
+| `upstream_invalidation` (optional response field) | 04 (7.4) | Handoff Contract response_schema | Allows a target_mode to signal mid-chain that its source_mode's premise was found invalid; shape: {invalidated_step_id, claim_invalidated, evidence_ref (pointer, not prose), severity ∈ {Sev1\|Sev2\|Sev3}}; Sev2+ triggers deterministic re-entry at invalidated_step_id (Module 00 7.23.0 re-entry rule); Sev1 logs only |
 
 ---
 

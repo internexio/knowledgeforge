@@ -1,8 +1,18 @@
 # KnowledgeForge Core
 
-**Version:** 7.25.0 · **Status:** Active development · **Modules:** 26 (00–25)
+**Version:** 7.27.0 · **Status:** Active development · **Modules:** 26 (00–25)
 
 Single source of truth for the KnowledgeForge reasoning framework. All platform variants compile from here.
+
+## What's New in 7.27.0
+
+Mid-chain premise invalidation (core-e49). A downstream chain step can signal back
+upstream via `upstream_invalidation` in its response schema. Sev2+ signals halt the
+chain and re-enter at the named step; Sev1 logs and continues. Implemented across
+M00 (re-entry predicate in STATIC ZONE), M03 (worked example contract), M04
+(handoff_contract template), and M19 (4th canonical re_routing_trigger).
+
+---
 
 ## What's New in 7.25.0
 

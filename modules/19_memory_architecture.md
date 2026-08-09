@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Memory Architecture
-  version: 7.3.1
+  version: 7.4.0
   purpose: Four-tier memory system — persistent domain knowledge (Tier 0), routing index (Tier 1), mode state (Tier 2), and archived history (Tier 3) — that maintains routing accuracy across long sessions and knowledge continuity across sessions
   topics: [memory, context-management, session-persistence, consolidation, skeptical-verification, persistent-knowledge, routing-audit-log, metric-aggregates]
   contexts: [long-sessions, mode-transitions, context-pressure, state-management, cross-session-knowledge, routing-decision-audit]
@@ -14,6 +14,12 @@ module:
   added_in: "6.1"
   implements: "Directive 2 (Three-Tier Memory Architecture), extended to four tiers in 6.2"
   changelog:
+    7.4.0:
+      date: 2026-08-09
+      driver: knowledgeforge-core-e49
+      changes:
+        - Added fourth canonical re_routing_trigger — downstream_step_premise_invalidation. Fires when a downstream chain step returns response.upstream_invalidation at Sev2+ (per Module 04 handoff_contract response_schema, 7.4.0). routing_decision_log entry sets re_routed = true; re_route_reason carries invalidated_step_id + evidence_ref from the upstream_invalidation signal. Cross-refs — Module 00 re-entry rule (writer), Module 04 upstream_invalidation field (source), Module 16 metric #10 (consumer).
+        - No schema_version change. No changes to existing three triggers or non-triggers.
     7.3.1:
       date: 2026-07-01
       driver: knowledgeforge-core-b3g
@@ -35,7 +41,7 @@ module:
       date: 2026-05-11
       changes:
         - Added re_routing_triggers enumeration to routing_decision_log section — canonical events that set re_routed = true (resolves F3 from kf-7.2.0 audit redo; previously this definition lived only in project agent instructions prose)
-        - Three canonical triggers — navigator_activation_after_initial_routing, user_explicit_redirect, critic_adversarial_wrong_mode_finding
+        - Three canonical triggers (at 7.2.1) — navigator_activation_after_initial_routing, user_explicit_redirect, critic_adversarial_wrong_mode_finding; fourth trigger added in 7.4.0 (downstream_step_premise_invalidation)
         - Three non-triggers documented — chain_progression, variant_selection_within_mode, critic_revision_loop
         - Cross-refs added — Module 00 (writer), Module 16 metric #10 (consumer), Module 04 trigger_disambiguator (refinement target)
         - Added variant ID composition rule to selected_variant field — `<selected_mode>.<selected_variant>` is the canonical qualified form used by Module 16 metric #10 per_variant tracking; Modules 05 and 07 variants[].id stored unqualified (resolves F7 from kf-7.2.0 audit redo; new finding surfaced on second-pass parity check)
@@ -347,6 +353,17 @@ routing_decision_log:
         writer: Module 00 (orchestrator), triggered by Module 07 (Critic adversarial)
         re_route_reason_format: "critic_adversarial_finding: <finding_id>"
         severity_threshold: 2
+
+      - id: downstream_step_premise_invalidation                       # NEW 7.4.0
+        description: |
+          A downstream chain step returns response.upstream_invalidation at Sev2 or Sev3
+          (per Module 04 handoff_contract response_schema upstream_invalidation signal).
+          The orchestrator halts forward chain execution and re-enters at the step identified
+          by upstream_invalidation.invalidated_step_id. The re-entry activation is the
+          re_routed entry in the log.
+        writer: Module 00 (orchestrator), triggered by Module 04 upstream_invalidation field
+        re_route_reason_format: "upstream_invalidation: invalidated_step_id=<id> evidence_ref=<ref>"
+        severity_threshold: 2                                          # Sev1 = log only, no re-route
 
     non_triggers:
       # Events that look like re-routing but are NOT re_routed = true
