@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.30.0
+version: 7.31.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,27 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.31.0
+    date: 2026-08-09
+    driver: knowledgeforge-core-public-release-phase5
+    note: |
+      Platform bindings + dist matrix for public release.
+
+      platform-bindings/vscode.yaml: Fixed 2 internal refs — "AllOfUs" dev-key
+      extension and 'dev-api-keys' provider ID replaced with generic VS Code
+      SecretStorage recommendation.
+
+      New deferred binding stubs (contract surface defined, compiler deferred):
+        platform-bindings/generic.yaml  — single-file consolidated export
+        platform-bindings/cursor.yaml   — Cursor .cursor/rules/*.mdc format
+        platform-bindings/chatgpt.yaml  — OpenAI Custom GPT (instructions + knowledge)
+        platform-bindings/gemini.yaml   — Gemini API / AI Studio Gems (two sub-targets)
+
+      docs/dist-matrix.md (new): Platform capability matrix and module coverage
+      table across all 9 bindings (claude-code, claude-projects, vscode,
+      plugin-bundle, codex, cursor, chatgpt, gemini, generic). Includes output
+      file counts, binding status legend, and "Adding a New Platform" guide.
+
   - version: 7.30.0
     date: 2026-08-09
     driver: knowledgeforge-core-public-release-phase4

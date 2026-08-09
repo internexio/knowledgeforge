@@ -396,6 +396,63 @@ Result: Only `scripts/happy-watchdog.sh` (excluded from public repo) — CLEAN.
 
 ---
 
+## Phase 5 — Platform bindings + dist matrix (2026-08-09)
+
+### Step 1: vscode.yaml — internal refs removed
+
+Two internal refs in `platform-bindings/vscode.yaml` description field:
+- `local.dev-keys (AllOfUs)` — internal VS Code extension for API key management
+- `vscode.authentication.getSession('dev-api-keys', ['anthropic'])` — internal auth provider ID
+
+Replaced with generic VS Code SecretStorage recommendation.
+
+### Step 2: New deferred platform binding stubs
+
+Four new binding files created, each with full contract surface:
+
+**`platform-bindings/generic.yaml`** (status: deferred)
+- Single-file consolidated export — works with any LLM that accepts a system prompt
+- Output: `kf-generic.md` (M00 routing + M13 decision classification + M06 quick reference)
+- Token target: 6000 (fits most system prompt budgets)
+- bind_when: compiler gains `compile_generic()` handler + summary extraction for M00/M06/M13
+
+**`platform-bindings/cursor.yaml`** (status: deferred)
+- Cursor `.cursor/rules/*.mdc` format (modern; supersedes `.cursorrules`)
+- Orchestrator rule: `alwaysApply: true`; mode rules: glob-gated
+- Rule token target: 2000 per file
+- bind_when: compiler gains `compile_cursor()` + .mdc frontmatter schema verified
+
+**`platform-bindings/chatgpt.yaml`** (status: deferred)
+- OpenAI Custom GPT: Instructions field (8000 char) + knowledge file upload
+- Instructions: M00 routing + M13; Knowledge: M01-M11 (one file each)
+- bind_when: compiler gains `compile_chatgpt()` + char limit + file count verified
+
+**`platform-bindings/gemini.yaml`** (status: deferred)
+- Two sub-targets: `api` (system_instruction string only) and `gem` (instructions + files)
+- bind_when: compiler gains `compile_gemini()` with sub-target dispatch
+
+### Step 3: Dist matrix
+
+`docs/dist-matrix.md` (new): 9-platform capability matrix and module coverage table.
+Covers: claude-code, claude-projects, vscode, plugin-bundle, codex, cursor, chatgpt,
+gemini, generic. Includes output file counts, status legend, and "Adding a New Platform" guide.
+
+### Verification
+
+```
+grep -rn "internexio|dpedersen|/Users/dp|semalytics|AllOfUs|dev-api-keys" \
+  platform-bindings/generic.yaml platform-bindings/cursor.yaml \
+  platform-bindings/chatgpt.yaml platform-bindings/gemini.yaml \
+  platform-bindings/vscode.yaml docs/dist-matrix.md
+```
+Result: CLEAN — zero matches.
+
+kf.yaml: 7.30.0 → 7.31.0.
+
+**Phase 5 status: COMPLETE.**
+
+---
+
 ## Pending decisions for GATE 0
 
 | Decision | Status | Notes |

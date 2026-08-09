@@ -8,9 +8,9 @@ description: >
   mode-router.ts maps user intent to a mode resource and sets it as the
   AnthropicAgent system prompt.
 
-  Auth: depends on local.dev-keys (AllOfUs) installed globally.
-  KF-VSCode calls vscode.authentication.getSession('dev-api-keys', ['anthropic'])
-  to resolve the Anthropic API key — never prompts directly.
+  Auth: requires an Anthropic API key accessible to the extension. Recommended
+  pattern: store via VS Code SecretStorage (vscode.SecretStorage) and retrieve
+  at session start. Do not hardcode keys in extension source.
 
 capabilities:
   filesystem: true        # Extension host has Node.js fs via vscode.workspace.fs

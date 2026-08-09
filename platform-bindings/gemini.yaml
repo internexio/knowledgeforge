@@ -1,0 +1,70 @@
+# platform-bindings/gemini.yaml — PLACEHOLDER
+# Google Gemini target. Covers two sub-targets:
+#   (a) Gemini API — system_instruction field (single string, no file upload)
+#   (b) Google AI Studio Gems — system instructions + optional knowledge files
+#
+# The architecture resembles claude-projects for (b) and the "generic" single-file
+# export for (a). Both are deferred pending compiler implementation.
+#
+# Deferred: compiler support for the "gemini" target is not yet implemented.
+# The contract surface below defines what the binding must emit when activated.
+
+target: gemini
+status: deferred
+
+description: >
+  Google Gemini target. Sub-target 'api' produces a single system instruction
+  string for use with the Gemini API (google-genai SDK system_instruction field).
+  Sub-target 'gem' produces system instructions plus knowledge files for
+  Google AI Studio Gems (similar to claude-projects model).
+
+capabilities:
+  filesystem: false       # No filesystem access in standard Gemini API
+  hooks: false            # No hook runner
+  multi_model: false      # Single model per session
+  sub_agents: false       # No sub-agent spawning
+  skills: false           # No skills directory equivalent
+  docs: false             # No docs directory equivalent
+  commands: false         # No slash commands
+  mcp: false              # MCP not supported in Gemini API model
+
+sub_targets:
+  api:
+    description: "Gemini API — system_instruction only"
+    output: "kf-gemini-system-instruction.md"
+    constraints:
+      system_instruction_token_target: 4000  # Conservative; actual limit is model-dependent
+      single_string: true
+  gem:
+    description: "Google AI Studio Gem — system instructions + optional files"
+    output_dir: "kf-gem/"
+    constraints:
+      instructions_token_target: 8000
+      knowledge_files: true  # Gems support uploaded reference files
+
+output_structure:
+  api_output: "kf-gemini-system-instruction.md"
+  gem_dir: "kf-gem/"
+  gem_instructions: "kf-gem/instructions.md"
+  gem_knowledge_dir: "kf-gem/knowledge/"
+
+module_outputs: {}
+
+contract_surface:
+  api_format: markdown
+  required_in_system_instruction:
+    - "Mode routing rules (from M00)"
+    - "Decision classification guide (from M13)"
+  optional_in_system_instruction:
+    - "Always-on behavioral patches (from M00)"
+    - "Key cross-cutting rules summary"
+  must_not_include:
+    - "CC Agent frontmatter (platform-specific)"
+    - "CC Skill / CC Doc / CC Rules section markers"
+    - "kf:if conditional block markers"
+
+bind_when:
+  - Compiler gains a 'gemini' target handler with sub-target dispatch
+  - system_instruction token limits verified against current Gemini model specs
+  - Gem knowledge file format verified against current AI Studio interface
+  - Sub-target selection mechanism decided (--sub-target flag vs binding field)

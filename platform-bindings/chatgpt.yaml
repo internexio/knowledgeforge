@@ -1,0 +1,65 @@
+# platform-bindings/chatgpt.yaml — PLACEHOLDER
+# OpenAI Custom GPT target. Custom GPTs accept a system prompt ("Instructions")
+# and optionally uploaded knowledge files (retrieved via file search).
+# The architecture is closest to claude-projects: a single system prompt sets
+# the orchestrator context, and knowledge files hold module specs.
+#
+# Deferred: compiler support for the "chatgpt" target is not yet implemented.
+# The contract surface below defines what the binding must emit when activated.
+
+target: chatgpt
+status: deferred
+
+description: >
+  OpenAI Custom GPT target. Compiles KF into a system prompt (Instructions)
+  containing mode routing rules, plus a set of knowledge files (one per
+  mode module) for file-search retrieval. Infrastructure modules (12-25)
+  are embedded in the system prompt or omitted depending on budget.
+
+capabilities:
+  filesystem: false       # Custom GPTs use file search, not direct filesystem
+  hooks: false            # No hook runner
+  multi_model: false      # Single model per GPT
+  sub_agents: false       # No sub-agent spawning
+  skills: false           # No skills directory equivalent
+  docs: false             # No docs directory equivalent
+  commands: false         # No slash commands (Actions are a separate concept)
+  mcp: false              # MCP not supported in Custom GPT model
+
+constraints:
+  instructions_char_limit: 8000    # OpenAI Custom GPT instructions field limit
+  knowledge_file_limit: 20         # Max uploaded files per Custom GPT
+  knowledge_file_size_limit: 512   # KB per file
+  retrieval: file_search           # Retrieval mechanism for knowledge files
+
+output_structure:
+  instructions_file: "kf-gpt-instructions.md"   # Paste content into Instructions field
+  knowledge_dir: "knowledge/"                    # Upload these files to the GPT
+
+# Module strategy (pending compiler implementation):
+#   M00 — Orchestrator: compiled into instructions_file (routing rules)
+#   M01–M11 — Mode specs: one knowledge file each (file-search retrieved)
+#   M12–M25 — Infrastructure: embedded in instructions_file (summary only)
+#              or omitted if over budget
+module_outputs: {}
+
+contract_surface:
+  instructions_format: markdown
+  knowledge_file_format: markdown
+  required_in_instructions:
+    - "Mode routing rules (from M00)"
+    - "Decision classification (from M13)"
+    - "File-search retrieval instruction (tell GPT to search knowledge files for mode details)"
+  optional_in_instructions:
+    - "Always-on behavioral patches (from M00)"
+    - "Key cross-cutting rules (from M15, M21 summary)"
+  must_not_include:
+    - "CC Agent frontmatter (platform-specific)"
+    - "CC Skill / CC Doc / CC Rules section markers"
+    - "kf:if conditional block markers"
+
+bind_when:
+  - Compiler gains a 'chatgpt' target handler in compile_chatgpt()
+  - instructions_char_limit verified against current OpenAI GPT builder interface
+  - knowledge file retrieval strategy decided (one file per mode vs topic-grouped)
+  - Token/char budget enforcement implemented

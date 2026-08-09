@@ -1,0 +1,66 @@
+# platform-bindings/generic.yaml — PLACEHOLDER
+# Generic single-file export — works with any LLM assistant that accepts a
+# system prompt or rules file. Produces one self-contained markdown file
+# containing the orchestrator routing logic and mode summaries.
+#
+# Use this target when no platform-specific binding exists yet, or when you
+# want a portable export you can paste into any assistant's system prompt.
+#
+# Deferred: compiler support for the "generic" target is not yet implemented.
+# The contract surface below defines what the binding must emit when activated.
+
+target: generic
+status: deferred
+
+description: >
+  Single-file consolidation target. Outputs one markdown document containing
+  the KF orchestrator (mode routing), mode quick-reference (Module 06), and
+  the decision classification guide (Module 13). Intended for any LLM
+  environment that accepts a system prompt or instruction file but does not
+  support file-per-module knowledge uploads.
+
+capabilities:
+  filesystem: false
+  hooks: false
+  multi_model: false
+  sub_agents: false
+  skills: false
+  docs: false
+  commands: false
+  mcp: false
+
+constraints:
+  output_token_target: 6000     # Fits within most system prompt budgets
+  single_file: true             # One output file; no multi-file support
+  no_per_module_extraction: true  # Content assembled from summary sections only
+
+output_structure:
+  output_file: "kf-generic.md"  # Relative to caller's chosen output directory
+
+# Modules included in the consolidated file (summary/routing content only):
+#   M00 — Orchestrator (mode routing rules, decision classification)
+#   M06 — Quick Reference (mode trigger table, decision cheat sheet)
+#   M13 — Decision Classification (evaluative/predictive/novel guide)
+#
+# Mode specs (M01–M11) are omitted — the generic target is for routing
+# only. For mode-aware exports, use the claude-projects target which
+# ships all 26 modules as knowledge files.
+module_outputs: {}
+
+contract_surface:
+  output_format: markdown
+  required_sections:
+    - "Mode routing rules (from M00)"
+    - "Decision classification guide (from M13)"
+    - "Mode trigger table (from M06)"
+  optional_sections:
+    - "Always-on behavioral patches (from M00 CC Rules)"
+  must_not_include:
+    - "CC Agent frontmatter (platform-specific)"
+    - "CC Skill / CC Doc / CC Rules section markers"
+    - "kf:if conditional block markers"
+
+bind_when:
+  - Compiler gains a 'generic' target handler in compile_generic()
+  - Summary extraction logic defined for M00/M06/M13
+  - Token budget enforcement verified against target constraint

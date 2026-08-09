@@ -1,0 +1,64 @@
+# platform-bindings/cursor.yaml — PLACEHOLDER
+# Cursor AI coding assistant target. Cursor supports project rules via
+# `.cursor/rules/*.mdc` files (current format) and `.cursorrules` (legacy).
+# Each .mdc rule has a frontmatter `description` field and optional
+# `globs` / `alwaysApply` fields that control when the rule is injected.
+#
+# Deferred: compiler support for the "cursor" target is not yet implemented.
+# The contract surface below defines what the binding must emit when activated.
+
+target: cursor
+status: deferred
+
+description: >
+  Cursor rules target. Compiles KF mode content into `.cursor/rules/*.mdc`
+  files that Cursor injects into context based on glob patterns and the
+  `alwaysApply` flag. The orchestrator rule (kf-orchestrator.mdc) is
+  always-applied; mode rules are injected on match.
+
+capabilities:
+  filesystem: true        # Cursor has full filesystem access
+  hooks: false            # No hook runner; rules are injected at prompt time
+  multi_model: false      # Single model per session
+  sub_agents: false       # No sub-agent spawning in Cursor rules model
+  skills: false           # No .claude/skills equivalent
+  docs: false             # No docs directory equivalent
+  commands: false         # No slash command equivalent in rules
+  mcp: true               # Cursor supports MCP servers
+
+constraints:
+  rule_token_budget: 2000     # Per-rule .mdc file target budget
+  orchestrator_budget: 3000   # Orchestrator rule budget
+  format: mdc                 # Markdown with YAML frontmatter
+
+output_structure:
+  rules_dir: ".cursor/rules/"
+  orchestrator_rule: ".cursor/rules/kf-orchestrator.mdc"
+  mode_rule_pattern: ".cursor/rules/kf-{mode}.mdc"
+
+# Mode modules → .mdc rule files
+# alwaysApply: false + globs means rule fires only when matched files are open.
+# alwaysApply: true means rule fires on every turn (orchestrator only).
+module_outputs: {}
+
+contract_surface:
+  rule_format: |
+    ---
+    description: <one-line description of what this rule does>
+    globs: ["<glob pattern>"]   # omit or set to [] for always-apply
+    alwaysApply: false          # true only for orchestrator
+    ---
+    <rule body — markdown>
+  required_rules:
+    - "kf-orchestrator.mdc (alwaysApply: true, contains mode routing)"
+  optional_rules:
+    - "kf-{mode}.mdc per mode (alwaysApply: false, glob-gated)"
+  must_not_include:
+    - "CC Agent frontmatter (platform-specific)"
+    - "kf:if conditional block markers"
+
+bind_when:
+  - Compiler gains a 'cursor' target handler in compile_cursor()
+  - .mdc frontmatter schema verified against current Cursor docs
+  - alwaysApply vs glob gating strategy decided (orchestrator always-on vs mode-specific)
+  - Token budget enforcement verified
