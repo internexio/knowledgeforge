@@ -5,13 +5,20 @@
 ```yaml
 module:
   title: Critic Agent Specification
-  version: 7.5.0
+  version: 7.6.0
   purpose: Systematically challenge specifications, find unstated assumptions, and identify edge cases — including adversarial variant for automatic chain verification, knowledge base linter variant for health checks, infrastructure audit variant for hosting assessment, and comms variant that delegates communications artifact review to COS analyze_full_comms
   topics: [quality-assurance, gap-detection, red-teaming, validation, adversarial-verification, knowledge-base-linting, infrastructure-audit, variant-taxonomy, comms-delegation]
   contexts: [specification-review, risk-assessment, completeness-checking, chain-verification, knowledge-base-maintenance, infrastructure-assessment, decomposition-planning, communications-review]
   difficulty: advanced
   related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 15_Grounding_Scores, 16_Operational_Bounds, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.6.0:
+      date: 2026-08-09
+      driver: knowledgeforge-core-public-release-phase3
+      changes:
+        - CC Skill Variants: Communications comms variant paragraph wrapped in <!-- kf:if cos --> / <!-- kf:endif -->. Stripped from compiled output when cos=false (public default).
+        - CC Agent: ## Communications Variant section wrapped in <!-- kf:if cos --> / <!-- kf:endif -->. Stripped from compiled output when cos=false.
+        - When cos=true (internal builds via --set cos=true), both blocks are included unchanged.
     7.5.0:
       date: 2026-07-11
       driver: kf-vo1
@@ -1348,11 +1355,13 @@ Findings list with severity (Critical / High / Medium / Low), location, finding,
 
 ## Variants
 
+<!-- kf:if cos -->
 **Communications (comms) variant** (activated when artifact is a comms piece): When reviewing marketing/sales copy, email, ad, blog draft, social post, press release, or pitch deck copy, delegate to COS MCP `analyze_full_comms` instead of running native protocol.
 
 *Detection signals:* user labels artifact "email/ad/post/copy/pitch/draft"; artifact has headline+CTA structure + persuasive register; domain tag is `marketing`, `comms`, `sales`, `email`, or `social`.
 
 *Protocol:* (1) Detect comms signals. (2) If YES → call `analyze_full_comms(content=<artifact>)`. (3) Map COS 7-framework output to severity: ethical violations→Critical, broken persuasion/missing CTA→High, audience mismatch→High, frame inconsistency→Medium, style/voice→Low. (4) Present as standard findings list with `[COS: <framework>]` attribution. (5) If COS MCP unavailable → fallback to native protocol with a warning note.
+<!-- kf:endif -->
 
 **Adversarial variant** (auto-triggered by mode chains): Framing shifts from "is this good?" to "does this do what the user actually needs, or does it correctly solve the wrong problem?" Start with functional correctness. Then check: compound failures (two medium findings combining to critical), unstated assumptions, and inverse-premise (if inverting the artifact's stated premise produces an equally confident argument, flag the conclusion as prompt-derived — severity 2 minimum). Report severity High/Critical only. Format:
 
@@ -1412,6 +1421,7 @@ Generate cases for: boundary conditions, timing issues, state problems, integrat
 - **Medium**: Degrades quality or maintainability
 - **Low**: Improvement opportunity only
 
+<!-- kf:if cos -->
 ## Communications Variant
 
 Activated when the artifact-under-review is a communications piece: marketing/sales copy, email, ad, blog draft, social post, press release, pitch deck copy. Skip native Steps 1–5; delegate to COS MCP instead.
@@ -1450,6 +1460,7 @@ If `analyze_full_comms` tool is not available:
 > **[NOTE: COS MCP unavailable — applying native Critic review. Comms-specific 7-framework analysis omitted. Start the COS MCP server for persuasion framework, audience profiling, and ethical compliance analysis.]**
 
 Then proceed with Steps 1–5 as normal.
+<!-- kf:endif -->
 
 ---
 

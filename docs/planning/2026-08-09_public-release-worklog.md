@@ -250,6 +250,87 @@ Result: 15/15 pass.
 
 ---
 
+## Phase 3 — COS/ODS genericize (2026-08-09)
+
+### Step 1: Module wrapping — M07, M08, M11
+
+**M07 (Critic) 7.5.0 → 7.6.0:**
+- CC Skill Variants: wrapped "Communications (comms) variant" paragraph (3 paragraphs)
+  with `<!-- kf:if cos -->` / `<!-- kf:endif -->`
+- CC Agent: wrapped entire `## Communications Variant` section (including
+  `### Comms Detection`, `### Comms Protocol`, `### COS Unavailable Fallback`,
+  comparison table, accretion note, and "Then proceed..." close) with
+  `<!-- kf:if cos -->` / `<!-- kf:endif -->`
+- Changelog entry added for 7.6.0
+
+**M08 (Synthesizer) 6.7.1 → 6.8.0:**
+- CC Skill Quality Gate: wrapped 4 comms-domain checklist items
+- CC Skill Variants: wrapped "Comms-domain emit (6.7)" paragraph
+- CC Agent Step 8: wrapped entire "### Step 8 — Comms-Domain Detection and COS
+  Template Emit (6.7)" section
+- CC Agent Quality Gate: wrapped 3 comms-domain checklist items
+- Changelog entry added for 6.8.0
+
+**M11 (Calibrator) 7.1.1 → 7.2.0:**
+- CC Skill Step 3.5: wrapped entire step
+- CC Skill Output Format: genericized — removed `[→ COS profile artifacts if
+  comms-heavy]` suffix; now ends with `Route to @critic for validation before
+  declaring production-ready.`
+- CC Skill Quality Gates: wrapped 3 comms-detection checklist items
+- CC Skill Variants: wrapped "Comms-heavy emit (7.1)" paragraph
+- CC Agent Step 3.5: wrapped entire step
+- CC Agent Quality Gate: wrapped 3 comms-detection checklist items
+- Changelog entry added for 7.2.0
+
+### Step 2: Binding flag — cos: false
+
+`platform-bindings/claude-code.yaml`:
+- Added `cos: false` to `flags:` section alongside `telemetry: false`
+- Comment documents flag purpose and `--set cos=true` override pattern
+
+### Step 3: kp-003 verb scan
+
+Script: grep all lines with `\bCOS\b` in CC sections (CC Skill, CC Agent) of M07,
+M08, M11, excluding lines inside `<!-- kf:if cos -->` / `<!-- kf:endif -->` blocks.
+
+**Result: CLEAN.** Zero COS mentions remain in CC sections outside conditional blocks.
+All COS-subject sentences are inside wrapped blocks and will not appear in public output.
+
+### Step 4: kf.yaml split (SSH → HTTPS)
+
+`variants:` section SSH URLs (`git@github.com:internexio/...`) replaced with HTTPS
+form (`https://github.com/internexio/...`) for the three variant entries:
+- `knowledgeforge-cp`: SSH → HTTPS
+- `knowledgeforge-cc`: SSH → HTTPS
+- `knowledgeforge-cw`: SSH → HTTPS (deprecated entry, retained)
+
+Note: `internexio` org name is in the public allowlist (R2 — publisher org). Only the
+`git@` SSH protocol prefix was internal-smell.
+
+### Step 5: kf.yaml bump and compile verification
+
+`kf.yaml`: 7.28.0 → 7.29.0 with Phase 3 changelog entry.
+
+**Verification:**
+- `check-identity-drift.py`: CLEAN (exit 0) ✓
+- Compile (cos=false, default): 37 outputs, 0 missing, 0 diverged ✓
+- Marker leak check: 0 `kf:if`/`kf:endif` markers in compiled output ✓
+- COS count in critic.md: 0 ✓
+- COS count in critic agent: 0 ✓
+- COS count in synthesizer.md: 0 ✓
+- COS count in synthesizer agent: 0 ✓
+- COS count in calibrator.md: 0 ✓
+- COS count in calibrator agent: 0 ✓
+- Telemetry count in kf-meta.md: 0 (still stripped from Phase 2) ✓
+- Compile (cos=true, override): COS restored — critic.md: 2, critic agent: 7,
+  synthesizer.md: 2, calibrator agent: 4 ✓
+
+ODS disposition: Deferred to later phase per operator decision (not Phase 3).
+
+**Phase 3 status: COMPLETE.**
+
+---
+
 ## Pending decisions for GATE 0
 
 | Decision | Status | Notes |

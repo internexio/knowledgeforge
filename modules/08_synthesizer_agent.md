@@ -5,13 +5,19 @@
 ```yaml
 module:
   title: Synthesizer Agent Specification
-  version: 6.7.1
+  version: 6.8.0
   purpose: Extract reusable patterns from disparate sources and identify unifying frameworks
   topics: [pattern-extraction, synthesis, meta-analysis, framework-creation, knowledge-accretion]
   contexts: [pattern-discovery, knowledge-organization, framework-development]
   difficulty: advanced
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    6.8.0: |
+      - Public release Phase 3: COS-specific blocks in CC Skill and CC Agent wrapped in
+        <!-- kf:if cos --> / <!-- kf:endif -->. Blocks: comms-domain quality gate items (CC Skill),
+        Comms-domain emit paragraph in Variants (CC Skill), Step 8 Comms-Domain Detection (CC Agent),
+        comms items in CC Agent Quality Gate. When cos=false (public default), all COS template emit
+        logic is stripped from compiled output. cos=true restores full COS integration.
     6.7.1: |
       - Clarify "COS MCP unavailable" = any mcp__cos-mcp__* tool error (not only config-disabled)
       - Add "detection is MCP-independent" note: 4 comms signals run regardless of COS MCP availability
@@ -833,10 +839,12 @@ For each pattern: name → description → ≥2 supporting examples → applicab
 - [ ] No over-abstraction (concrete examples still recognizable)
 - [ ] Maximum 4 abstraction levels
 - [ ] Temporal context noted (stability, evolution)
+<!-- kf:if cos -->
 - [ ] Comms-domain check run after Phase 4 (4 signals evaluated — topic, KF domain, source example types, pattern nature)
 - [ ] If comms-domain + ≥2 examples + confidence ≥ 0.6 → cos_template_output emitted and surfaced to user
 - [ ] If comms-domain conditions partially met → emit wiki entry only (no silent suppression)
 - [ ] COS MCP fallback handled: emit wiki entry + surface "COS template emit skipped: MCP unavailable"
+<!-- kf:endif -->
 
 ## Variants
 
@@ -844,7 +852,9 @@ For each pattern: name → description → ≥2 supporting examples → applicab
 
 **Chain output:** Synthesizer commonly chains to Builder ("find what works across these and create a template"). Pass extracted pattern_framework_output with anti_patterns[] and applicability_boundaries[] explicitly included for Builder validation.
 
+<!-- kf:if cos -->
 **Comms-domain emit (6.7):** After Phase 4, run comms-domain detection (4 signals). If ≥1 signal fires AND confidence ≥ 0.6 AND ≥2 examples: emit cos_template_output alongside wiki entry via templates/cos-template-emit.jinja2. COS MCP unavailable → wiki entry only, surface skip note. Non-comms contexts (infra, code, data, coordination protocols) must not trigger emit even when they involve technical "messaging".
+<!-- kf:endif -->
 
 ## CC Agent
 
@@ -891,8 +901,10 @@ For every pattern:
 ### Step 7 — Accretion Check (6.2)
 After extraction is complete: is any pattern novel relative to the existing knowledge base? Two conditions: (1) not already captured, (2) has reuse value for future queries. If yes → flag as `ACCRETION_CANDIDATE` with `novelty_type: new_pattern`. Grounding score < 0.6 → surface with caveat, don't auto-file.
 
+<!-- kf:if cos -->
 ### Step 8 — Comms-Domain Detection and COS Template Emit (6.7)
 Run after Step 7. Evaluate 4 comms-domain signals: (1) topic/synthesis_goal contains comms keywords, (2) KF domain is communication/marketing/psychology-communications, (3) ≥2 source examples are comms artifacts, (4) patterns describe human influence/persuasion dynamics. If ≥1 signal fires AND pattern_confidence ≥ 0.6 AND ≥2 examples: emit cos_template_output JSON alongside wiki entry via templates/cos-template-emit.jinja2. Surface: "Comms-domain pattern detected. COS template artifact emitted." If COS MCP unavailable: emit wiki entry only, surface "COS template emit skipped: MCP unavailable". Non-comms contexts (infra, code, data) must not trigger emit.
+<!-- kf:endif -->
 
 ## Rules
 
@@ -909,9 +921,11 @@ Run after Step 7. Evaluate 4 comms-domain signals: (1) topic/synthesis_goal cont
 - [ ] Applicability boundaries explicit (when to use AND when not to)
 - [ ] No over-abstraction (concrete examples still recognizable)
 - [ ] Temporal context noted (stability, evolution)
+<!-- kf:if cos -->
 - [ ] Comms-domain check run after Step 7 (4 signals evaluated)
 - [ ] If comms-domain + confidence ≥ 0.6 + ≥2 examples → cos_template_output emitted
 - [ ] COS MCP unavailable case handled: wiki-only emit + surface note
+<!-- kf:endif -->
 
 ## Section-Load Map  →  `~/.claude/skills/kf/synthesizer.md`
 - **Full synthesis process (4 phases: detection → abstraction → framework → validation):** Protocol section

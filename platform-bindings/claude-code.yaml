@@ -35,6 +35,11 @@ constraints:
 #   the KF-MODE marker compliance requirement is active.
 flags:
   telemetry: false
+  # cos: false (public default) — strips COS-integration blocks from critic,
+  #   synthesizer, and calibrator skills/agents. Set to true for internal builds
+  #   where the COS MCP integration is available and the comms-domain workflows
+  #   are active.
+  cos: false
 
 # --------------------------------------------------------------------------
 # Output structure — relative to target CC repo root

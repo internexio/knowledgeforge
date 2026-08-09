@@ -5,13 +5,22 @@
 ```yaml
 module:
   title: Calibrator Agent Specification
-  version: 7.1.1
+  version: 7.2.0
   purpose: Generate complexity-aware AI coder configuration that scales from hobby projects to regulated-industry deployments
   topics: [configuration, guardrails, best-practices, version-pinning, ai-coder-optimization, compliance, complexity-assessment, config-accretion]
   contexts: [project-setup, stack-selection, instruction-generation, regulated-industry]
   difficulty: intermediate
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 07_Critic_Agent, 08_Synthesizer_Agent, 10_Strategist_Agent, 12_Calibration_Layer, 13_Decision_Classification, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.2.0:
+      date: 2026-08-09
+      driver: knowledgeforge-core-public-release-phase3
+      changes:
+        - Public release Phase 3: COS-specific blocks in CC Skill and CC Agent wrapped in
+          <!-- kf:if cos --> / <!-- kf:endif -->. Blocks: Step 3.5 (CC Skill and CC Agent),
+          comms quality gate items (CC Skill and CC Agent), Comms-heavy emit Variant (CC Skill).
+          CC Skill Output Format line genericized (removed "[-> COS profile artifacts if comms-heavy]" suffix).
+          When cos=false (public default), COS profile emit logic is stripped from compiled output.
     7.1.1:
       date: 2026-07-08
       changes:
@@ -1089,11 +1098,13 @@ For each platform (CLAUDE.md, .cursorrules, etc.):
 - Testing expectations clear
 - File conventions documented
 
+<!-- kf:if cos -->
 ### Step 3.5 — Comms-Heavy Detection and COS Profile Emit (7.1)
 Run after Phase 1 interview, before configuration generation. Evaluate 5 signals (explicit domain answer, directory presence, file pattern, package.json deps, no-primary-code). If 2+ signals fire:
 - Collect audience description in Phase 2
 - After config generation: call COS MCP profile_agent + audience_profile, emit cos-agent-profile.json + cos-audience-profile.json, embed CLAUDE.md comms section
 - Fallback: if COS MCP unavailable → CLAUDE.md only with placeholder comms section + surface note
+<!-- kf:endif -->
 
 ### Step 4 — Compliance Templates (moderate/complex only)
 Apply relevant templates: HIPAA, SOC2, PCI. Use established templates, not improvisation.
@@ -1103,7 +1114,7 @@ Define hooks and rules that catch violations automatically rather than relying o
 
 ## Output Format
 
-Tier declaration → interview questions → generated configuration files (labeled by platform) → enforcement hooks [→ COS profile artifacts if comms-heavy]. Route to @critic for validation before declaring production-ready.
+Tier declaration → interview questions → generated configuration files (labeled by platform) → enforcement hooks. Route to @critic for validation before declaring production-ready.
 
 ## Quality Gates
 
@@ -1113,15 +1124,19 @@ Tier declaration → interview questions → generated configuration files (labe
 - [ ] Do/don't examples for ambiguous patterns
 - [ ] Platform token limits respected
 - [ ] Compliance templates applied (if regulated)
+<!-- kf:if cos -->
 - [ ] Comms-heavy detection run after Phase 1 (5 signals evaluated)
 - [ ] If comms-heavy: COS profile artifacts emitted + CLAUDE.md comms section included
 - [ ] COS MCP fallback handled: CLAUDE.md-only emit with placeholder + note if unavailable
+<!-- kf:endif -->
 
 ## Variants
 
 **Capability boundary:** Calibrator produces configuration artifacts only — cannot deploy or activate them. Hand off generated configs for user review before deployment. Novel compliance requirements (patterns not covered by HIPAA/SOC2/PCI templates) escalate to human review — don't improvise.
 
+<!-- kf:if cos -->
 **Comms-heavy emit (7.1):** After Phase 1, evaluate 5 comms signals. 2+ → comms-heavy mode: collect audience description in Phase 2, emit COS profile artifacts (cos-agent-profile.json, cos-audience-profile.json) and CLAUDE.md comms section after configuration generation. COS MCP unavailable → CLAUDE.md only with placeholder. Mixed comms+code projects: dual-emit (profiles complement CLAUDE.md, don't replace).
+<!-- kf:endif -->
 
 **Accretion check:** After generating configuration — does this config pattern apply to a class of projects? Novel stack combinations, novel compliance adaptations, and tier-jumping configs are candidates. Flag as `ACCRETION_CANDIDATE` with `novelty_type: template_candidate`. Standard CLAUDE.md for a vanilla Rails app is not.
 
@@ -1165,8 +1180,10 @@ For each platform (CLAUDE.md, .cursorrules, etc.):
 - Testing expectations clear
 - File conventions documented
 
+<!-- kf:if cos -->
 ### Step 3.5 — Comms-Heavy Detection and COS Profile Emit (7.1)
 After Phase 1, before generating config: evaluate 5 comms signals (explicit domain, directories, file pattern, package.json deps, no-primary-code). 2+ signals = comms-heavy. If comms-heavy: (1) add audience description question to Phase 2, (2) after config generation call COS MCP profile_agent + audience_profile, (3) emit cos-agent-profile.json + cos-audience-profile.json via templates, (4) embed CLAUDE.md comms section with style_label/strengths/blind_spots/elm_route. If COS MCP unavailable: CLAUDE.md only with placeholder + surface note.
+<!-- kf:endif -->
 
 ### Step 4 — Compliance Templates (moderate/complex only)
 Apply relevant templates: HIPAA, SOC2, PCI. Use established templates, not improvisation.
@@ -1197,9 +1214,11 @@ Calibrator produces configuration artifacts only — cannot deploy or activate t
 - [ ] Do/don't examples for ambiguous patterns
 - [ ] Platform token limits respected
 - [ ] Compliance templates applied (if regulated)
+<!-- kf:if cos -->
 - [ ] Comms-heavy detection run after Phase 1 (5 signals evaluated)
 - [ ] If comms-heavy: COS profile artifacts emitted + CLAUDE.md comms section included
 - [ ] COS MCP fallback handled: CLAUDE.md-only emit + note if unavailable
+<!-- kf:endif -->
 
 ## Section-Load Map  →  `~/.claude/skills/kf/calibrator.md`
 - **Complexity assessment protocol (full signals and approach per tier):** Protocol section
