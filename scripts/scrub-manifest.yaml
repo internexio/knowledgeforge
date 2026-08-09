@@ -133,7 +133,7 @@ post_scrub_verify:
     - "client-project"
     - "client-project"
   patterns_allowed:
-    - "internexio"   # Publisher org — keep
+    - "internexio"   # Personal domain / GitHub org — keep
     - "semalytics.com"  # Allowed in R7 integration context (COS MCP)
   author_email_must_be: github@internexio.com
   removed_paths_must_not_exist:

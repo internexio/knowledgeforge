@@ -1,6 +1,6 @@
 # Code of Conduct
 
-## Our Standards
+## Standards
 
 KnowledgeForge is a technical project. Participation is expected to be professional and constructive.
 
@@ -18,7 +18,7 @@ Unacceptable behavior:
 
 Report conduct issues to **security@internexio.com**. Reports are handled confidentially.
 
-Maintainers have discretion to remove, edit, or reject contributions and to ban participants who violate these standards.
+The maintainer has discretion to remove, edit, or reject contributions and to ban participants who violate these standards.
 
 ## Scope
 

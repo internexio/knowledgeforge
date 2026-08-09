@@ -18,6 +18,6 @@ Include:
 - Steps to reproduce or a proof-of-concept
 - Any suggested mitigations
 
-You will receive an acknowledgment within 48 hours. We will work with you to assess and address the issue before any public disclosure.
+You will receive an acknowledgment within 48 hours. The maintainer will work with you to assess and address the issue before any public disclosure.
 
 Do not open a public GitHub issue for security vulnerabilities.
