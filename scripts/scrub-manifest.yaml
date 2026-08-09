@@ -1,0 +1,153 @@
+# scripts/scrub-manifest.yaml
+# Canonical scrub spec for KnowledgeForge public release.
+# Run against a FRESH CLONE only. Never filter the working repo.
+# Never force-push after visibility flip.
+#
+# Updated: 2026-08-09 (Phase 6A — rehearsal)
+# GATE decisions recorded: R10=security@internexio.com, R13=github@internexio.com, R16=David Pedersen
+
+# --------------------------------------------------------------------------
+# GATE decisions
+# --------------------------------------------------------------------------
+gate_decisions:
+  R10_security_email: security@internexio.com
+  R13_author_email_rewrite: "github@internexio.com -> github@internexio.com"
+  R16_copyright_holder: "David Pedersen"
+
+# --------------------------------------------------------------------------
+# Author / committer email rewrite (mailmap)
+# --------------------------------------------------------------------------
+# Format used by git filter-repo --mailmap:
+#   New Name <new@email> <old@email>
+mailmap:
+  - old_email: github@internexio.com
+    new_email: github@internexio.com
+    new_name: David Pedersen   # author name unchanged
+
+# --------------------------------------------------------------------------
+# Content replacements (applied to all file blobs in all commits)
+# Format: "literal:OLD==>NEW" or "regex:PATTERN==>NEW"
+# --------------------------------------------------------------------------
+replace_text:
+  - rule: "literal:~/==>~/"
+    rationale: "Laptop home directory path. 32 wiki files across history."
+  - rule: "literal:~/==>~/"
+    rationale: "Mac Mini home directory path. Safety net."
+  - rule: "literal:github@internexio.com==>github@internexio.com"
+    rationale: "Author email in any file content (complements mailmap)."
+  - rule: "regex:orchestra\\.semalytics\\.io==>your-orchestra-host.example.com"
+    rationale: "Internal Orchestra API endpoint. 2 wiki files."
+  - rule: "regex:source_session: redacted
+    rationale: "Session IDs contain project names. 211 wiki files."
+  - rule: "literal:client-project==>client-project"
+    rationale: "Internal GTM project name. ~10 wiki files that are KEPT."
+  - rule: "literal:client-project==>client-project"
+    rationale: "Internal ads project name. ~10 wiki files that are KEPT."
+
+# --------------------------------------------------------------------------
+# Path removals (files removed from all commits in history)
+# Paths are relative to repo root.
+# --------------------------------------------------------------------------
+remove_paths:
+  # Personal service management (proprietary Happy integration)
+  - path: scripts/happy-watchdog.sh
+    reason: Personal Happy service management script. Not relevant to public KF.
+
+  # COS internal diagnostics (describe internal MCP auth/network failures)
+  - path: wiki/diagnostics/2026-05-19_cos-mcp-analyze-full-timeout-direct-curl-fallback.md
+    reason: COS internal MCP timeout. Not reusable outside [project] context.
+  - path: wiki/diagnostics/2026-05-20_cos-analyze-full-payload-ceiling-502.md
+    reason: COS internal 502 failure. Not reusable outside [project] context.
+  - path: wiki/diagnostics/2026-06-19_cos-mcp-auth-timeout-fallback-to-local-skills.md
+    reason: COS internal auth failure. Not reusable outside [project] context.
+  - path: wiki/diagnostics/2026-05-28_removed-ads-retain-history-join-scope-mismatch-retrospective-analysis.md
+    reason: client-project project specific diagnostic. Not reusable.
+
+  # Personal infrastructure
+  - path: wiki/infrastructure/2026-08-01_mac-mini-launchd-claude-p-operational-pattern.md
+    reason: Personal Mac Mini launchd config. Contains dpedersen username in body.
+
+  # Client/project-specific patterns
+  - path: wiki/infrastructure/2026-05-19_sem-tools-google-ads-keyword-planner-wrapper.md
+    reason: sem-tools project specific. Google Ads wrapper internals.
+  - path: wiki/patterns/2026-05-12_pin-tests-declarative-policy-manifests.md
+    reason: internexio/[project] PR-specific. Not generalizable.
+  - path: wiki/patterns/2026-05-25_google-ads-customer-id-dual-semantic-roles.md
+    reason: Google Ads client-project specific. Not generalizable.
+  - path: wiki/patterns/2026-06-16_pareto-pass-as-purpose-discovery.md
+    reason: Contains internexio blog draft reference.
+  - path: wiki/patterns/2026-06-26_variant-axes-as-temperature-substitute-content-generation.md
+    reason: client-project internals. Content not separable.
+  - path: wiki/patterns/2026-06-29_headless-chrome-html-png-pipeline-text-heavy-social-infographics.md
+    reason: "~/Scripts/semalytics-gtm/ path in body. Not separable."
+  - path: wiki/patterns/2026-07-10_headless-chrome-html-png-pipeline-text-heavy-mobile-infographics.md
+    reason: "/Users/dp path in body. Phase 0 identified."
+  - path: wiki/strategy/2026-07-07_adsense-anti-pattern-professional-practitioner-tool-audiences.md
+    reason: AdSense client-specific strategy. Not generalizable.
+
+  # Worklog — internal release planning document with internal project name refs
+  - path: docs/planning/2026-08-09_public-release-worklog.md
+    reason: |
+      Internal release preparation planning doc. References [project], client-project,
+      visionforge, [project], dpedersen by name (as documentation of what was scrubbed).
+      Not appropriate for public consumption. Spec docs (2026-06-*.md, other planning/)
+      are retained — they describe KF architecture without internal project refs.
+
+# --------------------------------------------------------------------------
+# Pre-scrub manual tasks (must complete BEFORE running filter-repo)
+# --------------------------------------------------------------------------
+pre_scrub_manual:
+  - task: "Update wiki/index.md to remove entries for all 13 REMOVED paths"
+    reason: "filter-repo preserves wiki/index.md but won't remove dangling entry lines"
+    files_to_remove_from_index:
+      - wiki/diagnostics/2026-05-19_cos-mcp-analyze-full-timeout-direct-curl-fallback.md
+      - wiki/diagnostics/2026-05-20_cos-analyze-full-payload-ceiling-502.md
+      - wiki/diagnostics/2026-06-19_cos-mcp-auth-timeout-fallback-to-local-skills.md
+      - wiki/diagnostics/2026-05-28_removed-ads-retain-history-join-scope-mismatch-retrospective-analysis.md
+      - wiki/infrastructure/2026-08-01_mac-mini-launchd-claude-p-operational-pattern.md
+      - wiki/infrastructure/2026-05-19_sem-tools-google-ads-keyword-planner-wrapper.md
+      - wiki/patterns/2026-05-12_pin-tests-declarative-policy-manifests.md
+      - wiki/patterns/2026-05-25_google-ads-customer-id-dual-semantic-roles.md
+      - wiki/patterns/2026-06-16_pareto-pass-as-purpose-discovery.md
+      - wiki/patterns/2026-06-26_variant-axes-as-temperature-substitute-content-generation.md
+      - wiki/patterns/2026-06-29_headless-chrome-html-png-pipeline-text-heavy-social-infographics.md
+      - wiki/patterns/2026-07-10_headless-chrome-html-png-pipeline-text-heavy-mobile-infographics.md
+      - wiki/strategy/2026-07-07_adsense-anti-pattern-professional-practitioner-tool-audiences.md
+
+  - task: "Body-review the ~90 wiki entries flagged in Phase 0 for semalytics/internexio refs"
+    reason: "Phase 0 flagged ~90 entries for individual review. replace_text handles most; \
+             but entries with deeply embedded client specifics may need targeted removal or \
+             selective line removal that replace_text cannot express."
+    status: DEFERRED — Phase 6A rehearsal applies replace_text rules, \
+            manual body review is a pre-real-scrub gate
+
+# --------------------------------------------------------------------------
+# Post-scrub verification (run in filtered clone)
+# --------------------------------------------------------------------------
+post_scrub_verify:
+  patterns_must_be_zero:
+    - "/Users/dp"
+    - "/Users/davidpedersen"
+    - "github@internexio.com"
+    - "your-orchestra-host.example.com"
+    - "client-project"
+    - "client-project"
+  patterns_allowed:
+    - "internexio"   # Publisher org — keep
+    - "semalytics.com"  # Allowed in R7 integration context (COS MCP)
+  author_email_must_be: github@internexio.com
+  removed_paths_must_not_exist:
+    - scripts/happy-watchdog.sh
+    - wiki/diagnostics/2026-05-19_cos-mcp-analyze-full-timeout-direct-curl-fallback.md
+    - wiki/diagnostics/2026-05-20_cos-analyze-full-payload-ceiling-502.md
+    - wiki/diagnostics/2026-06-19_cos-mcp-auth-timeout-fallback-to-local-skills.md
+    - wiki/diagnostics/2026-05-28_removed-ads-retain-history-join-scope-mismatch-retrospective-analysis.md
+    - wiki/infrastructure/2026-08-01_mac-mini-launchd-claude-p-operational-pattern.md
+    - wiki/infrastructure/2026-05-19_sem-tools-google-ads-keyword-planner-wrapper.md
+    - wiki/patterns/2026-05-12_pin-tests-declarative-policy-manifests.md
+    - wiki/patterns/2026-05-25_google-ads-customer-id-dual-semantic-roles.md
+    - wiki/patterns/2026-06-16_pareto-pass-as-purpose-discovery.md
+    - wiki/patterns/2026-06-26_variant-axes-as-temperature-substitute-content-generation.md
+    - wiki/patterns/2026-06-29_headless-chrome-html-png-pipeline-text-heavy-social-infographics.md
+    - wiki/patterns/2026-07-10_headless-chrome-html-png-pipeline-text-heavy-mobile-infographics.md
+    - wiki/strategy/2026-07-07_adsense-anti-pattern-professional-practitioner-tool-audiences.md

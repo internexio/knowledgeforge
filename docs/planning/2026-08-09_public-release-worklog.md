@@ -453,11 +453,156 @@ kf.yaml: 7.30.0 → 7.31.0.
 
 ---
 
-## Pending decisions for GATE 0
+## GATE 0 — Decision log (resolved 2026-08-09)
 
-| Decision | Status | Notes |
-|----------|--------|-------|
-| R10 — SECURITY.md contact email | NEEDS USER INPUT | Provide disclosure email before Phase 7 |
-| R13 — Author email in commit history | NEEDS USER INPUT | Mailmap to noreply? Or is github@internexio.com public-safe? |
-| R16 — Copyright holder string | NEEDS USER INPUT | internexio Inc. / David Pedersen / other |
-| ODS disposition | DECISION REQUIRED AT GATE 1 | Keep/genericize; see Step 3 above |
+| Decision | Resolution |
+|----------|------------|
+| R10 — SECURITY.md contact email | security@internexio.com |
+| R13 — Author email in commit history | github@internexio.com (mailmap rewrite) |
+| R16 — Copyright holder string | David Pedersen |
+| ODS disposition | Deferred to later phase per operator decision |
+
+---
+
+## Phase 6A — History scrub pipeline rehearsal (2026-08-09)
+
+### Step 1: scrub-manifest.yaml created
+
+`scripts/scrub-manifest.yaml` — canonical scrub spec. Full spec:
+
+**GATE decisions recorded:**
+- R10: security@internexio.com
+- R13: github@internexio.com → github@internexio.com
+- R16: David Pedersen
+
+**mailmap entry:** `David Pedersen <github@internexio.com> <github@internexio.com>`
+
+**replace_text rules (7):**
+1. `literal:~/==>~/` — laptop home dir path, 32 wiki files in history
+2. `literal:~/==>~/` — Mac Mini home dir path, safety net
+3. `literal:github@internexio.com==>github@internexio.com` — email in file content
+4. `regex:orchestra\\.semalytics\\.io==>your-orchestra-host.example.com` — internal API endpoint
+5. `regex:source_session: redacted
+6. `literal:client-project==>client-project` — internal GTM project name
+7. `literal:client-project==>client-project` — internal ads project name
+
+**remove_paths (14):**
+- `scripts/happy-watchdog.sh` — personal Happy service management
+- `wiki/diagnostics/2026-05-19_cos-mcp-analyze-full-timeout-direct-curl-fallback.md`
+- `wiki/diagnostics/2026-05-20_cos-analyze-full-payload-ceiling-502.md`
+- `wiki/diagnostics/2026-06-19_cos-mcp-auth-timeout-fallback-to-local-skills.md`
+- `wiki/diagnostics/2026-05-28_removed-ads-retain-history-join-scope-mismatch-retrospective-analysis.md`
+- `wiki/infrastructure/2026-08-01_mac-mini-launchd-claude-p-operational-pattern.md`
+- `wiki/infrastructure/2026-05-19_sem-tools-google-ads-keyword-planner-wrapper.md`
+- `wiki/patterns/2026-05-12_pin-tests-declarative-policy-manifests.md`
+- `wiki/patterns/2026-05-25_google-ads-customer-id-dual-semantic-roles.md`
+- `wiki/patterns/2026-06-16_pareto-pass-as-purpose-discovery.md`
+- `wiki/patterns/2026-06-26_variant-axes-as-temperature-substitute-content-generation.md`
+- `wiki/patterns/2026-06-29_headless-chrome-html-png-pipeline-text-heavy-social-infographics.md`
+- `wiki/patterns/2026-07-10_headless-chrome-html-png-pipeline-text-heavy-mobile-infographics.md`
+- `wiki/strategy/2026-07-07_adsense-anti-pattern-professional-practitioner-tool-audiences.md`
+- `docs/planning/2026-08-09_public-release-worklog.md` (this file — contains internal project name refs as meta-documentation; not appropriate for public consumption)
+
+Note: the June 2026 headless-chrome file (`2026-06-29_...social-infographics.md`) was
+added during Phase 6A prep. Phase 0 worklog listed only the July 2026 mobile variant;
+grep revealed the June file also contains `~/Scripts/semalytics-gtm/` path.
+
+### Step 2: Rehearsal run
+
+```
+git clone --no-local ~/Scripts/knowledgeforge-core /tmp/kf-scrub-rehearsal2
+
+git-filter-repo \
+  --replace-text /tmp/kf-scrub-replacements.txt \
+  --mailmap /tmp/kf-scrub-mailmap.txt \
+  --invert-paths \
+  --path scripts/happy-watchdog.sh \
+  --path wiki/diagnostics/2026-05-19_cos-mcp-analyze-full-timeout-direct-curl-fallback.md \
+  --path wiki/diagnostics/2026-05-20_cos-analyze-full-payload-ceiling-502.md \
+  --path wiki/diagnostics/2026-06-19_cos-mcp-auth-timeout-fallback-to-local-scripts.md \
+  --path wiki/diagnostics/2026-05-28_removed-ads-retain-history-join-scope-mismatch-retrospective-analysis.md \
+  --path wiki/infrastructure/2026-08-01_mac-mini-launchd-claude-p-operational-pattern.md \
+  --path wiki/infrastructure/2026-05-19_sem-tools-google-ads-keyword-planner-wrapper.md \
+  --path wiki/patterns/2026-05-12_pin-tests-declarative-policy-manifests.md \
+  --path wiki/patterns/2026-05-25_google-ads-customer-id-dual-semantic-roles.md \
+  --path wiki/patterns/2026-06-16_pareto-pass-as-purpose-discovery.md \
+  --path wiki/patterns/2026-06-26_variant-axes-as-temperature-substitute-content-generation.md \
+  --path wiki/patterns/2026-06-29_headless-chrome-html-png-pipeline-text-heavy-social-infographics.md \
+  --path wiki/patterns/2026-07-10_headless-chrome-html-png-pipeline-text-heavy-mobile-infographics.md \
+  --path wiki/strategy/2026-07-07_adsense-anti-pattern-professional-practitioner-tool-audiences.md
+```
+
+Completed in 0.75s.
+
+### Step 3: Rehearsal verification results
+
+**Path removal:**
+
+| Path | Result |
+|------|--------|
+| scripts/happy-watchdog.sh | Removed ✓ |
+| wiki/diagnostics/* (3 entries) | Removed ✓ |
+| wiki/diagnostics/2026-05-28_removed-ads-* | Removed ✓ |
+| wiki/infrastructure/2026-08-01_mac-mini-* | Removed ✓ |
+| wiki/infrastructure/2026-05-19_sem-tools-* | Removed ✓ |
+| wiki/patterns/* (6 entries) | Removed ✓ |
+| wiki/strategy/2026-07-07_adsense-* | Removed ✓ |
+
+14/14 paths removed from all commits ✓
+
+**Content replacement:**
+
+| Pattern | Remaining hits | Status |
+|---------|----------------|--------|
+| `/Users/dp` | 6 hits in worklog (this file) | Expected — meta-refs documenting scrub |
+| `/Users/davidpedersen` | 0 | Clean ✓ |
+| `github@internexio.com` | 0 | Clean ✓ |
+| `your-orchestra-host.example.com` | 0 | Clean ✓ |
+| `client-project` | 0 | Clean ✓ |
+| `client-project` | 0 | Clean ✓ |
+
+5/6 patterns → 0 hits ✓; 6th (`/Users/dp`) = expected meta-refs in worklog (file
+itself is on remove_paths for real scrub run — those refs will not appear in public repo)
+
+**Author email:**
+
+All commits → `github@internexio.com` ✓
+
+**Rehearsal verdict: CLEAN.** Ready for real scrub run after pre-real-scrub gate:
+- Body review of ~90 wiki entries flagged in Phase 0 (deferred to pre-real-scrub gate)
+
+### Step 4: wiki/index.md cleanup
+
+13 dangling entries removed from working repo `wiki/index.md`. (filter-repo preserves
+wiki/index.md but does not remove entries that reference removed files.)
+
+Entries removed:
+- wiki/patterns/2026-06-29_headless-chrome...social-infographics.md
+- wiki/patterns/2026-07-10_headless-chrome...mobile-infographics.md
+- wiki/patterns/2026-06-26_variant-axes-as-temperature-substitute-content-generation.md
+- wiki/patterns/2026-06-16_pareto-pass-as-purpose-discovery.md
+- wiki/patterns/2026-05-25_google-ads-customer-id-dual-semantic-roles.md
+- wiki/patterns/2026-05-12_pin-tests-declarative-policy-manifests.md
+- wiki/infrastructure/2026-08-01_mac-mini-launchd-claude-p-operational-pattern.md
+- wiki/infrastructure/2026-05-19_sem-tools-google-ads-keyword-planner-wrapper.md
+- wiki/diagnostics/2026-05-19_cos-mcp-analyze-full-timeout-direct-curl-fallback.md
+- wiki/diagnostics/2026-05-20_cos-analyze-full-payload-ceiling-502.md
+- wiki/diagnostics/2026-06-19_cos-mcp-auth-timeout-fallback-to-local-skills.md
+- wiki/diagnostics/2026-05-28_removed-ads-retain-history-join-scope-mismatch-retrospective-analysis.md
+- wiki/strategy/2026-07-07_adsense-anti-pattern-professional-practitioner-tool-audiences.md
+
+Note: the mobile-infographics file was not in wiki/index.md (Phase 0 had not indexed it).
+
+Verification: `grep` for all 14 removed-path slugs in wiki/index.md → 0 hits ✓
+
+### Step 5: Worklog disposition
+
+The worklog (`docs/planning/2026-08-09_public-release-worklog.md`) itself references
+[project], client-project, visionforge, [project] as documentation of what was scrubbed.
+Adding it to remove_paths is the correct disposition — it is a developer artifact, not
+public documentation. The public-facing spec docs (planning/*.md other than this file,
+modules/, docs/) are retained.
+
+**Phase 6A status: COMPLETE.**
+
+---

@@ -23,9 +23,7 @@ type: index
 - [2026-07-05] Claude Code skills durability — source repo + install.sh pattern — transferable_framework — `patterns/2026-07-05_claude-code-skills-durability-source-repo-install-script.md`
 - [2026-07-04] Triage-tool SUPPRESSED_STORE_LABELS pattern with per-entry bead link — new_pattern — `patterns/2026-07-04_triage-tool-suppressed-store-labels-with-per-entry-bead-link.md`
 - [2026-07-03] PKCE OAuth2 test hook pattern — _inject_code + MemoryTokenStorage — new_pattern — `patterns/2026-07-03_pkce-oauth2-test-hook-pattern-inject-code-memory-token-storage.md`
-- [2026-06-29] Headless Chrome HTML→PNG pipeline for text-heavy social infographics — diffusion-model bypass for structured layout — transferable_framework — `patterns/2026-06-29_headless-chrome-html-png-pipeline-text-heavy-social-infographics.md`
 - [2026-06-26] Git-history content authorship classifier (EDITORIAL > TEMPLATE-FILL > MASS-SWEEP) — reusable_diagnostic — `patterns/2026-06-26_git-history-content-authorship-classifier-editorial-template-mass-sweep.md`
-- [2026-06-26] Variant axes as a temperature-substitute for content generation without sampling control — new_pattern — `patterns/2026-06-26_variant-axes-as-temperature-substitute-content-generation.md`
 - [2026-06-26] Skill-spec vs canonical-doc staleness as a recurring class of silent drift — reusable_diagnostic — `patterns/2026-06-26_skill-spec-vs-canonical-doc-staleness-silent-drift.md`
 - [2026-06-25] Agent delegation for high-volume research and scraping tasks (≥20 fetches) — transferable_framework — `patterns/2026-06-25_agent-delegation-high-volume-research-scraping-tasks.md`
 - [2026-06-25] DriveFS write safety via SIGALRM (companion to read-safety pattern) — transferable_framework — `patterns/2026-06-25_drivefs-write-safety-sigalrm-companion-to-read-pattern.md`
@@ -34,7 +32,6 @@ type: index
 - [2026-06-20] Pre-commit hook three-piece structure — standalone checker + thin wrapper + manual installer — new_pattern — `patterns/2026-06-20_pre-commit-hook-three-piece-structure.md`
 - [2026-06-19] Cross-project credential resolution — read API keys from a sibling project's existing .env rather than duplicating into every environment — new_pattern — `patterns/2026-06-19_cross-project-credential-resolution-sibling-env-single-source.md`
 - [2026-06-19] Brand asset generation system — 4-layer architecture (spec / sanitize / wrap / chain) for repeatable on-brand visual output — transferable_framework — `patterns/2026-06-19_brand-asset-generation-4-layer-system.md`
-- [2026-06-16] Pareto pass as purpose discovery — the cut criterion becomes the principle — transferable_framework — `patterns/2026-06-16_pareto-pass-as-purpose-discovery.md`
 - [2026-06-16] Anthropic model-EOL incident response is a 3-phase fix, not a 1-line change — transferable_framework — `patterns/2026-06-16_anthropic-model-eol-incident-response-three-phase-fix.md`
 - [2026-06-16] Lock LLM JSON output with an explicit schema example in the prompt — transferable_framework — `patterns/2026-06-16_lock-llm-json-output-with-explicit-schema-example.md`
 - [2026-06-16] Markdown-fence JSON regex must match between fences, not between braces — new_pattern — `patterns/2026-06-16_fence-pair-json-regex-not-brace-pair.md`
@@ -49,7 +46,6 @@ type: index
 - [2026-05-29] Test isolation for shared file state — autouse fixture + post-test mtime guard — new_pattern — `patterns/2026-05-29_test-isolation-autouse-fixture-post-test-mtime-guard.md`
 - [2026-05-29] FastAPI API-surface classification via openapi() + auth-dependency AST extraction — transferable_framework — `patterns/2026-05-29_fastapi-api-surface-classification-auth-dependency-extraction.md`
 - [2026-05-28] Threading a new field through endpoints — enumerate ALL request/response models, not just the dominant one — transferable_framework — `patterns/2026-05-28_threading-field-through-endpoints-enumerate-all-models.md`
-- [2026-05-25] Google Ads customer_id has dual semantic roles — auth context vs data context — new_pattern — `patterns/2026-05-25_google-ads-customer-id-dual-semantic-roles.md`
 - [2026-05-22] Spec-to-implementation gap as a distinct review category — reusable_diagnostic — `patterns/2026-05-22_spec-to-implementation-gap-distinct-review-pass.md`
 - [2026-05-21] Backward-compatible hash-fragment renames via aria-hidden anchor shims — new_pattern — `patterns/2026-05-21_aria-hidden-anchor-shims-hash-fragment-renames.md`
 - [2026-05-21] Per-host caching for per-page detectors with per-host signal — new_pattern — `patterns/2026-05-21_per-host-caching-per-page-detectors.md`
@@ -82,7 +78,6 @@ type: index
 - [2026-05-13] Validator-after-ownership-gate pattern for shared CRUD scaffolds — new_pattern — `patterns/2026-05-13_validator-after-ownership-gate-shared-crud-scaffolds.md`
 - [2026-05-12] FastAPI StreamingResponse pre-flight gates must raise BEFORE construction — new_pattern — `patterns/2026-05-12_fastapi-streaming-preflight-gates.md`
 - [2026-05-12] Sanitization discipline for public-ready repos — three-pass grep + skip-or-sanitize decision tree — new_pattern — `patterns/2026-05-12_sanitization-three-pass-grep-discipline.md`
-- [2026-05-12] Pin-tests for declarative policy manifests — cheap regression guard against accidental entry deletion — new_pattern — `patterns/2026-05-12_pin-tests-declarative-policy-manifests.md`
 - [2026-05-12] Dogfood the safety machinery — end-to-end apply-path tests via the system's own atomic install + undo — transferable_framework — `patterns/2026-05-12_dogfood-apply-undo-end-to-end-testing.md`
 - [2026-05-11] Archival is retirement, not relocation — autonomous fix systems must honor the difference — transferable_framework — `patterns/2026-05-11_archival-retirement-not-relocation.md`
 - [2026-05-11] Atomic-write stubs for pipelines that read-and-write the same file — reusable_diagnostic — `patterns/2026-05-11_atomic-write-stubs-for-readwrite-pipelines.md`
@@ -138,7 +133,6 @@ type: index
 ### Infrastructure
 
 - [2026-08-01] happy-coder bundled claude binary silent failure on -p flag — reusable_diagnostic — `infrastructure/2026-08-01_happy-coder-bundled-claude-binary-silent-p-flag-failure.md`
-- [2026-08-01] Mac Mini launchd + claude -p operational pattern — reusable_diagnostic — `infrastructure/2026-08-01_mac-mini-launchd-claude-p-operational-pattern.md`
 - [2026-07-25] Ghost casper theme omits author bio from post pages — fix pattern — new_pattern — `infrastructure/2026-07-25_ghost-casper-theme-author-bio-post-rendering.md`
 - [2026-07-24] Ghost active-theme verification before SSH theme edits — reusable_diagnostic — `infrastructure/2026-07-24_ghost-active-theme-verification-before-ssh-edits.md`
 - [2026-07-14] Scheduled social post pipeline — JSON queue + Python scheduler + launchd — reusable_pattern — `infrastructure/2026-07-14_scheduled-social-post-pipeline-json-queue-python-scheduler-launchd.md`
@@ -172,7 +166,6 @@ type: index
 - [2026-05-25] Hook installed-vs-source drift after direct ~/.claude/ edits — reusable_diagnostic — `infrastructure/2026-05-25_hook-installed-vs-source-drift-direct-edits.md`
 - [2026-05-20] Static-site rsync excludes — internal-artifact leak prevention (2026-06-18 addendum: `--delete-excluded` self-healing + CI/docs workflow drift) — new_pattern — `infrastructure/2026-05-20_static-site-rsync-excludes-leak-prevention.md`
 - [2026-05-19] git -C /abs/path for CWD-unstable Claude Code Bash harness — reusable_diagnostic — `infrastructure/2026-05-19_git-dash-c-cwd-stability-claude-code-bash.md`
-- [2026-05-19] sem-tools Google Ads Keyword Planner wrapper — canonical reference location + setup — template_candidate — `infrastructure/2026-05-19_sem-tools-google-ads-keyword-planner-wrapper.md`
 - [2026-05-18] Editable-venv install for MCP servers — Python version floors + dependency major bumps — reusable_diagnostic — `infrastructure/2026-05-18_editable-venv-mcp-server-installation.md`
 - [2026-05-15] Realigning diverged git remotes via content-equivalence check + force-push — reusable_diagnostic — `infrastructure/2026-05-15_diverged-git-remotes-content-equivalence-realign.md`
 - [2026-05-15] Silent-success scripts — monitor by state artifact, not log file — reusable_diagnostic — `infrastructure/2026-05-15_silent-success-scripts-state-artifact-freshness.md`
@@ -240,7 +233,6 @@ type: index
 - [2026-06-25] React-route schema/meta edits are shadowed when site/ is rsynced but a Docker container actually serves the route — reusable_diagnostic — `diagnostics/2026-06-25_react-route-shadows-rsynced-static-html-in-mixed-deploy.md`
 - [2026-06-22] HTML-unescape before JSON-LD serialization — entities ship literal to schema validators and AI engines — reusable_diagnostic — `diagnostics/2026-06-22_html-unescape-before-json-ld-serialization.md`
 - [2026-06-20] Linters scoped to git's tracked-file set miss filesystem state — false-positive and false-negative orphan claims — reusable_diagnostic — `diagnostics/2026-06-20_linter-tracked-file-scope-misses-filesystem-state.md`
-- [2026-06-19] COS MCP endpoint auth/timeout — fall back to local cos-personality + cos-copy skills — reusable_diagnostic — `diagnostics/2026-06-19_cos-mcp-auth-timeout-fallback-to-local-skills.md`
 - [2026-06-17] Audience-mismatch engagement-farm — detection rule for founder outreach (prestige label in unrelated domain + template-warm reciprocity request = bait, regardless of profile credentials) — reusable_diagnostic — `diagnostics/2026-06-17_audience-mismatch-engagement-farm-founder-outreach.md`
 - [2026-06-17] AI Fingerprint Patterns — 7 recurring tells in marketing prose (tricolon-punchline, "X is not Y", "Most teams" weasel, header restatement, marketing-deck phrases, self-referential tic, closing summary) — reusable_diagnostic — `diagnostics/2026-06-17_ai-fingerprint-patterns-seven-recurring-tells-marketing-prose.md`
 - [2026-06-16] The Demonstration Gap diagnostic — frameworks explained but never shown — reusable_diagnostic — `diagnostics/2026-06-16_demonstration-gap-framework-explained-never-shown.md`
@@ -254,7 +246,6 @@ type: index
 - [2026-06-12] Count by the refreshed field, not the preserved one, when measuring producer liveness on a dedup-in-place queue — transferable_framework — `diagnostics/2026-06-12_count-by-refreshed-field-dedup-liveness-detection.md`
 - [2026-06-10] Refresh-in-place dedup creates false-positive silence alarms — pin first_seen_at separately from enqueued_at — reusable_diagnostic, new_pattern — `diagnostics/2026-06-10_refresh-in-place-dedup-false-positive-silence-alarms.md`
 - [2026-05-31] Per-entity status classifiers must distinguish "unmeasured" from "measured-null" — reusable_diagnostic — `diagnostics/2026-05-31_per-entity-status-classifier-unmeasured-vs-measured-null.md`
-- [2026-05-28] Retrospective ad-performance analysis must include removed ads and verify score↔performance linkage before correlating — reusable_diagnostic — `diagnostics/2026-05-28_removed-ads-retain-history-join-scope-mismatch-retrospective-analysis.md`
 - [2026-05-28] FastAPI shared response_model silently strips handler-specific fields — reusable_diagnostic — `diagnostics/2026-05-28_fastapi-shared-response-model-silently-strips-handler-fields.md`
 - [2026-05-26] PHP 8 array_combine throws ValueError — @ suppression does NOT catch it — reusable_diagnostic — `diagnostics/2026-05-26_php8-array-combine-throws-valueerror-suppression-doesnt-catch.md`
 - [2026-05-25] HTTP adapter bugs hidden by broad try/except + continue — mandatory integration test for production adapter call paths — reusable_diagnostic — `diagnostics/2026-05-25_http-adapter-silent-failure-integration-test-mandatory.md`
@@ -272,9 +263,7 @@ type: index
 - [2026-05-21] Test the wrapped tool directly — narrowing pattern for wrapper bugs — transferable_framework — `diagnostics/2026-05-21_test-wrapped-tool-directly-narrowing-search-space.md`
 - [2026-05-21] Encrypted server-side state can outlive every client-side fix — reusable_diagnostic — `diagnostics/2026-05-21_server-side-state-outlives-client-fixes-saas-wrappers.md`
 - [2026-05-20] `if key in seen: pass` — Python no-op silently breaks dedup loops — reusable_diagnostic — `diagnostics/2026-05-20_python-pass-noops-dedup-loop-intent-gap.md`
-- [2026-05-20] COS analyze_full payload size ceiling — 26K chars triggers 502, ~2.6K succeeds in 130s — reusable_diagnostic — `diagnostics/2026-05-20_cos-analyze-full-payload-ceiling-502.md`
 - [2026-05-21] Happy file-watcher ghost session_id — detection + absolute-path symlink fix — reusable_diagnostic — `diagnostics/2026-05-21_happy-filewatcher-absolute-path-symlink-fix.md` (supersedes 2026-05-18 entry)
-- [2026-05-19] COS MCP analyze_full_comms timeout — direct curl fallback — reusable_diagnostic — `diagnostics/2026-05-19_cos-mcp-analyze-full-timeout-direct-curl-fallback.md`
 - [2026-05-18] HTTP status signatures (404 vs 405 vs 401) as positive deploy-verification signals — reusable_diagnostic — `diagnostics/2026-05-18_http-status-signatures-deploy-verification-smoke-test.md`
 - [2026-05-18] Happy CLI file-watcher binds to ghost session_id that Claude never creates — reusable_diagnostic — `diagnostics/2026-05-18_happy-cli-filewatcher-ghost-session-mismatch.md`
 - [2026-05-18] bd validates issue title length in UTF-8 bytes, not codepoints — error message says "characters" — reusable_diagnostic — `diagnostics/2026-05-18_bd-title-length-utf8-bytes-not-codepoints.md`
@@ -380,7 +369,6 @@ type: index
 
 - [2026-08-04] Trial gate placement — gate on intent not entry — transferable_framework — `strategy/2026-08-04_trial-gate-placement-gate-on-intent-not-entry.md`
 - [2026-07-29] Court Lorenzini's Trust-as-GTM-Edge Framework — Three-Lens Trust Model for Early-Stage Startups — transferable_framework — `strategy/2026-07-29_court-lorenzini-trust-as-gtm-edge-framework.md`
-- [2026-07-07] AdSense anti-pattern for professional practitioner tool audiences — transferable_framework — `strategy/2026-07-07_adsense-anti-pattern-professional-practitioner-tool-audiences.md`
 - [2026-06-14] Substrate-migration triage — port/drop a dormant subsystem's backlog against the live substitute, never revive the corpse — transferable_framework — `strategy/2026-06-14_substrate-migration-triage.md`
 - [2026-06-10] Drop the dependent tier when a critic surfaces that an architecture's loading mechanism is more constrained than the spec assumed — transferable_framework, reusable_diagnostic — `strategy/2026-06-10_drop-dependent-tier-constrained-loader-reclassification.md`
 - [2026-05-29] Pricing LLM-wrapper APIs against the DIY-floor constraint — transferable_framework — `strategy/2026-05-29_llm-wrapper-api-pricing-diy-floor-calibration.md`

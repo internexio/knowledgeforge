@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.31.0
+version: 7.32.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,35 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.32.0
+    date: 2026-08-09
+    driver: knowledgeforge-core-public-release-phase6a
+    note: |
+      History scrub pipeline — manifest, rehearsal, and index cleanup.
+
+      scripts/scrub-manifest.yaml (new): Canonical scrub spec for public release.
+        GATE decisions recorded: R10=security@internexio.com,
+        R13=github@internexio.com→github@internexio.com, R16=David Pedersen.
+        7 replace_text rules: home directory paths, author email in content,
+        your-orchestra-host.example.com endpoint, source_session values, project name refs.
+        14 remove_paths: scripts/happy-watchdog.sh, 3 COS diagnostics,
+        1 ads retrospective, 1 mac-mini launchd, 2 sem-tools/client wiki entries,
+        6 patterns with non-separable internals, 1 release worklog.
+
+      Rehearsal (git-filter-repo on fresh --no-local clone):
+        14/14 paths removed from all commits ✓
+        5/6 content patterns → 0 hits ✓ (6th = expected meta-refs in worklog)
+        All author commits → github@internexio.com ✓
+
+      wiki/index.md: 13 dangling entries removed (pointing to removed wiki files).
+        Entries for: 2 headless-chrome patterns, variant-axes, pareto-pass,
+        google-ads-customer-id, pin-tests, mac-mini-launchd, sem-tools-google-ads,
+        3 COS diagnostics, 1 ads retrospective, adsense-anti-pattern.
+
+      docs/planning/2026-08-09_public-release-worklog.md: Phase 6A section added;
+        file itself added to scrub-manifest remove_paths (contains internal project
+        name refs as meta-documentation of what was scrubbed).
+
   - version: 7.31.0
     date: 2026-08-09
     driver: knowledgeforge-core-public-release-phase5
