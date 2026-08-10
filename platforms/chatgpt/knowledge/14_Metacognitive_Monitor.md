@@ -10,20 +10,7 @@ module:
   topics: [monitoring, failure-detection, intervention, metacognition, agent-safety, user-health, skeptical-verification, accretion-monitoring]
   contexts: [agent-execution, workflow-monitoring, quality-assurance, escalation, session-health]
   difficulty: advanced
-  related: [03_Coordination_Patterns, 09_Debugger_Agent, 12_Calibration_Layer, 15_Grounding_Scores, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
-  changelog:
-    6.6.0: |
-      - Added Check 6: Vision Principle Drift Detection — fires when Builder or Strategist output explicitly contradicts a stated vision principle; once per session per principle; requires wiki/vision.md to be present. Source: plans/kf-vision-roadmap-spec.md
-    6.2.0: |
-      - Added positive novelty detection — accretion signal complements existing confidence_degradation (Module 21 integration)
-      - Added accretion monitoring profile (over-accretion, accretion drift)
-    6.1.0: |
-      - Added user-side session health monitoring (D7: frustration detection)
-      - Added skeptical verification check (D2: memory architecture integration)
-      - Extended intervention strategies for user-side triggers
-      - Added user-side signals to intervention logging
-      - Three core checks → five core checks
-```
+  related: [03_Coordination_Patterns, 09_Debugger_Agent, 12_Calibration_Layer, 15_Grounding_Scores, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]```
 
 ---
 

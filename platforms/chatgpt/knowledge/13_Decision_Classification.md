@@ -10,17 +10,7 @@ module:
   topics: [decision-types, reasoning-depth, token-efficiency, classification, routing]
   contexts: [all-modes, reasoning-pipeline, resource-allocation]
   difficulty: intermediate
-  related: [01_Navigator_Agent, 10_Strategist_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 02_Builder_Agent, 12_Calibration_Layer, 19_Memory_Architecture, 20_Permission_Model]
-  changelog:
-    6.2.0: |
-      - Version alignment with KF 6.2
-      - Accretion signals in Module 21 are scoped to evaluative+ outputs — reckoning outputs are never accretion candidates
-    6.1.0: |
-      - Added Permission Model integration (Module 20) — decision type maps to base risk tier
-      - Added routing index integration (Module 19) — decision type metadata persisted in index
-      - Cleaned stale Next Steps (integrations completed in target modules)
-      - Standardized version numbering to KF release version
-```
+  related: [01_Navigator_Agent, 10_Strategist_Agent, 05_Expert_Agent_Example, 11_Calibrator_Agent, 02_Builder_Agent, 12_Calibration_Layer, 19_Memory_Architecture, 20_Permission_Model]```
 
 ---
 

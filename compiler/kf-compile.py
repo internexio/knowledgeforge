@@ -915,6 +915,65 @@ def assert_cp_clean(out_path: Path, content: str) -> None:
             )
 
 
+def strip_changelog_from_metadata(content: str) -> str:
+    """Strip the changelog: key from the ## Module Metadata YAML block.
+
+    changelog entries are developer-facing version history and add significant
+    size to compiled output without benefiting end-users of the platform
+    variants. The canonical changelog stays in modules/NN_*.md for contributors.
+
+    Algorithm: locate the YAML fence under ## Module Metadata, then do a
+    line-by-line pass that skips the changelog: key and all its indented
+    children. Stops removing when it hits a non-empty line at the same or
+    lesser indentation as the changelog: key itself.
+
+    Safe to call before or after strip_cc_sections(); no interaction with CC
+    section stripping logic. Should be called BEFORE process_conditional_blocks
+    so conditional markers inside changelog entries don't confuse the processor.
+    """
+    heading = _MODULE_METADATA_HEADING_RE.search(content)
+    if not heading:
+        return content
+
+    fence_open = _YAML_FENCE_OPEN_RE.search(content, heading.end())
+    if not fence_open:
+        return content
+
+    fence_close = _YAML_FENCE_CLOSE_RE.search(content, fence_open.end())
+    if not fence_close:
+        return content
+
+    yaml_start = fence_open.end()  # char index right after ```yaml\n
+    yaml_end = fence_close.start()  # char index of the closing ```
+    yaml_lines = content[yaml_start:yaml_end].split("\n")
+
+    filtered: list[str] = []
+    in_changelog = False
+    changelog_indent: int | None = None
+
+    for line in yaml_lines:
+        stripped = line.lstrip()
+        indent = len(line) - len(stripped)
+
+        if not in_changelog:
+            if stripped.startswith("changelog:"):
+                changelog_indent = indent
+                in_changelog = True
+                # Drop this line — don't append
+                continue
+            filtered.append(line)
+        else:
+            # Skip empty lines and lines more indented than changelog key
+            if stripped == "" or indent > changelog_indent:
+                continue
+            # Non-empty line at same or lower indent → changelog block ended
+            in_changelog = False
+            filtered.append(line)
+
+    new_yaml = "\n".join(filtered)
+    return content[:yaml_start] + new_yaml + content[yaml_end:]
+
+
 def compile_vscode(binding: dict, output_root: Path, dry_run: bool,
                    diff_mode: bool, version: str,
                    check_divergence: bool = False) -> list[dict]:
@@ -1365,6 +1424,7 @@ def compile_codex(binding: dict, output_root: Path, dry_run: bool,
         return manifest
 
     raw = strip_cc_sections(src.read_text(encoding="utf-8"))
+    raw = strip_changelog_from_metadata(raw)
     content = process_conditional_blocks(raw, {}, "codex")
     out_path = output_root / output_name
 
@@ -1429,6 +1489,7 @@ def compile_chatgpt(binding: dict, output_root: Path, dry_run: bool,
             continue
 
         raw = strip_cc_sections(src.read_text(encoding="utf-8"))
+        raw = strip_changelog_from_metadata(raw)
         content = process_conditional_blocks(raw, effective_flags, "chatgpt")
         out_path = output_root / chatgpt_name
         # Fail-closed guard — never silently publish a CC-section leak.
@@ -1488,6 +1549,7 @@ def compile_claude_projects(binding: dict, output_root: Path, dry_run: bool,
             continue
 
         raw = strip_cc_sections(src.read_text(encoding="utf-8"))
+        raw = strip_changelog_from_metadata(raw)
         content = process_conditional_blocks(raw, effective_flags, "claude-projects")
         out_path = output_root / cp_name
         # Item B3 fail-closed -CP guard — never silently publish a leak.

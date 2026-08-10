@@ -11,48 +11,7 @@ module:
   contexts: [decision-classification, mode-routing, memory-retrieval, coordinator-planning]
   difficulty: intermediate
   related: [13_Decision_Classification, 19_Memory_Architecture, 22_Semantic_Wiki_Search, 03_Coordination_Patterns, 18_Salience_Allocation, 10_Strategist_Agent]
-  added_in: "6.5"
-  changelog:
-    7.1.0:
-      date: 2026-06-12
-      driver: knowledgeforge-core-8gp
-      spec: docs/planning/2026-06-12_module-25-entity-path-glob-resolver-spec.md
-      changes:
-        - Added entity_paths resolver — ERA now produces entity_paths dict (glob patterns keyed by entity) alongside the existing memory_filter.
-        - Recommended resolver shape — GitNexus-primary with session-cached grep fallback. Cache key is (entity_name, repo_root) to prevent multi-repo session contamination.
-        - Glob derivation rules — single-file, N-in-dir, N-across-dirs, max-5-cap. Comparison function specified deterministically (literal-character prefix count + lexicographic tiebreak).
-        - Added resolver_source diagnostic metadata — records which resolver (gitnexus, grep, or none) produced the entity_paths. No current consumer; future drift-detection bead may read it.
-        - Forward-compatible — existing ERA consumers (M22 Phase 2, M24, downstream modes) ignore the new field cleanly; M21 path_globs lookup is the only currently-active consumer.
-        - Closes the <1% path_bound bottleneck identified in Phase 1 spec (y4b) Section 4.
-    7.0.3:
-      date: 2026-05-24
-      driver: knowledgeforge-core-8xq
-      changes:
-        - Memory Retrieval Enhancement section qualified — entity-scoped metadata filter integration with M22 is Phase 2 (Deferred). `mempalace_check_duplicate` (Phase 1) has no metadata filter parameter; passing entity/relationship/domain filters in Phase 1 is silently dropped. ERA's other outputs (entity list, relationship map, graph shape) remain consumed by downstream modes.
-        - Tier 3 (M24) integration unchanged.
-    7.0.2:
-      date: 2026-04-29
-      changes:
-        - Upstream ERA adversarial checklist from knowledgeforge-cw era-domain skill — compound failures (hidden join paths, blast radius, cardinality violations, brittleness test), blast radius probes, assumption inversions, design implications
-        - Add KF-specific ERA applications — module dependency audit, mode chain contracts, routing index schema
-        - Add adversarial probes to CC Doc section for Expert mode execution
-    7.0.1:
-      date: 2026-04-17
-      changes:
-        - Module is now fully standalone — Module 00 and Module 07 updated to reference this as a first-class cross-cutting module (not optional, not conditional on Module 05 ERA section size)
-    6.6.0: |
-      - Added ## CC Doc section for Claude Code compilation
-      - Added to CC platform binding (25_entity_relationship_analysis.md)
-      - Added M25 entry to kf_module_index.txt
-    6.5.0: |
-      - Initial module
-      - Entity extraction + relationship mapping pipeline
-      - Routing signal generation from relationship graph complexity
-      - Multi-hop reasoning support via relationship chains
-      - Memory retrieval enhancement via entity-scoped metadata filters
-      - Inspiration: James Hutchinson (github.com/anjinMeili) — A-RAG hierarchical retrieval,
-        multi-hop question answering, and modular agentic framework design patterns
-```
+  added_in: "6.5"```
 
 ---
 

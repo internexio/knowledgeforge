@@ -10,30 +10,7 @@ module:
   topics: [agent-creation, specification-generation, system-prompts, PDIA-method, template-accretion]
   contexts: [new-agent-requests, specification-needs, system-design]
   difficulty: intermediate
-  related: [01_Navigator_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
-  changelog:
-    7.0.1:
-      date: 2026-04-29
-      changes:
-        - Pre-registration git protocol — added skip_conditions (rapid prototyping, hotfix, explicit opt-out) and deviation rationale requirement for exploratory commits
-        - 7.0.0 had commit prefixes and tagging; missing when NOT to pre-register and what exploratory commits must include. Source: plans/ai-research-skills-integration.md ([project]-swd.10)
-    7.0.0:
-      date: 2026-04-14
-      changes:
-        - Add pre-registration git protocol — spec commits precede impl commits with confirmatory/exploratory tagging
-    6.6.1: |
-      - Added schema validation reference to pattern_framework input (ERA finding F3)
-      - pattern_framework input now validated against Module 08 pattern_framework_output schema
-      - Mismatch → escalate to Synthesizer for schema-conformant re-output
-    6.2.0: |
-      - Added accretion check — novel specification patterns flagged as ACCRETION_CANDIDATE (Module 21 integration)
-      - Added Module 21 to related modules
-    6.1.0: |
-      - Added auto-verification awareness — Builder output in chains triggers adversarial Critic pass
-      - Added sub-agent capability profile fields to generated specs (Module 20)
-      - Added routing index integration — check index for prior decisions before building (Module 19)
-      - Standardized version numbering to KF release version
-```
+  related: [01_Navigator_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]```
 
 ---
 

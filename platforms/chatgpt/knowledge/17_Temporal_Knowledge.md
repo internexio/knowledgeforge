@@ -10,33 +10,7 @@ module:
   topics: [temporal-reasoning, knowledge-versioning, knowledge-lifecycle, temporal-relationships, accretion-temporality, planning-artifacts]
   contexts: [knowledge-management, version-tracking, historical-queries, knowledge-hygiene, vision-staleness, roadmap-staleness]
   difficulty: advanced
-  related: [15_Grounding_Scores, 09_Debugger_Agent, 08_Synthesizer_Agent, 12_Calibration_Layer, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 18_Salience_Allocation]
-  changelog:
-    7.0.2:
-      date: 2026-04-30
-      changes:
-        - 'Added Planning Artifact Staleness section — vision (half_life_days: 60) and roadmap (half_life_days: 30) staleness gates with per-artifact severity calibration. In-progress phase stagnation signal added (> 2× expected duration). Aligns with /kf-vision and /kf-roadmap command staleness review modes.'
-    7.0.1:
-      date: 2026-04-29
-      changes:
-        - Research Staleness Gate completed — added trigger predicate (staleness_risk != stable), proportional severity based on staleness ratio (age/half-life), explicit do-not-block rule, and updated caveat format. 7.0.0 had binary gate; missing the proportionality and trigger condition. Source: plans/orchestra-integration.md ([project]-swd.7)
-    7.0.0:
-      date: 2026-04-14
-      changes:
-        - Add research staleness gate with domain half-life table; flags stale research before building on it
-    6.3.1: |
-      - Added importance-weighted exponential decay model, pinning, domain half-life table
-      - Added decay-staleness_risk consistency check (linter finding if they conflict)
-      - Extended temporal_entry schema with importance (int 1-5) and pinned (boolean)
-      - Added tertiary fallback chain for days_since_access: access log → last_verified → created_at
-    6.2.0: |
-      - Accreted entries carry temporal metadata and staleness_risk (Module 21 integration)
-      - Added accretion temporal metadata schema
-      - Staleness windows drive linter scheduling
-    6.1.0: |
-      - Added Memory Architecture integration (Module 19) — routing index provides session-scoped temporal record
-      - Standardized version numbering to KF release version
-```
+  related: [15_Grounding_Scores, 09_Debugger_Agent, 08_Synthesizer_Agent, 12_Calibration_Layer, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 18_Salience_Allocation]```
 
 ---
 

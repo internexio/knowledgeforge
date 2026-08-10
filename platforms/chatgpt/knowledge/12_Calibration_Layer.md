@@ -10,30 +10,7 @@ module:
   topics: [calibration, evaluation-quality, bias-detection, confidence-intervals, LLM-as-judge]
   contexts: [evaluation, review, scoring, quality-assurance, agent-assessment]
   difficulty: advanced
-  related: [02_Builder_Agent, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
-  changelog:
-    7.0.2:
-      date: 2026-04-29
-      changes:
-        - Judge isolation: add fallback rule (intra-family tier difference when cross-provider unavailable), add specific model examples, add ~80% multi-model benefit quantification
-        - SAP cascade: expand to full 5-strategy sequence (fence extract, multi-object scan, fault-tolerant fix, raw string fallback), add BAML-aligned scoring (StrippedNonAlphaNumeric +3, single_to_array_coercion +1), add fabrication flag and DefaultFromNoValue propagation rule, switch grounding mapping from cost-based multipliers to level-based absolute values (0.8/0.6/0.4/0.1)
-    7.0.1:
-      date: 2026-04-29
-      changes:
-        - (intermediate — superseded by 7.0.2)
-    7.0.0:
-      date: 2026-04-14
-      changes:
-        - Add cross-provider judge isolation rule — judge must be different family from agent
-        - Add SAP-inspired structured output parsing cascade with grounding score integration
-    6.2.0: |
-      - Added knowledge base accretion to always_calibrate triggers (Module 21 integration)
-    6.1.0: |
-      - Added routing index integration (Module 19) — calibration results persisted in index
-      - Added permission model awareness (Module 20) — calibration-triggered risk escalation
-      - Cleaned stale Next Steps (integrations already completed in target modules)
-      - Standardized version numbering to KF release version
-```
+  related: [02_Builder_Agent, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]```
 
 ---
 

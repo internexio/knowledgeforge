@@ -10,47 +10,7 @@ module:
   topics: [operational-safety, metric-monitoring, bounds-checking, corrective-action, chronic-drift, cache-efficiency, circuit-breakers, mode-selection-accuracy]
   contexts: [agent-operations, quality-assurance, cost-management, reliability, routing-correctness]
   difficulty: advanced
-  related: [00_Orchestrator, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 10_Strategist_Agent, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]
-  changelog:
-    7.3.1:
-      date: 2026-07-02
-      driver: kf-remediation-2026-07-02-adversarial-fix
-      changes:
-        - Fixed mode_selection_accuracy rationale text — "Expert 4 variants" → "Expert 5 variants" (was not updated when expert.research was added in 7.3.0; caught by adversarial-critic pass).
-    7.3.0:
-      date: 2026-07-02
-      driver: kf-remediation-2026-07-02
-      changes:
-        - Added expert.research to per_variant tracking list (resolves audit finding: research-variant routing errors were misattributed to expert.regular — the exact overlap td-research-vs-expert-regular exists to police). "8 Critic/Expert variants" phrasing updated to 9.
-    7.2.0:
-      date: 2026-05-10
-      changes:
-        - Added metric #10 (mode_selection_accuracy) — primary measurement is re-routing rate (deterministic, from Module 19 routing_decision_log); weekly adversarial sampling for calibration; variant-aware tracking across 9 Critic/Expert variants (resolves ERA F1 + F4 from chain-log-01-tool-calling)
-        - Healthy range — >=90% overall, >=95% per-variant; calibration drift threshold 5pp
-        - Corrective Action Summary extended with 5 new rows
-        - Source: docs/planning/Typed_Mode_Calling/ chain-logs 01–04 (Track C)
-    7.0.1:
-      date: 2026-04-29
-      changes:
-        - Expanded Pure Decision Functions section — added context_pressure_response function and formal Given/When/Then testability format
-        - decision_catalog now covers circuit_break and context_pressure_response; spawn_decision deferred (implementation-specific, not core KF bounds)
-        - Source: plans/background-agents-integration.md Phase 4 item ([project]-swd.13)
-    7.0.0:
-      date: 2026-04-14
-      changes:
-        - Add pure decision functions requirement for circuit breakers — input/output only, truth-table expressible
-    6.4.0: |
-      - Added metric #9: Token Cost Per Mode — per-mode token tracking, 40% chain budget ceiling
-    6.2.0: |
-      - Version alignment with KF 6.2
-      - Accretion rate monitoring deferred to Module 21 (Metacognitive Monitor catches over-accretion)
-    6.1.0: |
-      - Added cache hit rate metric with 80% floor (D3)
-      - Added circuit breaker tracking (D3/D4)
-      - Added mode transition cost as operational metric (D3)
-      - Added consolidation efficiency metric (D2, integrates with Module 19)
-      - Integrated with Permission Model (Module 20) for circuit breaker enforcement
-```
+  related: [00_Orchestrator, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 10_Strategist_Agent, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]```
 
 ---
 

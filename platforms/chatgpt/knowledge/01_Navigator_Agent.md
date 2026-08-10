@@ -10,33 +10,7 @@ module:
   topics: [ambiguity-detection, disambiguation, intent-interpretation, routing]
   contexts: [ambiguous-requests, multi-interpretation-scenarios]
   difficulty: intermediate
-  related: [02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 13_Decision_Classification, 19_Memory_Architecture, 20_Permission_Model]
-  changelog:
-    7.1.0:
-      - Version alignment with KF system 7.1.0
-      - User education layer: Step 4 Loop Detection + CC Skill — KF Fit Check
-      - Module was at 6.6.3; bumped to match system version on next edit
-    6.6.3:
-      - Add CC Skill — KF Fit Check (user onboarding skill)
-      - Explicit invocation only; not in orchestrator mode trigger table
-      - Compiled output: .claude/skills/kf/fit-check.md
-    6.6.2:
-      - Add Step 4 Loop Detection to Ambiguity Detection Protocol
-      - Confusion detection hint fires on second consecutive ambiguous clarification
-      - CC Skill and CC Agent Step 4 renumbered; Loop Detection inserted
-      - No routing index changes, no new risk tiers
-    6.6.1: |
-      - Activation predicate formalized in orchestrator static zone (SPEC-3 / ERA finding F2)
-      - Navigator now fires only when top-2 candidate modes produce different output types
-      - Inline routing-assumption surfacing for non-Navigator ambiguity resolution
-    6.2.0: |
-      - Version alignment with KF 6.2
-      - Navigator remains routing-only; no accretion output (knowledge flows from mode outputs, not routing decisions)
-    6.1.0: |
-      - Added routing index integration (Module 19) — check index before disambiguating
-      - Added permission model awareness (Module 20) — Navigator is LOW-risk, routing-only
-      - Standardized version numbering to KF release version
-```
+  related: [02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 13_Decision_Classification, 19_Memory_Architecture, 20_Permission_Model]```
 
 ---
 

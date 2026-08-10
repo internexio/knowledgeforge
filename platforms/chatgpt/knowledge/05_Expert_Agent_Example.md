@@ -10,50 +10,7 @@ module:
   topics: [expert-agent, adversarial-depth, domain-specialist, compound-failures, second-order-analysis, reusable-analysis-accretion, infrastructure-architecture, ml-infrastructure, hosting-audit, entity-relationship-analysis, variant-taxonomy]
   contexts: [agent-creation, expert-design, implementation-reference, security-review, code-review, architecture-review, infrastructure-planning, model-deployment, entity-modeling, dependency-auditing]
   difficulty: intermediate
-  related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 12_Calibration_Layer, 13_Decision_Classification, 15_Grounding_Scores, 16_Operational_Bounds, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
-  changelog:
-    7.4.0:
-      date: 2026-07-02
-      driver: kf-remediation-2026-07-02
-      changes:
-        - research variant degraded_mode: added accretion boundary note — degraded output at exactly 0.6 MUST NOT auto-file (M21 v7.5.0 at_threshold_degraded clause enforces this). Downstream accretion consumers must check the degraded flag; the M21 gate does so automatically.
-        - Added deployment note under research variant: deployments without Asta/Alia Semantic Scholar MCP connected permanently operate in degraded_mode. Ship disposition is permanently unavailable; outputs are soften/rebuild-only. Document this limitation to consumers at session start if research variant is requested.
-    7.3.0:
-      date: 2026-07-01
-      changes:
-        - Added research variant (fifth entry in variants[]) — grounded evidence retrieval with Asta/Alia Semantic Scholar MCP, composite grounding scores per claim, disposition routing (ship/soften/rebuild)
-        - runtime_dependency field declared per-variant (research only so far); degraded_mode specifies WebSearch fallback behaviour when MCP unavailable
-        - Trigger disambiguator td-research-vs-expert-regular registered in Module 04 to resolve "what does the research say" / "find evidence for" overlap with expert.regular
-        - Module 00 adds routing trigger for research variant (7.8.0 → 7.9.0)
-    7.2.0:
-      date: 2026-05-10
-      changes:
-        - Formalized variants[] field on agent spec — regular, infrastructure, ml_infrastructure, era (resolves ERA F1 from chain-log-01-tool-calling)
-        - Each variant declares trigger_phrases, output_format, output_template, typical_chain_position, decision_type_typical, risk_tier
-        - decision_type_exercised output field (already required since 6.6.1) now annotated with explicit enum constraint and consumed-by note for Module 00 auto-verify gate (resolves F3)
-        - Mode-selection accuracy metric (Module 16 #10) is now variant-aware
-        - Source: docs/planning/Typed_Mode_Calling/ chain-logs 01–04 (Track C)
-    6.6.1: |
-      - Added decision_type_exercised field to Expert output spec (ERA finding F5)
-      - Closes gate mismatch: auto-verify now fires on actual output depth, not request classification
-      - decision_type_exercised required on all Expert outputs; defaults to evaluative_judgment
-    6.6.0: |
-      - Added ERA (Entity Relationship Analysis) domain adaptation
-      - Adversarial checklist covering hidden couplings, cardinality violations, implicit contracts, schema drift
-      - KF-specific ERA applications: module dependency audit, routing index schema, ODS entity graph, mode chain contracts
-      - Accretion note for novel relationship patterns surfaced during ERA analysis
-    6.3.0: |
-      - Added infrastructure architecture domain adaptation (compound failures across co-located services, hardware assumption inversions)
-      - Added ML infrastructure domain adaptation (VRAM, routing model SPOFs, quantization error propagation)
-      - Added hosting audit domain adaptation (decomposition readiness, tested-restore assumption inversion)
-    6.2.0: |
-      - Added accretion check — novel domain analyses flagged as ACCRETION_CANDIDATE (Module 21 integration)
-      - Added Module 21 to related modules
-    6.1.0: |
-      - Added routing index integration (Module 19) — prior findings inform current analysis
-      - Added permission model awareness (Module 20) — Expert findings feed permission-aware output framing
-      - Standardized version numbering to KF release version
-```
+  related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 12_Calibration_Layer, 13_Decision_Classification, 15_Grounding_Scores, 16_Operational_Bounds, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]```
 
 ---
 

@@ -12,62 +12,7 @@ module:
   difficulty: advanced
   related: [00_Orchestrator, 03_Coordination_Patterns, 04_Specification_Templates, 14_Metacognitive_Monitor, 16_Operational_Bounds, 17_Temporal_Knowledge, 20_Permission_Model, 21_Knowledge_Accretion]
   added_in: "6.1"
-  implements: "Directive 2 (Three-Tier Memory Architecture), extended to four tiers in 6.2"
-  changelog:
-    7.4.0:
-      date: 2026-08-09
-      driver: knowledgeforge-core-e49
-      changes:
-        - Added fourth canonical re_routing_trigger — downstream_step_premise_invalidation. Fires when a downstream chain step returns response.upstream_invalidation at Sev2+ (per Module 04 handoff_contract response_schema, 7.4.0). routing_decision_log entry sets re_routed = true; re_route_reason carries invalidated_step_id + evidence_ref from the upstream_invalidation signal. Cross-refs — Module 00 re-entry rule (writer), Module 04 upstream_invalidation field (source), Module 16 metric #10 (consumer).
-        - No schema_version change. No changes to existing three triggers or non-triggers.
-    7.3.1:
-      date: 2026-07-01
-      driver: knowledgeforge-core-b3g
-      changes:
-        - Fixed Tier 3 body: access_pattern and search_protocol search_protocol step 2 corrected — removed stale "metadata pre-filter via search_memories" claim; replaced with Phase 1 (mempalace_search wing/room scope) / Phase 2 deferred split, matching M24 6.6.0 Retrieval Protocol.
-        - Fixed CC Doc Tier 3 description — removed aspirational "metadata pre-filtering" claim; added Phase 1/Phase 2 split note.
-        - Note: 7.3.0 changelog entry incorrectly claimed CC Doc Tier 3 was updated in gkf — that work was deferred to b3g.
-    7.3.0:
-      date: 2026-07-01
-      driver: knowledgeforge-core-gkf
-      changes:
-        - Added "cc Substrate Projections (Claude Code)" subsection — places .claude/rules/ and auto-memory in the tier model without introducing new tiers.
-        - .claude/rules/ is a compiled projection of Tier 0; activation_profile.trigger governs which compilation target is used (invariant → unscoped rule, path_bound → path-gated rule, task_bound → skill). Write-time invariant stated — manual rule edits are overwritten on next compile.
-        - auto-memory (~/.claude/projects/<proj>/memory/MEMORY.md) is harness-managed scratch sitting below Tier 1 — not KF-managed, not a tier. Do not accrete to it.
-        - Added comparison table: four KF tiers + auto-memory with scope and managed-by columns.
-        - Updated CC Doc Tier 0 description to note cc substrate projections.
-        - No schema changes. schema_version unchanged.
-    7.2.1:
-      date: 2026-05-11
-      changes:
-        - Added re_routing_triggers enumeration to routing_decision_log section — canonical events that set re_routed = true (resolves F3 from kf-7.2.0 audit redo; previously this definition lived only in project agent instructions prose)
-        - Three canonical triggers (at 7.2.1) — navigator_activation_after_initial_routing, user_explicit_redirect, critic_adversarial_wrong_mode_finding; fourth trigger added in 7.4.0 (downstream_step_premise_invalidation)
-        - Three non-triggers documented — chain_progression, variant_selection_within_mode, critic_revision_loop
-        - Cross-refs added — Module 00 (writer), Module 16 metric #10 (consumer), Module 04 trigger_disambiguator (refinement target)
-        - Added variant ID composition rule to selected_variant field — `<selected_mode>.<selected_variant>` is the canonical qualified form used by Module 16 metric #10 per_variant tracking; Modules 05 and 07 variants[].id stored unqualified (resolves F7 from kf-7.2.0 audit redo; new finding surfaced on second-pass parity check)
-        - No schema field changes. schema_version remains 1.0.
-    7.2.0:
-      date: 2026-05-10
-      changes:
-        - Added routing_decision_log section (schema_version 1.0) — audit trail of every routing decision, separate concern from routing_index state (resolves ERA F4 from chain-log-01-tool-calling)
-        - Retention — rolling 1000 entries + permanent re-route archive at wiki/operations/routing-log/{YYYY-MM}.md
-        - Added tier_2_metric_aggregates schema for weekly metric persistence beyond rolling window
-        - Data source for Module 16 metric #10 (mode_selection_accuracy) — primary measurement reads live log; calibration reads aggregates after window rolls
-        - Source: docs/planning/Typed_Mode_Calling/ chain-logs 01–04 (Track C)
-    6.6.1: |
-      - Added routing_index_schema section with field-level contract and schema version (ERA finding F6)
-      - Each module's read/write fields declared in contract
-      - Schema version field enables detection of cross-module misalignment
-      - Drift detection rule: absent fields log to Tier 2, surface at session end
-    6.5.0: |
-      - Tier 3 rewritten from "grep-only" to semantic vector search via MemPalace sidecar (Module 24)
-      - Tier 3 now carries recall benchmarks: 96.6% R@5 (verbatim+semantic) vs ~60% (grep)
-      - Added Module 22, 23, 24 cross-references to Related Modules
-    6.2.0: |
-      - Added Tier 0 (persistent domain knowledge) — accretion target layer (Module 21 integration)
-      - Three-tier → four-tier model
-      - Updated tier overview and core approach to reflect Tier 0
-```
+  implements: "Directive 2 (Three-Tier Memory Architecture), extended to four tiers in 6.2"```
 
 ---
 

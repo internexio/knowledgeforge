@@ -10,55 +10,7 @@ module:
   topics: [templates, specifications, formats, schemas, capability-profiles, risk-tiers, infrastructure-architecture, hosting-audit, era-specification, handoff-contracts, trigger-disambiguation]
   contexts: [agent-creation, process-design, documentation, infrastructure-planning, entity-modeling, mode-routing, chain-handoffs]
   difficulty: intermediate
-  related: [00_Orchestrator, 02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
-  changelog:
-    7.4.0:
-      date: 2026-08-09
-      driver: knowledgeforge-core-e49
-      changes:
-        - Added upstream_invalidation as an optional field on the handoff_contract response_schema — shape {invalidated_step_id: string, claim_invalidated: string, evidence_ref: pointer, severity: enum[Sev1|Sev2|Sev3]}. Target_mode populates this when it discovers during execution that the source_mode's premise was invalid, enabling mid-chain re-entry (Module 00 re-entry rule, 7.23.0). Three canonical validation checks — ui-check-1 (cross-field, all four subfields non-null when field is populated), ui-check-2 (enum-membership, severity ∈ {Sev1, Sev2, Sev3}), ui-check-3 (cross-field, Sev2/Sev3 requires evidence_ref non-null and resolvable). Motivated by AgentRadio convergence-failure analysis (Coral AI Labs, arXiv 2026) showing mid-execution premise discoveries not propagated upstream produce incorrect final answers with high confidence.
-        - Added KF 7.4 field summary table entry for upstream_invalidation.
-    7.3.0:
-      date: 2026-06-13
-      driver: knowledgeforge-core-f8a
-      spec: docs/planning/2026-06-13_spec-1-verifier-promotion.md
-      changes:
-        - Added response_schema field to handoff_contract entity template — parallel structure to payload_schema (fields[] with name/type/required/description/validation). Declares the shape target_mode returns to source_mode. Required for contracts where the source consumes the response (e.g., hc-orchestrator-to-verifier in Module 03 v7.4.0); optional for fire-and-forget contracts.
-        - Same canonical assertion forms apply to response_schema validation_checks (field-presence, enum-membership, cardinality, schema-conformance, cross-field per P2-Δ1).
-        - Editorial-only addition; no behavior change to existing contracts whose response is implicit. The 9 payload-schema-only contracts in Module 03 (pre-SPEC-1 count, post-SPEC-4) remain valid; only the new Contract A (hc-orchestrator-to-verifier) populates the response_schema field at v7.4.0.
-    7.2.1:
-      date: 2026-05-11
-      changes:
-        - Added 16_Operational_Bounds to related list — Module 16 metric #10 corrective actions reference Module 04 trigger_disambiguator entity, and Module 04 KF 7.2 field summary table documents mode_selection_accuracy as a Module 16 entity (resolves F6 from kf-7.2.0 audit redo)
-        - No behavior change. Editorial backlink completion.
-    7.2.0:
-      date: 2026-05-10
-      changes:
-        - Added Trigger Disambiguator Specification Template (resolves ERA F1 + F6 from chain-log-01-tool-calling)
-        - Added Handoff Contract Specification Template (resolves ERA F2 + F5)
-        - Handoff Contract validation_checks[].assertion must reduce to one of five canonical forms — field-presence, enum-membership, cardinality, schema-conformance, cross-field (P2-Δ1 from chain-log-04)
-        - 'Usage Notes: "Handoff" row renamed to "Handoff Contract"; Trigger Disambiguator row added; legacy Handoff row preserved for backward reference'
-        - KF 7.2 field summary table added
-        - Source: docs/planning/Typed_Mode_Calling/ chain-logs 01–04 (tool-calling audit, Track C)
-    6.6.0: |
-      - Added ERA Specification Template (Expert ERA → Builder chain)
-      - Added ERA row to Usage Notes template table
-      - Added KF 6.6 field summary table
-      - Added era-specification to topics
-    6.3.0: |
-      - Added Infrastructure Architecture Specification template (Expert → Builder chain, infrastructure domain)
-      - Added Hosting Audit & Decomposition Readiness template (Critic audit variant)
-      - Added KF 6.3 field summary table
-    6.2.0: |
-      - Added accretion_candidate field to output specs (Module 21 integration)
-      - Added KF 6.2 field summary table entry
-      - Added 21_Knowledge_Accretion to related modules
-    6.1.0: |
-      - Added capabilities_when_subagent field to agent spec (D6)
-      - Added risk_tier field to agent spec (D5)
-      - Added verification_required field to chain output specs
-      - Updated KF field summary table for new modules
-```
+  related: [00_Orchestrator, 02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]```
 
 ---
 

@@ -10,45 +10,7 @@ module:
   topics: [configuration, guardrails, best-practices, version-pinning, ai-coder-optimization, compliance, complexity-assessment, config-accretion]
   contexts: [project-setup, stack-selection, instruction-generation, regulated-industry]
   difficulty: intermediate
-  related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 07_Critic_Agent, 08_Synthesizer_Agent, 10_Strategist_Agent, 12_Calibration_Layer, 13_Decision_Classification, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
-  changelog:
-    7.2.0:
-      date: 2026-08-09
-      driver: knowledgeforge-core-public-release-phase3
-      changes:
-        - Public release Phase 3: COS-specific blocks in CC Skill and CC Agent wrapped in
-          <!-- kf:if cos --> / <!-- kf:endif -->. Blocks: Step 3.5 (CC Skill and CC Agent),
-          comms quality gate items (CC Skill and CC Agent), Comms-heavy emit Variant (CC Skill).
-          CC Skill Output Format line genericized (removed "[-> COS profile artifacts if comms-heavy]" suffix).
-          When cos=false (public default), COS profile emit logic is stripped from compiled output.
-    7.1.1:
-      date: 2026-07-08
-      changes:
-        - Clarify "COS MCP unavailable" = any mcp__cos-mcp__* tool error (not only config-disabled)
-        - Add "detection is MCP-independent" note: 5 comms signals run regardless of COS MCP availability
-        - Part of kf-integrations opt-in/out system (bead knowledgeforge-core-f8z)
-    7.1.0:
-      date: 2026-07-08
-      changes:
-        - Add comms-heavy project detection (5 heuristics, 2+ threshold) at interview phase
-        - Add COS profile artifact emit: cos-agent-profile.json + cos-audience-profile.json for comms-heavy projects
-        - Add CLAUDE.md comms section embedding style_label, strengths, blind_spots, audience elm_route
-        - Add fallback: COS MCP unavailable → CLAUDE.md-only emit with placeholder comms section
-        - Add cos_agent_profile_output and cos_audience_profile_output to outputs spec
-        - Templates: templates/cos-agent-profile.json.jinja + templates/cos-audience-profile.json.jinja
-        - Schema ref: specs/cos-profile-schemas.md
-    7.0.0:
-      date: 2026-04-14
-      changes:
-        - Add context hygiene audit — five-dimension checklist for instruction conflicts, staleness, verbosity, wiki, memory
-    6.2.0: |
-      - Added accretion check — novel configuration patterns flagged as ACCRETION_CANDIDATE (Module 21 integration)
-      - Added Module 21 to related modules
-    6.1.0: |
-      - Added routing index integration (Module 19) — prior stack decisions inform config generation
-      - Added permission model awareness (Module 20) — Calibrator cannot deploy, config output only
-      - Standardized version numbering to KF release version
-```
+  related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 07_Critic_Agent, 08_Synthesizer_Agent, 10_Strategist_Agent, 12_Calibration_Layer, 13_Decision_Classification, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]```
 
 ---
 

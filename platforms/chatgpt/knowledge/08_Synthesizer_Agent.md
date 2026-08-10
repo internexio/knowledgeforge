@@ -10,38 +10,7 @@ module:
   topics: [pattern-extraction, synthesis, meta-analysis, framework-creation, knowledge-accretion]
   contexts: [pattern-discovery, knowledge-organization, framework-development]
   difficulty: advanced
-  related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
-  changelog:
-    6.8.0: |
-      - Public release Phase 3: COS-specific blocks in CC Skill and CC Agent wrapped in
-        <!-- kf:if cos --> / <!-- kf:endif -->. Blocks: comms-domain quality gate items (CC Skill),
-        Comms-domain emit paragraph in Variants (CC Skill), Step 8 Comms-Domain Detection (CC Agent),
-        comms items in CC Agent Quality Gate. When cos=false (public default), all COS template emit
-        logic is stripped from compiled output. cos=true restores full COS integration.
-    6.7.1: |
-      - Clarify "COS MCP unavailable" = any mcp__cos-mcp__* tool error (not only config-disabled)
-      - Add "detection is MCP-independent" note: 4 comms signals run regardless of COS MCP availability
-      - Part of kf-integrations opt-in/out system (bead knowledgeforge-core-f8z)
-    6.7.0: |
-      - Added Phase 4.5: comms-domain detection (4 signals) and cos_template_output emit
-      - Added cos_template_output to outputs spec: COS-compatible template JSON for comms patterns
-      - Emit trigger: comms-domain signal (≥1 of 4) AND ≥2 examples AND pattern_confidence ≥ 0.6
-      - Added COS MCP unavailable fallback: emit wiki entry, log skip reason, surface note to user
-      - Added cos_template_emit gates to CC Skill and CC Agent quality checklists
-      - Template: templates/cos-template-emit.jinja2 (schema ref: specs/cos-template-schema.md)
-    6.6.1: |
-      - Added pattern_framework_output schema to outputs spec (ERA finding F3)
-      - Formalizes the Synthesizer → Builder handoff contract
-      - output_schema field mirrors Builder's pattern_framework input structure
-      - Non-Builder outputs (User, M21) remain unaffected — schema is additive
-    6.2.0: |
-      - Added accretion check in Phase 4 — novel patterns flagged as ACCRETION_CANDIDATE (Module 21 integration)
-      - Added Module 21 integration section
-    6.1.0: |
-      - Added routing index integration (Module 19) — prior patterns accessible via index
-      - Added permission model awareness (Module 20) — Synthesizer is read-only on source examples in chains
-      - Standardized version numbering to KF release version
-```
+  related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]```
 
 ---
 

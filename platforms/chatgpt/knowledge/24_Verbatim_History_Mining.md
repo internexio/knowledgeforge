@@ -11,38 +11,7 @@ module:
   contexts: [cross-session-recall, history-mining, pattern-detection, decision-archaeology]
   difficulty: advanced
   related: [19_Memory_Architecture, 22_Semantic_Wiki_Search, 23_Taxonomy_Enforcement, 21_Knowledge_Accretion, 17_Temporal_Knowledge]
-  added_in: "6.5"
-  changelog:
-    6.6.0:
-      date: 2026-07-01
-      driver: knowledgeforge-core-b3g
-      changes:
-        - Phase 1 / Phase 2 split applied to Retrieval Protocol — mirrors the M22 split done in bead 8xq.
-        - Phase 1 (current): MemPalace actual tool surface — mempalace_search(query, limit?, wing?, room?). No domain/topic/date_range/importance_min pre-filter parameters exist; calling with those args silently drops them (confirmed against live tool schema).
-        - Phase 2 (deferred): client-side post-filter on semantic results — apply domain/topic/date_range/importance_min after retrieval. Activates when M22 Phase 2 (bead acu) ships and cross-tier filter infrastructure is live.
-        - Fixed MCP Tools table — search_memories(query, filters, top_k) was aspirational; replaced with actual mempalace_search(query, limit?, wing?, room?) signature.
-        - Fixed Retrieval Protocol step 2 — removed fake metadata pre-filter call; added Phase 1 (wing/room filter, semantic re-rank) + Phase 2 deferred block.
-        - Fixed CC Doc Retrieval Protocol step 2 to match.
-        - Anti-pattern table updated — "Skipping metadata pre-filter" warning retained but qualified: at Phase 1, apply wing/room scope at minimum; domain/topic/importance_min are Phase 2 client-side filters.
-        - Updated M19 Tier 3 cross-refs — access_pattern and search_protocol corrected to Phase 1 reality.
-        - Closes knowledgeforge-core-b3g.
-    6.5.1: |
-      - Cross-tier filtering reference qualified — the Tier 0 half of cross-tier
-        metadata filtering (M22) is Phase 2 Deferred per knowledgeforge-core-8xq.
-        Phase 1 has no active cross-tier filter; M24 retains vocabulary at write
-        time for Phase 2 readiness. Caught by fourth critic pass as a reverse-
-        direction reference. No M24 behavioral change — purely documentation.
-      - See also: knowledgeforge-core-b3g (M24 reconciliation follow-up, P4)
-        which tracks whether M24's own retrieval surface needs a similar Phase 1
-        / Phase 2 split given MemPalace's tool_search signature constraints.
-    6.5.0: |
-      - Initial module — replaces grep-only Tier 3
-      - Verbatim storage: 96.6% R@5 vs 84.2% R@5 (pre-summarized) — 12.4-point permanent gap
-      - MemPalace MCP integration: store_memory, search_memories, update_importance, decay_stale
-      - Importance-weighted exponential decay (importance 1–5 → half-life 7–90 days)
-      - Module 23 taxonomy applied to Tier 3 entries for cross-tier metadata filtering
-      - Session-end flush protocol with importance threshold gate
-```
+  added_in: "6.5"```
 
 ---
 

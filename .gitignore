@@ -31,6 +31,7 @@ compiler/__pycache__/
 .gitnexus
 .claude/
 AGENTS.md
+!platforms/codex/AGENTS.md
 entities.json
 mempalace.yaml
 

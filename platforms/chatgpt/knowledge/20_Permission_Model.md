@@ -12,32 +12,7 @@ module:
   difficulty: advanced
   related: [03_Coordination_Patterns, 04_Specification_Templates, 07_Critic_Agent, 13_Decision_Classification, 14_Metacognitive_Monitor, 16_Operational_Bounds, 19_Memory_Architecture, 21_Knowledge_Accretion]
   added_in: "6.1"
-  implements: "Directive 5 (Layered Permission Model), Directive 6 (Fork-Join Capabilities)"
-  changelog:
-    7.1.0:
-      date: 2026-06-13
-      driver: knowledgeforge-core-f8a
-      spec: docs/planning/2026-06-13_spec-1-verifier-promotion.md + docs/planning/2026-06-13_spec-4-accretion-vetting-gate.md
-      changes:
-        - Added verifier_tool_tier_policy — gates separate-agent verifier (adversarial-critic) tool grants beyond Read/Glob/Grep by HIGH tier with explicit bind-side requirements (sandbox, read-replica, network-isolation). Cross-spec dependency for SPEC 1 verifier promotion.
-        - Added accretion_candidate_tier_policy — novel/predictive-derived accretion candidates surface for human review at HIGH tier regardless of target scope (project or cross-cutting). Annotation tags do not satisfy HIGH-tier confirmation. Cross-spec dependency for SPEC 4 vetting gate.
-        - Both policies fit the existing risk_escalation block shape (rule/trigger/action). No behavioral revolution; additive rules with explicit Module 07 + Module 21 integration points.
-        - Phase 3-prep PR landing before SPEC 1 and SPEC 4 implementation; eliminates documentation drift from specs referencing a Module 20 surface that does not exist yet.
-    7.0.1:
-      date: 2026-04-29
-      changes:
-        - Expanded Allow-With-Mutation section — added hook output contract, audit trail spec (.kf/state/permission_mutations.jsonl with fields), and explicit deny-vs-mutate decision rule
-        - 7.0.0 had mutation policies table and implementation note; missing the concrete hook interface, audit path, and when to prefer mutation over denial
-        - Source: plans/hooks-mastery-integration.md ([project]-swd.12)
-    7.0.0:
-      date: 2026-04-14
-      changes:
-        - Add allow-with-mutation permission tier — path normalization, safety flags, cost annotation policies
-    6.2.0: |
-      - Added accretion permission rules — MEDIUM base, HIGH for customer-facing knowledge bases (Module 21 integration)
-      - Added accretion_permissions yaml block
-      - Added accretion to risk escalation rules
-```
+  implements: "Directive 5 (Layered Permission Model), Directive 6 (Fork-Join Capabilities)"```
 
 ---
 

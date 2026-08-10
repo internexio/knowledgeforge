@@ -10,24 +10,7 @@ module:
   topics: [resource-allocation, salience, prioritization, competitive-inhibition, goal-alignment]
   contexts: [multi-agent-coordination, resource-contention, queue-management, orchestra-integration]
   difficulty: advanced
-  related: [03_Coordination_Patterns, 10_Strategist_Agent, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
-  changelog:
-    7.1.0:
-      date: 2026-04-23
-      changes:
-        - Version alignment with KF system 7.1.0
-        - Add inhibition-first framing spec note to Competitive Inhibition section
-        - References wiki/architecture/imagination-as-suppression-validates-patching.md
-        - No implementation change — spec-level observation for Phase 1 hook design
-    6.3.1: |
-      - Added access-driven salience signal source from wiki access logs (Module 21)
-    6.2.0: |
-      - Version alignment with KF 6.2
-      - High-salience outputs are natural accretion candidates — salience scores inform accretion priority (Module 21)
-    6.1.0: |
-      - Added routing index integration (Module 19) — salience scores for session tasks tracked in index
-      - Standardized version numbering to KF release version
-```
+  related: [03_Coordination_Patterns, 10_Strategist_Agent, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]```
 
 ---
 

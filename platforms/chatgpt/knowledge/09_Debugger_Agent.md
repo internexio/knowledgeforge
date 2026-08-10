@@ -10,27 +10,7 @@ module:
   topics: [debugging, troubleshooting, root-cause-analysis, diagnosis, diagnostic-accretion]
   contexts: [problem-solving, failure-analysis, system-diagnosis]
   difficulty: advanced
-  related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 10_Strategist_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
-  changelog:
-    7.0.1:
-      date: 2026-04-29
-      changes:
-        - Expanded CI Failure Feedback Loop — added fingerprint comparison logic (same/different/subset), trigger condition, determinism note
-        - 'Missing from 7.0.0 initial implementation: what to do when fingerprint changes (new issue introduced) or partially changes (subset). Source: plans/agent-orchestrator-integration.md ([project]-swd.11)'
-    7.0.0:
-      date: 2026-04-14
-      changes:
-        - Add Phase 4b (Failure Reproduction) between root cause and remediation; add reproduction_status output field
-        - Add CI failure feedback loop — fingerprint failure sets, dispatch only new failures, escalate after N retries
-    6.2.0: |
-      - Added accretion check — reusable diagnostic patterns flagged as ACCRETION_CANDIDATE (Module 21 integration)
-      - Added Module 21 to related modules
-    6.1.0: |
-      - Added routing index integration (Module 19) — temporal trace of session decisions aids diagnosis
-      - Added permission model awareness (Module 20) — Debugger has full read, write-only to diagnostic output
-      - Removed stale Phase references
-      - Standardized version numbering to KF release version
-```
+  related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 10_Strategist_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]```
 
 ---
 

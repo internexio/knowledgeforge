@@ -10,17 +10,7 @@ module:
   topics: [grounding, trust, knowledge-quality, verification, epistemics, accretion-gating]
   contexts: [knowledge-management, decision-support, fact-checking, agent-reasoning]
   difficulty: advanced
-  related: [05_Expert_Agent_Example, 07_Critic_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 16_Operational_Bounds, 17_Temporal_Knowledge, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
-  changelog:
-    6.2.0: |
-      - Grounding scores gate accretion quality — candidates below 0.6 require caveat (Module 21 integration)
-      - Added accretion-specific grounding rules
-    6.1.0: |
-      - Added routing index integration (Module 19) — grounding scores persisted in index per artifact
-      - Added permission model awareness (Module 20) — low grounding triggers confidence escalation
-      - Removed stale Phase references
-      - Standardized version numbering to KF release version
-```
+  related: [05_Expert_Agent_Example, 07_Critic_Agent, 12_Calibration_Layer, 14_Metacognitive_Monitor, 16_Operational_Bounds, 17_Temporal_Knowledge, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]```
 
 ---
 

@@ -10,19 +10,7 @@ module:
   topics: [strategy, prioritization, roadmap, trade-offs, decision-architecture, framework-accretion]
   contexts: [planning, resource-allocation, architectural-decisions, sequencing]
   difficulty: advanced
-  related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
-  changelog:
-    6.2.0: |
-      - Added accretion check — transferable decision frameworks flagged as ACCRETION_CANDIDATE (Module 21 integration)
-      - Added Module 21 to related modules
-    6.1.0: |
-      - Added routing index integration (Module 19) — check for prior decisions before re-analyzing
-      - Added permission model integration (Module 20) — strategy recommendations are HIGH-risk when irreversible
-      - Added auto-verification awareness — Strategist output in chains triggers adversarial Critic pass
-      - Added Module 14 (Metacognitive Monitor) to related modules
-      - Removed stale Phase references
-      - Standardized version numbering to KF release version
-```
+  related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]```
 
 ---
 
