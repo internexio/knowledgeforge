@@ -85,9 +85,9 @@ remove_paths:
   - path: wiki/patterns/2026-06-26_variant-axes-as-temperature-substitute-content-generation.md
     reason: client-project internals. Content not separable.
   - path: wiki/patterns/2026-06-29_headless-chrome-html-png-pipeline-text-heavy-social-infographics.md
-    reason: "~/Scripts/semalytics-gtm/ path in body. Not separable."
+    reason: "Personal home path + internal project path in body. Not separable."
   - path: wiki/patterns/2026-07-10_headless-chrome-html-png-pipeline-text-heavy-mobile-infographics.md
-    reason: "/Users/dp path in body. Phase 0 identified."
+    reason: "Personal macOS home path in body. Phase 0 identified."
   - path: wiki/strategy/2026-07-07_adsense-anti-pattern-professional-practitioner-tool-audiences.md
     reason: AdSense client-specific strategy. Not generalizable.
 
@@ -143,14 +143,18 @@ pre_scrub_manual:
 # Post-scrub verification (run in filtered clone)
 # --------------------------------------------------------------------------
 post_scrub_verify:
+  # Verification: grep each pattern across all blobs (git grep) and all commit messages.
+  # Exception: scripts/scrub-manifest.yaml itself is excluded from blob checks —
+  # it necessarily documents the patterns it scrubs (the list entries and rationale
+  # strings below). All other blobs and all commit messages must have zero hits.
   patterns_must_be_zero:
-    - "/Users/dp"
-    - "/Users/davidpedersen"
+    - "Users/dp"            # matches /Users/dp — leading slash omitted to avoid self-match in this file
+    - "Users/davidpedersen" # matches /Users/davidpedersen
     - "github@internexio.com"
     - "your-orchestra-host.example.com"
     - "client-project"
     - "client-project"
-    - "[project]"      # added body-review pass — case-insensitive rule; verify both cases
+    - "[project]"      # added body-review pass (blobs + commit messages via --message-callback)
     - "[project]"
     - "[project]"         # added body-review pass
     - "[project]"  # added body-review pass
