@@ -4,6 +4,8 @@
 
 Reasoning orchestration layer for AI coding assistants. Routes requests to specialized modes with targeted context injection, patching known failure modes: skipping hypotheses, hiding trade-offs, missing gaps, over-engineering simple problems.
 
+**Platforms:** [Claude Code](platforms/claude-code/) · [Claude Projects](platforms/claude-projects/) · [VSCode](platforms/vscode/) · [Plugin Bundle](platforms/plugin-bundle/) · [ChatGPT 🔜](platforms/chatgpt/) · [Cursor 🔜](platforms/cursor/) · [Codex 🔜](platforms/codex/) · [Gemini 🔜](platforms/gemini/)
+
 ---
 
 ## Install
@@ -55,7 +57,7 @@ Then upload the output.
 python3 compiler/kf-compile.py --target vscode --output ./knowledgeforge-vscode
 ```
 
-See `load-map-vscode.md` for what gets generated and where it deploys inside a VSCode extension.
+See [`platforms/vscode/load-map.md`](platforms/vscode/load-map.md) for what gets generated and where it deploys inside a VSCode extension.
 
 ---
 
@@ -68,7 +70,7 @@ python3 compiler/kf-compile.py --target plugin-bundle --output ./knowledgeforge-
 bash ./knowledgeforge-bundle/install.sh
 ```
 
-See `load-map-plugin-bundle.md` for the full file manifest.
+See [`platforms/plugin-bundle/load-map.md`](platforms/plugin-bundle/load-map.md) for the full file manifest.
 
 ---
 
@@ -126,6 +128,7 @@ Changes go into this repo first, then compile out. Never edit variant repos dire
 modules/           # 26 canonical module specs (M00–M25)
 compiler/          # kf-compile.py — builds platform variants from source
 platform-bindings/ # Per-platform adaptation rules (YAML)
+platforms/         # Per-platform install guides and load maps
 hooks/             # Claude Code hooks (routing, session, validation)
 wiki/              # Tier 0 accreted knowledge base
 taxonomy/          # Controlled vocabulary (10 domains, ~40 topics, ~55 tags)
