@@ -1,8 +1,74 @@
 # KnowledgeForge
 
-**Version:** 7.32.0 | **Status:** Active | **Modules:** 26 (M00-M25) | **License:** Apache-2.0
+**Version:** 7.32.0 | **Status:** Active | **Modules:** 26 (M00–M25) | **License:** Apache-2.0
 
 Reasoning orchestration layer for AI coding assistants. Routes requests to specialized modes with targeted context injection, patching known failure modes: skipping hypotheses, hiding trade-offs, missing gaps, over-engineering simple problems.
+
+---
+
+## Install
+
+### Claude Code · Cursor · Windsurf · Zed
+
+These editors all support the `~/.claude/` agent convention. Install from this repo:
+
+```bash
+git clone https://github.com/internexio/knowledgeforge
+cd knowledgeforge
+bash install.sh
+```
+
+`install.sh` compiles the Claude Code variant and deploys agents, skills, hooks, rules, and docs to `~/.claude/`. Python 3.9+ required.
+
+Restart your editor after install. KnowledgeForge is active — no further configuration needed.
+
+**Optional: faster pre-prompt routing.** The routing hook can classify requests with a lightweight LLM before Claude sees them, injecting the right mode directive automatically. Set `GEMINI_API_KEY` in your environment to enable it. The hook degrades gracefully if the key is absent.
+
+**Register hooks in settings.json.** `install.sh` does this automatically. If you need to do it manually, the hook entries are in `.claude/settings.json` inside this repo — merge them into your `~/.claude/settings.json`.
+
+---
+
+### Claude Projects
+
+> **Before re-uploading:** delete all existing KnowledgeForge knowledge files first. Claude Projects appends rather than replaces — duplicate filenames create a contradiction source where retrieval cannot distinguish canonical from stale.
+
+1. Create or open a Claude Project at [claude.ai](https://claude.ai).
+2. Go to **Project Instructions** → paste the full contents of `00_Project_Instructions-Claude.md` from `knowledgeforge-cp/`.
+3. Under **Project Knowledge** → upload all 25 knowledge files from `knowledgeforge-cp/`.
+4. Start a conversation. Classification and routing are automatic.
+
+To generate the `knowledgeforge-cp/` files from this repo:
+
+```bash
+python3 compiler/kf-compile.py --target claude-projects --output ./knowledgeforge-cp
+```
+
+Then upload the output.
+
+> M25 (ERA) is required. The orchestrator runs Entity Relationship Analysis as a post-routing pass on Builder, Coordinator, Expert, Strategist, and Critic requests. Omitting it leaves five routing paths unguarded.
+
+---
+
+### VSCode (experimental)
+
+```bash
+python3 compiler/kf-compile.py --target vscode --output ./knowledgeforge-vscode
+```
+
+See `load-map-vscode.md` for what gets generated and where it deploys inside a VSCode extension.
+
+---
+
+### Plugin bundle
+
+For tool-agnostic deployment (any platform that can load agent files via a plugin):
+
+```bash
+python3 compiler/kf-compile.py --target plugin-bundle --output ./knowledgeforge-bundle
+bash ./knowledgeforge-bundle/install.sh
+```
+
+See `load-map-plugin-bundle.md` for the full file manifest.
 
 ---
 
@@ -29,21 +95,36 @@ Modes chain automatically. "Fix this bug" runs Debugger then Builder. "Review an
 
 ---
 
+## Optional Integrations
+
+Configured via `~/.claude/kf-integrations.yaml` (created by `install.sh`). All enabled by default; set `enabled: false` to opt out.
+
+| Integration | Purpose | Fallback |
+|-------------|---------|---------|
+| `gemini_routing` | Gemini Flash Lite classifies prompts before Claude sees them; injects `[KF-ROUTE]` directives | Native routing via orchestrator table |
+| `mempalace` | Semantic wiki search + knowledge graph (M22) | grep-based wiki search |
+| `beads` | Task tracker — session priority awareness, `bd ready/close` in workflows | No task tracking; workflow guidance intact |
+| `asta` | Semantic Scholar MCP for Expert research variant — paper retrieval, citation grounding | WebSearch fallback; grounding capped at 0.6 |
+| `cos` | COS MCP for comms-domain analysis and copy generation (M07/M08/M11) | Standard KF output only |
+| `gitnexus` | Code impact analysis, call graph navigation, safe refactoring | Standard file/grep navigation |
+
+---
+
 ## Repository Structure
 
-`knowledgeforge-core` is the source. All platform variants compile from here.
+This repo is the canonical source. All platform variants compile from here.
 
 | Repo | Role |
 |------|------|
-| **knowledgeforge-core** (this) | Module specs, plans, wiki, compiler |
-| `knowledgeforge-cc` | Claude Code variant (compiled) |
-| `knowledgeforge-cp` | Claude Projects variant (compiled) |
+| **knowledgeforge** (this) | Module specs, plans, wiki, compiler |
+| `knowledgeforge-cc` | Claude Code variant (pre-compiled) |
+| `knowledgeforge-cp` | Claude Projects variant (pre-compiled) |
 
-Changes go into core first, then compile out. Never edit variant repos directly for module changes.
+Changes go into this repo first, then compile out. Never edit variant repos directly for module changes — they are compiler outputs.
 
 ```
-modules/           # 26 canonical module specs (M00-M25)
-compiler/          # kf-compile.py — builds platform variants from core
+modules/           # 26 canonical module specs (M00–M25)
+compiler/          # kf-compile.py — builds platform variants from source
 platform-bindings/ # Per-platform adaptation rules (YAML)
 hooks/             # Claude Code hooks (routing, session, validation)
 wiki/              # Tier 0 accreted knowledge base
@@ -52,7 +133,6 @@ model-profiles/    # Per-model weakness/strength maps
 templates/         # Spec templates (Module 04)
 tests/             # Routing and module test suites
 docs/              # Platform distribution matrix, planning docs
-plans/             # Architecture session documents (read-only reference)
 ```
 
 ---
@@ -76,11 +156,11 @@ plans/             # Architecture session documents (read-only reference)
 | M12 | Calibration Layer | Multi-pass evaluation, judge isolation |
 | M13 | Decision Classification | Reckoning / evaluative / predictive / novel |
 | M14 | Metacognitive Monitor | Failure-mode self-detection |
-| M15 | Grounding Scores | Knowledge trust 0.0-1.0 |
+| M15 | Grounding Scores | Knowledge trust 0.0–1.0 |
 | M16 | Operational Bounds | Circuit breakers, resource limits |
 | M17 | Temporal Knowledge | Knowledge age and decay rates |
 | M18 | Salience Allocation | Multi-task attention weighting |
-| M19 | Memory Architecture | Tier 0-3 memory system |
+| M19 | Memory Architecture | Tier 0–3 memory system |
 | M20 | Permission Model | Risk tiers (LOW / MEDIUM / HIGH) and capability gates |
 | M21 | Knowledge Accretion | Cross-session knowledge persistence |
 | M22 | Semantic Wiki Search | Two-phase retrieval, grep fallback |
@@ -90,46 +170,17 @@ plans/             # Architecture session documents (read-only reference)
 
 ---
 
-## Setup
-
-### Claude Code (knowledgeforge-cc)
-
-```bash
-# Clone the compiled CC variant
-git clone https://github.com/internexio/knowledgeforge-cc ~/.claude/knowledgeforge
-
-# Deploy hooks (routing, session management, validation)
-cd ~/.claude/knowledgeforge
-bash scripts/deploy-hooks.sh
-```
-
-Skills and agents install under `~/.claude/skills/` and `~/.claude/agents/`. The routing hook (`kf-route.py`) fires on every prompt and injects mode directives before Claude sees the request.
-
-The hook uses a fast LLM for routing classification. Set `GEMINI_API_KEY` in your environment, or set `KF_ROUTE_MODEL` to any compatible endpoint. The hook degrades gracefully if the classifier is unavailable.
-
-### Claude Projects (knowledgeforge-cp)
-
-> Before re-uploading: delete all existing project knowledge files first. Claude Projects appends rather than replaces. Duplicate filenames create a contradiction source where retrieval cannot distinguish canonical from stale.
-
-1. Create or open a Claude Project at [claude.ai](https://claude.ai).
-2. Go to **Project Instructions** and paste the full contents of `00_Project_Instructions-Claude.md` from `knowledgeforge-cp/`.
-3. Under **Project Knowledge**, upload all 25 knowledge files from `knowledgeforge-cp/`.
-4. Start a conversation. The system classifies and routes every request automatically.
-
-Note: M25 (ERA) is required. The orchestrator runs ERA as a post-routing, pre-execution pass on Builder, Coordinator, Expert, Strategist, and Critic requests. Omitting it leaves five routing paths unguarded.
-
----
-
-## Compiling from Core
-
-If you have `knowledgeforge-core` and want to compile a variant:
+## Compiling from Source
 
 ```bash
 # Claude Code variant
-python3 compiler/kf-compile.py --target claude-code --output /path/to/knowledgeforge-cc
+python3 compiler/kf-compile.py --target claude-code --output /path/to/output
 
 # Claude Projects variant
-python3 compiler/kf-compile.py --target claude-projects --output /path/to/knowledgeforge-cp
+python3 compiler/kf-compile.py --target claude-projects --output /path/to/output
+
+# VSCode extension resources
+python3 compiler/kf-compile.py --target vscode --output /path/to/output
 
 # Verify determinism (build twice, diff)
 bash scripts/verify-deterministic-build.sh
@@ -138,11 +189,11 @@ bash scripts/verify-deterministic-build.sh
 Compilation flags can override binding defaults:
 
 ```bash
-# Example: enable optional integration blocks
-python3 compiler/kf-compile.py --target claude-code --set cos=true --output /tmp/kf-cc-cos
+# Enable optional integration blocks (e.g. COS)
+python3 compiler/kf-compile.py --target claude-code --set cos=true --output /tmp/kf-cc
 ```
 
-See `docs/dist-matrix.md` for full platform capability and module coverage matrix.
+See `docs/dist-matrix.md` for the full platform capability and module coverage matrix.
 
 ---
 
