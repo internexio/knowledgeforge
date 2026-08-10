@@ -1,0 +1,190 @@
+{
+  "compiled_at": "2026-08-10T15:11:36.527977+00:00",
+  "source": "knowledgeforge-core",
+  "platform": "claude-projects",
+  "version": "7.33.0",
+  "entries": [
+    {
+      "source": "00_orchestrator.md",
+      "output": "00_Project_Instructions-Claude.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 45948
+    },
+    {
+      "source": "01_navigator.md",
+      "output": "01_Navigator_Agent.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 15441
+    },
+    {
+      "source": "02_builder.md",
+      "output": "02_Builder_Agent.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 24355
+    },
+    {
+      "source": "03_coordination_patterns.md",
+      "output": "03_Coordination_Patterns.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 57059
+    },
+    {
+      "source": "04_specification_templates.md",
+      "output": "04_Specification_Templates.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 70139
+    },
+    {
+      "source": "05_expert_agent.md",
+      "output": "05_Expert_Agent_Example.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 40803
+    },
+    {
+      "source": "06_quick_reference.md",
+      "output": "06_Quick_Reference.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 41021
+    },
+    {
+      "source": "07_critic_agent.md",
+      "output": "07_Critic_Agent.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 52953
+    },
+    {
+      "source": "08_synthesizer_agent.md",
+      "output": "08_Synthesizer_Agent.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 29890
+    },
+    {
+      "source": "09_debugger_agent.md",
+      "output": "09_Debugger_Agent.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 30151
+    },
+    {
+      "source": "10_strategist_agent.md",
+      "output": "10_Strategist_Agent.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 28305
+    },
+    {
+      "source": "11_calibrator_agent.md",
+      "output": "11_Calibrator_Agent.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 36726
+    },
+    {
+      "source": "12_calibration_layer.md",
+      "output": "12_Calibration_Layer.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 18889
+    },
+    {
+      "source": "13_decision_classification.md",
+      "output": "13_Decision_Classification.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 20300
+    },
+    {
+      "source": "14_metacognitive_monitor.md",
+      "output": "14_Metacognitive_Monitor.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 25773
+    },
+    {
+      "source": "15_grounding_scores.md",
+      "output": "15_Grounding_Scores.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 12864
+    },
+    {
+      "source": "16_operational_bounds.md",
+      "output": "16_Operational_Bounds.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 22527
+    },
+    {
+      "source": "17_temporal_knowledge.md",
+      "output": "17_Temporal_Knowledge.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 21092
+    },
+    {
+      "source": "18_salience_allocation.md",
+      "output": "18_Salience_Allocation.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 14522
+    },
+    {
+      "source": "19_memory_architecture.md",
+      "output": "19_Memory_Architecture.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 32654
+    },
+    {
+      "source": "20_permission_model.md",
+      "output": "20_Permission_Model.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 24145
+    },
+    {
+      "source": "21_knowledge_accretion.md",
+      "output": "21_Knowledge_Accretion.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 74641
+    },
+    {
+      "source": "22_semantic_wiki_search.md",
+      "output": "22_Semantic_Wiki_Search.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 21716
+    },
+    {
+      "source": "23_taxonomy_enforcement.md",
+      "output": "23_Taxonomy_Enforcement.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 18386
+    },
+    {
+      "source": "24_verbatim_history_mining.md",
+      "output": "24_Verbatim_History_Mining.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 13991
+    },
+    {
+      "source": "25_entity_relationship_analysis.md",
+      "output": "25_Entity_Relationship_Analysis.md",
+      "section": "full",
+      "status": "written",
+      "bytes": 19389
+    }
+  ]
+}

@@ -20,7 +20,7 @@ cd knowledgeforge
 bash install.sh
 ```
 
-`install.sh` compiles the Claude Code variant and deploys agents, skills, hooks, rules, and docs to `~/.claude/`. Python 3.9+ required. Restart your editor after install.
+`install.sh` copies the pre-compiled variant from `platforms/claude-code/.claude/` to `~/.claude/`. No compiler required. Restart your editor after install.
 
 **Optional: faster pre-prompt routing.** Set `GEMINI_API_KEY` in your environment to enable the routing hook — it classifies every request before Claude sees it, injecting the right mode directive automatically. Degrades gracefully without the key.
 
@@ -33,15 +33,9 @@ See [`platforms/claude-code/`](platforms/claude-code/) for the full install guid
 > **Before re-uploading:** delete all existing KnowledgeForge knowledge files first. Claude Projects appends rather than replaces — duplicate filenames create a contradiction source where retrieval cannot distinguish canonical from stale.
 
 1. Create or open a Claude Project at [claude.ai](https://claude.ai)
-2. **Project Instructions** → paste the full contents of `00_Project_Instructions-Claude.md`
-3. **Project Knowledge** → upload all 25 knowledge files
+2. **Project Instructions** → paste the full contents of [`platforms/claude-projects/00_Project_Instructions-Claude.md`](platforms/claude-projects/00_Project_Instructions-Claude.md)
+3. **Project Knowledge** → upload all 25 files from [`platforms/claude-projects/`](platforms/claude-projects/) (`01_Navigator_Agent.md` through `25_Entity_Relationship_Analysis.md`)
 4. Start a conversation — routing is automatic
-
-Generate the files from this repo:
-
-```bash
-python3 compiler/kf-compile.py --target claude-projects --output ./dist/claude-projects
-```
 
 > M25 (ERA) is required. The orchestrator runs Entity Relationship Analysis as a post-routing pass on Builder, Coordinator, Expert, Strategist, and Critic requests. Omitting it leaves five routing paths unguarded.
 
@@ -215,16 +209,16 @@ docs/              # Platform distribution matrix, planning docs
 ## Compiling from Source
 
 ```bash
-# Claude Code variant
-python3 compiler/kf-compile.py --target claude-code --output /path/to/output
+# Claude Code (pre-compiled output lives in-repo at platforms/claude-code/)
+python3 compiler/kf-compile.py --target claude-code --output platforms/claude-code
 
-# Claude Projects variant
-python3 compiler/kf-compile.py --target claude-projects --output /path/to/output
+# Claude Projects (pre-compiled output lives in-repo at platforms/claude-projects/)
+python3 compiler/kf-compile.py --target claude-projects --output platforms/claude-projects
 
-# ChatGPT Projects (output lives in-repo at platforms/chatgpt/)
+# ChatGPT Projects (pre-compiled output lives in-repo at platforms/chatgpt/)
 python3 compiler/kf-compile.py --target chatgpt --output platforms/chatgpt
 
-# Codex CLI (output lives in-repo at platforms/codex/)
+# Codex CLI (pre-compiled output lives in-repo at platforms/codex/)
 python3 compiler/kf-compile.py --target codex --output platforms/codex
 
 # VSCode extension resources

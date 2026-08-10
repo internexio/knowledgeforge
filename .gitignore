@@ -29,9 +29,8 @@ compiler/__pycache__/
 
 # Local tooling artifacts (per-machine, not project content)
 .gitnexus
-.claude/
-AGENTS.md
-!platforms/codex/AGENTS.md
+/.claude/
+/AGENTS.md
 entities.json
 mempalace.yaml
 
@@ -43,3 +42,5 @@ mempalace.yaml
 # Bead workflow state (per-machine triage artifacts)
 .bead-workflow/*
 !.bead-workflow/README.md
+load-map-claude-code.md
+load-map-claude-projects.md

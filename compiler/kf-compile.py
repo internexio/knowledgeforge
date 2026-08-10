@@ -1892,9 +1892,9 @@ def main():
 
     print_manifest(manifest, args.target, args.dry_run, args.diff)
 
-    # chatgpt and codex output directly into platforms/ inside core — no
-    # separate load map or manifest file needed (output is already in core).
-    _skip_manifest = args.target in ("chatgpt", "codex")
+    # All pre-compiled platform variants output directly into platforms/ inside core —
+    # no separate load map or manifest file needed (output is already in core).
+    _skip_manifest = args.target in ("chatgpt", "codex", "claude-code", "claude-projects")
     if not args.dry_run and not args.diff and args.manifest and not _skip_manifest:
         write_manifest(manifest, output_root, args.target, version)
 

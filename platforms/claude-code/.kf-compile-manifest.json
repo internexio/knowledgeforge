@@ -1,0 +1,267 @@
+{
+  "compiled_at": "2026-08-10T15:11:33.187730+00:00",
+  "source": "knowledgeforge-core",
+  "platform": "claude-code",
+  "version": "7.33.0",
+  "entries": [
+    {
+      "source": "00_orchestrator.md",
+      "output": ".claude/agents/kf.md",
+      "section": "CC Agent",
+      "status": "written",
+      "bytes": 20200
+    },
+    {
+      "source": "00_orchestrator.md",
+      "output": ".claude/rules/kf-meta.md",
+      "section": "CC Rules",
+      "status": "written",
+      "bytes": 2075
+    },
+    {
+      "source": "01_navigator.md",
+      "output": ".claude/skills/kf/navigator.md",
+      "section": "CC Skill",
+      "status": "written",
+      "bytes": 3225
+    },
+    {
+      "source": "01_navigator.md",
+      "output": ".claude/skills/kf/fit-check.md",
+      "section": "CC Skill \u2014 KF Fit Check",
+      "status": "written",
+      "bytes": 5841
+    },
+    {
+      "source": "01_navigator.md",
+      "output": ".claude/agents/navigator.md",
+      "section": "CC Agent",
+      "status": "written",
+      "bytes": 5176
+    },
+    {
+      "source": "02_builder.md",
+      "output": ".claude/skills/kf/builder.md",
+      "section": "CC Skill",
+      "status": "written",
+      "bytes": 3135
+    },
+    {
+      "source": "02_builder.md",
+      "output": ".claude/agents/builder.md",
+      "section": "CC Agent",
+      "status": "written",
+      "bytes": 3587
+    },
+    {
+      "source": "03_coordination_patterns.md",
+      "output": ".claude/skills/kf/coordinator.md",
+      "section": "CC Skill",
+      "status": "written",
+      "bytes": 4371
+    },
+    {
+      "source": "03_coordination_patterns.md",
+      "output": ".claude/agents/coordinator.md",
+      "section": "CC Agent",
+      "status": "written",
+      "bytes": 3708
+    },
+    {
+      "source": "05_expert_agent.md",
+      "output": ".claude/skills/kf/expert.md",
+      "section": "CC Skill",
+      "status": "written",
+      "bytes": 5384
+    },
+    {
+      "source": "05_expert_agent.md",
+      "output": ".claude/agents/expert.md",
+      "section": "CC Agent",
+      "status": "written",
+      "bytes": 4187
+    },
+    {
+      "source": "07_critic_agent.md",
+      "output": ".claude/skills/kf/critic.md",
+      "section": "CC Skill",
+      "status": "written",
+      "bytes": 3743
+    },
+    {
+      "source": "07_critic_agent.md",
+      "output": ".claude/agents/critic.md",
+      "section": "CC Agent",
+      "status": "written",
+      "bytes": 5549
+    },
+    {
+      "source": "07_critic_agent.md",
+      "output": ".claude/agents/adversarial-critic.md",
+      "section": "CC Agent (Adversarial Variant)",
+      "status": "written",
+      "bytes": 5216
+    },
+    {
+      "source": "08_synthesizer_agent.md",
+      "output": ".claude/skills/kf/synthesizer.md",
+      "section": "CC Skill",
+      "status": "written",
+      "bytes": 3024
+    },
+    {
+      "source": "08_synthesizer_agent.md",
+      "output": ".claude/agents/synthesizer.md",
+      "section": "CC Agent",
+      "status": "written",
+      "bytes": 3283
+    },
+    {
+      "source": "09_debugger_agent.md",
+      "output": ".claude/skills/kf/debugger.md",
+      "section": "CC Skill",
+      "status": "written",
+      "bytes": 3048
+    },
+    {
+      "source": "09_debugger_agent.md",
+      "output": ".claude/agents/debugger.md",
+      "section": "CC Agent",
+      "status": "written",
+      "bytes": 3480
+    },
+    {
+      "source": "10_strategist_agent.md",
+      "output": ".claude/skills/kf/strategist.md",
+      "section": "CC Skill",
+      "status": "written",
+      "bytes": 3229
+    },
+    {
+      "source": "10_strategist_agent.md",
+      "output": ".claude/agents/strategist.md",
+      "section": "CC Agent",
+      "status": "written",
+      "bytes": 4047
+    },
+    {
+      "source": "11_calibrator_agent.md",
+      "output": ".claude/skills/kf/calibrator.md",
+      "section": "CC Skill",
+      "status": "written",
+      "bytes": 3304
+    },
+    {
+      "source": "11_calibrator_agent.md",
+      "output": ".claude/agents/calibrator.md",
+      "section": "CC Agent",
+      "status": "written",
+      "bytes": 4082
+    },
+    {
+      "source": "12_calibration_layer.md",
+      "output": ".claude/docs/knowledgeforge/12_calibration_layer.md",
+      "section": "CC Doc",
+      "status": "written",
+      "bytes": 2431
+    },
+    {
+      "source": "13_decision_classification.md",
+      "output": ".claude/docs/knowledgeforge/13_decision_classification.md",
+      "section": "CC Doc",
+      "status": "written",
+      "bytes": 2413
+    },
+    {
+      "source": "14_metacognitive_monitor.md",
+      "output": ".claude/docs/knowledgeforge/14_metacognitive_monitor.md",
+      "section": "CC Doc",
+      "status": "written",
+      "bytes": 3413
+    },
+    {
+      "source": "15_grounding_scores.md",
+      "output": ".claude/docs/knowledgeforge/15_grounding_scores.md",
+      "section": "CC Doc",
+      "status": "written",
+      "bytes": 2313
+    },
+    {
+      "source": "16_operational_bounds.md",
+      "output": ".claude/docs/knowledgeforge/16_operational_bounds.md",
+      "section": "CC Doc",
+      "status": "written",
+      "bytes": 2330
+    },
+    {
+      "source": "17_temporal_knowledge.md",
+      "output": ".claude/docs/knowledgeforge/17_temporal_knowledge.md",
+      "section": "CC Doc",
+      "status": "written",
+      "bytes": 2635
+    },
+    {
+      "source": "18_salience_allocation.md",
+      "output": ".claude/docs/knowledgeforge/18_salience_allocation.md",
+      "section": "CC Doc",
+      "status": "written",
+      "bytes": 2157
+    },
+    {
+      "source": "19_memory_architecture.md",
+      "output": ".claude/docs/knowledgeforge/19_memory_architecture.md",
+      "section": "CC Doc",
+      "status": "written",
+      "bytes": 3520
+    },
+    {
+      "source": "20_permission_model.md",
+      "output": ".claude/docs/knowledgeforge/20_permission_model.md",
+      "section": "CC Doc",
+      "status": "written",
+      "bytes": 3089
+    },
+    {
+      "source": "21_knowledge_accretion.md",
+      "output": ".claude/docs/knowledgeforge/21_knowledge_accretion.md",
+      "section": "CC Doc",
+      "status": "written",
+      "bytes": 6931
+    },
+    {
+      "source": "21_knowledge_accretion.md",
+      "output": ".claude/agents/knowledge-librarian.md",
+      "section": "CC Agent (Knowledge Librarian)",
+      "status": "written",
+      "bytes": 10694
+    },
+    {
+      "source": "22_semantic_wiki_search.md",
+      "output": ".claude/docs/knowledgeforge/22_semantic_wiki_search.md",
+      "section": "CC Doc",
+      "status": "written",
+      "bytes": 3797
+    },
+    {
+      "source": "23_taxonomy_enforcement.md",
+      "output": ".claude/docs/knowledgeforge/23_taxonomy_enforcement.md",
+      "section": "CC Doc",
+      "status": "written",
+      "bytes": 4591
+    },
+    {
+      "source": "24_verbatim_history_mining.md",
+      "output": ".claude/docs/knowledgeforge/24_verbatim_history_mining.md",
+      "section": "CC Doc",
+      "status": "written",
+      "bytes": 2910
+    },
+    {
+      "source": "25_entity_relationship_analysis.md",
+      "output": ".claude/docs/knowledgeforge/25_entity_relationship_analysis.md",
+      "section": "CC Doc",
+      "status": "written",
+      "bytes": 5087
+    }
+  ]
+}
