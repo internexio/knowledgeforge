@@ -1,65 +1,58 @@
-# platform-bindings/chatgpt.yaml — PLACEHOLDER
-# OpenAI Custom GPT target. Custom GPTs accept a system prompt ("Instructions")
-# and optionally uploaded knowledge files (retrieved via file search).
-# The architecture is closest to claude-projects: a single system prompt sets
-# the orchestrator context, and knowledge files hold module specs.
-#
-# Deferred: compiler support for the "chatgpt" target is not yet implemented.
-# The contract surface below defines what the binding must emit when activated.
-
 target: chatgpt
-status: deferred
-
+status: active
 description: >
-  OpenAI Custom GPT target. Compiles KF into a system prompt (Instructions)
-  containing mode routing rules, plus a set of knowledge files (one per
-  mode module) for file-search retrieval. Infrastructure modules (12-25)
-  are embedded in the system prompt or omitted depending on budget.
+  ChatGPT Projects target. Compiles KF into a project instructions file
+  (paste into ChatGPT Project Custom Instructions) plus a set of knowledge
+  files (one per module) uploaded to Project Knowledge for retrieval.
+  CC-specific sections are stripped; the output is platform-agnostic markdown.
 
 capabilities:
-  filesystem: false       # Custom GPTs use file search, not direct filesystem
+  filesystem: false       # ChatGPT Projects use file search, not direct filesystem
   hooks: false            # No hook runner
-  multi_model: false      # Single model per GPT
+  multi_model: false      # Single model per project
   sub_agents: false       # No sub-agent spawning
   skills: false           # No skills directory equivalent
   docs: false             # No docs directory equivalent
-  commands: false         # No slash commands (Actions are a separate concept)
-  mcp: false              # MCP not supported in Custom GPT model
+  commands: false         # No slash commands
+  mcp: false              # MCP not supported in ChatGPT Projects
 
 constraints:
-  instructions_char_limit: 8000    # OpenAI Custom GPT instructions field limit
-  knowledge_file_limit: 20         # Max uploaded files per Custom GPT
+  instructions_char_limit: 8000    # ChatGPT Project Instructions field limit
+  knowledge_file_limit: 20         # Max uploaded files per project
   knowledge_file_size_limit: 512   # KB per file
   retrieval: file_search           # Retrieval mechanism for knowledge files
 
 output_structure:
-  instructions_file: "kf-gpt-instructions.md"   # Paste content into Instructions field
-  knowledge_dir: "knowledge/"                    # Upload these files to the GPT
+  instructions_file: "kf-chatgpt-instructions.md"   # Paste into Project Instructions
+  knowledge_dir: "knowledge/"                         # Upload these files to Project Knowledge
 
-# Module strategy (pending compiler implementation):
-#   M00 — Orchestrator: compiled into instructions_file (routing rules)
-#   M01–M11 — Mode specs: one knowledge file each (file-search retrieved)
-#   M12–M25 — Infrastructure: embedded in instructions_file (summary only)
-#              or omitted if over budget
-module_outputs: {}
-
-contract_surface:
-  instructions_format: markdown
-  knowledge_file_format: markdown
-  required_in_instructions:
-    - "Mode routing rules (from M00)"
-    - "Decision classification (from M13)"
-    - "File-search retrieval instruction (tell GPT to search knowledge files for mode details)"
-  optional_in_instructions:
-    - "Always-on behavioral patches (from M00)"
-    - "Key cross-cutting rules (from M15, M21 summary)"
-  must_not_include:
-    - "CC Agent frontmatter (platform-specific)"
-    - "CC Skill / CC Doc / CC Rules section markers"
-    - "kf:if conditional block markers"
-
-bind_when:
-  - Compiler gains a 'chatgpt' target handler in compile_chatgpt()
-  - instructions_char_limit verified against current OpenAI GPT builder interface
-  - knowledge file retrieval strategy decided (one file per mode vs topic-grouped)
-  - Token/char budget enforcement implemented
+# Module → output mapping
+# M00 compiles to the root instructions file.
+# M01-M25 compile into knowledge/ with the same CP-style naming convention.
+filename_map:
+  "00_orchestrator.md":          "kf-chatgpt-instructions.md"
+  "01_navigator.md":             "knowledge/01_Navigator_Agent.md"
+  "02_builder.md":               "knowledge/02_Builder_Agent.md"
+  "03_coordination_patterns.md": "knowledge/03_Coordination_Patterns.md"
+  "04_specification_templates.md": "knowledge/04_Specification_Templates.md"
+  "05_expert_agent.md":          "knowledge/05_Expert_Agent_Example.md"
+  "06_quick_reference.md":       "knowledge/06_Quick_Reference.md"
+  "07_critic_agent.md":          "knowledge/07_Critic_Agent.md"
+  "08_synthesizer_agent.md":     "knowledge/08_Synthesizer_Agent.md"
+  "09_debugger_agent.md":        "knowledge/09_Debugger_Agent.md"
+  "10_strategist_agent.md":      "knowledge/10_Strategist_Agent.md"
+  "11_calibrator_agent.md":      "knowledge/11_Calibrator_Agent.md"
+  "12_calibration_layer.md":     "knowledge/12_Calibration_Layer.md"
+  "13_decision_classification.md": "knowledge/13_Decision_Classification.md"
+  "14_metacognitive_monitor.md": "knowledge/14_Metacognitive_Monitor.md"
+  "15_grounding_scores.md":      "knowledge/15_Grounding_Scores.md"
+  "16_operational_bounds.md":    "knowledge/16_Operational_Bounds.md"
+  "17_temporal_knowledge.md":    "knowledge/17_Temporal_Knowledge.md"
+  "18_salience_allocation.md":   "knowledge/18_Salience_Allocation.md"
+  "19_memory_architecture.md":   "knowledge/19_Memory_Architecture.md"
+  "20_permission_model.md":      "knowledge/20_Permission_Model.md"
+  "21_knowledge_accretion.md":   "knowledge/21_Knowledge_Accretion.md"
+  "22_semantic_wiki_search.md":  "knowledge/22_Semantic_Wiki_Search.md"
+  "23_taxonomy_enforcement.md":  "knowledge/23_Taxonomy_Enforcement.md"
+  "24_verbatim_history_mining.md": "knowledge/24_Verbatim_History_Mining.md"
+  "25_entity_relationship_analysis.md": "knowledge/25_Entity_Relationship_Analysis.md"

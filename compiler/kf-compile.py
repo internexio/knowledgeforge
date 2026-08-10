@@ -1339,33 +1339,131 @@ def compile_plugin_bundle(binding: dict, output_root: Path, dry_run: bool,
     return manifest
 
 
-def compile_codex_placeholder(binding: dict, output_root: Path, dry_run: bool,
-                               diff_mode: bool, version: str,
-                               check_divergence: bool = False) -> list[dict]:
+def compile_codex(binding: dict, output_root: Path, dry_run: bool,
+                  diff_mode: bool, version: str,
+                  check_divergence: bool = False) -> list[dict]:
     """
-    Codex target — DEFERRED placeholder (SPEC 1 D7).
+    Codex CLI target.
 
-    The Codex agent schema (TOML) authoritative reference is not yet in core,
-    so we cannot emit valid agent files. This handler writes nothing and
-    returns an empty manifest with a stderr warning. Recommended exit code 0
-    so CI dry-runs and inventory scans don't false-fail on a known-deferred
-    target.
+    Produces a single AGENTS.md file at output_root/AGENTS.md. Content is
+    M00 orchestrator with CC sections stripped via strip_cc_sections() and
+    conditional blocks processed via process_conditional_blocks(). Users copy
+    the file to their project root — Codex CLI reads AGENTS.md as natural
+    language instructions, equivalent to Claude Code's CLAUDE.md.
 
-    When the binding's `status` field flips from "deferred" to "active" AND
-    `module_outputs` becomes non-empty, this function will be replaced by a
-    real compile_codex(...) that mirrors compile_claude_code(...) but emits
-    TOML instead of markdown.
-
-    Decision-tag: evaluative (parallels existing compile_* dispatch shape;
-    writes no files but returns the expected list[dict] manifest type).
+    Decision-tag: evaluative (mirrors compile_claude_projects single-file
+    variant; output_root is platforms/codex/ inside core, so no write_manifest
+    call needed — the file lives in core already).
     """
-    status = (binding or {}).get("status", "unknown")
-    sys.stderr.write(
-        "[kf-compile] Codex target is deferred "
-        "(see platform-bindings/codex.yaml). Bind schema then re-run. "
-        f"(binding status: {status})\n"
-    )
-    return []
+    manifest: list[dict] = []
+    source_name = "00_orchestrator.md"
+    output_name = "AGENTS.md"
+
+    src = MODULES_DIR / source_name
+    if not src.exists():
+        sys.stderr.write(f"[kf-compile] Module not found: {source_name} — aborting codex\n")
+        return manifest
+
+    raw = strip_cc_sections(src.read_text(encoding="utf-8"))
+    content = process_conditional_blocks(raw, {}, "codex")
+    out_path = output_root / output_name
+
+    entry: dict = {"source": source_name, "output": output_name, "section": "full"}
+
+    if diff_mode:
+        existing = out_path.read_text(encoding="utf-8") if out_path.exists() else ""
+        if content == existing:
+            entry["status"] = "unchanged"
+        else:
+            entry["status"] = "changed"
+            old_lines = len(existing.splitlines())
+            new_lines = len(content.splitlines())
+            entry["diff_summary"] = f"{old_lines} → {new_lines} lines"
+    elif dry_run:
+        entry["status"] = "would_write"
+    else:
+        if check_divergence:
+            reason = detect_divergence(out_path, content)
+            if reason:
+                entry["status"] = "diverged"
+                entry["diverged_reason"] = reason
+                entry["bytes"] = len(content.encode())
+                manifest.append(entry)
+                return manifest
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(content, encoding="utf-8")
+        entry["status"] = "written"
+
+    entry["bytes"] = len(content.encode())
+    manifest.append(entry)
+    return manifest
+
+
+def compile_chatgpt(binding: dict, output_root: Path, dry_run: bool,
+                    diff_mode: bool, version: str,
+                    check_divergence: bool = False,
+                    flags: dict | None = None) -> list[dict]:
+    """
+    ChatGPT Projects target.
+
+    Mirrors compile_claude_projects exactly: iterates the binding's
+    filename_map, strips CC sections, processes conditional blocks, and writes
+    each output under output_root. M00 goes to kf-chatgpt-instructions.md at
+    the root; M01-M25 go into knowledge/ subdirectory.
+
+    assert_cp_clean() is called on each output to ensure no CC-specific
+    sections leak into the published files.
+
+    Decision-tag: evaluative (direct structural parallel to
+    compile_claude_projects; same strip/assert pipeline, different filename_map
+    and output_root).
+    """
+    manifest: list[dict] = []
+    effective_flags: dict = flags if flags is not None else binding.get("flags", {})
+    filename_map = binding.get("filename_map", {})
+
+    for core_name, chatgpt_name in filename_map.items():
+        src = MODULES_DIR / core_name
+        if not src.exists():
+            sys.stderr.write(f"[kf-compile] Module not found: {core_name} — skipping\n")
+            continue
+
+        raw = strip_cc_sections(src.read_text(encoding="utf-8"))
+        content = process_conditional_blocks(raw, effective_flags, "chatgpt")
+        out_path = output_root / chatgpt_name
+        # Fail-closed guard — never silently publish a CC-section leak.
+        assert_cp_clean(out_path, content)
+
+        entry: dict = {"source": core_name, "output": chatgpt_name, "section": "full"}
+
+        if diff_mode:
+            existing = out_path.read_text(encoding="utf-8") if out_path.exists() else ""
+            if content == existing:
+                entry["status"] = "unchanged"
+            else:
+                entry["status"] = "changed"
+                old_lines = len(existing.splitlines())
+                new_lines = len(content.splitlines())
+                entry["diff_summary"] = f"{old_lines} → {new_lines} lines"
+        elif dry_run:
+            entry["status"] = "would_write"
+        else:
+            if check_divergence:
+                reason = detect_divergence(out_path, content)
+                if reason:
+                    entry["status"] = "diverged"
+                    entry["diverged_reason"] = reason
+                    entry["bytes"] = len(content.encode())
+                    manifest.append(entry)
+                    continue
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            out_path.write_text(content, encoding="utf-8")
+            entry["status"] = "written"
+
+        entry["bytes"] = len(content.encode())
+        manifest.append(entry)
+
+    return manifest
 
 
 def compile_claude_projects(binding: dict, output_root: Path, dry_run: bool,
@@ -1597,7 +1695,7 @@ def main():
     parser.add_argument(
         "--target",
         required=True,
-        choices=["claude-code", "claude-projects", "vscode", "plugin-bundle", "codex"],
+        choices=["claude-code", "claude-projects", "vscode", "plugin-bundle", "codex", "chatgpt"],
         help="Platform target to compile for",
     )
     parser.add_argument(
@@ -1716,11 +1814,15 @@ def main():
             check_divergence=args.check_divergence,
         )
     elif args.target == "codex":
-        # SPEC 1 D7 — Codex binding is deferred; placeholder emits no files,
-        # writes a stderr warning, and exits 0 so CI/dry-runs don't false-fail.
-        manifest = compile_codex_placeholder(
+        manifest = compile_codex(
             binding, output_root, args.dry_run, args.diff, version,
             check_divergence=args.check_divergence,
+        )
+    elif args.target == "chatgpt":
+        manifest = compile_chatgpt(
+            binding, output_root, args.dry_run, args.diff, version,
+            check_divergence=args.check_divergence,
+            flags=binding_flags,
         )
     else:
         sys.stderr.write(f"[kf-compile] Target '{args.target}' not yet implemented\n")
@@ -1728,7 +1830,10 @@ def main():
 
     print_manifest(manifest, args.target, args.dry_run, args.diff)
 
-    if not args.dry_run and not args.diff and args.manifest:
+    # chatgpt and codex output directly into platforms/ inside core — no
+    # separate load map or manifest file needed (output is already in core).
+    _skip_manifest = args.target in ("chatgpt", "codex")
+    if not args.dry_run and not args.diff and args.manifest and not _skip_manifest:
         write_manifest(manifest, output_root, args.target, version)
 
     # Exit 1 if any sections were missing (signals incomplete module annotations)

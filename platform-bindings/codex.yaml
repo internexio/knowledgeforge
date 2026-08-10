@@ -1,33 +1,24 @@
-# platform-bindings/codex.yaml — PLACEHOLDER
-# Codex agent schema (TOML) authoritative reference NOT YET in core.
-# Full binding deferred to follow-on bead. This file specifies the
-# contract surface that the eventual binding MUST satisfy.
-#
-# Added 2026-06-13 (SPEC 1 D7, kf.yaml 7.12.0). See
-# docs/planning/2026-06-13_spec-1-verifier-promotion.md.
-
 target: codex
-status: deferred
+status: active
+description: >
+  OpenAI Codex CLI target. Produces a single AGENTS.md file that users
+  copy to their project root. Codex reads AGENTS.md as natural language
+  instructions, equivalent to how Claude Code reads CLAUDE.md.
 
-contract_surface:
-  agent_emission_format: TOML
-  agent_emission_path_pattern: ".codex/agents/{name}.toml"
-  required_fields_per_agent:
-    - name
-    - description
-    - tools
-    - body
-  tool_name_mapping:
-    Read: "?"
-    Write: "?"
-    Edit: "?"
-    Bash: "?"
-    Glob: "?"
-    Grep: "?"
+capabilities:
+  filesystem: true    # Codex CLI can read/write files
+  hooks: false        # No hook runner equivalent
+  multi_model: false
+  sub_agents: false
+  skills: false
+  docs: false
+  commands: false
+  mcp: false
 
-module_outputs: {}
+output_structure:
+  agents_file: "AGENTS.md"
 
-bind_when:
-  - Authoritative Codex agent TOML schema documented in core
-  - Tool name mapping verified against running Codex install
-  - One worked example agent compiled to both CC and Codex format
+module_outputs:
+  # M00 orchestrator is the single source — CC sections stripped
+  source: "00_orchestrator.md"
+  section: verbatim_stripped  # strip CC sections, output rest as-is
