@@ -8,9 +8,9 @@ KnowledgeForge compiles to multiple AI assistant platforms from a single canonic
 | [Claude Projects](claude-projects/) | ✓ Supported | [Install guide](claude-projects/README.md) |
 | [Plugin Bundle](plugin-bundle/) | ✓ Supported | [Install guide](plugin-bundle/README.md) |
 | [VSCode Copilot](vscode/) | ✓ Supported | [Install guide](vscode/README.md) |
-| [ChatGPT](chatgpt/) | 🔜 Planned | — |
+| [ChatGPT Projects](chatgpt/) | ✓ Supported | [Install guide](chatgpt/README.md) |
+| [Codex CLI](codex/) | ✓ Supported | [Install guide](codex/README.md) |
 | [Cursor](cursor/) | 🔜 Planned | — |
-| [Codex](codex/) | 🔜 Planned | — |
 | [Gemini](gemini/) | 🔜 Planned | — |
 
 ## How it works

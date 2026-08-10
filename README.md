@@ -4,15 +4,15 @@
 
 Reasoning orchestration layer for AI coding assistants. Routes requests to specialized modes with targeted context injection, patching known failure modes: skipping hypotheses, hiding trade-offs, missing gaps, over-engineering simple problems.
 
-**Platforms:** [Claude Code](platforms/claude-code/) · [Claude Projects](platforms/claude-projects/) · [VSCode](platforms/vscode/) · [Plugin Bundle](platforms/plugin-bundle/) · [ChatGPT 🔜](platforms/chatgpt/) · [Cursor 🔜](platforms/cursor/) · [Codex 🔜](platforms/codex/) · [Gemini 🔜](platforms/gemini/)
+**Platforms:** [Claude Code](platforms/claude-code/) · [Claude Projects](platforms/claude-projects/) · [ChatGPT Projects](platforms/chatgpt/) · [Codex CLI](platforms/codex/) · [VSCode](platforms/vscode/) · [Plugin Bundle](platforms/plugin-bundle/) · [Cursor 🔜](platforms/cursor/) · [Gemini 🔜](platforms/gemini/)
 
 ---
 
 ## Install
 
-### Claude Code · Cursor · Windsurf · Zed
+### Claude Code
 
-These editors all support the `~/.claude/` agent convention. Install from this repo:
+Works with Claude Code, Windsurf, and Zed — any editor that supports the `~/.claude/` agent convention.
 
 ```bash
 git clone https://github.com/internexio/knowledgeforge
@@ -20,13 +20,11 @@ cd knowledgeforge
 bash install.sh
 ```
 
-`install.sh` compiles the Claude Code variant and deploys agents, skills, hooks, rules, and docs to `~/.claude/`. Python 3.9+ required.
+`install.sh` compiles the Claude Code variant and deploys agents, skills, hooks, rules, and docs to `~/.claude/`. Python 3.9+ required. Restart your editor after install.
 
-Restart your editor after install. KnowledgeForge is active — no further configuration needed.
+**Optional: faster pre-prompt routing.** Set `GEMINI_API_KEY` in your environment to enable the routing hook — it classifies every request before Claude sees it, injecting the right mode directive automatically. Degrades gracefully without the key.
 
-**Optional: faster pre-prompt routing.** The routing hook can classify requests with a lightweight LLM before Claude sees them, injecting the right mode directive automatically. Set `GEMINI_API_KEY` in your environment to enable it. The hook degrades gracefully if the key is absent.
-
-**Register hooks in settings.json.** `install.sh` does this automatically. If you need to do it manually, the hook entries are in `.claude/settings.json` inside this repo — merge them into your `~/.claude/settings.json`.
+See [`platforms/claude-code/`](platforms/claude-code/) for the full install guide and load map.
 
 ---
 
@@ -34,27 +32,68 @@ Restart your editor after install. KnowledgeForge is active — no further confi
 
 > **Before re-uploading:** delete all existing KnowledgeForge knowledge files first. Claude Projects appends rather than replaces — duplicate filenames create a contradiction source where retrieval cannot distinguish canonical from stale.
 
-1. Create or open a Claude Project at [claude.ai](https://claude.ai).
-2. Go to **Project Instructions** → paste the full contents of `00_Project_Instructions-Claude.md` from `knowledgeforge-cp/`.
-3. Under **Project Knowledge** → upload all 25 knowledge files from `knowledgeforge-cp/`.
-4. Start a conversation. Classification and routing are automatic.
+1. Create or open a Claude Project at [claude.ai](https://claude.ai)
+2. **Project Instructions** → paste the full contents of `00_Project_Instructions-Claude.md`
+3. **Project Knowledge** → upload all 25 knowledge files
+4. Start a conversation — routing is automatic
 
-To generate the `knowledgeforge-cp/` files from this repo:
+Generate the files from this repo:
 
 ```bash
-python3 compiler/kf-compile.py --target claude-projects --output ./knowledgeforge-cp
+python3 compiler/kf-compile.py --target claude-projects --output ./dist/claude-projects
 ```
 
-Then upload the output.
-
 > M25 (ERA) is required. The orchestrator runs Entity Relationship Analysis as a post-routing pass on Builder, Coordinator, Expert, Strategist, and Critic requests. Omitting it leaves five routing paths unguarded.
+
+See [`platforms/claude-projects/`](platforms/claude-projects/) for the full install guide.
+
+---
+
+### ChatGPT Projects
+
+Pre-compiled files are in [`platforms/chatgpt/`](platforms/chatgpt/) — no build step needed.
+
+1. Open your ChatGPT Project → **Settings > Instructions** → paste the contents of `platforms/chatgpt/kf-chatgpt-instructions.md`
+2. **Knowledge** → upload all files from `platforms/chatgpt/knowledge/`
+
+> Before re-uploading: delete existing KF knowledge files first. ChatGPT does not deduplicate by filename.
+>
+> If you hit a file limit (Custom GPTs cap at 20): prioritize `knowledge/01`–`knowledge/11` (the mode specs) over the infrastructure modules `12`–`25`.
+
+To recompile after module changes:
+
+```bash
+python3 compiler/kf-compile.py --target chatgpt --output platforms/chatgpt
+```
+
+See [`platforms/chatgpt/`](platforms/chatgpt/) for the full install guide.
+
+---
+
+### Codex CLI
+
+Pre-compiled output is in [`platforms/codex/`](platforms/codex/) — no build step needed.
+
+```bash
+cp platforms/codex/AGENTS.md /path/to/your/project/AGENTS.md
+```
+
+Codex reads `AGENTS.md` at the project root automatically — same convention as `CLAUDE.md` for Claude Code.
+
+To recompile after module changes:
+
+```bash
+python3 compiler/kf-compile.py --target codex --output platforms/codex
+```
+
+See [`platforms/codex/`](platforms/codex/) for the full install guide.
 
 ---
 
 ### VSCode (experimental)
 
 ```bash
-python3 compiler/kf-compile.py --target vscode --output ./knowledgeforge-vscode
+python3 compiler/kf-compile.py --target vscode --output ./dist/vscode
 ```
 
 See [`platforms/vscode/load-map.md`](platforms/vscode/load-map.md) for what gets generated and where it deploys inside a VSCode extension.
@@ -66,8 +105,8 @@ See [`platforms/vscode/load-map.md`](platforms/vscode/load-map.md) for what gets
 For tool-agnostic deployment (any platform that can load agent files via a plugin):
 
 ```bash
-python3 compiler/kf-compile.py --target plugin-bundle --output ./knowledgeforge-bundle
-bash ./knowledgeforge-bundle/install.sh
+python3 compiler/kf-compile.py --target plugin-bundle --output ./dist/plugin-bundle
+bash ./dist/plugin-bundle/install.sh
 ```
 
 See [`platforms/plugin-bundle/load-map.md`](platforms/plugin-bundle/load-map.md) for the full file manifest.
@@ -182,8 +221,17 @@ python3 compiler/kf-compile.py --target claude-code --output /path/to/output
 # Claude Projects variant
 python3 compiler/kf-compile.py --target claude-projects --output /path/to/output
 
+# ChatGPT Projects (output lives in-repo at platforms/chatgpt/)
+python3 compiler/kf-compile.py --target chatgpt --output platforms/chatgpt
+
+# Codex CLI (output lives in-repo at platforms/codex/)
+python3 compiler/kf-compile.py --target codex --output platforms/codex
+
 # VSCode extension resources
 python3 compiler/kf-compile.py --target vscode --output /path/to/output
+
+# Plugin bundle
+python3 compiler/kf-compile.py --target plugin-bundle --output /path/to/output
 
 # Verify determinism (build twice, diff)
 bash scripts/verify-deterministic-build.sh
