@@ -243,6 +243,7 @@ era:
     "API gateway": ["src/api/**/*.ts", "src/gateway/**/*.ts"]
     "session store": ["src/storage/session*.ts", "config/redis.yaml"]
     "rate limit policy": []
+<!-- kf:if gitnexus -->
   resolver_source:
     # DIAGNOSTIC METADATA only — no current consumer module reads this.
     # When a future drift-detection bead lands, this comment updates to
@@ -250,8 +251,10 @@ era:
     primary: gitnexus  # one of: gitnexus | grep | none
     gitnexus_attempted: true
     grep_attempted: false
+<!-- kf:endif -->
 ```
 
+<!-- kf:if gitnexus -->
 ### Resolver shape (added 7.1.0)
 
 ERA's entity → path-glob resolver uses a two-source strategy:
@@ -266,6 +269,7 @@ ERA's entity → path-glob resolver uses a two-source strategy:
 4. Cache invalidates at session end (M19 Tier 2 lifecycle).
 
 **Hybrid strategy:** try GitNexus first; on failure (tool unavailable OR returns empty), fall back to grep cache. Both paths feed the same `entity_paths` output shape.
+<!-- kf:endif -->
 
 ### Glob derivation rules (added 7.1.0)
 

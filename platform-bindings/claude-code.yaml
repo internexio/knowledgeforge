@@ -41,6 +41,7 @@ flags:
   #   where the COS MCP integration is available and the comms-domain workflows
   #   are active.
   cos: false
+  gitnexus: false
 
 # --------------------------------------------------------------------------
 # Output structure — relative to target CC repo root

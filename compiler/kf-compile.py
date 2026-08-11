@@ -44,10 +44,12 @@ HOOKS_DIR = CORE_ROOT / "hooks"
 # ---------------------------------------------------------------------------
 
 
-# Section names that delimit compilation blocks. The extractor only stops
-# when it hits another CC marker — internal ## headings in embedded content
-# are passed through unchanged.
-CC_SECTION_MARKERS = frozenset({"CC Skill", "CC Doc", "CC Agent", "CC Rules"})
+# Section names that delimit platform compilation blocks. The extractor only
+# stops when it hits another platform marker — internal ## headings in embedded
+# content are passed through unchanged.
+CC_SECTION_MARKERS = frozenset({
+    "CC Skill", "CC Doc", "CC Agent", "CC Rules", "ChatGPT Instructions",
+})
 
 # Sections to STRIP from -CP output. Superset of CC_SECTION_MARKERS plus
 # "Section-Load Map" — the latter only ever appears as a compile-side back-
@@ -1466,10 +1468,9 @@ def compile_chatgpt(binding: dict, output_root: Path, dry_run: bool,
     """
     ChatGPT Projects target.
 
-    Mirrors compile_claude_projects exactly: iterates the binding's
-    filename_map, strips CC sections, processes conditional blocks, and writes
-    each output under output_root. M00 goes to kf-chatgpt-instructions.md at
-    the root; M01-M25 go into knowledge/ subdirectory.
+    Iterates the binding's filename_map and writes each output under
+    output_root. M00 is reduced to the binding's dedicated instruction section;
+    M01-M25 retain full module content with platform sections stripped.
 
     assert_cp_clean() is called on each output to ensure no CC-specific
     sections leak into the published files.
@@ -1481,21 +1482,128 @@ def compile_chatgpt(binding: dict, output_root: Path, dry_run: bool,
     manifest: list[dict] = []
     effective_flags: dict = flags if flags is not None else binding.get("flags", {})
     filename_map = binding.get("filename_map", {})
+    output_structure = binding.get("output_structure", {})
+    instructions_file = output_structure.get("instructions_file")
+    instructions_section = output_structure.get("instructions_source_section")
+    constraints = binding.get("constraints", {})
+
+    if not instructions_file or not instructions_section:
+        raise RuntimeError(
+            "[kf-compile][chatgpt] output_structure must declare "
+            "instructions_file and instructions_source_section"
+        )
+
+    if instructions_file not in filename_map.values():
+        raise RuntimeError(
+            "[kf-compile][chatgpt] instructions_file is not present in filename_map: "
+            f"{instructions_file}"
+        )
+
+    def require_positive_int(name: str) -> int:
+        value = constraints.get(name)
+        if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+            raise RuntimeError(
+                f"[kf-compile][chatgpt] constraints.{name} must be a positive "
+                f"integer; got {value!r}"
+            )
+        return value
+
+    target_limit = require_positive_int("instructions_target_chars")
+    hard_limit = require_positive_int("instructions_char_limit")
+    if target_limit > hard_limit:
+        raise RuntimeError(
+            "[kf-compile][chatgpt] invalid instruction budgets: "
+            f"target {target_limit} exceeds hard limit {hard_limit}"
+        )
+
+    required_knowledge = constraints.get("required_knowledge_files")
+    if not isinstance(required_knowledge, list) or not required_knowledge or not all(
+        isinstance(path, str) and path for path in required_knowledge
+    ):
+        raise RuntimeError(
+            "[kf-compile][chatgpt] constraints.required_knowledge_files must "
+            "be a non-empty list of paths"
+        )
+    forbidden_terms = constraints.get("forbidden_terms")
+    if not isinstance(forbidden_terms, list) or not forbidden_terms or not all(
+        isinstance(term, str) and term for term in forbidden_terms
+    ):
+        raise RuntimeError(
+            "[kf-compile][chatgpt] constraints.forbidden_terms must be a "
+            "non-empty list of terms"
+        )
+
+    mapped_outputs = set(filename_map.values())
+    missing_mappings = [path for path in required_knowledge if path not in mapped_outputs]
+    if missing_mappings:
+        raise RuntimeError(
+            "[kf-compile][chatgpt] required knowledge file(s) are not mapped: "
+            + ", ".join(missing_mappings)
+        )
 
     for core_name, chatgpt_name in filename_map.items():
         src = MODULES_DIR / core_name
         if not src.exists():
-            sys.stderr.write(f"[kf-compile] Module not found: {core_name} — skipping\n")
-            continue
+            required_label = "required " if chatgpt_name in required_knowledge else ""
+            raise RuntimeError(
+                f"[kf-compile][chatgpt] missing {required_label}source module "
+                f"{core_name} mapped to {chatgpt_name}; compilation aborted"
+            )
 
-        raw = strip_cc_sections(src.read_text(encoding="utf-8"))
-        raw = strip_changelog_from_metadata(raw)
+        source_content = src.read_text(encoding="utf-8")
+        section_label = "full"
+        if chatgpt_name == instructions_file:
+            extracted = extract_section(source_content, instructions_section)
+            if extracted is None:
+                raise RuntimeError(
+                    f"[kf-compile][chatgpt] missing ## {instructions_section} "
+                    f"in {core_name}"
+                )
+            raw = extracted.rstrip() + "\n"
+            section_label = instructions_section
+        else:
+            raw = strip_cc_sections(source_content)
+            raw = strip_changelog_from_metadata(raw)
         content = process_conditional_blocks(raw, effective_flags, "chatgpt")
         out_path = output_root / chatgpt_name
         # Fail-closed guard — never silently publish a CC-section leak.
         assert_cp_clean(out_path, content)
 
-        entry: dict = {"source": core_name, "output": chatgpt_name, "section": "full"}
+        leaked_terms = [term for term in forbidden_terms if term.lower() in content.lower()]
+        if leaked_terms:
+            raise RuntimeError(
+                f"[kf-compile][chatgpt] {chatgpt_name} contains forbidden "
+                "platform term(s): " + ", ".join(leaked_terms)
+            )
+
+        if chatgpt_name == instructions_file:
+            content_chars = len(content)
+            if content_chars > hard_limit:
+                raise RuntimeError(
+                    "[kf-compile][chatgpt] Project Instructions exceed hard limit: "
+                    f"{content_chars} chars > {hard_limit}"
+                )
+            if content_chars > target_limit:
+                raise RuntimeError(
+                    "[kf-compile][chatgpt] Project Instructions exceed budget: "
+                    f"{content_chars} chars > target {target_limit} "
+                    f"(hard limit {hard_limit})"
+                )
+            missing_references = [
+                path for path in required_knowledge
+                if path not in content
+            ]
+            if missing_references:
+                raise RuntimeError(
+                    "[kf-compile][chatgpt] instruction kernel does not reference "
+                    "required knowledge file(s): " + ", ".join(missing_references)
+                )
+
+        entry: dict = {
+            "source": core_name,
+            "output": chatgpt_name,
+            "section": section_label,
+        }
 
         if diff_mode:
             existing = out_path.read_text(encoding="utf-8") if out_path.exists() else ""

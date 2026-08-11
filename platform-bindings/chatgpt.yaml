@@ -18,14 +18,31 @@ capabilities:
   mcp: false              # MCP not supported in ChatGPT Projects
 
 constraints:
-  instructions_char_limit: 8000    # ChatGPT Project Instructions field limit
+  instructions_target_chars: 6500  # Compiler-enforced operating target
+  instructions_char_limit: 8000    # ChatGPT Project Instructions hard limit
+  forbidden_terms: [gitnexus]
+  required_knowledge_files:
+    - "knowledge/01_Navigator_Agent.md"
+    - "knowledge/02_Builder_Agent.md"
+    - "knowledge/03_Coordination_Patterns.md"
+    - "knowledge/05_Expert_Agent_Example.md"
+    - "knowledge/07_Critic_Agent.md"
+    - "knowledge/08_Synthesizer_Agent.md"
+    - "knowledge/09_Debugger_Agent.md"
+    - "knowledge/10_Strategist_Agent.md"
+    - "knowledge/11_Calibrator_Agent.md"
   knowledge_file_limit: 20         # Max uploaded files per project
   knowledge_file_size_limit: 512   # KB per file
   retrieval: file_search           # Retrieval mechanism for knowledge files
 
 output_structure:
   instructions_file: "kf-chatgpt-instructions.md"   # Paste into Project Instructions
+  instructions_source_section: "ChatGPT Instructions"
   knowledge_dir: "knowledge/"                         # Upload these files to Project Knowledge
+
+flags:
+  cos: false
+  gitnexus: false
 
 # Module → output mapping
 # M00 compiles to the root instructions file.

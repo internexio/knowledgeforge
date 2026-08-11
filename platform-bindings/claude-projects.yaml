@@ -25,6 +25,9 @@ constraints:
   no_hooks: true
   no_compilation: true              # CP receives full module content — no extraction
 
+flags:
+  gitnexus: false
+
 # --------------------------------------------------------------------------
 # Output structure — relative to target CP repo root
 # --------------------------------------------------------------------------

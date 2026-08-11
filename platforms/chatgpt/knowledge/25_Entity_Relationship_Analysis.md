@@ -202,29 +202,8 @@ era:
     "API gateway": ["src/api/**/*.ts", "src/gateway/**/*.ts"]
     "session store": ["src/storage/session*.ts", "config/redis.yaml"]
     "rate limit policy": []
-  resolver_source:
-    # DIAGNOSTIC METADATA only — no current consumer module reads this.
-    # When a future drift-detection bead lands, this comment updates to
-    # name the consumer. Useful for post-hoc debugging in the meantime.
-    primary: gitnexus  # one of: gitnexus | grep | none
-    gitnexus_attempted: true
-    grep_attempted: false
 ```
 
-### Resolver shape (added 7.1.0)
-
-ERA's entity → path-glob resolver uses a two-source strategy:
-
-**Primary path: GitNexus.** When `gitnexus_context` or `gitnexus_query` is available in the session (KF's global CLAUDE.md mandates GitNexus usage when indexed), ERA delegates entity-name lookup to GitNexus. GitNexus returns file paths for symbols; ERA wraps those paths as globs (per the Glob Derivation Rules below).
-
-**Fallback path: session-cached grep.** When GitNexus is unavailable (e.g., fresh repo not yet `npx gitnexus analyze`-d):
-
-1. On first ERA call against a given repo in a session, scan the repo for entity-candidate paths using `git grep -l` against the entity name plus common variations (kebab-case, snake_case, camelCase, PascalCase).
-2. Cache the result keyed by `(entity_name, repo_root)` where `repo_root = git rev-parse --show-toplevel`. Multi-repo sessions get separate cache scopes.
-3. Subsequent ERA calls in the same session-and-same-repo read from cache.
-4. Cache invalidates at session end (M19 Tier 2 lifecycle).
-
-**Hybrid strategy:** try GitNexus first; on failure (tool unavailable OR returns empty), fall back to grep cache. Both paths feed the same `entity_paths` output shape.
 
 ### Glob derivation rules (added 7.1.0)
 
