@@ -2,7 +2,7 @@
 
 ## Status
 
-🔜 Planned — not yet implemented.
+🧪 Experimental / planned — not yet implemented or validated.
 
 The platform binding stub exists at [`platform-bindings/cursor.yaml`](../../platform-bindings/cursor.yaml).
 

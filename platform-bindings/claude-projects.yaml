@@ -1,5 +1,6 @@
 platform: claude-projects
 platform_version: "7.0"
+maturity: tested
 description: >
   Claude Projects (CP) — no filesystem, no hooks, no skills.
   Context is loaded from Project Knowledge files at session start.

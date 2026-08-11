@@ -4,18 +4,20 @@ KnowledgeForge compiles to multiple AI assistant platforms from a single canonic
 
 | Platform | Status | Guide |
 |----------|--------|-------|
-| [Claude Code](claude-code/) | ✓ Supported | [Install guide](claude-code/README.md) |
-| [Claude Projects](claude-projects/) | ✓ Supported | [Install guide](claude-projects/README.md) |
-| [Plugin Bundle](plugin-bundle/) | ✓ Supported | [Install guide](plugin-bundle/README.md) |
-| [VSCode Copilot](vscode/) | ✓ Supported | [Install guide](vscode/README.md) |
-| [ChatGPT Projects](chatgpt/) | ✓ Supported | [Install guide](chatgpt/README.md) |
-| [Codex CLI](codex/) | ✓ Supported | [Install guide](codex/README.md) |
-| [Cursor](cursor/) | 🔜 Planned | — |
-| [Gemini](gemini/) | 🔜 Planned | — |
+| [Claude Code](claude-code/) | ✓ Tested | [Install guide](claude-code/README.md) |
+| [Claude Projects](claude-projects/) | ✓ Tested | [Install guide](claude-projects/README.md) |
+| [Plugin Bundle](plugin-bundle/) | 🧪 Experimental | [Install guide](plugin-bundle/README.md) |
+| [VSCode Copilot](vscode/) | 🧪 Experimental | [Install guide](vscode/README.md) |
+| [ChatGPT Projects](chatgpt/) | 🧪 Experimental | [Install guide](chatgpt/README.md) |
+| [Codex CLI](codex/) | 🧪 Experimental | [Install guide](codex/README.md) |
+| [Cursor](cursor/) | 🧪 Experimental / planned | — |
+| [Gemini](gemini/) | 🧪 Experimental / planned | — |
 
 ## How it works
 
 The 26 module specs in `modules/` are platform-agnostic. The compiler (`compiler/kf-compile.py`) reads platform bindings from `platform-bindings/*.yaml` and produces platform-specific output — skill files and agents for Claude Code, a compiled system prompt for Claude Projects, VSCode extension resources, and so on.
+
+Only the Claude Code and Claude Projects variants are currently considered tested. Every other target is experimental, including targets whose compiler implementation is active.
 
 ```
 modules/           ←  canonical source (platform-agnostic)

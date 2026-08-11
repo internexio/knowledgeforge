@@ -11,6 +11,7 @@
 
 target: gemini
 status: deferred
+maturity: experimental
 
 description: >
   Google Gemini target. Sub-target 'api' produces a single system instruction

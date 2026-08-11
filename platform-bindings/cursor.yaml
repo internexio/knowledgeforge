@@ -9,6 +9,7 @@
 
 target: cursor
 status: deferred
+maturity: experimental
 
 description: >
   Cursor rules target. Compiles KF mode content into `.cursor/rules/*.mdc`

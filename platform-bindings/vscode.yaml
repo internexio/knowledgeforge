@@ -1,5 +1,6 @@
 platform: vscode
 platform_version: "1.0"
+maturity: experimental
 description: >
   VS Code extension target. Emits KF mode content as .md resource files
   loaded at runtime by the extension host via vscode.workspace.fs.readFile().

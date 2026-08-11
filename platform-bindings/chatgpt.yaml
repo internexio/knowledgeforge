@@ -1,5 +1,6 @@
 target: chatgpt
 status: active
+maturity: experimental
 description: >
   ChatGPT Projects target. Compiles KF into a project instructions file
   (paste into ChatGPT Project Custom Instructions) plus a set of knowledge

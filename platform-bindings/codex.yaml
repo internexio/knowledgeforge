@@ -1,5 +1,6 @@
 target: codex
 status: active
+maturity: experimental
 description: >
   OpenAI Codex CLI target. Produces a single AGENTS.md file that users
   copy to their project root. Codex reads AGENTS.md as natural language

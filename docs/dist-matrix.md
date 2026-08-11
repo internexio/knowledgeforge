@@ -10,7 +10,8 @@ Platform binding inventory — capabilities, module coverage, and implementation
 
 | Capability | claude-code | claude-projects | vscode | codex | cursor | chatgpt | gemini | generic |
 |---|---|---|---|---|---|---|---|---|
-| **Status** | active | active | active | deferred | deferred | deferred | deferred | deferred |
+| **Implementation** | active | active | active | active | deferred | active | deferred | deferred |
+| **Maturity** | tested | tested | experimental | experimental | experimental | experimental | experimental | experimental |
 | Filesystem | ✓ | — | ✓ | ✓ | ✓ | — | — | — |
 | Hooks | ✓ | — | — | — | — | — | — | — |
 | Sub-agents | ✓ | — | — | — | — | — | — | — |
@@ -80,6 +81,8 @@ Platform binding inventory — capabilities, module coverage, and implementation
 | `active` | Compiler target implemented; outputs verified |
 | `deferred` | Contract surface defined; compiler target not yet implemented |
 | `deprecated` | Target removed; artifacts frozen (knowledgeforge-cw) |
+
+Implementation status and validation maturity are independent. `active` means the compiler target exists; it does not mean the output has been thoroughly validated. Only Claude Code and Claude Projects are currently `tested`; all non-Claude targets are `experimental`.
 
 ---
 

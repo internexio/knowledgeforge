@@ -1,5 +1,7 @@
 # KnowledgeForge — Plugin Bundle
 
+> **Experimental:** Bundle generation is implemented, but this distribution has not received the same validation coverage as the Claude variants.
+
 The plugin bundle is a self-contained, redistributable package of KF agents and skills for use in Claude Code plugin marketplaces and managed deployments.
 
 ## What's included

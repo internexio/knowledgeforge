@@ -1,5 +1,7 @@
 # KnowledgeForge — VSCode Copilot
 
+> **Experimental:** This variant has not received the same validation coverage as the Claude variants.
+
 ## What you get
 
 KF mode resources compiled for VSCode's GitHub Copilot Chat extension — the orchestrator prompt and all mode docs injected as Copilot context resources.

@@ -4,7 +4,9 @@
 
 Reasoning orchestration layer for AI coding assistants. Routes requests to specialized modes with targeted context injection, patching known failure modes: skipping hypotheses, hiding trade-offs, missing gaps, over-engineering simple problems.
 
-**Platforms:** [Claude Code](platforms/claude-code/) · [Claude Projects](platforms/claude-projects/) · [ChatGPT Projects](platforms/chatgpt/) · [Codex CLI](platforms/codex/) · [VSCode](platforms/vscode/) · [Plugin Bundle](platforms/plugin-bundle/) · [Cursor 🔜](platforms/cursor/) · [Gemini 🔜](platforms/gemini/)
+**Platforms:** [Claude Code](platforms/claude-code/) · [Claude Projects](platforms/claude-projects/) · [ChatGPT Projects 🧪](platforms/chatgpt/) · [Codex CLI 🧪](platforms/codex/) · [VSCode 🧪](platforms/vscode/) · [Plugin Bundle 🧪](platforms/plugin-bundle/) · [Cursor 🧪 planned](platforms/cursor/) · [Gemini 🧪 planned](platforms/gemini/)
+
+> Only the Claude Code and Claude Projects variants are currently considered tested. All non-Claude targets are experimental.
 
 ---
 
@@ -45,6 +47,8 @@ See [`platforms/claude-projects/`](platforms/claude-projects/) for the full inst
 
 ### ChatGPT Projects
 
+> **Experimental:** This variant has not received the same validation coverage as the Claude variants.
+
 Pre-compiled files are in [`platforms/chatgpt/`](platforms/chatgpt/) — no build step needed.
 
 1. Open your ChatGPT Project → **Settings > Instructions** → paste the contents of `platforms/chatgpt/kf-chatgpt-instructions.md`
@@ -66,13 +70,23 @@ See [`platforms/chatgpt/`](platforms/chatgpt/) for the full install guide.
 
 ### Codex CLI
 
+> **Experimental:** Codex support is under active testing and currently exposes only part of Codex's native customization surface.
+
 Pre-compiled output is in [`platforms/codex/`](platforms/codex/) — no build step needed.
 
+Install into one project:
+
 ```bash
-cp platforms/codex/AGENTS.md /path/to/your/project/AGENTS.md
+bash install.sh --codex --project /path/to/your/project
 ```
 
-Codex reads `AGENTS.md` at the project root automatically — same convention as `CLAUDE.md` for Claude Code.
+Or install globally for all local Codex projects:
+
+```bash
+bash install.sh --codex --global
+```
+
+The global install writes `~/.codex/AGENTS.md`; the project install writes `AGENTS.md` in the selected project. If either target already contains different instructions, the installer refuses to replace it unless you add `--force`, which creates a timestamped backup first. Use `--dry-run` to preview either command.
 
 To recompile after module changes:
 
@@ -80,7 +94,7 @@ To recompile after module changes:
 python3 compiler/kf-compile.py --target codex --output platforms/codex
 ```
 
-See [`platforms/codex/`](platforms/codex/) for the full install guide.
+Project instructions are more specific, so keep the project install for repositories that need different behavior. See [`platforms/codex/`](platforms/codex/) for the full install guide.
 
 ---
 
@@ -95,6 +109,8 @@ See [`platforms/vscode/load-map.md`](platforms/vscode/load-map.md) for what gets
 ---
 
 ### Plugin bundle
+
+> **Experimental:** Bundle generation is implemented, but this distribution has not received the same validation coverage as the Claude variants.
 
 For tool-agnostic deployment (any platform that can load agent files via a plugin):
 

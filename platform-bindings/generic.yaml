@@ -11,6 +11,7 @@
 
 target: generic
 status: deferred
+maturity: experimental
 
 description: >
   Single-file consolidation target. Outputs one markdown document containing
