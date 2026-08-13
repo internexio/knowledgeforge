@@ -5,13 +5,22 @@
 ```yaml
 module:
   title: Metacognitive Monitor
-  version: 6.6.0
+  version: 6.7.0
   purpose: Supervisory layer that detects agent failure and user-side session degradation before bad output is produced, triggering appropriate interventions
   topics: [monitoring, failure-detection, intervention, metacognition, agent-safety, user-health, skeptical-verification, accretion-monitoring]
   contexts: [agent-execution, workflow-monitoring, quality-assurance, escalation, session-health]
   difficulty: advanced
   related: [03_Coordination_Patterns, 09_Debugger_Agent, 12_Calibration_Layer, 15_Grounding_Scores, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    6.7.0:
+      date: 2026-08-12
+      driver: knowledgeforge-core-31l
+      changes:
+        - Added iteration_scope block to circular_reasoning Check 1. Documents the scope
+          distinction between intra-session hash_window (10 steps within one session trace)
+          and cross-iteration plateau detection (Module 26 KF-LOOP Substrate monitor, which
+          operates across full loop cadences spanning multiple sessions). The two checks are
+          complementary and non-overlapping in scope.
     6.6.0: |
       - Added Check 6: Vision Principle Drift Detection — fires when Builder or Strategist output explicitly contradicts a stated vision principle; once per session per principle; requires wiki/vision.md to be present. Source: plans/kf-vision-roadmap-spec.md
     6.2.0: |
@@ -66,6 +75,21 @@ circular_reasoning:
     severity: warning (first occurrence) | critical (second occurrence)
     
   intervention: SWITCH_STRATEGY (first) → ESCALATE (if loop persists)
+
+  # Added 6.7.0 (knowledgeforge-core-31l)
+  iteration_scope:
+    description: >
+      Check 1 operates within a single session trace (hash_window=10 reasoning steps).
+      Cross-iteration plateau detection is a separate, complementary check defined in
+      Module 26 (KF-LOOP Substrate) that operates at iteration scope -- where one
+      iteration spans one full loop cadence and may cover multiple sessions.
+    scope_boundary: >
+      Check 1 scope: intra-session, reasoning-step granularity.
+      Module 26 monitor scope: cross-iteration, full-cadence granularity.
+    relationship: >
+      The two checks do not overlap. Check 1 catches loops within a session;
+      Module 26 monitor catches plateaus across sessions. Both must be active
+      when a KF-LOOP instance is running.
 ```
 
 ### 2. Context Overflow Prediction
@@ -677,6 +701,7 @@ Turn 16: Update routing index. Flag downstream artifacts that assumed REST.
 - `19_Memory_Architecture.md` — (6.1) Skeptical verification integrates with routing index
 - `20_Permission_Model.md` — (6.1) User-side health signals can trigger risk escalation
 - `21_Knowledge_Accretion.md` — (6.2) Positive novelty detection; over-accretion and drift monitoring
+- `26_kf_loop_substrate.md` — (6.7) KF-LOOP iteration-scope plateau detection; complementary to Check 1 at cross-iteration scope
 - All mode modules — Monitor is the universal observation substrate
 
 ## CC Doc
@@ -688,7 +713,7 @@ Monitor execution for failure patterns. Default action is CONTINUE — the monit
 
 ## Six Checks
 
-**1. Circular reasoning:** Hash working state at each step. Compare against last 10 states. Threshold: 90% similarity within 10-step window. First detection → SWITCH_STRATEGY. Second → ESCALATE.
+**1. Circular reasoning:** Hash working state at each step. Compare against last 10 states. Threshold: 90% similarity within 10-step window. First detection → SWITCH_STRATEGY. Second → ESCALATE. Scope: intra-session reasoning steps only. Cross-iteration plateau detection (across full loop cadences) is a separate check in Module 26 (KF-LOOP Substrate); the two checks are complementary and non-overlapping.
 
 **2. Context overflow:** Track window utilization. 75% → FLAG_UNCERTAINTY; 80% → COMPRESS_CONTEXT; 85% → SWITCH_STRATEGY or ESCALATE.
 

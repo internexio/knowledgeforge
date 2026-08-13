@@ -5,15 +5,24 @@
 ```yaml
 module:
   title: Memory Architecture
-  version: 7.4.0
-  purpose: Four-tier memory system — persistent domain knowledge (Tier 0), routing index (Tier 1), mode state (Tier 2), and archived history (Tier 3) — that maintains routing accuracy across long sessions and knowledge continuity across sessions
-  topics: [memory, context-management, session-persistence, consolidation, skeptical-verification, persistent-knowledge, routing-audit-log, metric-aggregates]
-  contexts: [long-sessions, mode-transitions, context-pressure, state-management, cross-session-knowledge, routing-decision-audit]
+  version: 7.5.0
+  purpose: Four-tier memory system -- persistent domain knowledge (Tier 0), routing index (Tier 1), mode state (Tier 2), and archived history (Tier 3) -- plus two cross-session audit logs (routing_decision_log, attempt_ledger) that maintain routing accuracy and iterative loop convergence across sessions
+  topics: [memory, context-management, session-persistence, consolidation, skeptical-verification, persistent-knowledge, routing-audit-log, metric-aggregates, attempt-ledger, iterative-convergence]
+  contexts: [long-sessions, mode-transitions, context-pressure, state-management, cross-session-knowledge, routing-decision-audit, kf-loop-substrate]
   difficulty: advanced
-  related: [00_Orchestrator, 03_Coordination_Patterns, 04_Specification_Templates, 14_Metacognitive_Monitor, 16_Operational_Bounds, 17_Temporal_Knowledge, 20_Permission_Model, 21_Knowledge_Accretion]
+  related: [00_Orchestrator, 03_Coordination_Patterns, 04_Specification_Templates, 14_Metacognitive_Monitor, 16_Operational_Bounds, 17_Temporal_Knowledge, 20_Permission_Model, 21_Knowledge_Accretion, 26_KF_LOOP_Substrate]
   added_in: "6.1"
   implements: "Directive 2 (Three-Tier Memory Architecture), extended to four tiers in 6.2"
   changelog:
+    7.5.0:
+      date: 2026-08-12
+      driver: knowledgeforge-core-31l
+      changes:
+        - Added attempt_ledger schema alongside routing_decision_log (DECISION-1 Option a selected). Satisfies I2 (cross-iteration memory) for Module 26 KF-LOOP Substrate. Schema version 1.0.
+        - attempt_ledger is partitioned by loop_id; retention is permanent per partition (rolling eviction would allow excluded hypotheses to re-enter scope). Fields include loop_id, iteration_number, timestamp, stratify_axis, stratify_stratum, root_cause_title, hypothesis_summary (exclusion target), action_taken, outcome_label, metric_delta.
+        - Renamed section "Routing Decision Log" to "Cross-Session Audit Logs" to reflect both logs. Section now carries a brief framing note explaining the two-log shape and shared design principle.
+        - No changes to routing_decision_log schema or retention. schema_version 1.0 unchanged. Existing readers unaffected.
+        - Reference instance: kf-loop-mode-calibration adopts routing_decision_log as its de facto attempt_ledger (re_route_reason -> hypothesis_summary; re_routed=true -> attempt entry). Adoption is non-breaking (optional fields added).
     7.4.0:
       date: 2026-08-09
       driver: knowledgeforge-core-e49
@@ -250,9 +259,17 @@ routing_index_schema:
       and surface drift at session end.
 ```
 
-### Routing Decision Log (NEW 7.2)
+### Cross-Session Audit Logs (7.2 / 7.5)
 
-Audit trail of routing decisions, separate from the `routing_index` (which tracks state). The log is the data source for Module 16 metric #10 (`mode_selection_accuracy`). State and audit trail are kept as separate concerns: state answers "what is the current task and what modes are open?", the log answers "for each routing decision, which mode/variant was selected, by which predicate, and was it re-routed?". Resolves ERA F4 (no routing-decision logging).
+Two cross-session audit logs live here. Both follow the same shape: schema-versioned, keyed by context, retained based on operational need, written deterministically by substrate stages (not LLM judgment). Adding a second log to this section does not introduce a new tier -- both logs are cross-session operational state, conceptually adjacent to Tier 0 (knowledge) but distinct from it.
+
+**routing_decision_log** (7.2): Audit trail of routing decisions. Data source for Module 16 metric #10. State and audit trail are kept as separate concerns: state answers "what is the current task?"; the log answers "which mode was selected, by which predicate, was it re-routed?". Resolves ERA F4.
+
+**attempt_ledger** (7.5): Cross-iteration hypothesis log for KF-LOOP instances. Satisfies I2 (cross-iteration memory). Written by the observe stage; read by the recall stage. Partitioned by loop_id. See Module 26 (KF-LOOP Substrate) for stage definitions.
+
+---
+
+#### routing_decision_log
 
 ```yaml
 routing_decision_log:
@@ -405,9 +422,134 @@ routing_decision_log:
         best-effort field mapping.
 
   consumed_by:
-    - Module 16 metric #10 (mode_selection_accuracy) — primary measurement
-    - Critic linter variant — re-routing pattern analysis during health checks
-    - Orchestrator — session-end metric calculation
+    - Module 16 metric #10 (mode_selection_accuracy) -- primary measurement
+    - Critic linter variant -- re-routing pattern analysis during health checks
+    - Orchestrator -- session-end metric calculation
+```
+
+---
+
+#### attempt_ledger (NEW 7.5)
+
+Cross-iteration hypothesis log for KF-LOOP instances (Module 26). Satisfies I2: every loop iteration records what was tried and what outcome resulted, so future iterations can exclude specific hypotheses already shown to fail. Partitioned by `loop_id` -- each distinct loop instance writes to its own partition and reads only its own partition.
+
+```yaml
+attempt_ledger:
+  schema_version: "1.0"
+  driver: "knowledgeforge-core-31l / Module 26 KF-LOOP Substrate"
+
+  write_trigger: "observe stage of any KF-LOOP instance, on completion of act stage"
+  read_trigger: "recall stage of any KF-LOOP instance, before reason stage fires"
+
+  partitioning:
+    key: loop_id
+    note: "Each loop instance reads and writes only its own partition. No cross-loop reads."
+
+  log_entry:
+    fields:
+      - name: loop_id
+        type: string
+        required: true
+        description: "Identifies the KF-LOOP instance. Partitions the ledger."
+        example: "kf-loop-mode-calibration"
+
+      - name: iteration_number
+        type: integer
+        required: true
+        description: "Monotonically increasing within loop_id partition. Assigned by observe stage."
+
+      - name: timestamp
+        type: ISO8601
+        required: true
+
+      - name: stratify_axis
+        type: string
+        required: true
+        description: "The failure_axis_key used in the stratify stage for this iteration."
+
+      - name: stratify_stratum
+        type: string
+        required: true
+        description: "The dominant stratum value selected. The one axis value the reason stage received evidence for."
+
+      - name: root_cause_title
+        type: string
+        required: true
+        description: >
+          High-level root cause class identified by the reason stage.
+          NOT the exclusion target -- loops may return to the same class.
+        example: "routing-variant-confusion"
+
+      - name: hypothesis_summary
+        type: string
+        required: true
+        description: >
+          Specific implementation hypothesis tried. This IS the exclusion target.
+          Future iterations in the same loop_id partition MUST NOT repeat this
+          exact hypothesis_summary. Recommend short predicate-form description
+          (< 20 words, verb-object structure) to reduce phrasing collisions.
+        example: "Tighten adversarial predicate to require chain_position >= 2"
+
+      - name: action_taken
+        type: string
+        required: true
+        description: "The one-variable change applied in the act stage."
+
+      - name: outcome_label
+        type: string
+        required: true
+        enum: [succeeded, failed, partial, inconclusive]
+        description: "Gate result for this iteration, as emitted by the gate stage."
+
+      - name: metric_delta
+        type: float
+        required: false
+        description: "Change in the loop primary metric vs. prior iteration. Positive = improvement."
+
+      - name: stratify_note
+        type: string
+        required: false
+        description: "Populated on degenerate stratification (all rows share same axis value) or anomalies."
+
+  exclusion_injection:
+    description: >
+      During the recall stage, the substrate reads all attempt_ledger entries
+      for the current loop_id WHERE outcome_label IN (failed, partial) and injects
+      them into the reason stage context as an exclusion constraint.
+    constraint_text: >
+      Exclusion targets hypothesis_summary (specific implementation tried),
+      NOT root_cause_title (general class). A loop MAY return to the same
+      root cause class; it MUST NOT try the same specific hypothesis twice.
+
+  retention:
+    policy: permanent per loop_id partition
+    rationale: >
+      The exclusion constraint requires all-time history within a loop_id.
+      Rolling eviction would allow excluded hypotheses to re-enter scope.
+      Permanent retention is the minimal correct policy.
+    archive_path: "wiki/operations/loop-ledger/{loop_id}/{YYYY}.md"
+    archive_trigger: "Loop exits via PROMOTE or is manually paused for > 90 days"
+
+  drift_detection:
+    schema_version_check:
+      rule: >
+        When a module reads attempt_ledger entries with schema_version != 1.0,
+        flag SCHEMA_DRIFT in Tier 2 state and surface at session end.
+        Continue with best-effort field mapping.
+
+  consumed_by:
+    - Module 26 recall stage -- injects exclusion constraint before reason stage
+    - Module 26 monitor stage -- reads last plateau_window entries for plateau detection
+    - Module 26 observe stage -- writes entry after act stage completes
+
+  reference_instance:
+    loop_id: "kf-loop-mode-calibration"
+    adoption: >
+      The existing routing_decision_log serves as the de facto attempt_ledger for
+      this loop. re_route_reason maps to hypothesis_summary; re_routed=true entries
+      map to attempt_ledger entries. To formally adopt: add loop_id and outcome_label
+      as optional fields to routing_decision_log entries written during calibration
+      iterations (non-breaking; optional fields).
 ```
 
 ### Tier 2: Mode-Specific State (Loaded On Demand)

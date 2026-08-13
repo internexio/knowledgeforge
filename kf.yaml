@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.33.0
+version: 7.34.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -36,11 +36,26 @@ variants:
     note: Does not exist yet — Phase 8
 
 modules:
-  count: 26
-  range: "00–25"
+  count: 27
+  range: "00–26"
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.34.0
+    date: 2026-08-12
+    driver: knowledgeforge-core-31l
+    note: |
+      Added Module 26 (KF-LOOP Substrate v1.0.1). Formalizes iterative self-improvement
+      loops as a named orchestration primitive with shared substrate. Two invariants: I1
+      (evidence stratification via deterministic GROUP BY) and I2 (cross-iteration
+      attempt ledger with exclusion constraint). Five loops cataloged; one reference
+      instance (mode-selection self-calibration). DECISION-1 (ledger location) open.
+      Module 14 bumped to 6.7.0 (iteration_scope block added to Check 1).
+      Post-adversarial-critic fixes: gate branching semantics explicit (Sev 2);
+      accretion candidate taxonomy fields added (Sev 2).
+      DECISION-1 resolved: attempt_ledger placed in Module 19 (Option a).
+      Module 19 bumped to 7.5.0; Module 26 bumped to 1.1.0.
+
   - version: 7.33.0
     date: 2026-08-09
     driver: knowledgeforge-core-public-release-phase7
