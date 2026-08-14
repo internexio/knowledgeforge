@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.34.0
+version: 7.35.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,27 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.35.0
+    date: 2026-08-13
+    driver: knowledgeforge-core-hvj knowledgeforge-core-knw knowledgeforge-core-7x5 knowledgeforge-core-r7y
+    note: |
+      Loop catalog complete. Four remaining KF-LOOP instantiation specs written to
+      specs/kf-loops/. Module 26 bumped to 1.2.0; loop catalog entries promoted from
+      DEFINED to BUILT with spec cross-references.
+
+      kf-loop-adversarial-yield: gate on per-mode in-range binary series (Wilson-CI);
+      canary rotation enforced; low-traffic DIAGNOSE advisory trigger added.
+
+      kf-loop-kb-health: contradiction class requires topic-cluster pairwise input;
+      canary namespace exclusion enforced; n_trials_minimum=5 gate guard added.
+
+      kf-loop-pattern-extraction: inverted Wilson-CI saturation gate; two-pass stratify
+      for derived failure_signature labels; zero-iteration PROMOTE guard added.
+
+      kf-loop-cos-grounding: adaptive gate_window for sparse two-axis strata (15 strata
+      possible); claim_archive_review_gate requires human confirmation before archiving
+      production content; degraded mode (Claude Projects, no Asta) documented.
+
   - version: 7.34.0
     date: 2026-08-12
     driver: knowledgeforge-core-31l

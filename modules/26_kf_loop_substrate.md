@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: KF-LOOP Substrate
-  version: 1.1.0
+  version: 1.2.0
   purpose: >
     Shared substrate for iterative self-improvement loops; formalizes evidence
     stratification (I1) and cross-iteration attempt memory (I2) so any KF loop
@@ -16,6 +16,15 @@ module:
   related: [00_orchestrator, 03_coordination_patterns, 07_critic_agent, 14_metacognitive_monitor, 19_memory_architecture, 21_knowledge_accretion, 16_operational_bounds]
   added_in: "7.34"
   changelog:
+    1.2.0:
+      date: 2026-08-13
+      driver: knowledgeforge-core-hvj knowledgeforge-core-knw knowledgeforge-core-7x5 knowledgeforge-core-r7y
+      changes:
+        - Loop catalog: four remaining loops promoted from DEFINED to BUILT. Instantiation specs written at specs/kf-loops/. Each spec includes full stage configuration (gate, stratify, recall, reason, verify, act, observe, monitor, cadence) plus inline adversarial critic pass with Sev 2 findings fixed.
+        - kf-loop-adversarial-yield (hvj): gate on in-range binary series, canary rotation requirement, low-traffic DIAGNOSE advisory trigger.
+        - kf-loop-kb-health (knw): contradiction class requires topic-cluster pairwise input; canary namespace exclusion enforced; n_trials_minimum=5 gate guard added.
+        - kf-loop-pattern-extraction (7x5): inverted Wilson-CI saturation gate documented; two-pass stratify for derived failure_signature; zero-iteration guard added.
+        - kf-loop-cos-grounding (r7y): adaptive gate_window for sparse two-axis strata; claim_archive_review_gate added (human confirmation before archiving production content); degraded mode documented.
     1.1.0:
       date: 2026-08-12
       driver: knowledgeforge-core-31l
@@ -478,7 +487,7 @@ monitor_specification:
 
 ## Loop Catalog
 
-Five loops defined; one built (reference instance). Build order is the instantiating-loop designer's choice.
+Five loops defined; five built (all instantiation specs complete as of v1.2.0).
 
 ```yaml
 loop_catalog:
@@ -499,7 +508,7 @@ loop_catalog:
 
   - id: kf-loop-adversarial-yield
     label: "Adversarial-yield tuning"
-    status: DEFINED (not built)
+    status: BUILT (spec: specs/kf-loops/kf-loop-adversarial-yield.md)
     metric: "Adversarial Critic Sev2+ yield (target: 20-80% per Module 07)"
     failure_axis_key: producing_mode
     stratify_description: "Per-mode yield; aggregate yield is meaningless for diagnosis"
@@ -507,10 +516,11 @@ loop_catalog:
     canary_requirement: >
       Seed a known flaw in every verify pass. Zero-finding pass that misses the canary
       means the loop is broken, not converged.
+    driver_bead: knowledgeforge-core-hvj
 
   - id: kf-loop-kb-health
     label: "KB health / accretion"
-    status: DEFINED (not built)
+    status: BUILT (spec: specs/kf-loops/kf-loop-kb-health.md)
     metric: "Ratio of entries passing Critic linter per failure_class"
     failure_axis_key: failure_class
     stratify_description: "One failure_class per pass: staleness | contradiction | grounding-decay | orphan"
@@ -518,10 +528,11 @@ loop_catalog:
     note: >
       Stratify constraint is critical: one failure_class per pass.
       Running on mixed-class evidence re-introduces I1 failure.
+    driver_bead: knowledgeforge-core-knw
 
   - id: kf-loop-pattern-extraction
     label: "Pattern extraction"
-    status: DEFINED (not built)
+    status: BUILT (spec: specs/kf-loops/kf-loop-pattern-extraction.md)
     metric: "Pattern distinctness score (negative: already-accreted overlap)"
     failure_axis_key: failure_signature
     stratify_description: "Cluster failures by structural signature before abstracting"
@@ -531,10 +542,11 @@ loop_catalog:
       by "root cause already tried" and injects only the negative (exclusion constraint).
       This loop promotes it: Synthesizer abstracts the positive (generalizable pattern),
       accretes it with source_fingerprint dedup, and future loops retrieve it.
+    driver_bead: knowledgeforge-core-7x5
 
   - id: kf-loop-cos-grounding
     label: "COS grounding / claim-fidelity"
-    status: DEFINED (not built)
+    status: BUILT (spec: specs/kf-loops/kf-loop-cos-grounding.md)
     metric: "Claim grounding score (Module 15)"
     failure_axis_key: claim_type
     stratify_description: "Partition by claim_type (numeric | mechanism | comparative) AND source_corpus"
@@ -546,6 +558,7 @@ loop_catalog:
     ledger_note: >
       On re-ground: exclude already-failed sources. Claims that rebuild twice escalate.
       Exclusion target: hypothesis_summary = specific source combination tried.
+    driver_bead: knowledgeforge-core-r7y
 ```
 
 ---
@@ -794,7 +807,7 @@ RESOLVED: Option (a) selected 2026-08-12. attempt_ledger lives in Module 19 alon
 | Loop ID | Status |
 |---------|--------|
 | kf-loop-mode-calibration | REFERENCE INSTANCE (built) |
-| kf-loop-adversarial-yield | DEFINED (not built) |
-| kf-loop-kb-health | DEFINED (not built) |
-| kf-loop-pattern-extraction | DEFINED (not built) |
-| kf-loop-cos-grounding | DEFINED (not built) |
+| kf-loop-adversarial-yield | BUILT -- specs/kf-loops/kf-loop-adversarial-yield.md |
+| kf-loop-kb-health | BUILT -- specs/kf-loops/kf-loop-kb-health.md |
+| kf-loop-pattern-extraction | BUILT -- specs/kf-loops/kf-loop-pattern-extraction.md |
+| kf-loop-cos-grounding | BUILT -- specs/kf-loops/kf-loop-cos-grounding.md |
