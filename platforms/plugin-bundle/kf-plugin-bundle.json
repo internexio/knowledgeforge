@@ -1,0 +1,113 @@
+{
+  "version": "7.35.0",
+  "bundle_id": "kf-plugin-bundle",
+  "bundle_version": "7.35.0",
+  "compiled_at": "2026-08-14T14:18:35.841933+00:00",
+  "source": "knowledgeforge-core",
+  "skills": [
+    {
+      "name": "builder",
+      "path": "skills/builder.md",
+      "module_source": "02_builder.md",
+      "module_version": "7.0.1",
+      "status": "written"
+    }
+  ],
+  "agents": [
+    {
+      "name": "kf",
+      "path": "agents/kf.md",
+      "module_source": "00_orchestrator.md",
+      "module_version": "7.24.0",
+      "status": "written"
+    },
+    {
+      "name": "builder",
+      "path": "agents/builder.md",
+      "module_source": "02_builder.md",
+      "module_version": "7.0.1",
+      "status": "written"
+    },
+    {
+      "name": "expert",
+      "path": "agents/expert.md",
+      "module_source": "05_expert_agent.md",
+      "module_version": "7.4.0",
+      "status": "written"
+    },
+    {
+      "name": "critic",
+      "path": "agents/critic.md",
+      "module_source": "07_critic_agent.md",
+      "module_version": "",
+      "status": "written"
+    },
+    {
+      "name": "adversarial-critic",
+      "path": "agents/adversarial-critic.md",
+      "module_source": "07_critic_agent.md",
+      "module_version": "",
+      "status": "skipped_version_gate",
+      "requires_module_version": ">=7.3.0"
+    },
+    {
+      "name": "synthesizer",
+      "path": "agents/synthesizer.md",
+      "module_source": "08_synthesizer_agent.md",
+      "module_version": "6.8.0",
+      "status": "written"
+    },
+    {
+      "name": "debugger",
+      "path": "agents/debugger.md",
+      "module_source": "09_debugger_agent.md",
+      "module_version": "7.0.2",
+      "status": "written"
+    },
+    {
+      "name": "strategist",
+      "path": "agents/strategist.md",
+      "module_source": "10_strategist_agent.md",
+      "module_version": "6.5.0",
+      "status": "written"
+    },
+    {
+      "name": "calibrator",
+      "path": "agents/calibrator.md",
+      "module_source": "11_calibrator_agent.md",
+      "module_version": "",
+      "status": "written"
+    },
+    {
+      "name": "knowledge-librarian",
+      "path": "agents/knowledge-librarian.md",
+      "module_source": "21_knowledge_accretion.md",
+      "module_version": "7.5.0",
+      "status": "written"
+    }
+  ],
+  "mcp_connectors": [
+    {
+      "id": "cos-mcp",
+      "source": "$COS_DEV_ROOT/cos/cos-mcp/server.json",
+      "path_type": "absolute_requires_local_config",
+      "fallback_message": "cos-mcp source path not found. Set $COS_DEV_ROOT environment variable\nto the directory containing your cos-mcp clone, OR skip this connector.\n",
+      "targets": [],
+      "required": false
+    }
+  ],
+  "install_protocol": [
+    {
+      "step": "copy_skills_to_target_repo"
+    },
+    {
+      "step": "copy_agents_to_target_repo"
+    },
+    {
+      "step": "register_mcp_connectors_in_target_settings"
+    },
+    {
+      "step": "emit_install_receipt"
+    }
+  ]
+}

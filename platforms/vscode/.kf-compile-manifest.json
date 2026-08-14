@@ -1,0 +1,85 @@
+{
+  "compiled_at": "2026-08-14T14:18:35.718738+00:00",
+  "source": "knowledgeforge-core",
+  "platform": "vscode",
+  "version": "7.35.0",
+  "entries": [
+    {
+      "source": "00_orchestrator.md",
+      "output": "src/resources/kf-orchestrator.md",
+      "section": "verbatim",
+      "status": "written",
+      "bytes": 95296
+    },
+    {
+      "source": "01_navigator.md",
+      "output": "src/resources/kf-modes/navigator.md",
+      "section": "verbatim",
+      "status": "written",
+      "bytes": 30018
+    },
+    {
+      "source": "02_builder.md",
+      "output": "src/resources/kf-modes/builder.md",
+      "section": "verbatim",
+      "status": "written",
+      "bytes": 31850
+    },
+    {
+      "source": "03_coordination_patterns.md",
+      "output": "src/resources/kf-modes/coordinator.md",
+      "section": "verbatim",
+      "status": "written",
+      "bytes": 71039
+    },
+    {
+      "source": "05_expert_agent.md",
+      "output": "src/resources/kf-modes/expert.md",
+      "section": "verbatim",
+      "status": "written",
+      "bytes": 53301
+    },
+    {
+      "source": "07_critic_agent.md",
+      "output": "src/resources/kf-modes/critic.md",
+      "section": "verbatim",
+      "status": "written",
+      "bytes": 76082
+    },
+    {
+      "source": "08_synthesizer_agent.md",
+      "output": "src/resources/kf-modes/synthesizer.md",
+      "section": "verbatim",
+      "status": "written",
+      "bytes": 39787
+    },
+    {
+      "source": "09_debugger_agent.md",
+      "output": "src/resources/kf-modes/debugger.md",
+      "section": "verbatim",
+      "status": "written",
+      "bytes": 37289
+    },
+    {
+      "source": "10_strategist_agent.md",
+      "output": "src/resources/kf-modes/strategist.md",
+      "section": "verbatim",
+      "status": "written",
+      "bytes": 35616
+    },
+    {
+      "source": "11_calibrator_agent.md",
+      "output": "src/resources/kf-modes/calibrator.md",
+      "section": "verbatim",
+      "status": "written",
+      "bytes": 48017
+    },
+    {
+      "source": "platform-bindings/vscode.yaml",
+      "output": "src/resources/kf-mode-registry.json",
+      "section": "mode_registry",
+      "status": "written",
+      "bytes": 740
+    }
+  ]
+}

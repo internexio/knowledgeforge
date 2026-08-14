@@ -1,0 +1,8 @@
+{
+  "id": "cos-mcp",
+  "path_type": "absolute_requires_local_config",
+  "source": "$COS_DEV_ROOT/cos/cos-mcp/server.json",
+  "fallback_message": "cos-mcp source path not found. Set $COS_DEV_ROOT environment variable\nto the directory containing your cos-mcp clone, OR skip this connector.\n",
+  "targets": [],
+  "required": false
+}

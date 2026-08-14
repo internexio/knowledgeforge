@@ -1,0 +1,13 @@
+{
+  "modes": [
+    { "id": "navigator",   "file": "kf-modes/navigator.md",   "module": "01" },
+    { "id": "builder",     "file": "kf-modes/builder.md",     "module": "02" },
+    { "id": "coordinator", "file": "kf-modes/coordinator.md", "module": "03" },
+    { "id": "expert",      "file": "kf-modes/expert.md",      "module": "05" },
+    { "id": "critic",      "file": "kf-modes/critic.md",      "module": "07" },
+    { "id": "synthesizer", "file": "kf-modes/synthesizer.md", "module": "08" },
+    { "id": "debugger",    "file": "kf-modes/debugger.md",    "module": "09" },
+    { "id": "strategist",  "file": "kf-modes/strategist.md",  "module": "10" },
+    { "id": "calibrator",  "file": "kf-modes/calibrator.md",  "module": "11" }
+  ]
+}
