@@ -1,15 +1,15 @@
 {
-  "compiled_at": "2026-08-14T14:18:35.842102+00:00",
+  "compiled_at": "2026-08-14T14:32:04.818242+00:00",
   "source": "knowledgeforge-core",
   "platform": "plugin-bundle",
-  "version": "7.35.0",
+  "version": "7.36.0",
   "entries": [
     {
       "source": "00_orchestrator.md",
       "output": "agents/kf.md",
       "section": "CC Agent",
-      "module_version": "7.24.0",
-      "bundle_version": "7.35.0",
+      "module_version": "7.25.0",
+      "bundle_version": "7.36.0",
       "status": "written",
       "bytes": 19563
     },
@@ -18,7 +18,7 @@
       "output": "skills/builder.md",
       "section": "CC Skill",
       "module_version": "7.0.1",
-      "bundle_version": "7.35.0",
+      "bundle_version": "7.36.0",
       "status": "written",
       "bytes": 3066
     },
@@ -27,7 +27,7 @@
       "output": "agents/builder.md",
       "section": "CC Agent",
       "module_version": "7.0.1",
-      "bundle_version": "7.35.0",
+      "bundle_version": "7.36.0",
       "status": "written",
       "bytes": 3395
     },
@@ -36,7 +36,7 @@
       "output": "agents/expert.md",
       "section": "CC Agent",
       "module_version": "7.4.0",
-      "bundle_version": "7.35.0",
+      "bundle_version": "7.36.0",
       "status": "written",
       "bytes": 4032
     },
@@ -45,7 +45,7 @@
       "output": "agents/critic.md",
       "section": "CC Agent",
       "module_version": "",
-      "bundle_version": "7.35.0",
+      "bundle_version": "7.36.0",
       "status": "written",
       "bytes": 6889
     },
@@ -62,7 +62,7 @@
       "output": "agents/synthesizer.md",
       "section": "CC Agent",
       "module_version": "6.8.0",
-      "bundle_version": "7.35.0",
+      "bundle_version": "7.36.0",
       "status": "written",
       "bytes": 4265
     },
@@ -71,7 +71,7 @@
       "output": "agents/debugger.md",
       "section": "CC Agent",
       "module_version": "7.0.2",
-      "bundle_version": "7.35.0",
+      "bundle_version": "7.36.0",
       "status": "written",
       "bytes": 3336
     },
@@ -80,7 +80,7 @@
       "output": "agents/strategist.md",
       "section": "CC Agent",
       "module_version": "6.5.0",
-      "bundle_version": "7.35.0",
+      "bundle_version": "7.36.0",
       "status": "written",
       "bytes": 3855
     },
@@ -89,7 +89,7 @@
       "output": "agents/calibrator.md",
       "section": "CC Agent",
       "module_version": "",
-      "bundle_version": "7.35.0",
+      "bundle_version": "7.36.0",
       "status": "written",
       "bytes": 4840
     },
@@ -98,7 +98,7 @@
       "output": "agents/knowledge-librarian.md",
       "section": "CC Agent (Knowledge Librarian)",
       "module_version": "7.5.0",
-      "bundle_version": "7.35.0",
+      "bundle_version": "7.36.0",
       "status": "written",
       "bytes": 10343
     },

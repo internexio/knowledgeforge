@@ -1,8 +1,8 @@
 {
-  "version": "7.35.0",
+  "version": "7.36.0",
   "bundle_id": "kf-plugin-bundle",
-  "bundle_version": "7.35.0",
-  "compiled_at": "2026-08-14T14:18:35.841933+00:00",
+  "bundle_version": "7.36.0",
+  "compiled_at": "2026-08-14T14:32:04.818009+00:00",
   "source": "knowledgeforge-core",
   "skills": [
     {
@@ -18,7 +18,7 @@
       "name": "kf",
       "path": "agents/kf.md",
       "module_source": "00_orchestrator.md",
-      "module_version": "7.24.0",
+      "module_version": "7.25.0",
       "status": "written"
     },
     {

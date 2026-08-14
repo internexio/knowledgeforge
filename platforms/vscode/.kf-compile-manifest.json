@@ -1,15 +1,15 @@
 {
-  "compiled_at": "2026-08-14T14:18:35.718738+00:00",
+  "compiled_at": "2026-08-14T14:32:04.698783+00:00",
   "source": "knowledgeforge-core",
   "platform": "vscode",
-  "version": "7.35.0",
+  "version": "7.36.0",
   "entries": [
     {
       "source": "00_orchestrator.md",
       "output": "src/resources/kf-orchestrator.md",
       "section": "verbatim",
       "status": "written",
-      "bytes": 95296
+      "bytes": 96905
     },
     {
       "source": "01_navigator.md",

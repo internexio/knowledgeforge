@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # KF plugin bundle installer
-# Bundle version: 7.35.0
-# Compiled at:    2026-08-14T14:18:35.841573+00:00
+# Bundle version: 7.36.0
+# Compiled at:    2026-08-14T14:32:04.816919+00:00
 #
 # SPEC reference: docs/planning/2026-06-13_spec-5-plugin-packaging.md (D3b)
 #
@@ -27,7 +27,7 @@ set -euo pipefail
 # Bundle root is the directory containing this script (resolved via $0).
 BUNDLE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TARGET_ROOT="${PWD}"
-BUNDLE_VERSION="7.35.0"
+BUNDLE_VERSION="7.36.0"
 INSTALLED_AT="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
 # Target paths (Claude Code convention)
