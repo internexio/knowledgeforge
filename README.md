@@ -1,12 +1,57 @@
 # KnowledgeForge
 
-**Version:** 7.32.0 | **Status:** Active | **Modules:** 26 (M00–M25) | **License:** Apache-2.0
+> Structured reasoning infrastructure for AI coding assistants. Decision-aware
+> routing, adversarial verification, session-persistent memory, and cross-session
+> knowledge accretion — across 27 specialized modules and 9 reasoning modes.
 
-Reasoning orchestration layer for AI coding assistants. Routes requests to specialized modes with targeted context injection, patching known failure modes: skipping hypotheses, hiding trade-offs, missing gaps, over-engineering simple problems.
+**Version:** 7.36.0 | **Status:** Active | **Modules:** 27 (M00–M26) | **License:** Apache-2.0
 
 **Platforms:** [Claude Code](platforms/claude-code/) · [Claude Projects](platforms/claude-projects/) · [ChatGPT Projects 🧪](platforms/chatgpt/) · [Codex CLI 🧪](platforms/codex/) · [VSCode 🧪](platforms/vscode/) · [Plugin Bundle 🧪](platforms/plugin-bundle/) · [Cursor 🧪 planned](platforms/cursor/) · [Gemini 🧪 planned](platforms/gemini/)
 
 > Only the Claude Code and Claude Projects variants are currently considered tested. All non-Claude targets are experimental.
+
+---
+
+## Why KnowledgeForge?
+
+LLMs have predictable failure modes. Without structure, a factual lookup and a high-stakes
+architectural decision go through the same reasoning process. KF patches the failures
+that matter:
+
+| Failure Mode | Without KF | With KF |
+|---|---|---|
+| **Wrong reasoning depth** | Novel strategic question treated like a factual lookup | Decision classification routes each to the correct depth first |
+| **Skipping hypotheses** | "The bug is in X" stated without evidence | Debugger requires >0.8 confidence; documents hypothesis → elimination path |
+| **Hidden trade-offs** | "Use option A" without mentioning what you sacrifice | Strategist: quantified trade-offs + reversibility always assessed |
+| **Spec gaps** | Ships incomplete requirements | Critic: systematic completeness check + adversarial variant assuming ≥1 flaw |
+| **Session drift** | Routing accuracy degrades as context fills | Three-tier memory: routing index always loaded, utilization plateaus |
+| **Retry loops** | Keeps trying the same failing approach | Circuit breakers: 3 failures → halt, surface pattern, present options |
+| **Missing adversarial thinking** | "Looks good to me" without real challenge | Auto-verification fires on qualifying chains — framed to find what the producing agent missed |
+
+> **"KF modes patch Claude's weaknesses, not scaffold its strengths."**
+>
+> Modes activate only when they prevent a known failure. Most requests route directly.
+
+### How It Works
+
+```
+Request arrives
+    │
+    ▼
+Decision Classification (always, silent)
+    │
+    ├── Reckoning (verifiable answer)
+    │       └── Answer directly. <50 tokens. No mode.
+    │
+    ├── Evaluative judgment (criteria exist)
+    │       └── Structured analysis with confidence. Mode if needed.
+    │
+    ├── Predictive judgment (future outcomes)
+    │       └── Explicit assumptions + probability ranges. Mode activated.
+    │
+    └── Novel judgment (no precedent)
+            └── Full expanded reasoning. Human review flagged. Mode activated.
+```
 
 ---
 
@@ -26,7 +71,7 @@ bash install.sh
 
 **Optional: faster pre-prompt routing.** Set `GEMINI_API_KEY` in your environment to enable the routing hook — it classifies every request before Claude sees it, injecting the right mode directive automatically. Degrades gracefully without the key.
 
-See [`platforms/claude-code/`](platforms/claude-code/) for the full install guide and load map.
+See [`docs/install.md`](docs/install.md) for the full install guide, `settings.json` configuration, and add-ons overview.
 
 ---
 
@@ -36,12 +81,12 @@ See [`platforms/claude-code/`](platforms/claude-code/) for the full install guid
 
 1. Create or open a Claude Project at [claude.ai](https://claude.ai)
 2. **Project Instructions** → paste the full contents of [`platforms/claude-projects/00_Project_Instructions-Claude.md`](platforms/claude-projects/00_Project_Instructions-Claude.md)
-3. **Project Knowledge** → upload all 25 files from [`platforms/claude-projects/`](platforms/claude-projects/) (`01_Navigator_Agent.md` through `25_Entity_Relationship_Analysis.md`)
+3. **Project Knowledge** → upload all 26 files from [`platforms/claude-projects/`](platforms/claude-projects/) (`01_Navigator_Agent.md` through `26_KF_Loop_Substrate.md`)
 4. Start a conversation — routing is automatic
 
-> M25 (ERA) is required. The orchestrator runs Entity Relationship Analysis as a post-routing pass on Builder, Coordinator, Expert, Strategist, and Critic requests. Omitting it leaves five routing paths unguarded.
+> M26 (KF-LOOP Substrate) is required. The orchestrator uses the loop substrate for iterative self-improvement patterns across five loop instances. Omitting it leaves the loop orchestration primitive unspecified.
 
-See [`platforms/claude-projects/`](platforms/claude-projects/) for the full install guide.
+See [`platforms/claude-projects/`](platforms/claude-projects/) for the full install guide. See [`EXPLORATION_PROMPTS.md`](EXPLORATION_PROMPTS.md) for ready-to-paste prompts that exercise specific KF behaviors.
 
 ---
 
@@ -56,7 +101,7 @@ Pre-compiled files are in [`platforms/chatgpt/`](platforms/chatgpt/) — no buil
 
 > Before re-uploading: delete existing KF knowledge files first. ChatGPT does not deduplicate by filename.
 >
-> If you hit a file limit (Custom GPTs cap at 20): prioritize `knowledge/01`–`knowledge/11` (the mode specs) over the infrastructure modules `12`–`25`.
+> If you hit a file limit (Custom GPTs cap at 20): prioritize `knowledge/01`–`knowledge/11` (the mode specs) over the infrastructure modules `12`–`26`.
 
 To recompile after module changes:
 
@@ -123,26 +168,40 @@ See [`platforms/plugin-bundle/load-map.md`](platforms/plugin-bundle/load-map.md)
 
 ---
 
-## Modes
+## Agent Modes
 
-| Mode | Trigger signals | Notes |
-|------|----------------|-------|
-| **Builder** | "create", "build", "generate spec", "write", "implement", "scaffold" | PDIA method; auto-verify on chain output |
-| **Critic** | "review", "validate", "find gaps", "audit", "sanity check", "LGTM?" | 4 variants: regular, linter, audit, adversarial |
-| **Critic (linter)** | "health check the knowledge base", "lint the wiki" | Staleness, contradictions, redundancy |
-| **Critic (audit)** | "hosting audit", "infrastructure inventory", "SPOF analysis" | Decomposition readiness |
-| **Debugger** | "not working", "debug", "failing", "why is this", "root cause" | Hypothesis-driven; requires >0.8 confidence |
-| **Strategist** | "prioritize", "trade-offs", "should I", "which option", "ROI" | Explicit trade-offs + reversibility assessment |
-| **Synthesizer** | "find patterns", "extract", "what do these have in common" | Every pattern requires at least one anti-pattern |
-| **Calibrator** | "setup project", "CLAUDE.md", "AI coder config", "guardrails" | Complexity-appropriate; avoids over-engineering |
-| **Expert** | "deep analysis", "blast radius", "threat model", "architecture review" | Adversarial depth; emits decision_type_exercised |
-| **Expert (infra/ML)** | "design infrastructure", "plan service topology", "GPU sizing", "model deployment" | Expert analyzes; Builder produces architecture doc |
-| **Expert (ERA)** | "map entity relationships", "audit module dependencies", "model agent contracts" | Entity graph + ERA Specification Template |
-| **Expert (research)** | "find evidence for", "ground this claim", "what does the research say" | Semantic Scholar MCP; WebSearch fallback available |
-| **Coordinator** | "workflow", "multi-agent", "orchestrate", "fan out", "delegate" | Dependency-first; derives coordination pattern from graph |
-| **Navigator** | Ambiguous intent with different output types for top-2 candidates | One targeted question; then routes |
+| Mode | Purpose | Patches This Failure Mode |
+|------|---------|--------------------------|
+| **Navigator** | Resolve genuinely ambiguous requests | Mis-routing on unclear intent |
+| **Builder** | Generate complete specifications (PDIA) | Incomplete specs, missing integration points |
+| **Coordinator** | Design multi-agent workflows | Dependency drift, bad handoffs |
+| **Expert** | Deep domain analysis with adversarial depth | Surface-level analysis, missed compound failures |
+| **Critic** | Systematic gap detection + adversarial variant | "Looks good" without actually checking |
+| **Synthesizer** | Extract reusable patterns from examples | Over-specific solutions, no transferable framework |
+| **Debugger** | Hypothesis-driven root cause analysis | "I think the bug is..." without evidence |
+| **Strategist** | Options analysis with explicit trade-offs | Hidden trade-offs, single-objective optimization |
+| **Calibrator** | Complexity-appropriate AI coder config | Enterprise scaffolding on hobby projects |
 
-Modes chain automatically. "Fix this bug" runs Debugger then Builder. "Review and tell me what to fix first" runs Critic then Strategist. Declared in the response before execution.
+Modes chain automatically. "Fix this bug" runs Debugger then Builder. "Review and tell me what to fix first" runs Critic then Strategist. The chain plan is declared in the response before execution.
+
+**Mode trigger signals:**
+
+| Signal | Mode | Notes |
+|--------|------|-------|
+| "Create", "build", "generate spec", "write", "implement", "scaffold" | **Builder** | PDIA method; auto-verify on chain output |
+| "Review", "validate", "find gaps", "audit", "sanity check", "LGTM?" | **Critic** | 4 variants: regular / linter / audit / adversarial |
+| "Health check the knowledge base", "lint the wiki" | **Critic (linter)** | Staleness, contradictions, redundancy |
+| "Hosting audit", "infrastructure inventory", "SPOF analysis" | **Critic (audit)** | Decomposition readiness |
+| "Not working", "debug", "failing", "why is this", "root cause" | **Debugger** | Hypothesis-driven; requires >0.8 confidence |
+| "Prioritize", "trade-offs", "should I", "which option", "ROI" | **Strategist** | Explicit trade-offs + reversibility assessment |
+| "Find patterns", "extract", "what do these have in common" | **Synthesizer** | Every pattern requires ≥1 anti-pattern |
+| "Setup project", "CLAUDE.md", "AI coder config", "guardrails" | **Calibrator** | Complexity-appropriate; avoids over-engineering |
+| "Deep analysis", "blast radius", "threat model", "architecture review" | **Expert** | Adversarial depth; emits decision_type_exercised |
+| "Design infrastructure", "plan service topology", "GPU sizing", "model deployment" | **Expert (infra/ML)** | Expert analyzes; Builder produces architecture doc |
+| "Map entity relationships", "audit module dependencies", "model agent contracts" | **Expert (ERA)** | Entity graph + ERA Specification Template |
+| "Find evidence for", "ground this claim", "what does the research say" | **Expert (research)** | Semantic Scholar MCP; WebSearch fallback available |
+| "Workflow", "multi-agent", "orchestrate", "fan out", "delegate" | **Coordinator** | Dependency-first; derives coordination pattern from graph |
+| Genuinely ambiguous intent with different output types for top-2 candidates | **Navigator** | One targeted question; then routes |
 
 ---
 
@@ -158,34 +217,6 @@ Configured via `~/.claude/kf-integrations.yaml` (created by `install.sh`). All e
 | `asta` | Semantic Scholar MCP for Expert research variant — paper retrieval, citation grounding | WebSearch fallback; grounding capped at 0.6 |
 | `cos` | COS MCP for comms-domain analysis and copy generation (M07/M08/M11) | Standard KF output only |
 | `gitnexus` | Code impact analysis, call graph navigation, safe refactoring | Standard file/grep navigation |
-
----
-
-## Repository Structure
-
-This repo is the canonical source. All platform variants compile from here.
-
-| Repo | Role |
-|------|------|
-| **knowledgeforge** (this) | Module specs, plans, wiki, compiler |
-| `knowledgeforge-cc` | Claude Code variant (pre-compiled) |
-| `knowledgeforge-cp` | Claude Projects variant (pre-compiled) |
-
-Changes go into this repo first, then compile out. Never edit variant repos directly for module changes — they are compiler outputs.
-
-```
-modules/           # 26 canonical module specs (M00–M25)
-compiler/          # kf-compile.py — builds platform variants from source
-platform-bindings/ # Per-platform adaptation rules (YAML)
-platforms/         # Per-platform install guides and load maps
-hooks/             # Claude Code hooks (routing, session, validation)
-wiki/              # Tier 0 accreted knowledge base
-taxonomy/          # Controlled vocabulary (10 domains, ~40 topics, ~55 tags)
-model-profiles/    # Per-model weakness/strength maps
-templates/         # Spec templates (Module 04)
-tests/             # Routing and module test suites
-docs/              # Platform distribution matrix, planning docs
-```
 
 ---
 
@@ -219,6 +250,35 @@ docs/              # Platform distribution matrix, planning docs
 | M23 | Taxonomy Enforcement | Controlled vocabulary validation |
 | M24 | Verbatim History Mining | Conversation turn storage and recall |
 | M25 | Entity Relationship Analysis | ERA post-routing pass: entity graph, cardinality, coupling |
+| M26 | KF-LOOP Substrate | Iterative self-improvement loops — eight-stage orchestration primitive (cadence, gate, stratify, recall, reason, verify, act, observe); Wilson-CI gate; five loop instances |
+
+---
+
+## Repository Structure
+
+This repo is the canonical source. All platform variants compile from here.
+
+| Repo | Role |
+|------|------|
+| **knowledgeforge** (this) | Module specs, plans, wiki, compiler |
+| `knowledgeforge-cc` | Claude Code variant (pre-compiled) |
+| `knowledgeforge-cp` | Claude Projects variant (pre-compiled) |
+
+Changes go into this repo first, then compile out. Never edit variant repos directly for module changes — they are compiler outputs.
+
+```
+modules/           # 27 canonical module specs (M00–M26)
+compiler/          # kf-compile.py — builds platform variants from source
+platform-bindings/ # Per-platform adaptation rules (YAML)
+platforms/         # Per-platform install guides and load maps
+hooks/             # Claude Code hooks (routing, session, validation)
+wiki/              # Tier 0 accreted knowledge base
+taxonomy/          # Controlled vocabulary (15 domains, ~40 topics, ~55 tags)
+model-profiles/    # Per-model weakness/strength maps
+templates/         # Spec templates (Module 04)
+tests/             # Routing and module test suites
+docs/              # Platform distribution matrix, planning docs
+```
 
 ---
 
@@ -255,6 +315,66 @@ python3 compiler/kf-compile.py --target claude-code --set cos=true --output /tmp
 ```
 
 See `docs/dist-matrix.md` for the full platform capability and module coverage matrix.
+
+---
+
+## Core Principles
+
+1. **Decision classification first** — every request classified before any mode fires
+2. **Mode activation only when needed** — patches weaknesses, doesn't scaffold strengths
+3. **Direct answers** — no preamble, no hedging, no unnecessary overhead
+4. **Adversarial depth** — qualifying chains get automatic adversarial review
+5. **Actionable outputs** — user can proceed without follow-up
+6. **Forward navigation** — every response ends with next steps
+
+---
+
+## Version History
+
+| Version | Date | Focus |
+|---------|------|-------|
+| v1 | Apr 2025 | Proof of concept — structured output patterns |
+| v2 | Apr 2025 | Agent instructions and navigation |
+| v3.1 | Jun 2025 | Comprehensive platform with N8N integration |
+| v4 | Dec 2025 | The Great Simplification — 41 files → 7 |
+| v5 | Jan 2026 | Expanded modes: Critic, Synthesizer, Debugger, Strategist |
+| v5.1 | Jan 2026 | Calibrator Agent; module refinements |
+| v6.0 | Mar 2026 | Cognitive architecture: 7 infrastructure modules, meta-principle established |
+| v6.1 | Apr 2026 | Prompt routing, three-tier memory, adversarial verification, permission model |
+| v6.2 | Apr 2026 | Knowledge Accretion (M21): compile-query-enhance, four-tier memory |
+| v6.3 | Apr 2026 | Infrastructure Planning: Expert domain adaptations, architecture + hosting audit templates |
+| v6.3.1 | Apr 2026 | Knowledge Maintenance: importance-weighted decay, autonomous maintenance cycle |
+| v6.4 | Apr 2026 | Neuro-symbolic identity: empirical validation, token cost observability |
+| v6.5 | Apr 2026 | Semantic wiki search (M22), taxonomy enforcement (M23), verbatim history mining (M24) |
+| v7.0.0 | Apr 2026 | Compiler pipeline: knowledgeforge-core as single source, kf-compile.py, CI automation |
+| v7.1 | Apr 2026 | M25 Entity Relationship Analysis; loop detection; kf-fit-check skill |
+| v7.2 | May 2026 | Typed mode handoffs (Handoff_Contract); mode-selection accuracy metric; routing decision log |
+| v7.3 | May 2026 | M22 Phase 1 MemPalace: dup-check gate at calibrated 0.85 threshold |
+| v7.4 | Jun 2026 | M21 activation_profile on accretion candidates (substrate-agnostic dispatch) |
+| v7.5 | Jun 2026 | Compiler Phase 2: cc_rules + settings.kf.json emitters |
+| v7.6 | Jun 2026 | M23 vocab: 5 new domains, ~55 new topics, grandfathering policy |
+| v7.7 | Jun 2026 | Always-on behavioral patches (Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven) |
+| v7.8 | Jun 2026 | M25 entity → path-glob resolver (GitNexus-primary + cached-grep fallback) |
+| v7.9 | Jun 2026 | M21 linter violation-event counter |
+| v7.10 | Jun 2026 | M20 sub-policies: verifier + accretion candidate tool tier policies |
+| v7.11 | Jun 2026 | SPEC 4: accretion vetting gate, Contract B, Knowledge Librarian agent |
+| v7.12 | Jun 2026 | SPEC 1: adversarial-critic Untrusted Input Boundary; Contract A |
+| v7.13 | Jun 2026 | Per-turn KF-MODE telemetry marker (observability-only) |
+| v7.14–7.16 | Jun 2026 | M23 vocab expansion + cleanup (compiler + orchestration domains) |
+| v7.17–7.18 | Jun 2026 | Per-turn marker: tool-calling three-case rule; 76.6% → 100% compliance |
+| v7.19 | Jun 2026 | M21 native:true gate activated (three-signal content classifier) |
+| v7.20 | Jul 2026 | M19 tier model: `.claude/rules/` as compiled Tier 0 projection |
+| v7.21 | Jul 2026 | M24 + M19 MemPalace Phase 1/2 split: actual tool surface documented |
+| v7.22 | Jul 2026 | Audit remediation: Always-On in STATIC ZONE, 13-contract registry, grounding gate boundary |
+| v7.23 | Jul 2026 | M22 Phase 2 active: semantic wiki search operational |
+| v7.24 | Jul 2026 | M07 Critic comms-domain variant via COS MCP |
+| v7.25 | Jul 2026 | M08/M11 COS emit: Synthesizer + Calibrator comms-domain structured output |
+| v7.26 | Jul 2026 | M07 adversarial inverse-premise check; kf-integrations opt-in/out; br-prime-safe.sh |
+| v7.27–7.32 | Jul–Aug 2026 | Mid-chain re-entry rule; upstream_invalidation signal; OSS hygiene files; public release |
+| v7.33 | Aug 2026 | OSS hygiene: Apache-2.0, CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md |
+| **v7.34** | **Aug 2026** | **M26 KF-LOOP Substrate added — eight-stage iterative loop primitive, five loop catalog entries, Wilson-CI gate** |
+| **v7.35** | **Aug 2026** | **Loop catalog complete — four remaining loop specs written: adversarial-yield, kb-health, pattern-extraction, cos-grounding** |
+| **v7.36** | **Aug 2026** | **M00 v7.25.0 with M26 awareness — module reference table, routing, and identity strings updated** |
 
 ---
 
