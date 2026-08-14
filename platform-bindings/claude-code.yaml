@@ -255,6 +255,11 @@ module_outputs:
       - type: doc
         path: ".claude/docs/knowledgeforge/25_entity_relationship_analysis.md"
         section: "CC Doc"
+  "26":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/26_kf_loop_substrate.md"
+        section: "CC Doc"
 
 # --------------------------------------------------------------------------
 # Special outputs — not derived from module sections
