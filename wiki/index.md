@@ -101,6 +101,7 @@ type: index
 
 ### Orchestration
 
+- [2026-08-13] Adaptive gate_window floor for sparse multi-axis Wilson-CI strata — reusable_diagnostic — `orchestration/2026-08-13_adaptive-gate-window-floor-sparse-multi-axis-wilson-ci-strata.md`
 - [2026-08-09] KF Governance Over Async Transport — AgentRadio open problems (interruption-worthiness, recipient selection, evidence sufficiency, cost limits, permissions, provenance) mapped to M07/M15/M18/M19/M16/M20/M00 — transferable_framework — `orchestration/2026-08-09_kf-governance-over-async-transport.md`
 - [2026-08-03] TTL drain — source-lifecycle-gated proposal expiry without active cleanup — new_pattern — `orchestration/2026-08-03_ttl-drain-source-lifecycle-gated-expiry.md`
 - [2026-08-01] Gate Placement Decision — In-Skill vs Coordinator-Level Pre-flight Checks — transferable_framework — `orchestration/2026-08-01_gate-placement-in-skill-entry-point-vs-coordinator-level.md`
@@ -405,9 +406,9 @@ type: index
 
 ## Index Stats
 
-- **Total entries:** 223
-- **Entry types:** new_pattern (61), transferable_framework (58), reusable_diagnostic (98), reusable_diagnostic + transferable_framework (2), reusable_diagnostic + new_pattern (1), reusable_pattern (3), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
-- **Domains:** patterns (48), architecture (10), orchestration (17), infrastructure (30), compiler (5), diagnostics (51), methodologies (42), migrations (5), strategy (5), integration (13), debugging (2)
+- **Total entries:** 224
+- **Entry types:** new_pattern (61), transferable_framework (58), reusable_diagnostic (99), reusable_diagnostic + transferable_framework (2), reusable_diagnostic + new_pattern (1), reusable_pattern (3), template_candidate (1), emerging_pattern (1), operational_pattern (2), refinement (1), tool_quirk_and_workaround_pattern (1), workflow_pattern (1), methodology (1)
+- **Domains:** patterns (48), architecture (10), orchestration (18), infrastructure (30), compiler (5), diagnostics (51), methodologies (42), migrations (5), strategy (5), integration (13), debugging (2)
 - **Avg grounding score:** 0.84 (across grounded entries)
-- **Staleness risk distribution:** stable (191), slow_decay (13), fast_decay (1)
+- **Staleness risk distribution:** stable (192), slow_decay (13), fast_decay (1)
 

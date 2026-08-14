@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Metacognitive Monitor
-  version: 6.6.0
+  version: 6.7.0
   purpose: Supervisory layer that detects agent failure and user-side session degradation before bad output is produced, triggering appropriate interventions
   topics: [monitoring, failure-detection, intervention, metacognition, agent-safety, user-health, skeptical-verification, accretion-monitoring]
   contexts: [agent-execution, workflow-monitoring, quality-assurance, escalation, session-health]
@@ -53,6 +53,21 @@ circular_reasoning:
     severity: warning (first occurrence) | critical (second occurrence)
     
   intervention: SWITCH_STRATEGY (first) → ESCALATE (if loop persists)
+
+  # Added 6.7.0 (knowledgeforge-core-31l)
+  iteration_scope:
+    description: >
+      Check 1 operates within a single session trace (hash_window=10 reasoning steps).
+      Cross-iteration plateau detection is a separate, complementary check defined in
+      Module 26 (KF-LOOP Substrate) that operates at iteration scope -- where one
+      iteration spans one full loop cadence and may cover multiple sessions.
+    scope_boundary: >
+      Check 1 scope: intra-session, reasoning-step granularity.
+      Module 26 monitor scope: cross-iteration, full-cadence granularity.
+    relationship: >
+      The two checks do not overlap. Check 1 catches loops within a session;
+      Module 26 monitor catches plateaus across sessions. Both must be active
+      when a KF-LOOP instance is running.
 ```
 
 ### 2. Context Overflow Prediction
@@ -664,4 +679,5 @@ Turn 16: Update routing index. Flag downstream artifacts that assumed REST.
 - `19_Memory_Architecture.md` — (6.1) Skeptical verification integrates with routing index
 - `20_Permission_Model.md` — (6.1) User-side health signals can trigger risk escalation
 - `21_Knowledge_Accretion.md` — (6.2) Positive novelty detection; over-accretion and drift monitoring
+- `26_kf_loop_substrate.md` — (6.7) KF-LOOP iteration-scope plateau detection; complementary to Check 1 at cross-iteration scope
 - All mode modules — Monitor is the universal observation substrate
