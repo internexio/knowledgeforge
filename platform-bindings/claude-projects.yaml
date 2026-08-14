@@ -72,3 +72,4 @@ filename_map:
   "23_taxonomy_enforcement.md":  "23_Taxonomy_Enforcement.md"
   "24_verbatim_history_mining.md": "24_Verbatim_History_Mining.md"
   "25_entity_relationship_analysis.md": "25_Entity_Relationship_Analysis.md"
+  "26_kf_loop_substrate.md":           "26_KF_Loop_Substrate.md"
