@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.35.0
+version: 7.36.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,18 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.36.0
+    date: 2026-08-14
+    driver: knowledgeforge-core-orchestrator-m26-awareness
+    note: |
+      Module 00 (Orchestrator) bumped to v7.25.0. M00 was at v7.24.0 and predated M26;
+      module reference table, related list, and identity strings all updated:
+      - Module reference table: M26 row added (KF_Loop_Substrate, v1.2.0, full descriptor).
+      - Module reference table: M19 row updated to v7.5.0 (attempt_ledger addition).
+      - Related list: 26_KF_Loop_Substrate added.
+      - Identity strings: "7.24.0 orchestrator" → "7.25.0 orchestrator" (lines 311, 871).
+      All platforms recompiled to pick up M00 changes.
+
   - version: 7.35.0
     date: 2026-08-13
     driver: knowledgeforge-core-hvj knowledgeforge-core-knw knowledgeforge-core-7x5 knowledgeforge-core-r7y
