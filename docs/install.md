@@ -1,10 +1,12 @@
 # KnowledgeForge — Installation Guide
 
-Two install paths for Claude Code: **plugin** (recommended, no git required) and **manual clone**
-(for pinned local installs or when the plugin registry isn't available). Both produce the same
-result: KF artifacts in `~/.claude/` ready to use.
+Two install paths for Claude Code: **plugin** (recommended, no git required) and
+**manual clone** (for pinned local installs or when the plugin registry isn't
+available). Both produce the same result: KF artifacts in `~/.claude/` ready to use.
 
-For Claude Projects, see the [Claude Project Setup](#claude-project-setup) section below.
+For other platforms see [Claude Projects](#claude-project-setup),
+[ChatGPT](#chatgpt-projects), [Codex CLI](#codex-cli),
+[VSCode](#vscode-experimental), and [Plugin Bundle](#plugin-bundle-experimental).
 
 ---
 
@@ -84,11 +86,11 @@ After either Claude Code install path, add these entries to `~/.claude/settings.
 ```
 
 **`"agent": "kf"`** — sets the KF orchestrator as the default agent for all Claude
-Code sessions in this install.
+Code sessions in this install. Without this, you need to invoke KF explicitly per session.
 
 **`kf-route.py` hook** — classifies each prompt before Claude reads it, injects a
 `[KF-ROUTE]` directive that loads the right reasoning mode immediately. Requires
-`GEMINI_API_KEY` in your environment (see [Optional Add-ons](#optional-add-ons) below).
+`GEMINI_API_KEY` in your environment (see [Add-ons](add-ons.md)).
 
 Without the hook, KF still works — Claude routes natively via its built-in routing
 table. Correct results, but mode selection is slower on ambiguous prompts.
@@ -148,16 +150,16 @@ no hooks. The pre-compiled output lives at `platforms/claude-projects/` in this 
 
 4. Start a conversation — KF classifies and routes every request automatically.
 
-> **Note:** M26 (KF-LOOP Substrate) is required. The orchestrator uses the loop substrate
-> for iterative self-improvement patterns. Omitting it leaves the loop orchestration
+> **M26 (KF-LOOP Substrate) is required.** The orchestrator uses the loop substrate for
+> iterative self-improvement patterns. Omitting it leaves the loop orchestration
 > primitive unspecified.
 
-> **Note:** The research variant in Module 05 requires the Asta/Alia Semantic Scholar MCP
-> connected to your Claude Project. Without it, the research variant permanently operates
-> in degraded mode (WebSearch fallback, grounding capped at 0.6, ship disposition
-> unavailable). All other modes work normally without the MCP.
+> **Expert research variant** requires the Asta/Alia Semantic Scholar MCP connected to
+> your Claude Project. Without it, the research variant permanently operates in degraded
+> mode (WebSearch fallback, grounding capped at 0.6, ship disposition unavailable). All
+> other modes work normally.
 
-> **Note:** Claude Projects don't support hooks or the local file system. The `kf-route.py`
+> **Claude Projects don't support hooks or the local file system.** The `kf-route.py`
 > pre-prompt classifier and add-ons that require local binaries (Beads, GitNexus) don't
 > apply. MemPalace and the API-based integrations (Gemini, Asta, COS) work fine if
 > registered as Project tools.
@@ -180,15 +182,12 @@ all degrade gracefully when unavailable. Managed via `~/.claude/kf-integrations.
 | **COS** | Structured comms analysis in Critic, Synthesizer, and Calibrator | Yes | Yes (register as Project tool) |
 | **Orchestra** | Multi-agent cross-machine coordination *(opt-in — access required)* | Yes | No |
 
-**Gemini Routing setup (Claude Code):**
+**Gemini Routing setup:**
 
 ```bash
 export GEMINI_API_KEY=your_key_here
 # Add to ~/.zshrc or ~/.bashrc to persist
 ```
-
-The key is read by `kf-route.py` at hook invocation time. No restart required after
-setting the variable in a new shell — the hook reads it fresh on each prompt.
 
 **MemPalace setup:**
 
@@ -197,27 +196,102 @@ pip install mempalace
 claude plugin install --scope user mempalace
 ```
 
-**Full per-integration documentation:** All install steps, API keys, MCP registration,
-and per-integration config are documented in
-[`knowledgeforge-cc/docs/add-ons.md`](https://github.com/internexio/knowledgeforge-cc/blob/main/docs/add-ons.md).
+Full per-integration documentation — install steps, API keys, MCP registration, and
+config options — is in [`docs/add-ons.md`](add-ons.md).
+
+---
+
+## ChatGPT Projects
+
+> **Experimental:** This variant has not received the same validation coverage as the
+> Claude variants.
+
+Pre-compiled files are in [`platforms/chatgpt/`](../platforms/chatgpt/) — no build
+step needed.
+
+1. Open your ChatGPT Project → **Settings > Instructions** → paste the contents of
+   `platforms/chatgpt/kf-chatgpt-instructions.md`
+2. **Knowledge** → upload all files from `platforms/chatgpt/knowledge/`
+
+> Before re-uploading: delete existing KF knowledge files first. ChatGPT does not
+> deduplicate by filename.
+>
+> If you hit a file limit (Custom GPTs cap at 20): prioritize `knowledge/01`–`knowledge/11`
+> (the mode specs) over the infrastructure modules `12`–`26`.
+
+See [`platforms/chatgpt/`](../platforms/chatgpt/) for the full install guide.
+
+---
+
+## Codex CLI
+
+> **Experimental:** Codex support is under active testing.
+
+Pre-compiled output is in [`platforms/codex/`](../platforms/codex/) — no build step needed.
+
+Install into one project:
+
+```bash
+bash install.sh --codex --project /path/to/your/project
+```
+
+Or install globally for all local Codex projects:
+
+```bash
+bash install.sh --codex --global
+```
+
+The global install writes `~/.codex/AGENTS.md`; the project install writes `AGENTS.md`
+in the selected project. If either target already contains different instructions, the
+installer refuses to replace it unless you add `--force` (creates a timestamped backup
+first). Use `--dry-run` to preview either command.
+
+See [`platforms/codex/`](../platforms/codex/) for the full install guide.
+
+---
+
+## VSCode (Experimental)
+
+```bash
+python3 compiler/kf-compile.py --target vscode --output ./dist/vscode
+```
+
+See [`platforms/vscode/load-map.md`](../platforms/vscode/load-map.md) for what gets
+generated and where it deploys inside a VSCode extension.
+
+---
+
+## Plugin Bundle (Experimental)
+
+For tool-agnostic deployment (any platform that can load agent files via a plugin):
+
+```bash
+python3 compiler/kf-compile.py --target plugin-bundle --output ./dist/plugin-bundle
+bash ./dist/plugin-bundle/install.sh
+```
+
+See [`platforms/plugin-bundle/load-map.md`](../platforms/plugin-bundle/load-map.md) for
+the full file manifest.
 
 ---
 
 ## Updating
 
 **Claude Code (plugin):**
+
 ```bash
 /plugin update kf
 /kf:bootstrap   # always re-run after update
 ```
 
 **Claude Code (manual clone):**
+
 ```bash
 cd knowledgeforge
 git pull
 bash install.sh
 ```
 
-**Claude Projects:** Re-run the full setup procedure — delete all existing knowledge files,
-re-paste Project Instructions, re-upload all 26 knowledge files. There is no incremental
-update path for Claude Projects.
+**Claude Projects:** Re-run the full setup procedure — delete all existing knowledge
+files, re-paste Project Instructions, re-upload all 26 knowledge files. There is no
+incremental update path for Claude Projects.
