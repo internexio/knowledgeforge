@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Semantic Wiki Search
-  version: 7.4.0
+  version: 7.4.1
   purpose: Retrieval contract over the Tier 0 wiki — KF's specification on top of MemPalace's tool surface, defining how the accretion pipeline gates against duplicates and how retrieval degrades gracefully when the vector backend is unavailable
   topics: [retrieval, semantic-search, mempalace, vector-index, wiki-search, duplicate-detection]
   contexts: [knowledge-retrieval, accretion-check, linter-runs, cross-session-queries]
@@ -13,6 +13,10 @@ module:
   related: [19_Memory_Architecture, 21_Knowledge_Accretion, 23_Taxonomy_Enforcement, 24_Verbatim_History_Mining, 17_Temporal_Knowledge]
   added_in: "6.5"
   changelog:
+    7.4.1: |
+      - Added Phase 2 success criteria section (knowledgeforge-core-acu work scope item 5).
+        Defines R@10 target, off-domain noise threshold, injection hit rate, wrapper
+        latency, and false-negative monitoring. Closes the bead.
     7.4.0: |
       - Phase 2 activated (knowledgeforge-core-acu, triggered 2026-07-07).
         Trigger #1 fired: wiki > 100 entries AND infrastructure query returned
@@ -296,6 +300,25 @@ Load skill: .claude/skills/kf/builder.md
 ```
 
 **Graceful degradation:** Any failure in the wiki search path emits `[M22 Phase 2 FALLBACK]` to stderr and falls through to the existing routing-only behavior. Tool search unavailability, import failures, and individual query failures are all caught.
+
+---
+
+## Success Criteria (Phase 2)
+
+Phase 2 became active with v7.4.0 (2026-07-07). Metrics below are the operative targets for ongoing measurement.
+
+| Metric | Target | Measurement method |
+|--------|--------|-------------------|
+| Domain-relevant results in top-10 (R@10) | ≥ 95% of top-10 results from `wiki_search` are domain-relevant | Monthly: sample 10 queries across 3 domains; count domain-relevant results in returned top-10 |
+| Off-domain noise in top-5 | ≤ 1/5 off-domain results (down from 2/5 that triggered Phase 2) | Same sampling pass; count off-domain in position 1–5 |
+| Injection hit rate | ≥ 50% of non-reckoning routed turns get wiki context injected | Review `~/.claude/logs/kf-events.jsonl` for M22 injection entries vs total mode-routed turns per week |
+| Wrapper latency (P95) | < 2 s added to routing latency | stderr timestamps in `[kf-route] M22 Phase 2` log lines; compute delta over a session |
+| Phase 2 fallback engagement | < 5% of wiki-search calls fall back | Count `[M22 Phase 2 FALLBACK]` entries in stderr logs per week |
+| False-negative monitoring | 0 new `wiki/diagnostics/*module22-false-negative*` entries per month | File inspection: `ls wiki/diagnostics/ | grep module22-false-negative` |
+
+**Measurement cadence:** Monthly manual review is sufficient. Trigger immediate re-review if off-domain noise climbs back to 2/5, or if David reports "search isn't finding things" (Phase 2 upgrade trigger #4 restated — a single subjective report is the highest-priority signal).
+
+**95% R@10 provenance:** LongMemEval benchmark (Arora et al. 2025) measured 60% R@10 without hierarchical filter → 95% R@10 with metadata-gated retrieval. The Phase 2 design follows the same filter structure; the 95% target is aspirational calibration, not a guaranteed outcome on the KF wiki corpus. Treat 80%+ as operationally acceptable; 95%+ as the design target.
 
 ---
 
