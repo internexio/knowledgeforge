@@ -10,15 +10,15 @@ are the contributions I can trace directly. The ones I can't are no less real.
 
 **James Hutchinson** ([@anjinMeili](https://github.com/anjinMeili)) — The A-RAG
 hierarchical retrieval framework and multi-hop reasoning patterns from his AllOfUs
-project directly shaped Entity Relationship Analysis (Module 25). The idea of
+project directly shaped [Entity Relationship Analysis (Module 25)](../modules/25_entity_relationship_analysis.md). The idea of
 treating entities as first-class graph nodes before reasoning fires came from
 studying his work.
 
 **PNW AGI Group** — The group's research archive was a significant source for
 several foundational modules. Allen's 13 temporal interval relations (simplified
-to KF's 4-relation model in Module 17), the SYNAPSE competitive inhibition
-algorithm that became Module 18's salience allocation, and the ingredients of
-the four-part decision taxonomy in Module 13 all trace back to materials from
+to KF's 4-relation model in [Module 17](../modules/17_temporal_knowledge.md)), the SYNAPSE competitive inhibition
+algorithm that became [Module 18](../modules/18_salience_allocation.md)'s salience allocation, and the ingredients of
+the four-part decision taxonomy in [Module 13](../modules/13_decision_classification.md) all trace back to materials from
 this group. Access to their repo was the catalyst.
 
 ---

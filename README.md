@@ -53,6 +53,8 @@ Decision Classification (always, silent)
             └── Full expanded reasoning. Human review flagged. Mode activated.
 ```
 
+Routing is handled by [M00 Orchestrator](modules/00_orchestrator.md). Decision types are defined in [M13 Decision Classification](modules/13_decision_classification.md). All 27 modules listed in [docs/modules.md](docs/modules.md).
+
 ---
 
 ## Quick Install

@@ -9,7 +9,7 @@ any integration without restarting.
 
 ## MemPalace — Semantic Wiki Search
 
-**What it does:** Powers KF's Tier 0 semantic wiki search (Module 22). Without it,
+**What it does:** Powers KF's Tier 0 semantic wiki search ([Module 22](../modules/22_semantic_wiki_search.md)). Without it,
 wiki search falls back to grep — lower recall, no semantic ranking.
 
 **Install:**
@@ -96,7 +96,7 @@ Register the MCP in `~/.claude/settings.json`:
 
 ## Asta — Expert Research Variant
 
-**What it does:** The Asta MCP connects KF's Expert (research) mode to the
+**What it does:** The Asta MCP connects KF's [Expert (research) mode](../modules/05_expert_agent.md) to the
 [Allen AI Semantic Scholar corpus](https://www.semanticscholar.org/) — paper retrieval,
 citation grounding, claim verification. Without it, Expert research falls back to
 WebSearch (grounding capped at 0.6, output flagged `degraded=true`, ship disposition
@@ -180,13 +180,13 @@ your workflow — no context switching.
 
 **What it adds to KF:**
 
-- **Critic (comms variant)** — `analyze_full_comms` via COS MCP: 4–7 framework
+- **[Critic](../modules/07_critic_agent.md) (comms variant)** — `analyze_full_comms` via COS MCP: 4–7 framework
   structured analysis (engagement, personality fit, strategic clarity, framing,
   persuasion, platform, quality). Degrades gracefully to standard Critic output
   without COS MCP.
-- **Synthesizer (comms domain)** — emits `cos_template_output` alongside pattern
+- **[Synthesizer](../modules/08_synthesizer_agent.md) (comms domain)** — emits `cos_template_output` alongside pattern
   frameworks when comms-domain signals are detected
-- **Calibrator (comms-heavy)** — emits `cos_agent_profile_output` +
+- **[Calibrator](../modules/11_calibrator_agent.md) (comms-heavy)** — emits `cos_agent_profile_output` +
   `cos_audience_profile_output` for comms-heavy project configurations
 
 **Access:** [Try COS free for 7 days →](https://semalytics.com/cos) Subscription
