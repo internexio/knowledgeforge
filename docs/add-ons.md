@@ -19,7 +19,7 @@ pip install mempalace
 claude plugin install --scope user mempalace
 ```
 
-**Repo:** [github.com/milla-jovovich/mempalace](https://github.com/milla-jovovich/mempalace) (MIT)
+**Repo:** [github.com/MemPalace/mempalace](https://github.com/MemPalace/mempalace) (MIT)
 
 **Config:** Enabled by default in `~/.claude/kf-integrations.yaml`. No API key required.
 
@@ -54,7 +54,7 @@ calls, and the `br prime` context-priming step before compaction. Without it, ta
 tracking is skipped; all other KF behavior is unaffected.
 
 **Install:** Follow the instructions at
-[github.com/steveyegge/beads](https://github.com/steveyegge/beads)
+[github.com/gastownhall/beads](https://github.com/gastownhall/beads)
 
 **Config:** Enabled by default. KF's hooks (`br-prime-safe.sh`) fail silently if `bd`
 or `br` aren't on PATH — no broken behavior.
@@ -88,7 +88,7 @@ Register the MCP in `~/.claude/settings.json`:
 }
 ```
 
-**Repo:** [github.com/nordic-ai/gitnexus](https://github.com/nordic-ai/gitnexus)
+**Repo:** [github.com/abhigyanpatwari/GitNexus](https://github.com/abhigyanpatwari/GitNexus)
 
 **Config:** Enabled by default in `~/.claude/kf-integrations.yaml`.
 
