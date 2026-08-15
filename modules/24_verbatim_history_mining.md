@@ -279,7 +279,7 @@ Half-life values in the importance-weighted decay formula are informed by Module
 | Verbatim vs. pre-summarized recall benchmarks | MemPalace evaluation suite (Drlordbasil, 2025) |
 | LongMemEval benchmark | Arora et al., 2025 |
 | Importance-weighted exponential decay | Adapted from spaced repetition literature (Ebbinghaus, 1885; SM-2 algorithm, Wozniak, 1987) |
-| MemPalace repository | github.com/Drlordbasil/MemPalace |
+| MemPalace repository | github.com/MemPalace/mempalace |
 
 ---
 
