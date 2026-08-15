@@ -3,6 +3,8 @@
 Use these prompts to exercise specific KF behaviors. Each is designed to trigger a particular mechanism so you can observe, tune, and validate the framework is working as designed.
 
 > **How to use:** Paste each prompt into a fresh KF session (Claude Code or Claude Projects). The "What to look for" box tells you what correct behavior looks like. If the response doesn't match, the framework has a configuration or depth issue to investigate.
+>
+> Unfamiliar acronyms or terms? See the [Glossary](docs/glossary.md).
 
 ---
 
