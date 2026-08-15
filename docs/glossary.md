@@ -74,7 +74,7 @@ A 0.0–1.0 trust score assigned to knowledge claims. ≥0.6 required to file an
 ## H
 
 **HAPE** *(COS-specific)*
-Engagement scoring framework used by COS: **H**ook, **A**ction, **P**ain, **E**vidence. One of the seven analysis frameworks surfaced by the Critic (comms variant).
+**H**igh **A**rousal **P**ositive **E**ngagement — COS's proprietary engagement scoring framework. Measures whether content generates the high-arousal positive emotional state associated with sharing, action-taking, and memory encoding. One of the seven analysis frameworks surfaced by the Critic (comms variant).
 
 ---
 
