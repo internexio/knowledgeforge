@@ -323,6 +323,134 @@ that would orient a new session faster than re-reading all the files.
 
 ---
 
+## 17. Critic (Linter) — Knowledge Base Health Check
+
+**Exercises:** Linter variant of Critic — staleness detection, contradiction surfacing, orphan identification. Routes directly from the "health check" trigger phrase without going through the standard Critic protocol.
+
+```
+Health check the knowledge base. I want to know what's stale, what contradicts 
+something else, and what's no longer useful.
+```
+
+> **What to look for:** Routes to Critic (linter variant) — not standard Critic. Should scan for: entries with no recent verification (staleness), entries that assert something another entry contradicts (contradiction pairs), and entries that reference modules or decisions no longer in the system (orphans). Findings should be categorized by failure class. No fix proposals — linter surfaces, doesn't repair.
+
+---
+
+## 18. Critic (Audit) — Infrastructure Decomposition Readiness
+
+**Exercises:** Audit variant of Critic — single-point-of-failure analysis, hosting inventory, decomposition readiness. Routes from "audit" + infrastructure domain signals.
+
+```
+Audit our infrastructure setup for decomposition readiness:
+
+- Single Postgres instance: app DB, analytics, and job queue all on the same host
+- Monolith Rails app deployed to one DigitalOcean droplet (8vCPU, 16GB)
+- Redis on the same droplet as the app (used for caching, Sidekiq queue, and sessions)
+- All background jobs run in Sidekiq on the same host
+- Nginx as reverse proxy, also on the same droplet
+- Nightly pg_dump to S3 — no streaming replication
+
+What are the single points of failure and what would you extract first?
+```
+
+> **What to look for:** Routes to Critic (audit variant), not Expert. Inventory of all services and their co-location. SPOF identification with blast radius for each (Postgres down = app + analytics + jobs; Redis down = caching + queue + sessions simultaneously). Decomposition priority ranked by: blast radius first, then extraction effort. Should recommend Postgres read replica and Redis separation before anything else — both are high-blast-radius and low-extraction-effort.
+
+---
+
+## 19. Expert → Strategist — Competitive Moat Analysis
+
+**Exercises:** Expert (architecture) → Strategist auto-chain for moat and defensibility analysis. Expert goes deep on architecture; Strategist evaluates durability and reinforcement loops.
+
+```
+We're building a B2B SaaS platform for legal contract analysis. Our current moat is:
+- Proprietary training data from 3 law firms (5 years of annotated contracts)
+- Integrations with the three dominant contract lifecycle management platforms
+- A 14-person team with 6 ex-BigLaw attorneys on staff
+
+Our main competitor just raised $40M. What's actually defensible here and what isn't?
+Give me the adversarial depth analysis.
+```
+
+> **What to look for:** Auto-chain declared upfront: `@expert (architecture) → @strategist`. Expert inverts each claimed advantage: training data (how fast does it decay? can competitor replicate in 18 months?), integrations (exclusive or just first?), attorney headcount (can they hire?). Strategist evaluates durability — which advantages compound over time vs. erode? Reinforcement loops identified (more customers → more annotated data → better model → more customers). High-stakes flag with explicit confidence levels.
+
+---
+
+## 20. Expert (ERA) — Entity Relationship Analysis
+
+**Exercises:** ERA post-routing pass — entity extraction, relationship mapping, cardinality, coupling analysis. Fires automatically on entity-heavy requests.
+
+```
+Map the entity relationships in this system:
+
+- Users create Projects
+- Projects contain Documents
+- Documents have Versions (immutable snapshots)
+- Users are assigned Roles per Project (viewer, editor, owner)
+- Comments attach to specific Versions, not Documents
+- Notifications are sent to Users when a Document they're watching gets a new Version
+- Billing is per Organization; Organizations contain multiple Projects and Users
+
+What are the entities, their relationships, and where are the tight coupling risks?
+```
+
+> **What to look for:** Entity list extracted first (User, Project, Document, Version, Role, Comment, Notification, Organization). Relationship map with cardinality for each edge. Coupling risks identified — Comments tied to Versions (not Documents) means Version immutability propagates to Comment anchoring; Notifications bridging Users and Versions creates a fan-out concern at scale. Tight coupling flagged: the Role entity lives at Project scope but billing lives at Organization scope — cross-scope permission queries will be expensive.
+
+---
+
+## 21. Expert (Research) — Evidence-Grounded Claim Verification
+
+**Exercises:** Expert research variant — Semantic Scholar retrieval via Asta MCP, grounding scores on claims, degraded mode behavior when Asta is unavailable.
+
+> **Note:** This prompt exercises the Asta integration. Without an Asta API key registered, KF falls back to WebSearch — grounding is capped at 0.6 and output is flagged `degraded=true`.
+
+```
+Ground this claim with peer-reviewed evidence:
+
+"Structured prompting frameworks reduce LLM error rates on multi-step reasoning tasks 
+by 30-50% compared to unstructured prompting."
+
+Find supporting papers, note where the evidence is strong vs. weak, and flag anything 
+the claim overstates.
+```
+
+> **What to look for:** Routes to Expert (research variant) — not standard Expert. Asta MCP queried (look for tool calls to `asta_search` or `get_paper`). Claims matched to specific papers with citation. Grounding score per claim — should be 0.7–0.9 if papers are found, lower if only WebSearch is available. "30-50%" range likely overstated for some task types — expect a caveat that effect sizes vary heavily by task complexity and baseline. If Asta is unavailable: `degraded=true` in output, grounding capped at 0.6, ship disposition unavailable.
+
+---
+
+## 22. Adversarial Critic — Inverse-Premise Check
+
+**Exercises:** Adversarial Critic's inverse-premise check — assumes the artifact has ≥1 significant flaw, then inverts the stated premise and argues the inverse with equal rigor.
+
+```
+Review this architectural recommendation adversarially. Assume it has at least one 
+significant flaw:
+
+---
+Recommendation: Move to an event-driven architecture using Kafka for inter-service 
+communication. This will decouple our services, improve resilience, and allow us to 
+scale each service independently. The operational overhead of Kafka is justified by 
+the long-term flexibility benefits. Team size is 8 engineers, current system handles 
+~500 req/min peak.
+---
+```
+
+> **What to look for:** Adversarial framing — "this has at least one significant flaw, find it." Should invert the stated premise: "Kafka's operational overhead is justified" → argue it is NOT justified for this team/load profile. At 500 req/min and 8 engineers, Kafka's complexity cost likely outweighs benefits — simpler message queues (Redis pub/sub, RabbitMQ, even SQS) achieve the decoupling goal without the operational burden. Severity 2+ findings only. If the inverse lands with equal or greater confidence than the original recommendation, flag the conclusion as **premise-derived, not data-derived**.
+
+---
+
+## 23. Mid-Chain Premise Invalidation
+
+**Exercises:** The upstream invalidation protocol — when a downstream chain step discovers the prior step's premise was wrong, the chain halts and re-enters at the invalidated step with the corrective evidence.
+
+```
+I think our authentication slowness is caused by bcrypt being too expensive (cost factor 14).
+Debug it and then spec a fix.
+```
+
+> **What to look for:** Auto-chain declared: `@debugger → @builder`. Debugger investigates — and if the actual bottleneck is a database query (missing index on the sessions table, say) rather than bcrypt, it should return `upstream_invalidation` signaling the stated premise is wrong. The chain should halt, re-enter Debugger with the corrective evidence, and produce a revised diagnosis before Builder specifies anything. Builder should NOT spec a bcrypt cost reduction if that's not the root cause. This tests that the chain doesn't blindly proceed when premise invalidation is detected.
+
+---
+
 ## Reference
 
 | Prompt | Mode(s) | Decision Type | Key Feature |
@@ -344,3 +472,10 @@ that would orient a new session faster than re-reading all the files.
 | 14 | Multi-turn | Evaluative | Session continuity |
 | 15 | Critic | Evaluative | Gap detection, severity |
 | 16 | Synthesizer | Evaluative | Knowledge Accretion — self-referential filing |
+| 17 | Critic (linter) | Evaluative | KB health check — staleness, contradictions, orphans |
+| 18 | Critic (audit) | Evaluative | SPOF analysis, decomposition priority |
+| 19 | Expert → Strategist | Novel | Competitive moat, reinforcement loops |
+| 20 | Expert (ERA) | Evaluative | Entity graph, cardinality, coupling risks |
+| 21 | Expert (research) | Evaluative | Asta grounding, degraded mode |
+| 22 | Adversarial Critic | Evaluative | Inverse-premise check, premise-derived flag |
+| 23 | Debugger → Builder | Evaluative | Mid-chain premise invalidation, re-entry |
