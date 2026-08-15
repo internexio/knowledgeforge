@@ -90,6 +90,7 @@ See [`docs/install.md`](docs/install.md) for the full guide: `settings.json` con
 - [Changelog](CHANGELOG.md) — full version history
 - [Exploration prompts](EXPLORATION_PROMPTS.md) — ready-to-paste prompts that exercise specific KF behaviors
 - [Distribution matrix](docs/dist-matrix.md) — platform capability and module coverage matrix
+- [Credits](docs/credits.md) — contributors, inspirations, and the broader community
 
 ---
 
