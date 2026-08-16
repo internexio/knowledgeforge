@@ -69,6 +69,19 @@ jobs:
 
           CHANGED_CC=$(git status --porcelain | grep -v '.kf-compile-manifest' | awk '{print "- " $2}')
 
+          # Skip if a PR already exists for this SHA (idempotent re-runs)
+          EXISTING_PR=$(gh pr list \
+            --repo internexio/knowledgeforge-cc \
+            --head "$BRANCH" \
+            --json number --jq '.[0].number' 2>/dev/null)
+          if [ -n "$EXISTING_PR" ]; then
+            echo "PR #${EXISTING_PR} already exists for core@${CORE_SHA_SHORT} — skipping."
+            exit 0
+          fi
+
+          # Delete remote branch if it exists but has no open PR (e.g. from a merged run)
+          git push origin --delete "$BRANCH" 2>/dev/null || true
+
           git checkout -b "$BRANCH"
           git add .
           git commit -m "chore(compile): CC build from core@${CORE_SHA_SHORT}"
