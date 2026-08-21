@@ -2,7 +2,7 @@
 """
 kf-loop.py — KnowledgeForge Loop Enforcement
 Hook type: UserPromptSubmit  (when called with no arguments)
-CLI mode:  enable / pause / disable / status / list  (when called with arguments)
+CLI mode:  enable / pause / disable / create / status / list  (when called with arguments)
 
 Purpose:
   Behavioral loops that decay within long sessions get re-injected on every
@@ -18,6 +18,7 @@ Usage (CLI):
   python3 kf-loop.py enable <name>
   python3 kf-loop.py pause <name>
   python3 kf-loop.py disable <name>
+  python3 kf-loop.py create <name> --description "..." --rules "..."
   python3 kf-loop.py status
   python3 kf-loop.py list
 """
@@ -121,6 +122,9 @@ def _parse_registry_yaml(text: str) -> dict:
         if line.startswith("    ") and current_loop and ":" in stripped:
             key, _, val = stripped.partition(":")
             val = val.strip().strip('"')
+            # Restore escaped newlines in custom_rules
+            if key.strip() == "custom_rules":
+                val = val.replace("\\n", "\n").replace('\\"', '"')
             registry["loops"][current_loop][key.strip()] = val
     return registry
 
@@ -136,13 +140,15 @@ def _serialize_registry_yaml(registry: dict) -> str:
             lines.append(f"  {name}:")
             status = config.get("status", "active")
             enabled_at = config.get("enabled_at", str(date.today()))
-            custom = config.get("custom_rules", "")
+            custom_rules = config.get("custom_rules", "")
+            custom_desc = config.get("custom_description", "")
             lines.append(f'    status: "{status}"')
             lines.append(f'    enabled_at: "{enabled_at}"')
-            if custom:
-                lines.append(f'    custom_rules: "{custom}"')
-            else:
-                lines.append(f"    custom_rules: \"\"")
+            # Escape inner quotes and newlines for single-line YAML storage
+            safe_rules = custom_rules.replace('"', '\\"').replace("\n", "\\n")
+            lines.append(f'    custom_rules: "{safe_rules}"')
+            safe_desc = custom_desc.replace('"', '\\"')
+            lines.append(f'    custom_description: "{safe_desc}"')
     return "\n".join(lines) + "\n"
 
 # ─── Hook mode ────────────────────────────────────────────────────────────────
@@ -196,20 +202,31 @@ def hook_mode() -> None:
 # ─── CLI mode ─────────────────────────────────────────────────────────────────
 
 def cli_enable(name: str) -> None:
+    registry = load_registry()
+    loops = registry.setdefault("loops", {})
+
+    # Custom loop already in registry — just re-activate it
+    if name not in BUILT_IN_LOOPS and name in loops:
+        loops[name]["status"] = "active"
+        save_registry(registry)
+        desc = loops[name].get("custom_description", "custom loop")
+        print(f"Loop enabled: {name}")
+        print(f"  {desc}")
+        print(f"  Rules inject on every prompt turn until paused or disabled.")
+        return
+
     if name not in BUILT_IN_LOOPS:
         known = ", ".join(sorted(BUILT_IN_LOOPS.keys()))
         print(f"Unknown loop '{name}'. Built-in loops: {known}")
-        print("To add a custom loop, edit the registry directly at:")
-        print(f"  {REGISTRY_PATH}")
+        print(f"To create a custom loop: kf-loop.py create {name} --description '...' --rules '...'")
         sys.exit(1)
 
-    registry = load_registry()
-    loops = registry.setdefault("loops", {})
     existing = loops.get(name, {})
     loops[name] = {
         "status": "active",
         "enabled_at": existing.get("enabled_at", str(date.today())),
         "custom_rules": existing.get("custom_rules", ""),
+        "custom_description": existing.get("custom_description", ""),
     }
     save_registry(registry)
     desc = BUILT_IN_LOOPS[name]["description"]
@@ -240,24 +257,31 @@ def cli_disable(name: str) -> None:
     print(f"Loop removed: {name}")
 
 
+def _loop_desc(name: str, cfg: dict) -> str:
+    """Return display description for any loop, built-in or custom."""
+    return (
+        BUILT_IN_LOOPS.get(name, {}).get("description")
+        or cfg.get("custom_description")
+        or "custom loop"
+    )
+
+
 def cli_status() -> None:
     registry = load_registry()
     loops = registry.get("loops", {})
     if not loops:
         print("No loops registered. Use 'enable <name>' to add one.")
         return
-    print("Active loops:")
     active = [(n, c) for n, c in loops.items() if c.get("status") == "active"]
     paused = [(n, c) for n, c in loops.items() if c.get("status") == "paused"]
-    for name, cfg in sorted(active):
-        desc = BUILT_IN_LOOPS.get(name, {}).get("description", "custom")
-        since = cfg.get("enabled_at", "?")
-        print(f"  [on]     {name} — {desc}  (since {since})")
-    for name, cfg in sorted(paused):
-        desc = BUILT_IN_LOOPS.get(name, {}).get("description", "custom")
-        print(f"  [paused] {name} — {desc}")
     if not active and not paused:
-        print("  (none)")
+        print("No loops registered. Use 'enable <name>' to add one.")
+        return
+    for name, cfg in sorted(active):
+        since = cfg.get("enabled_at", "?")
+        print(f"  [on]     {name} — {_loop_desc(name, cfg)}  (since {since})")
+    for name, cfg in sorted(paused):
+        print(f"  [paused] {name} — {_loop_desc(name, cfg)}")
 
 
 def cli_list() -> None:
@@ -268,6 +292,80 @@ def cli_list() -> None:
         status = registered.get(name, {}).get("status", "off")
         tag = f"[{status}]" if name in registered else "[off]"
         print(f"  {tag:<10} {name} — {meta['description']}")
+    custom = {n: c for n, c in registered.items() if n not in BUILT_IN_LOOPS}
+    if custom:
+        print("\nCustom loops:")
+        for name, cfg in sorted(custom.items()):
+            status = cfg.get("status", "active")
+            desc = cfg.get("custom_description", "no description")
+            print(f"  [{status}]{'': <{8 - len(status)}} {name} — {desc}")
+
+
+def cli_create(args: list) -> None:
+    """
+    create <name> --description "..." --rules "..."
+
+    Stores a custom loop in the registry and enables it immediately.
+    Rules are re-injected on every prompt turn, same as built-ins.
+    Use \\n in --rules to embed newlines.
+    """
+    import re
+
+    if not args:
+        print("Usage: kf-loop.py create <name> --description '...' --rules '...'")
+        sys.exit(1)
+
+    name = args[0]
+
+    if not re.match(r"^[a-z][a-z0-9-]*$", name):
+        print(f"Loop name must be lowercase letters, digits, hyphens (got: '{name}')")
+        sys.exit(1)
+
+    if name in BUILT_IN_LOOPS:
+        print(f"'{name}' is a built-in loop. Use 'enable {name}' to activate it.")
+        sys.exit(1)
+
+    # Parse --description and --rules from remaining args
+    description = ""
+    rules = ""
+    remaining = args[1:]
+    i = 0
+    while i < len(remaining):
+        if remaining[i] == "--description" and i + 1 < len(remaining):
+            description = remaining[i + 1]
+            i += 2
+        elif remaining[i] == "--rules" and i + 1 < len(remaining):
+            rules = remaining[i + 1]
+            i += 2
+        else:
+            i += 1
+
+    if not description:
+        print("--description is required")
+        sys.exit(1)
+    if not rules:
+        print("--rules is required")
+        sys.exit(1)
+
+    # Allow \\n in rules string to represent actual newlines
+    rules = rules.replace("\\n", "\n")
+
+    registry = load_registry()
+    loops = registry.setdefault("loops", {})
+    existed = name in loops
+
+    loops[name] = {
+        "status": "active",
+        "enabled_at": loops[name].get("enabled_at", str(date.today())) if existed else str(date.today()),
+        "custom_rules": rules,
+        "custom_description": description,
+    }
+    save_registry(registry)
+
+    verb = "updated and enabled" if existed else "created and enabled"
+    print(f"Loop {verb}: {name}")
+    print(f"  {description}")
+    print(f"  Rules inject on every prompt turn until paused or disabled.")
 
 
 # ─── Entry point ──────────────────────────────────────────────────────────────
@@ -306,9 +404,12 @@ def main() -> None:
     elif subcommand in ("list", "ls"):
         cli_list()
 
+    elif subcommand == "create":
+        cli_create(args[1:])
+
     else:
         print(f"Unknown subcommand '{subcommand}'.")
-        print("Usage: kf-loop.py [enable|pause|disable|status|list] [name]")
+        print("Usage: kf-loop.py [enable|pause|disable|create|status|list] [name]")
         sys.exit(1)
 
 
