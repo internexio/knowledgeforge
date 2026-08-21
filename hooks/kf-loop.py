@@ -2,7 +2,7 @@
 """
 kf-loop.py — KnowledgeForge Loop Enforcement
 Hook type: UserPromptSubmit  (when called with no arguments)
-CLI mode:  enable / pause / disable / create / status / list  (when called with arguments)
+CLI mode:  enable / pause / disable / auto / create / status / list  (when called with arguments)
 
 Purpose:
   Behavioral loops that decay within long sessions get re-injected on every
@@ -16,6 +16,7 @@ Graceful degradation: any failure in hook mode → exit 0 (pass through unmodifi
 
 Usage (CLI):
   python3 kf-loop.py enable <name>
+  python3 kf-loop.py auto <name>      # context-aware: only fires when prompt looks like copy work
   python3 kf-loop.py pause <name>
   python3 kf-loop.py disable <name>
   python3 kf-loop.py create <name> --description "..." --rules "..."
@@ -76,6 +77,63 @@ BUILT_IN_LOOPS = {
         ),
     },
 }
+
+# ─── Context detection (for auto-mode loops) ─────────────────────────────────
+
+# Signals that indicate a technical context — suppress auto-mode injection
+TECH_SIGNALS = {
+    "```", "def ", "class ", "import ", "function(", "function ",
+    "traceback", "error:", "exception:", "syntaxerror", "typeerror",
+    "nameerror", "indexerror", "keyerror", "valueerror",
+    "git ", "bash ", "python ", "javascript", "typescript", "node ",
+    "dockerfile", "kubernetes", "nginx", "sql ", "select ", "insert ",
+    "deploy", "endpoint", "api call", "http ", "curl ",
+    "debug", "implement", "refactor", "unittest", "pytest",
+}
+
+# Signals that indicate a copy-writing context — enable auto-mode injection
+# Direct content type nouns — high confidence copy context
+COPY_NOUNS = {
+    "email", "subject line", "blog", "article", "newsletter", "post",
+    "linkedin", "tweet", "twitter", "instagram", "tiktok", "copy",
+    "headline", "landing page", "cta", "press release", "case study",
+    "announcement", "caption", "tagline", "pitch", "bio", "about page",
+    "cold email", "sales email", "outreach", "ad copy", "script",
+    "blurb", "description", "product description", "meta description",
+    "hook", "lede", "opener", "closing", "call to action",
+}
+
+# Action verbs that suggest copy work (only count if no tech signals present)
+COPY_VERBS = {
+    "draft", "compose", "rewrite", "de-ai", "copyedit", "copywrite",
+}
+
+
+def is_copy_context(prompt: str) -> bool:
+    """
+    Return True if the prompt looks like a copy-writing task.
+    Technical signals take precedence — if any are detected, return False.
+    Then check for copy nouns or copy verbs.
+    """
+    lower = prompt.lower()
+
+    # Technical override — check first
+    for signal in TECH_SIGNALS:
+        if signal in lower:
+            return False
+
+    # Copy nouns — high confidence regardless of verb
+    for noun in COPY_NOUNS:
+        if noun in lower:
+            return True
+
+    # Copy verbs — sufficient on their own if no tech signals present
+    for verb in COPY_VERBS:
+        if verb in lower:
+            return True
+
+    return False
+
 
 # ─── YAML helpers (stdlib only — no PyYAML dependency) ───────────────────────
 
@@ -166,17 +224,29 @@ def hook_mode() -> None:
         sys.exit(0)
 
     registry = load_registry()
-    active_loops = [
-        name for name, cfg in registry.get("loops", {}).items()
-        if cfg.get("status") == "active"
-    ]
+    all_loops = registry.get("loops", {})
 
-    if not active_loops:
+    # Resolve which loops inject this turn
+    original_prompt = hook_input.get("userPrompt", "")
+    copy_ctx = None  # lazy-evaluate — only check once if needed
+
+    injecting = []
+    for name, cfg in all_loops.items():
+        status = cfg.get("status", "")
+        if status == "active":
+            injecting.append(name)
+        elif status == "auto":
+            if copy_ctx is None:
+                copy_ctx = is_copy_context(original_prompt)
+            if copy_ctx:
+                injecting.append(name)
+
+    if not injecting:
         sys.exit(0)
 
     # Build injection block
     block_lines = ["[KF-LOOPS ACTIVE]"]
-    for name in sorted(active_loops):
+    for name in sorted(injecting):
         cfg = registry["loops"][name]
         custom_rules = cfg.get("custom_rules", "").strip()
         rules = custom_rules if custom_rules else BUILT_IN_LOOPS.get(name, {}).get("rules", "")
@@ -186,8 +256,7 @@ def hook_mode() -> None:
 
     injection = "\n".join(block_lines)
 
-    # Append to user prompt
-    original_prompt = hook_input.get("userPrompt", "")
+    # Append to user prompt (original_prompt already set above)
     augmented_prompt = f"{original_prompt}\n\n{injection}" if original_prompt else injection
 
     output = {
@@ -235,6 +304,30 @@ def cli_enable(name: str) -> None:
     print(f"  Rules inject on every prompt turn until paused or disabled.")
 
 
+def cli_auto(name: str) -> None:
+    """Set a loop to auto mode — injects only when prompt looks like copy work."""
+    registry = load_registry()
+    loops = registry.setdefault("loops", {})
+
+    if name not in BUILT_IN_LOOPS and name not in loops:
+        print(f"Unknown loop '{name}'. Use 'list' to see available loops.")
+        sys.exit(1)
+
+    existing = loops.get(name, {})
+    loops[name] = {
+        "status": "auto",
+        "enabled_at": existing.get("enabled_at", str(date.today())),
+        "custom_rules": existing.get("custom_rules", ""),
+        "custom_description": existing.get("custom_description", ""),
+    }
+    save_registry(registry)
+    desc = BUILT_IN_LOOPS.get(name, {}).get("description") or existing.get("custom_description", "custom loop")
+    print(f"Loop set to auto: {name}")
+    print(f"  {desc}")
+    print(f"  Injects only when prompt contains copy-writing signals.")
+    print(f"  Suppressed on: code, debug, implement, git, bash, deploy, etc.")
+
+
 def cli_pause(name: str) -> None:
     registry = load_registry()
     loops = registry.get("loops", {})
@@ -273,13 +366,17 @@ def cli_status() -> None:
         print("No loops registered. Use 'enable <name>' to add one.")
         return
     active = [(n, c) for n, c in loops.items() if c.get("status") == "active"]
+    auto   = [(n, c) for n, c in loops.items() if c.get("status") == "auto"]
     paused = [(n, c) for n, c in loops.items() if c.get("status") == "paused"]
-    if not active and not paused:
+    if not active and not auto and not paused:
         print("No loops registered. Use 'enable <name>' to add one.")
         return
     for name, cfg in sorted(active):
         since = cfg.get("enabled_at", "?")
         print(f"  [on]     {name} — {_loop_desc(name, cfg)}  (since {since})")
+    for name, cfg in sorted(auto):
+        since = cfg.get("enabled_at", "?")
+        print(f"  [auto]   {name} — {_loop_desc(name, cfg)}  (copy-context only, since {since})")
     for name, cfg in sorted(paused):
         print(f"  [paused] {name} — {_loop_desc(name, cfg)}")
 
@@ -291,7 +388,8 @@ def cli_list() -> None:
     for name, meta in sorted(BUILT_IN_LOOPS.items()):
         status = registered.get(name, {}).get("status", "off")
         tag = f"[{status}]" if name in registered else "[off]"
-        print(f"  {tag:<10} {name} — {meta['description']}")
+        suffix = "  ← copy-context only" if status == "auto" else ""
+        print(f"  {tag:<10} {name} — {meta['description']}{suffix}")
     custom = {n: c for n, c in registered.items() if n not in BUILT_IN_LOOPS}
     if custom:
         print("\nCustom loops:")
@@ -386,6 +484,12 @@ def main() -> None:
             sys.exit(1)
         cli_enable(args[1])
 
+    elif subcommand == "auto":
+        if len(args) < 2:
+            print("Usage: kf-loop.py auto <name>")
+            sys.exit(1)
+        cli_auto(args[1])
+
     elif subcommand == "pause":
         if len(args) < 2:
             print("Usage: kf-loop.py pause <name>")
@@ -409,7 +513,7 @@ def main() -> None:
 
     else:
         print(f"Unknown subcommand '{subcommand}'.")
-        print("Usage: kf-loop.py [enable|pause|disable|create|status|list] [name]")
+        print("Usage: kf-loop.py [enable|auto|pause|disable|create|status|list] [name]")
         sys.exit(1)
 
 
