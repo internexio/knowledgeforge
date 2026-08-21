@@ -133,6 +133,8 @@ type: index
 
 ### Infrastructure
 
+- [2026-08-21] KF loop enforcement via UserPromptSubmit hook injection — new_pattern — `infrastructure/2026-08-21_kf-loop-enforcement-userpromptsubmit-hook-injection.md`
+- [2026-08-16] CI branch-by-SHA collision — idempotent push pattern — reusable_diagnostic + transferable_pattern — `infrastructure/2026-08-16_ci-branch-by-sha-collision-idempotent-push-pattern.md`
 - [2026-08-01] happy-coder bundled claude binary silent failure on -p flag — reusable_diagnostic — `infrastructure/2026-08-01_happy-coder-bundled-claude-binary-silent-p-flag-failure.md`
 - [2026-07-25] Ghost casper theme omits author bio from post pages — fix pattern — new_pattern — `infrastructure/2026-07-25_ghost-casper-theme-author-bio-post-rendering.md`
 - [2026-07-24] Ghost active-theme verification before SSH theme edits — reusable_diagnostic — `infrastructure/2026-07-24_ghost-active-theme-verification-before-ssh-edits.md`
@@ -200,6 +202,7 @@ type: index
 
 ### Diagnostics
 
+- [2026-08-21] Behavioral protocol decay in long sessions is a hook injection gap, not a protocol design gap — reusable_diagnostic — `diagnostics/2026-08-21_behavioral-protocol-decay-hook-gap-not-protocol-gap.md`
 - [2026-08-04] Score calibration methodology for two-model pipelines — reusable_diagnostic — `diagnostics/2026-08-04_score-calibration-methodology-two-model-pipelines.md`
 - [2026-07-29] Ghost CMS Docker MySQL discovery — diagnosing why MySQL updates don't surface — reusable_diagnostic — `diagnostics/2026-07-29_ghost-docker-mysql-discovery-why-updates-dont-surface.md`
 - [2026-07-29] UNHEX() as shell-safe MySQL injection for complex string values — reusable_diagnostic — `diagnostics/2026-07-29_unhex-shell-safe-mysql-injection-complex-strings.md`
@@ -293,6 +296,7 @@ type: index
 
 ### Methodologies
 
+- [2026-08-16] Bead-left-open anti-pattern — verify implementation state before starting bead work — reusable_diagnostic — `methodologies/2026-08-16_bead-left-open-anti-pattern-verify-implementation-state-before-starting.md`
 - [2026-07-07] Fleet repo audit: 4-tier classification methodology for multi-repo codebases — reusable_diagnostic — `methodologies/2026-07-07_fleet-repo-audit-4-tier-classification-methodology.md`
 - [2026-07-06] Cross-project marker files — verify the creator lives elsewhere before flagging an empty repo-root file as stale — new_pattern — `methodologies/2026-07-06_cross-project-marker-files-verify-creator-before-flagging-stale.md`
 - [2026-07-06] Backup files timestamped near a "fix" commit are not automatically "pre-regression working reference" — cross-check backup mtime against git log — reusable_diagnostic — `methodologies/2026-07-06_backup-file-mtime-vs-git-log-cross-check-before-trusting-pre-regression-claim.md`
