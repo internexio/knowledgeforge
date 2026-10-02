@@ -32,6 +32,7 @@ Nine modes. Each one handles a distinct class of reasoning problem. The orchestr
 | **Session drift** | Routing accuracy degrades as context fills | Three-tier memory: routing index always loaded, utilization plateaus |
 | **Retry loops** | Keeps trying the same failing approach | Circuit breakers: 3 failures → halt, surface pattern, present options |
 | **Missing adversarial thinking** | "Looks good to me" without real challenge | Auto-verification fires on qualifying chains — framed to find what the producing agent missed |
+| **Stateless business execution** | Authority and context reset between sessions; no persistent role identity | Role Layer (M29): business roles with charter, RACI, decision authority, and memory scope |
 
 > **"KF modes patch Claude's weaknesses, not scaffold its strengths."**
 >
@@ -60,7 +61,7 @@ Decision Classification (always, silent)
             └── Full expanded reasoning. Human review flagged. Mode activated.
 ```
 
-Routing is handled by [M00 Orchestrator](modules/00_orchestrator.md). Decision types are defined in [M13 Decision Classification](modules/13_decision_classification.md). All 27 modules listed in [docs/modules.md](docs/modules.md).
+Routing is handled by [M00 Orchestrator](modules/00_orchestrator.md). Decision types are defined in [M13 Decision Classification](modules/13_decision_classification.md). All 30 modules listed in [docs/modules.md](docs/modules.md).
 
 ---
 
@@ -86,7 +87,7 @@ I ran a Pareto pass: which modules produced measurable results in daily work, wh
 
 What survived: Builder, Critic, Debugger, Strategist, Expert, Synthesizer, Calibrator, Coordinator, Navigator. Each one addresses a real, recurring failure mode. Nothing in the list exists for completeness.
 
-The 27 underlying modules (M00–M26) implement those nine modes plus the cross-cutting infrastructure they share: memory architecture, decision classification, knowledge accretion, grounding scores.
+The 30 underlying modules (M00–M29) implement those nine modes plus the cross-cutting infrastructure they share: memory architecture, decision classification, knowledge accretion, grounding scores, and the Role Agent Layer (M29) for persistent business roles above the mode level.
 
 ---
 
@@ -123,7 +124,7 @@ See [`docs/install.md`](docs/install.md) for the full guide: `settings.json` con
 
 - [Full install guide](docs/install.md) — CC + CP paths, `settings.json` config, all platforms, add-ons
 - [Add-ons](docs/add-ons.md) — MemPalace, Gemini Routing, Beads, GitNexus, Asta, COS, Orchestra
-- [Modules](docs/modules.md) — all 27 modules with versions and purposes
+- [Modules](docs/modules.md) — all 30 modules with versions and purposes
 - [Changelog](CHANGELOG.md) — full version history
 - [Exploration prompts](EXPLORATION_PROMPTS.md) — ready-to-paste prompts that exercise specific KF behaviors
 - [Distribution matrix](docs/dist-matrix.md) — platform capability and module coverage matrix
@@ -143,4 +144,4 @@ See [`SECURITY.md`](SECURITY.md) for the vulnerability reporting process.
 
 Apache-2.0. Copyright 2026 David Pedersen. See [`LICENSE`](LICENSE).
 
-**Version:** 7.36.0 | **Modules:** 27 (M00–M26)
+**Version:** 7.36.1 | **Modules:** 30 (M00–M29)
