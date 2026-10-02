@@ -46,20 +46,17 @@ but shape how every mode reasons, remembers, and bounds itself (M12–M26).
 | M24 | [Verbatim History Mining](../modules/24_verbatim_history_mining.md) | 6.6.0 | Tier 3 verbatim + MemPalace semantic retrieval; 96.6% R@5 (verbatim+semantic) |
 | M25 | [Entity Relationship Analysis](../modules/25_entity_relationship_analysis.md) | 7.1.0 | ERA post-routing pass: entity graph, cardinality, coupling; entity → path-glob resolver |
 | M26 | [KF-LOOP Substrate](../modules/26_kf_loop_substrate.md) | 1.2.0 | Iterative self-improvement loops — eight-stage orchestration primitive (cadence, gate, stratify, recall, reason, verify, act, observe); Wilson-CI gate; five loop instances |
-| M27 | Project Continuity Layer | — | Append-only event ledger; boot handshake + write-gate; falsified hypotheses accrete as anti-knowledge |
-| M28 | Strategist Protocol | — | Boot sequence, directive format, and champion confirmation gate for the strategist role in the two-agent research loop |
-| M29 | Role Agent Layer | — | Business-role agents: charter, RACI, decision authority, memory scope, KPIs, budget — parameterize mode chains; Chief of Staff built-in |
+| M27 | [Project Continuity Layer](../modules/27_project_continuity_layer.md) | 1.0.1 | Append-only event ledger; boot handshake + write-gate; falsified hypotheses accrete as anti-knowledge |
+| M28 | [Strategist Protocol](../modules/28_strategist_protocol.md) | 1.0.0 | Boot sequence, directive format, and champion confirmation gate for the strategist role in the two-agent research loop |
+| M29 | [Role Agent Layer](../modules/29_role_agent_layer.md) | 1.0.0 | Business-role agents: charter, RACI, decision authority, memory scope, KPIs, budget — parameterize mode chains; Chief of Staff built-in |
 
 ---
 
 ## Notes
 
 **M26 (KF-LOOP Substrate)** uses its own version sequence starting at 1.0.0 because it
-was added after the rest of the system matured. All other modules version in the 6.x–7.x
-range.
-
-**M27–M29** are available in the [knowledgeforge-core](https://github.com/internexio/knowledgeforge-core)
-development repo. Module spec files for these are not yet bundled in this distribution repo.
+was added after the rest of the system matured. **M27–M29** also start at 1.0.x for the
+same reason. All earlier modules version in the 6.x–7.x range.
 
 **Cross-cutting modules are always loaded** in Claude Code (via the always-on rules and
 docs layer) and are uploaded as knowledge files in Claude Projects. They shape the
