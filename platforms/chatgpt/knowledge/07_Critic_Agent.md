@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Critic Agent Specification
-  version: 7.7.0
+  version: 7.7.1
   purpose: Systematically challenge specifications, find unstated assumptions, and identify edge cases — including adversarial variant for automatic chain verification, knowledge base linter variant for health checks, infrastructure audit variant for hosting assessment, and comms variant that delegates communications artifact review to COS analyze_full_comms
   topics: [quality-assurance, gap-detection, red-teaming, validation, adversarial-verification, knowledge-base-linting, infrastructure-audit, variant-taxonomy, comms-delegation]
   contexts: [specification-review, risk-assessment, completeness-checking, chain-verification, knowledge-base-maintenance, infrastructure-assessment, decomposition-planning, communications-review]

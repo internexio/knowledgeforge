@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Specification Templates
-  version: 7.5.0
+  version: 7.5.1
   purpose: Provide complete, reusable templates for agents, processes, and coordination
   topics: [templates, specifications, formats, schemas, capability-profiles, risk-tiers, infrastructure-architecture, hosting-audit, era-specification, handoff-contracts, trigger-disambiguation]
   contexts: [agent-creation, process-design, documentation, infrastructure-planning, entity-modeling, mode-routing, chain-handoffs]

@@ -1,5 +1,5 @@
 {
-  "compiled_at": "2026-11-12T21:06:22.830240+00:00",
+  "compiled_at": "2026-11-12T21:09:21.585105+00:00",
   "source": "knowledgeforge-core",
   "platform": "plugin-bundle",
   "version": "7.37.0",
@@ -44,18 +44,19 @@
       "source": "07_critic_agent.md",
       "output": "agents/critic.md",
       "section": "CC Agent",
-      "module_version": "",
+      "module_version": "7.7.1",
       "bundle_version": "7.37.0",
       "status": "written",
-      "bytes": 6889
+      "bytes": 6887
     },
     {
       "source": "07_critic_agent.md",
       "output": "agents/adversarial-critic.md",
       "section": "CC Agent (Adversarial Variant)",
-      "status": "skipped_version_gate",
-      "requires_module_version": ">=7.3.0",
-      "module_version": ""
+      "module_version": "7.7.1",
+      "bundle_version": "7.37.0",
+      "status": "written",
+      "bytes": 4999
     },
     {
       "source": "08_synthesizer_agent.md",
@@ -88,10 +89,10 @@
       "source": "11_calibrator_agent.md",
       "output": "agents/calibrator.md",
       "section": "CC Agent",
-      "module_version": "",
+      "module_version": "7.2.1",
       "bundle_version": "7.37.0",
       "status": "written",
-      "bytes": 4840
+      "bytes": 4838
     },
     {
       "source": "21_knowledge_accretion.md",
@@ -121,7 +122,7 @@
       "output": "kf-plugin-bundle.json",
       "section": "bundle_manifest",
       "status": "written",
-      "bytes": 2924
+      "bytes": 2882
     }
   ]
 }

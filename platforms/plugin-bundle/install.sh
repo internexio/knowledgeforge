@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # KF plugin bundle installer
 # Bundle version: 7.37.0
-# Compiled at:    2026-11-12T21:06:22.829560+00:00
+# Compiled at:    2026-11-12T21:09:21.584309+00:00
 #
 # SPEC reference: docs/planning/2026-06-13_spec-5-plugin-packaging.md (D3b)
 #

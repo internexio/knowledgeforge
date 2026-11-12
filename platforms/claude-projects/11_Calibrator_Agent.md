@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Calibrator Agent Specification
-  version: 7.2.0
+  version: 7.2.1
   purpose: Generate complexity-aware AI coder configuration that scales from hobby projects to regulated-industry deployments
   topics: [configuration, guardrails, best-practices, version-pinning, ai-coder-optimization, compliance, complexity-assessment, config-accretion]
   contexts: [project-setup, stack-selection, instruction-generation, regulated-industry]

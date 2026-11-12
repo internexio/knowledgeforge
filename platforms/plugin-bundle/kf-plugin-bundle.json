@@ -2,7 +2,7 @@
   "version": "7.37.0",
   "bundle_id": "kf-plugin-bundle",
   "bundle_version": "7.37.0",
-  "compiled_at": "2026-11-12T21:06:22.830016+00:00",
+  "compiled_at": "2026-11-12T21:09:21.584698+00:00",
   "source": "knowledgeforge-core",
   "skills": [
     {
@@ -39,16 +39,15 @@
       "name": "critic",
       "path": "agents/critic.md",
       "module_source": "07_critic_agent.md",
-      "module_version": "",
+      "module_version": "7.7.1",
       "status": "written"
     },
     {
       "name": "adversarial-critic",
       "path": "agents/adversarial-critic.md",
       "module_source": "07_critic_agent.md",
-      "module_version": "",
-      "status": "skipped_version_gate",
-      "requires_module_version": ">=7.3.0"
+      "module_version": "7.7.1",
+      "status": "written"
     },
     {
       "name": "synthesizer",
@@ -75,7 +74,7 @@
       "name": "calibrator",
       "path": "agents/calibrator.md",
       "module_source": "11_calibrator_agent.md",
-      "module_version": "",
+      "module_version": "7.2.1",
       "status": "written"
     },
     {

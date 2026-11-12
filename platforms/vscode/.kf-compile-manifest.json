@@ -1,5 +1,5 @@
 {
-  "compiled_at": "2026-11-12T21:06:22.716721+00:00",
+  "compiled_at": "2026-11-12T21:09:21.460227+00:00",
   "source": "knowledgeforge-core",
   "platform": "vscode",
   "version": "7.37.0",
@@ -44,7 +44,7 @@
       "output": "src/resources/kf-modes/critic.md",
       "section": "verbatim",
       "status": "written",
-      "bytes": 78061
+      "bytes": 78352
     },
     {
       "source": "08_synthesizer_agent.md",
@@ -72,7 +72,7 @@
       "output": "src/resources/kf-modes/calibrator.md",
       "section": "verbatim",
       "status": "written",
-      "bytes": 48017
+      "bytes": 48308
     },
     {
       "source": "platform-bindings/vscode.yaml",

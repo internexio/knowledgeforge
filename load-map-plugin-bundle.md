@@ -12,7 +12,7 @@ Click the source link to jump directly to that section in the module file.
 | ✓ | `agents/builder.md` | [`02_builder.md`](modules/02_builder.md#cc-agent) | `CC Agent` |
 | ✓ | `agents/expert.md` | [`05_expert_agent.md`](modules/05_expert_agent.md#cc-agent) | `CC Agent` |
 | ✓ | `agents/critic.md` | [`07_critic_agent.md`](modules/07_critic_agent.md#cc-agent) | `CC Agent` |
-| skipped_version_gate | `agents/adversarial-critic.md` | [`07_critic_agent.md`](modules/07_critic_agent.md#cc-agent-adversarial-variant) | `CC Agent (Adversarial Variant)` |
+| ✓ | `agents/adversarial-critic.md` | [`07_critic_agent.md`](modules/07_critic_agent.md#cc-agent-adversarial-variant) | `CC Agent (Adversarial Variant)` |
 | ✓ | `agents/synthesizer.md` | [`08_synthesizer_agent.md`](modules/08_synthesizer_agent.md#cc-agent) | `CC Agent` |
 | ✓ | `agents/debugger.md` | [`09_debugger_agent.md`](modules/09_debugger_agent.md#cc-agent) | `CC Agent` |
 | ✓ | `agents/strategist.md` | [`10_strategist_agent.md`](modules/10_strategist_agent.md#cc-agent) | `CC Agent` |
