@@ -1,15 +1,15 @@
 {
-  "compiled_at": "2026-08-14T14:32:04.698783+00:00",
+  "compiled_at": "2026-11-12T21:06:22.716721+00:00",
   "source": "knowledgeforge-core",
   "platform": "vscode",
-  "version": "7.36.0",
+  "version": "7.37.0",
   "entries": [
     {
       "source": "00_orchestrator.md",
       "output": "src/resources/kf-orchestrator.md",
       "section": "verbatim",
       "status": "written",
-      "bytes": 96905
+      "bytes": 97736
     },
     {
       "source": "01_navigator.md",
@@ -30,7 +30,7 @@
       "output": "src/resources/kf-modes/coordinator.md",
       "section": "verbatim",
       "status": "written",
-      "bytes": 71039
+      "bytes": 75024
     },
     {
       "source": "05_expert_agent.md",
@@ -44,7 +44,7 @@
       "output": "src/resources/kf-modes/critic.md",
       "section": "verbatim",
       "status": "written",
-      "bytes": 76082
+      "bytes": 78061
     },
     {
       "source": "08_synthesizer_agent.md",

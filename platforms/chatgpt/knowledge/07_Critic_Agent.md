@@ -5,12 +5,12 @@
 ```yaml
 module:
   title: Critic Agent Specification
-  version: 7.6.0
+  version: 7.7.0
   purpose: Systematically challenge specifications, find unstated assumptions, and identify edge cases — including adversarial variant for automatic chain verification, knowledge base linter variant for health checks, infrastructure audit variant for hosting assessment, and comms variant that delegates communications artifact review to COS analyze_full_comms
   topics: [quality-assurance, gap-detection, red-teaming, validation, adversarial-verification, knowledge-base-linting, infrastructure-audit, variant-taxonomy, comms-delegation]
   contexts: [specification-review, risk-assessment, completeness-checking, chain-verification, knowledge-base-maintenance, infrastructure-assessment, decomposition-planning, communications-review]
   difficulty: advanced
-  related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 15_Grounding_Scores, 16_Operational_Bounds, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]```
+  related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 15_Grounding_Scores, 16_Operational_Bounds, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 30_Completion_Gate]```
 
 ---
 
@@ -201,6 +201,22 @@ agent:
       typical_chain_position: terminal | standalone
       decision_type_typical: evaluative_judgment
       risk_tier: MEDIUM
+
+    # NEW 7.7.0 (Module 30 Completion Gate). Not routed by the orchestrator: the grader is launched by the
+    # kf-grade runner on a separate host after a worker submission. It reuses the Adversarial Variant framing
+    # ("this submission has at least one significant flaw; find it") and the Untrusted Input Boundary by
+    # reference. EXCLUDED from Module 16 metric #10 mode_selection_accuracy because no routing event exists.
+    - id: grader
+      purpose: Score a submission that already passed deterministic completion checks (executable ACs, tamper, probes) on four rubric dimensions; the runner, not this variant, decides PASS or FAIL
+      trigger_phrases: ["[none - never orchestrator-routed; worker submission via kf-grade]"]
+      activation_predicate:
+        type: completion_gate
+        rule: "worker submission via kf-grade; never orchestrator-routed"
+      output_format: schema_validated_scores_json
+      output_template: verdict (Module 30_Completion_Gate)
+      typical_chain_position: standalone
+      decision_type_typical: evaluative_judgment
+      risk_tier: HIGH
 ```
 
 ---
@@ -1010,15 +1026,15 @@ Comms reviews are not auto-filed as accretion candidates. Exception: if the revi
 
 ## All Critic Variants — Comparison
 
-| Aspect | Standard | Adversarial (6.1) | Linter (6.2) | Audit (6.3) | Comms (7.4) |
-|--------|----------|-------------------|--------------|-------------|-------------|
-| Trigger | Review request | Auto in chains | Health check request | Infrastructure assessment | Comms artifact detected |
-| Scope | Single artifact | Chain output | Entire knowledge base | Infrastructure estate | Communications piece |
-| Mindset | "Is this good?" | "Where will this break?" | "Is the KB healthy?" | "What exists and what's fragile?" | "Does this connect with the audience?" |
-| Max findings | 15 | Severity 2+ only | No limit (ranked) | No limit (ranked) | COS output governs |
-| Output | Critique | Compressed findings | Maintenance backlog | Hosting Audit document | COS-sourced findings list |
-| Template | Critique template | Adversarial format | Health report | Hosting Audit (Module 04) | Critique + [COS: framework] tags |
-| Accretion | N/A | N/A | Contradictions → candidates | Full audit → baseline candidate | Generalizable patterns only |
+| Aspect | Standard | Adversarial (6.1) | Linter (6.2) | Audit (6.3) | Comms (7.4) | Grader (7.7, Module 30) |
+|--------|----------|-------------------|--------------|-------------|-------------|-------------|
+| Trigger | Review request | Auto in chains | Health check request | Infrastructure assessment | Comms artifact detected | Worker submission via kf-grade (never orchestrator-routed) |
+| Scope | Single artifact | Chain output | Entire knowledge base | Infrastructure estate | Communications piece | One submission at one head_sha |
+| Mindset | "Is this good?" | "Where will this break?" | "Is the KB healthy?" | "What exists and what's fragile?" | "Does this connect with the audience?" | "This submission has at least one significant flaw; find it" |
+| Max findings | 15 | Severity 2+ only | No limit (ranked) | No limit (ranked) | COS output governs | Per schema (4 scored dimensions plus findings) |
+| Output | Critique | Compressed findings | Maintenance backlog | Hosting Audit document | COS-sourced findings list | Schema-validated scores JSON; the runner signs the verdict |
+| Template | Critique template | Adversarial format | Health report | Hosting Audit (Module 04) | Critique + [COS: framework] tags | verdict (Module 30_Completion_Gate) |
+| Accretion | N/A | N/A | Contradictions → candidates | Full audit → baseline candidate | Generalizable patterns only | False passes become canaries (not wiki entries) |
 
 ---
 

@@ -5,12 +5,12 @@
 ```yaml
 module:
   title: Operational Bounds
-  version: 7.3.1
+  version: 7.4.0
   purpose: Maintain key agent operational metrics within defined ranges and trigger corrective behavior when metrics drift
   topics: [operational-safety, metric-monitoring, bounds-checking, corrective-action, chronic-drift, cache-efficiency, circuit-breakers, mode-selection-accuracy]
   contexts: [agent-operations, quality-assurance, cost-management, reliability, routing-correctness]
   difficulty: advanced
-  related: [00_Orchestrator, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 10_Strategist_Agent, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]```
+  related: [00_Orchestrator, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 10_Strategist_Agent, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 30_Completion_Gate]```
 
 ---
 
@@ -373,6 +373,49 @@ mode_selection_accuracy:
     historical: Module 19 tier_2_metric_aggregates (post-window)
 ```
 
+### 11. First-Attempt Pass Rate (Completion Gate, 7.4.0)
+
+```yaml
+first_attempt_pass_rate:
+  scope: per agent (Module 30 registration agent)
+  measurement:
+    rate: "passes_on_attempt_1 / graded_tasks"
+    window: rolling 20 graded tasks (current window) versus the 20 before it (previous window)
+    interval: Wilson score interval, z = 1.96
+  alarm:
+    - "wilson_lower(current) > wilson_upper(previous)  # significant jump"
+    - "rate(current) > 0.9"
+  insufficient_data: "fewer than 20 graded tasks in the current window, or no previous window: no alarm"
+  rationale: "A rising first-attempt pass rate is the signature of a worker learning the grader instead of the goal, or of ACs that became easier. The alarm sends a human to re-verify."
+  data_source: Module 19 grader_verdict_ledger
+```
+
+### 12. Threshold Clustering (Completion Gate, 7.4.0)
+
+```yaml
+threshold_clustering:
+  scope: per agent, grader as a whole
+  measurement:
+    share: "PASS verdicts whose minimum Stage 2 score equals the threshold / PASS verdicts"
+    window: last 20 PASS verdicts
+  alarm: "share > 0.5"
+  insufficient_data: "fewer than 10 PASS verdicts in the window: no alarm"
+  rationale: "The Module 15 uniform-score gaming check applied to the grader. A grader whose passes pile up exactly on the threshold is being steered, or has lost resolution."
+  data_source: Module 19 grader_verdict_ledger
+```
+
+### 13. Grader False-Pass Rate (Completion Gate, 7.4.0)
+
+```yaml
+grader_false_pass_rate:
+  measurement:
+    rate: "false_passes / spot_checks"
+    interval: Wilson score interval, z = 1.96 (always reported with the rate)
+  alarm: none (report only)
+  corrective: "Every false pass becomes a canary (kf-grade canary add-from --task-id) and the canary suite is re-run."
+  data_source: "spotchecks.jsonl on the grader host (kf-grade spotcheck record)"
+```
+
 ---
 
 ## Corrective Action Summary
@@ -396,6 +439,9 @@ mode_selection_accuracy:
 | Variant accuracy < 95% (per-variant) | Audit variant trigger phrase overlap, tighten domain_specificity predicate |
 | Variant accuracy < 85% (per-variant) | Trigger trigger_disambiguator review, halt affected variant |
 | Calibration drift > 5pp (metric #10) | Re-baseline primary, trigger orchestrator prompt revision |
+| first_attempt_pass_rate significant jump or > 0.9 (metric #11) | Human re-verifies the last 5 PASS verdicts for that agent; tighten registration ACs; consider grader gaming |
+| threshold_clustering > 0.5 (metric #12) | Audit Stage 2 for uniform-score gaming (Module 15); add canaries near the threshold |
+| Any grader false pass (metric #13) | kf-grade canary add-from; re-run canary suite; review the AC set that admitted it |
 
 ---
 
@@ -591,6 +637,23 @@ truth table:
 
 Thresholds derive from the context_utilization bound in this module (healthy: 40–80%, pressure: >80%).
 
+**completion_gate_drift (metrics 11-12):**
+```
+inputs:  prev_passes (int), prev_n (int), cur_passes (int), cur_n (int), pass_min_scores (int[]), threshold (int)
+outputs: first_attempt_alarm (bool), clustering_alarm (bool)
+
+wilson(k, n, z=1.96) -> (lo, hi)                       # standard Wilson score interval
+first_attempt_alarm:
+  cur_n < 20 OR prev_n < 20                             -> false
+  wilson_lo(cur) > wilson_hi(prev)                      -> true
+  cur_passes / cur_n > 0.9                              -> true
+  else                                                  -> false
+clustering_alarm:
+  len(pass_min_scores) < 10                             -> false
+  share(min_score == threshold) > 0.5                   -> true
+  else                                                  -> false
+```
+
 ### Testability Rule
 
 Every decision function must be expressible as a truth table. If it cannot be written as input → output without hidden context, it is not pure — refactor until it is.
@@ -619,3 +682,4 @@ Then:  block
 - `15_Grounding_Scores.md` — Grounding distribution monitoring
 - `19_Memory_Architecture.md` — (6.1) Consolidation efficiency metric source
 - `20_Permission_Model.md` — (6.1) Circuit breakers enforce permission model's halt-on-failure rule
+- `30_Completion_Gate.md` — (7.4) Metrics 11-13: grader drift alarms and false-pass rate
