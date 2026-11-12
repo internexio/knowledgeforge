@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# KF pre-commit: identity-string drift check on staged modules/*.md files.
+# KF pre-commit, two jobs on staged modules/*.md files:
+#   1. Identity-string drift check. BLOCKS the commit on drift.
+#   2. Bead nudge (scripts/kf-bead-nudge.py): reminds you to close the driving bead. NEVER blocks.
 #
-# Operates on the working tree (matches staged content in the common
+# The drift check operates on the working tree (matches staged content in the common
 # focused-commit workflow). If you stage a partial fix and have unrelated
 # unstaged edits to the same module, run the check manually after a stash:
 #   python3 scripts/check-identity-drift.py
-set -e
 
 staged=$(git diff --cached --name-only --diff-filter=ACM \
   | grep -E '^modules/[0-9]+_.*\.md$' || true)
@@ -15,4 +16,10 @@ if [ -z "$staged" ]; then
 fi
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# Nudge first and unconditionally: it exits 0 on every path, and it should still be visible when the drift check fails.
+python3 "$REPO_ROOT/scripts/kf-bead-nudge.py" || true
+
+# Drift check decides the exit status.
+# shellcheck disable=SC2086  # $staged is a newline-separated list of module paths without spaces
 exec python3 "$REPO_ROOT/scripts/check-identity-drift.py" $staged
