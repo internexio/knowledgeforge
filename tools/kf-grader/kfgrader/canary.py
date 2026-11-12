@@ -133,22 +133,82 @@ def run_one(cid: str, exp: dict, root: Path) -> dict:
     return {"id": cid, "status": "mismatch" if problems else "match", "detail": ("; ".join(problems) + context) or f"{view['verdict']} {view['reasons']}"}
 
 
-def run_suite(ids: list[str] | None = None) -> tuple[list[dict], int]:
+def custom_cases(h: Path) -> dict[str, dict]:
+    out = {}
+    for p in sorted((h / "canaries" / "custom").glob("*/case.json")):
+        c = json.loads(p.read_text())
+        out[c["id"]] = c
+    return out
+
+
+def run_custom(case: dict, root: Path) -> dict:
+    """A custom canary replays a former false pass: the same repo, base and head must now FAIL."""
+    cid = case["id"]
+    if case.get("needs_stage2") and os.environ.get("KF_GRADER_STAGE2") == "off":
+        return {"id": cid, "status": "incomplete", "detail": "needs Stage 2; KF_GRADER_STAGE2=off"}
+    if not Path(case["repo"]).exists():
+        return {"id": cid, "status": "mismatch", "detail": f"repo {case['repo']} no longer exists; canary cannot replay"}
+    home = root / cid / "home"
+    spec = root / cid / "spec.md"
+    spec.parent.mkdir(parents=True, exist_ok=True)
+    spec.write_text(case["spec_text"])
+    try:
+        with _env(KF_GRADER_HOME=home):
+            registry.ensure_layout()
+            registry.register(task_id=f"canary-{cid}", repo=case["repo"], base_sha=case["base_sha"], spec_file=str(spec),
+                              agent=case.get("agent"), **case.get("registration", {}))
+            view, _ = runner.grade(f"canary-{cid}", case["head_sha"])
+    except Exception as e:  # noqa: BLE001
+        return {"id": cid, "status": "mismatch", "detail": f"canary harness error: {type(e).__name__}: {e}"}
+    if case.get("needs_stage2") and view["reasons"] == ["stage2_unavailable"]:
+        return {"id": cid, "status": "incomplete", "detail": "Stage 2 unavailable on this host"}
+    ok = view["verdict"] == "FAIL"
+    return {"id": cid, "status": "match" if ok else "mismatch", "detail": f"{view['verdict']} {view['reasons']}" + ("" if ok else " (a former false pass must FAIL)")}
+
+
+def run_suite(ids: list[str] | None = None, include_custom: bool = True) -> tuple[list[dict], int]:
     expected = json.loads((CAN / "expected.json").read_text())
-    chosen = ids or list(expected)
-    unknown = [i for i in chosen if i not in expected]
+    custom = custom_cases(registry.home()) if include_custom else {}
+    chosen = ids or (list(expected) + list(custom))
+    unknown = [i for i in chosen if i not in expected and i not in custom]
     if unknown:
         raise registry.Refused(f"unknown canary id(s): {unknown}")
     with tempfile.TemporaryDirectory(prefix="kf-canary-") as td:
-        results = [run_one(cid, expected[cid], Path(td)) for cid in chosen]
+        results = [run_one(cid, expected[cid], Path(td)) if cid in expected else run_custom(custom[cid], Path(td)) for cid in chosen]
     code = 1 if any(r["status"] == "mismatch" for r in results) else 5 if any(r["status"] == "incomplete" for r in results) else 0
     return results, code
+
+
+def add_from(task_id: str) -> dict:
+    """Turn a task whose PASS verdict was judged a false pass into a permanent regression canary."""
+    h = registry.ensure_layout()
+    reg = registry.load_registration(h, task_id)
+    if reg is None:
+        raise registry.Refused(f"unknown task_id {task_id!r}")
+    passes = [v for v in verdict.load_valid(h, task_id) if v["verdict"] == "PASS"]
+    if not passes:
+        raise registry.Refused(f"task {task_id} has no signed PASS verdict")
+    v = passes[-1]
+    cid = f"X-{task_id}"
+    d = h / "canaries" / "custom" / cid
+    if (d / "case.json").exists():
+        raise registry.Refused(f"canary {cid} already exists")
+    keys = ("target_url", "probe_urls", "test_command", "allow_modify", "spec_repo_path", "network")
+    case = {"id": cid, "repo": reg["repo"], "base_sha": reg["base_sha"], "head_sha": v["head_sha"], "agent": reg.get("agent"),
+            "spec_text": reg["spec_text"], "registration": {k: reg[k] for k in keys if reg.get(k) not in (None, [], "")},
+            "needs_stage2": v.get("stage2") is not None, "added_at": registry.now(), "origin_verdict_ref": v.get("verdict_ref"),
+            "note": "Former false pass found by spot-check; must now FAIL. Replays against the original repo path."}
+    registry.atomic_write(d / "case.json", json.dumps(case, indent=2, sort_keys=True) + "\n")
+    return {"canary": cid, "case": str(d / "case.json")}
 
 
 def cli(a) -> int:
     outer_home = registry.home()
     if a.rest and a.rest[0] == "add-from":
-        raise registry.Refused("canary add-from is implemented in milestone 3")
+        if not a.task_id:
+            raise registry.Refused("canary add-from requires --task-id")
+        print(json.dumps(add_from(a.task_id), indent=2))
+        return 0
     if not (a.all or a.id):
         raise registry.Refused("canary requires --all or --id CID")
     results, code = run_suite(None if a.all else [a.id])
@@ -157,6 +217,10 @@ def cli(a) -> int:
         registry.atomic_write(outer_home / "ledger" / "canary_state.json",
                               json.dumps({"healthy": code == 0, "checked_at": registry.now(),
                                           "mismatches": [r["id"] for r in results if r["status"] == "mismatch"]}) + "\n")
+        if code == 1:
+            from . import metrics
+
+            metrics.alert(outer_home, "canary_unhealthy", ", ".join(r["id"] for r in results if r["status"] == "mismatch"))
     if a.json:
         print(json.dumps({"results": results, "exit": code}, indent=2))
     else:

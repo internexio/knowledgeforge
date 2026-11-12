@@ -11,7 +11,7 @@ import uuid
 from contextlib import contextmanager
 from pathlib import Path
 
-from . import VERSION, acs, decide as decide_mod, probes, registry, sandbox, stage2, tamper, verdict
+from . import VERSION, acs, decide as decide_mod, metrics, probes, registry, sandbox, stage2, tamper, verdict
 from .registry import Refused
 
 EXIT = {"PASS": 0, "FAIL": 1, "BLOCKED": 3, "PENDING": 4}
@@ -201,6 +201,9 @@ def grade(task_id: str, head_sha: str) -> tuple[dict, int]:
         v["verdict_ref"] = f"verdicts/{task_id}/{name}"
         verdict.sign(h, v)
         verdict.write(h, v, name)
+        metrics.record(h, v, reg.get("agent"))
+        if "grader_error" in v["reasons"] or "canary_unhealthy" in v["reasons"]:
+            metrics.alert(h, v["reasons"][0], f"{task_id}: {'; '.join(notes) or 'see verdict'}")
         return worker_view(v, cap), EXIT[v["verdict"]]
 
 

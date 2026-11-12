@@ -7,6 +7,30 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [7.37.0] - 2026-11-11
+
+### Added
+
+- **Module 30 (Completion Gate) v1.0.0** — independent grader for agent work. A worker
+  submits only `task_id` and `head_sha`; a separate-host grader runs every executable
+  acceptance criterion itself, checks for tampering, runs hidden probes, and only then asks
+  an LLM to score four dimensions (pass rule: minimum at least 8). An ed25519-signed verdict
+  is the completion condition. Reference implementation in `tools/kf-grader/`; design in
+  `docs/recommendations/grader-agent-rec-2026-11-07.md`.
+
+### Changed
+
+- **Module 03 v7.7.0**: Contract F `hc-worker-to-grader`; registry now 14 entries.
+- **Module 04 v7.5.0**: `kf-acceptance` AC block template.
+- **Module 06 v7.4.0**: Completion Gate quick reference.
+- **Module 07 v7.7.0**: Critic variant `grader` (never orchestrator-routed).
+- **Module 16 v7.4.0**: metrics 11-13 (grader drift alarms, false-pass rate).
+- **Module 19 v7.6.0**: `grader_verdict_ledger` schema v1.0.
+- **Module 20 v7.2.0**: `grader_stage1_runner` HIGH tier and `grader` capability profile.
+- **Module 00 v7.25.1**: Module Reference row for Module 30; identity strings.
+
+---
+
 ## [7.36.0] - 2026-08-14
 
 ### Changed

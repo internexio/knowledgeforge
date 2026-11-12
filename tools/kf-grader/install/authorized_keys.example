@@ -1,0 +1,9 @@
+# Grader host: ~kfgrader/.ssh/authorized_keys
+# One forced-command line per key. `restrict` disables pty, forwarding and agent use. The role and key id after
+# kf-grade-ssh are recorded on every registration (registered_via) and show up in the weekly digest.
+#
+# Worker key (one per worker machine/agent): submit, status, verify only.
+command="/opt/kf-grader/bin/kf-grade-ssh worker cos-dev",restrict ssh-ed25519 AAAA...REPLACE_WITH_WORKER_PUBLIC_KEY kf-grade-worker-cos-dev
+# Dispatcher key (David / cos-manager): register, digest, spotcheck, canary, plus the worker commands.
+# Protect with a passphrase and never load it into an agent's environment (residual risk RR1).
+command="/opt/kf-grader/bin/kf-grade-ssh dispatcher david",restrict ssh-ed25519 AAAA...REPLACE_WITH_DISPATCHER_PUBLIC_KEY kf-grade-dispatcher-david

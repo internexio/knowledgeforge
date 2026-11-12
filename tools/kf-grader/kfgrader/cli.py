@@ -59,6 +59,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     d = sub.add_parser("digest", help="weekly digest (dispatcher)")
     d.add_argument("--since")
+    d.add_argument("--json", action="store_true")
     sp = sub.add_parser("spotcheck", help="spot-check selection and logging (dispatcher)")
     sp.add_argument("action", nargs="?", default="next", choices=["next", "record"])
     sp.add_argument("--verdict-ref")
@@ -96,8 +97,24 @@ def cmd_submit(a) -> int:
     return 4
 
 
+def forward_ssh(argv: list[str]) -> int:
+    """Client mode: run the command on the grader host over SSH (forced-command key decides what is allowed)."""
+    import shlex
+
+    target = os.environ.get("KF_GRADER_SSH_TARGET")
+    if not target:
+        sys.stderr.write("kf-grade: KF_GRADER_MODE=ssh requires KF_GRADER_SSH_TARGET\n")
+        return 2
+    ssh = os.environ.get("KF_GRADER_SSH_BIN", "ssh")
+    opts = shlex.split(os.environ.get("KF_GRADER_SSH_OPTS", "-o BatchMode=yes -o ConnectTimeout=15"))
+    return subprocess.run([ssh, *opts, target, "kf-grade " + " ".join(shlex.quote(x) for x in argv)]).returncode
+
+
 def main(argv: list[str] | None = None) -> int:
-    a = build_parser().parse_args(argv)
+    raw = sys.argv[1:] if argv is None else argv
+    a = build_parser().parse_args(raw)
+    if os.environ.get("KF_GRADER_MODE") == "ssh" and a.cmd not in ("init", "lock", "_grade"):
+        return forward_ssh(raw)
     try:
         if a.cmd == "init":
             h = registry.ensure_layout()
