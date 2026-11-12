@@ -202,6 +202,7 @@ type: index
 
 ### Diagnostics
 
+- [2026-11-12] Compiler warn-and-skip hides broken module metadata — single colon-space item parses as a dict, so safe_load scans pass (extends 2026-06-14 entry) — reusable_diagnostic — `diagnostics/2026-11-12_yaml-single-colon-space-dict-escapes-safe-load-scan.md`
 - [2026-08-21] Behavioral protocol decay in long sessions is a hook injection gap, not a protocol design gap — reusable_diagnostic — `diagnostics/2026-08-21_behavioral-protocol-decay-hook-gap-not-protocol-gap.md`
 - [2026-08-04] Score calibration methodology for two-model pipelines — reusable_diagnostic — `diagnostics/2026-08-04_score-calibration-methodology-two-model-pipelines.md`
 - [2026-07-29] Ghost CMS Docker MySQL discovery — diagnosing why MySQL updates don't surface — reusable_diagnostic — `diagnostics/2026-07-29_ghost-docker-mysql-discovery-why-updates-dont-surface.md`

@@ -2,7 +2,9 @@
 
 ## Role of This Repo
 
-`knowledgeforge-core` is the canonical source for all KnowledgeForge module specs, plans, wiki, and (when built) the compiler. All variant repos (`knowledgeforge-cp`, `knowledgeforge-cc`, `knowledgeforge-cw`, `knowledgeforge-web`) derive from here.
+This checkout (`~/Scripts/knowledgeforge`, remote `internexio/knowledgeforge`) holds the KnowledgeForge module specs, platform bindings, plans, wiki and the compiler. Merges to its `main` trigger CI that opens compile PRs into `knowledgeforge-cc` and `knowledgeforge-cp`. Variant repos (`knowledgeforge-cp`, `knowledgeforge-cc`, `knowledgeforge-cw`, `knowledgeforge-web`) derive from here.
+
+**`~/Scripts/knowledgeforge-core` is a separate repo** (remote `internexio/knowledgeforge-core`) with its own history, wiki and bindings, and the two have diverged: this repo's claude-code binding lacked Modules 27-29 that core's listed, and the hooks differ. Run `git remote -v` before assuming which one you are in.
 
 **Current version:** 7.0.0-alpha (see `kf.yaml`)
 **Current phase:** Phase 0 — Repo setup and sync
@@ -66,6 +68,7 @@ DO:
 - Add a changelog entry with date and description
 - Update `kf.yaml` if the change affects the overall system version
 - Cross-check references to this module in other modules before changing interface
+- After editing a module, parse every module's `## Module Metadata` block with `yaml.safe_load` and check each changelog item is a string. `kf-compile.py` only warns and degrades silently (missing agents, `module_version=unknown`). An unquoted `: ` inside a changelog item is an error when there are two and silently becomes a dict when there is one; write such items as `- >-` folded scalars (see `wiki/diagnostics/2026-11-12_yaml-single-colon-space-dict-escapes-safe-load-scan.md`)
 
 DON'T:
 - Edit module files without bumping the version
@@ -244,8 +247,11 @@ See `IMPLEMENTATION_PLAN.md` for the full Phase 0–10 roadmap.
 python3 compiler/kf-compile.py --target claude-code --output ~/Scripts/knowledgeforge-cc
 # 3. Commit CC
 cd ~/Scripts/knowledgeforge-cc && git add -A && git commit -m "chore: compiled from core" && git push
-# 4. Deploy hooks (if hooks changed)
-cd ~/Scripts/knowledgeforge-core && ./scripts/deploy-hooks.sh
+# 4. Hooks: do NOT run scripts/deploy-hooks.sh and do NOT merge `sync/hooks-*` PRs from CI.
+#    knowledgeforge-cc is authoritative for .claude/hooks/ and this repo's hooks/ lag behind it;
+#    copying them over cc deletes 365 lines of kf-route.py and 180 of kf-session-start.py.
+#    Install from the cc repo instead:
+cd ~/Scripts/knowledgeforge-cc && ./install.sh
 ```
 
 <!-- gitnexus:start -->
