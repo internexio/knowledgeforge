@@ -16,14 +16,14 @@ but shape how every mode reasons, remembers, and bounds itself (M12–M30).
 | M01 | [Navigator](../modules/01_navigator.md) | 7.1.0 | Ambiguity detection and resolution — fires only on genuine ambiguity |
 | M02 | [Builder](../modules/02_builder.md) | 7.0.1 | Spec and implementation generation (PDIA method: Purpose → Design → Implementation → Assessment) |
 | M03 | [Coordination Patterns](../modules/03_coordination_patterns.md) | 7.7.0 | Multi-agent workflow design, Handoff Contract Registry (14 contracts, incl. hc-worker-to-grader), dual fingerprinting |
-| M04 | [Specification Templates](../modules/04_specification_templates.md) | 7.5.0 | Reusable spec formats, trigger disambiguators, upstream_invalidation field, kf-acceptance AC block |
+| M04 | [Specification Templates](../modules/04_specification_templates.md) | 7.5.1 | Reusable spec formats, trigger disambiguators, upstream_invalidation field, kf-acceptance AC block |
 | M05 | [Expert Agent](../modules/05_expert_agent.md) | 7.4.0 | Deep analysis with adversarial depth (5 variants: regular / infra / ml-infra / era / research) |
 | M06 | [Quick Reference](../modules/06_quick_reference.md) | 7.4.0 | Routing table, signal guide, mode variants taxonomy, integration flows |
-| M07 | [Critic Agent](../modules/07_critic_agent.md) | 7.7.0 | Review, validation, audit (4 variants: regular / linter / audit / adversarial); comms variant via COS MCP; grader variant (M30) |
+| M07 | [Critic Agent](../modules/07_critic_agent.md) | 7.7.1 | Review, validation, audit (4 variants: regular / linter / audit / adversarial); comms variant via COS MCP; grader variant (M30) |
 | M08 | [Synthesizer Agent](../modules/08_synthesizer_agent.md) | 6.8.0 | Pattern extraction, abstraction, anti-patterns; comms-domain emit |
 | M09 | [Debugger Agent](../modules/09_debugger_agent.md) | 7.0.2 | Hypothesis-driven root-cause diagnosis; requires >0.8 confidence before declaring root cause |
 | M10 | [Strategist Agent](../modules/10_strategist_agent.md) | 6.5.0 | Trade-off evaluation, reversibility assessment, sequencing; never recommends "do everything" |
-| M11 | [Calibrator Agent](../modules/11_calibrator_agent.md) | 7.2.0 | Complexity-appropriate AI coder configuration (CLAUDE.md, .cursorrules, etc.) |
+| M11 | [Calibrator Agent](../modules/11_calibrator_agent.md) | 7.2.1 | Complexity-appropriate AI coder configuration (CLAUDE.md, .cursorrules, etc.) |
 
 ---
 
@@ -45,7 +45,7 @@ but shape how every mode reasons, remembers, and bounds itself (M12–M30).
 | M23 | [Taxonomy Enforcement](../modules/23_taxonomy_enforcement.md) | 6.10.0 | Controlled vocabulary at write time: 15 domains, ~40 topics, ~55 approved tags |
 | M24 | [Verbatim History Mining](../modules/24_verbatim_history_mining.md) | 6.6.0 | Tier 3 verbatim + MemPalace semantic retrieval; 96.6% R@5 (verbatim+semantic) |
 | M25 | [Entity Relationship Analysis](../modules/25_entity_relationship_analysis.md) | 7.1.0 | ERA post-routing pass: entity graph, cardinality, coupling; entity → path-glob resolver |
-| M26 | [KF-LOOP Substrate](../modules/26_kf_loop_substrate.md) | 1.2.0 | Iterative self-improvement loops — eight-stage orchestration primitive (cadence, gate, stratify, recall, reason, verify, act, observe); Wilson-CI gate; five loop instances |
+| M26 | [KF-LOOP Substrate](../modules/26_kf_loop_substrate.md) | 1.2.1 | Iterative self-improvement loops — eight-stage orchestration primitive (cadence, gate, stratify, recall, reason, verify, act, observe); Wilson-CI gate; five loop instances |
 | M27 | [Project Continuity Layer](../modules/27_project_continuity_layer.md) | 1.0.1 | Append-only event ledger; boot handshake + write-gate; falsified hypotheses accrete as anti-knowledge |
 | M28 | [Strategist Protocol](../modules/28_strategist_protocol.md) | 1.0.0 | Boot sequence, directive format, and champion confirmation gate for the strategist role in the two-agent research loop |
 | M29 | [Role Agent Layer](../modules/29_role_agent_layer.md) | 1.0.0 | Business-role agents: charter, RACI, decision authority, memory scope, KPIs, budget — parameterize mode chains; Chief of Staff built-in |

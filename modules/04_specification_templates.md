@@ -5,13 +5,18 @@
 ```yaml
 module:
   title: Specification Templates
-  version: 7.5.0
+  version: 7.5.1
   purpose: Provide complete, reusable templates for agents, processes, and coordination
   topics: [templates, specifications, formats, schemas, capability-profiles, risk-tiers, infrastructure-architecture, hosting-audit, era-specification, handoff-contracts, trigger-disambiguation]
   contexts: [agent-creation, process-design, documentation, infrastructure-planning, entity-modeling, mode-routing, chain-handoffs]
   difficulty: intermediate
   related: [00_Orchestrator, 02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 30_Completion_Gate]
   changelog:
+    7.5.1:
+      date: 2026-11-12
+      driver: knowledgeforge-core-08h
+      changes:
+        - Reformatted older changelog entries as folded block scalars so the Module Metadata block parses as YAML again. The text of every entry is unchanged and there is no behavior change.
     7.5.0:
       date: 2026-11-11
       driver: knowledgeforge-core-j2c
@@ -22,7 +27,8 @@ module:
       date: 2026-08-09
       driver: knowledgeforge-core-e49
       changes:
-        - Added upstream_invalidation as an optional field on the handoff_contract response_schema — shape {invalidated_step_id: string, claim_invalidated: string, evidence_ref: pointer, severity: enum[Sev1|Sev2|Sev3]}. Target_mode populates this when it discovers during execution that the source_mode's premise was invalid, enabling mid-chain re-entry (Module 00 re-entry rule, 7.23.0). Three canonical validation checks — ui-check-1 (cross-field, all four subfields non-null when field is populated), ui-check-2 (enum-membership, severity ∈ {Sev1, Sev2, Sev3}), ui-check-3 (cross-field, Sev2/Sev3 requires evidence_ref non-null and resolvable). Motivated by AgentRadio convergence-failure analysis (Coral AI Labs, arXiv 2026) showing mid-execution premise discoveries not propagated upstream produce incorrect final answers with high confidence.
+        - >-
+          Added upstream_invalidation as an optional field on the handoff_contract response_schema — shape {invalidated_step_id: string, claim_invalidated: string, evidence_ref: pointer, severity: enum[Sev1|Sev2|Sev3]}. Target_mode populates this when it discovers during execution that the source_mode's premise was invalid, enabling mid-chain re-entry (Module 00 re-entry rule, 7.23.0). Three canonical validation checks — ui-check-1 (cross-field, all four subfields non-null when field is populated), ui-check-2 (enum-membership, severity ∈ {Sev1, Sev2, Sev3}), ui-check-3 (cross-field, Sev2/Sev3 requires evidence_ref non-null and resolvable). Motivated by AgentRadio convergence-failure analysis (Coral AI Labs, arXiv 2026) showing mid-execution premise discoveries not propagated upstream produce incorrect final answers with high confidence.
         - Added KF 7.4 field summary table entry for upstream_invalidation.
     7.3.0:
       date: 2026-06-13

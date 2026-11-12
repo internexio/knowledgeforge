@@ -5,18 +5,24 @@
 ```yaml
 module:
   title: Calibrator Agent Specification
-  version: 7.2.0
+  version: 7.2.1
   purpose: Generate complexity-aware AI coder configuration that scales from hobby projects to regulated-industry deployments
   topics: [configuration, guardrails, best-practices, version-pinning, ai-coder-optimization, compliance, complexity-assessment, config-accretion]
   contexts: [project-setup, stack-selection, instruction-generation, regulated-industry]
   difficulty: intermediate
   related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 07_Critic_Agent, 08_Synthesizer_Agent, 10_Strategist_Agent, 12_Calibration_Layer, 13_Decision_Classification, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]
   changelog:
+    7.2.1:
+      date: 2026-11-12
+      driver: knowledgeforge-core-08h
+      changes:
+        - Reformatted older changelog entries as folded block scalars so the Module Metadata block parses as YAML again. The text of every entry is unchanged and there is no behavior change.
     7.2.0:
       date: 2026-08-09
       driver: knowledgeforge-core-public-release-phase3
       changes:
-        - Public release Phase 3: COS-specific blocks in CC Skill and CC Agent wrapped in
+        - >-
+          Public release Phase 3: COS-specific blocks in CC Skill and CC Agent wrapped in
           <!-- kf:if cos --> / <!-- kf:endif -->. Blocks: Step 3.5 (CC Skill and CC Agent),
           comms quality gate items (CC Skill and CC Agent), Comms-heavy emit Variant (CC Skill).
           CC Skill Output Format line genericized (removed "[-> COS profile artifacts if comms-heavy]" suffix).

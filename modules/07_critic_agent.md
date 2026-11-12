@@ -5,13 +5,18 @@
 ```yaml
 module:
   title: Critic Agent Specification
-  version: 7.7.0
+  version: 7.7.1
   purpose: Systematically challenge specifications, find unstated assumptions, and identify edge cases — including adversarial variant for automatic chain verification, knowledge base linter variant for health checks, infrastructure audit variant for hosting assessment, and comms variant that delegates communications artifact review to COS analyze_full_comms
   topics: [quality-assurance, gap-detection, red-teaming, validation, adversarial-verification, knowledge-base-linting, infrastructure-audit, variant-taxonomy, comms-delegation]
   contexts: [specification-review, risk-assessment, completeness-checking, chain-verification, knowledge-base-maintenance, infrastructure-assessment, decomposition-planning, communications-review]
   difficulty: advanced
   related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 15_Grounding_Scores, 16_Operational_Bounds, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 30_Completion_Gate]
   changelog:
+    7.7.1:
+      date: 2026-11-12
+      driver: knowledgeforge-core-08h
+      changes:
+        - Reformatted older changelog entries as folded block scalars so the Module Metadata block parses as YAML again. The text of every entry is unchanged and there is no behavior change.
     7.7.0:
       date: 2026-11-11
       driver: knowledgeforge-core-j2c
@@ -30,7 +35,8 @@ module:
       driver: kf-vo1
       changes:
         - Added inverse-premise check to adversarial_framing.specific_instructions (5th item) — distinct from assumption inversion; tests whether the inverted premise produces equally confident argument, detecting prompt-derived rather than data-derived conclusions; severity 2 minimum on positive match
-        - Source: Kesler, A. "The 4-Step Test That Catches AI Errors Before They Shape Your Strategy." Search Engine Journal, 2026-07-01. Gap analysis by L1 (2026-07-06): sole actionable delta vs existing KF coverage.
+        - >-
+          Source: Kesler, A. "The 4-Step Test That Catches AI Errors Before They Shape Your Strategy." Search Engine Journal, 2026-07-01. Gap analysis by L1 (2026-07-06): sole actionable delta vs existing KF coverage.
         - Updated CC Skill version and adversarial variant description; updated CC Agent adversarial framing bullets; updated CC Agent (Adversarial Variant) specific instructions.
     7.4.0:
       date: 2026-07-07
