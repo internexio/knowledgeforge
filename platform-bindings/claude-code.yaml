@@ -260,6 +260,28 @@ module_outputs:
       - type: doc
         path: ".claude/docs/knowledgeforge/26_kf_loop_substrate.md"
         section: "CC Doc"
+  "27":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/27_project_continuity_layer.md"
+        section: "CC Doc"
+  "28":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/28_strategist_protocol.md"
+        section: "CC Doc"
+  "29":
+    # Only the CC Doc is bound. Module 29's "## CC Skill" section is a description of a skill to be written
+    # (it says what the skill will include), not a skill body, so compiling it would install a stub skill.
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/29_role_agent_layer.md"
+        section: "CC Doc"
+  "30":
+    outputs:
+      - type: doc
+        path: ".claude/docs/knowledgeforge/30_completion_gate.md"
+        section: "CC Doc"
 
 # --------------------------------------------------------------------------
 # Special outputs — not derived from module sections
