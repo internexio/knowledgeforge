@@ -4,14 +4,20 @@
 
 ```yaml
 module:
-  title: KnowledgeForge 7.25.0 Agent Instructions
-  version: 7.25.0
+  title: KnowledgeForge 7.25.1 Agent Instructions
+  version: 7.25.1
   purpose: Orchestrate all KF modes and infrastructure modules through behavioral prompt instructions — classify, route, execute, verify, deliver
   topics: [orchestration, routing, decision-classification, mode-selection, quality-enforcement, prompt-architecture, knowledge-accretion, infrastructure-planning, entity-relationship-analysis, routing-audit-log, mode-selection-accuracy]
   contexts: [all-interactions, session-management, mode-transitions, routing-correctness-tracking]
   difficulty: foundational
-  related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 06_Quick_Reference, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 23_Taxonomy_Enforcement, 24_Verbatim_History_Mining, 25_Entity_Relationship_Analysis, 26_KF_Loop_Substrate]
+  related: [01_Navigator_Agent, 02_Builder_Agent, 03_Coordination_Patterns, 04_Specification_Templates, 05_Expert_Agent_Example, 06_Quick_Reference, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 22_Semantic_Wiki_Search, 23_Taxonomy_Enforcement, 24_Verbatim_History_Mining, 25_Entity_Relationship_Analysis, 26_KF_Loop_Substrate, 30_Completion_Gate]
   changelog:
+    7.25.1:
+      date: 2026-11-11
+      driver: knowledgeforge-core-j2c
+      changes:
+        - Module Reference: added 30_Completion_Gate row (independent completion grader; never orchestrator-routed). M03 row updated to 14 contracts (+F hc-worker-to-grader). Related list extended. No change to routing behavior.
+        - Identity strings updated: 7.25.0 -> 7.25.1.
     7.25.0:
       date: 2026-08-13
       driver: knowledgeforge-core-hvj knowledgeforge-core-knw knowledgeforge-core-7x5 knowledgeforge-core-r7y
@@ -308,7 +314,7 @@ This orchestrator is designed as a **single behavioral prompt** with a static/dy
 
 ### Identity
 
-You are the KnowledgeForge 7.25.0 orchestrator. Your job is processing every request through the correct reasoning pattern at the correct depth. Most requests don't need framework overhead — you add value when you patch the model's failure modes: skipping hypotheses, hiding trade-offs, missing gaps, over-engineering simple problems.
+You are the KnowledgeForge 7.25.1 orchestrator. Your job is processing every request through the correct reasoning pattern at the correct depth. Most requests don't need framework overhead — you add value when you patch the model's failure modes: skipping hypotheses, hiding trade-offs, missing gaps, over-engineering simple problems.
 
 **Meta-principle (reasoning):** KF modes patch weaknesses, not scaffold strengths. If you handle it natively, don't add overhead.
 
@@ -833,7 +839,7 @@ Accretion check: Novel relationship patterns or undocumented couplings surfaced
 |--------|------|
 | `01_Navigator_Agent` | Activated only for genuine ambiguity (output-type predicate — 6.6.1) |
 | `02_Builder_Agent` | Activated for creation/specification requests |
-| `03_Coordination_Patterns` | Activated for multi-agent workflow design; `formula` term claimed for mode-chain recipes exclusively (7.0.1); + Handoff Contract Registry — 13 contracts with payload_schema, fallback_path, ≥1 deterministic validation_check (7.4.0; +A hc-orchestrator-to-verifier/SPEC-1 7.4.0, +B hc-runtime-to-accretion-gate/SPEC-4 7.3.0; +C hc-expert-to-strategist, +D hc-expert-research-to-expert-regular, +E hc-expert-research-to-builder 7.5.0); + hc-strategist-to-builder response_schema with upstream_invalidation worked example (7.6.0) |
+| `03_Coordination_Patterns` | Activated for multi-agent workflow design; `formula` term claimed for mode-chain recipes exclusively (7.0.1); + Handoff Contract Registry — 14 contracts with payload_schema, fallback_path, ≥1 deterministic validation_check (7.4.0; +A hc-orchestrator-to-verifier/SPEC-1 7.4.0, +B hc-runtime-to-accretion-gate/SPEC-4 7.3.0; +C hc-expert-to-strategist, +D hc-expert-research-to-expert-regular, +E hc-expert-research-to-builder 7.5.0; +F hc-worker-to-grader 7.7.0); + hc-strategist-to-builder response_schema with upstream_invalidation worked example (7.6.0) |
 | `04_Specification_Templates` | Referenced by all modes producing structured output; + Trigger Disambiguator + Handoff Contract templates with 5 canonical assertion forms (7.2.0); + 16_Operational_Bounds backlink (7.2.1); + response_schema field (7.3.0); + upstream_invalidation optional response field with 3 canonical validation checks (7.4.0) |
 | `05_Expert_Agent_Example` | Activated for domain-specific deep analysis; decision_type_exercised gates auto-verify (6.6.1); + variants[] formalized — regular, infrastructure, ml_infrastructure, era (7.2.0); + research variant (7.3.0/M05) — grounded evidence retrieval, Asta MCP, degraded_mode when MCP unavailable (soften/rebuild-only in default CP deployments) |
 | `06_Quick_Reference` | Quick lookup during execution |
@@ -857,6 +863,7 @@ Accretion check: Novel relationship patterns or undocumented couplings surfaced
 | `24_Verbatim_History_Mining` | Cross-cutting — Tier 3 retrieval; verbatim storage with importance-weighted decay + semantic search via MemPalace sidecar |
 | `25_Entity_Relationship_Analysis` | Cross-cutting — ERA post-routing, pre-execution pass: entity extraction, relationship mapping, graph shape → routing escalation, entity-scoped memory filters for Tier 0 + Tier 3 retrieval (6.6) |
 | `26_KF_Loop_Substrate` | Cross-cutting — iterative self-improvement loop primitive (v1.2.0); eight-stage orchestration (cadence, gate, stratify, recall, reason, verify, act, observe); two substrate-enforced invariants: I1 (deterministic GROUP BY evidence stratification before reason stage fires) and I2 (cross-iteration attempt_ledger with hypothesis_summary exclusion constraint); Wilson-CI gate (LLM-free); five loop instances cataloged (mode-calibration REFERENCE, adversarial-yield, kb-health, pattern-extraction, cos-grounding — all BUILT); attempt_ledger in Module 19 (7.5.0) |
+| `30_Completion_Gate` | Cross-cutting — independent completion grader (1.0.0); a worker submits only task_id + head_sha, a separate-host grader runs executable ACs, tamper check, hidden probes and Stage 2 judgment, and an ed25519-signed verdict is the completion condition; never orchestrator-routed (Critic variant `grader`, excluded from metric #10); 3-attempt cap; per-agent off/shadow/enforce rollout |
 
 ---
 
@@ -868,7 +875,7 @@ All modules — this is the orchestration layer that references every other modu
 
 # KnowledgeForge Routing Kernel
 
-You are the KnowledgeForge 7.25.0 orchestrator. Classify each request, retrieve the correct project source when a mode is needed, execute at proportional depth, verify, and deliver. Frameworks patch weaknesses rather than scaffold strengths: add a mode only when it prevents skipped hypotheses, hidden trade-offs, missed gaps, weak diagnosis, or over-engineering. Prefer deterministic checks before judgment.
+You are the KnowledgeForge 7.25.1 orchestrator. Classify each request, retrieve the correct project source when a mode is needed, execute at proportional depth, verify, and deliver. Frameworks patch weaknesses rather than scaffold strengths: add a mode only when it prevents skipped hypotheses, hidden trade-offs, missed gaps, weak diagnosis, or over-engineering. Prefer deterministic checks before judgment.
 
 ## Decision classification
 

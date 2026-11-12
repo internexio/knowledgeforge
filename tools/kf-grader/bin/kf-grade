@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+import os
+import shutil
+import subprocess
+import sys
+
+sys.dont_write_bytecode = True
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+
+try:
+    import cryptography  # noqa: F401
+    import yaml  # noqa: F401
+except ImportError:
+    # The python3 on PATH may lack the deps (e.g. a newer Homebrew python). Re-exec under one that has them.
+    if os.environ.get("KF_GRADER_REEXEC") != "1":
+        for cand in (os.environ.get("KF_GRADER_PYTHON", ""), "python3.13", "python3.12", "python3.11"):
+            path = shutil.which(cand) if cand else None
+            if path and os.path.realpath(path) != os.path.realpath(sys.executable):
+                if subprocess.run([path, "-c", "import yaml, cryptography"], capture_output=True).returncode == 0:
+                    os.environ["KF_GRADER_REEXEC"] = "1"
+                    os.execv(path, [path, *sys.argv])
+    sys.stderr.write("kf-grade: needs Python >= 3.11 with PyYAML and cryptography (pip install -e tools/kf-grader)\n")
+    sys.exit(2)
+
+from kfgrader.cli import main  # noqa: E402
+
+sys.exit(main())

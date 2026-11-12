@@ -5,15 +5,20 @@
 ```yaml
 module:
   title: Memory Architecture
-  version: 7.5.0
-  purpose: Four-tier memory system -- persistent domain knowledge (Tier 0), routing index (Tier 1), mode state (Tier 2), and archived history (Tier 3) -- plus two cross-session audit logs (routing_decision_log, attempt_ledger) that maintain routing accuracy and iterative loop convergence across sessions
+  version: 7.6.0
+  purpose: Four-tier memory system -- persistent domain knowledge (Tier 0), routing index (Tier 1), mode state (Tier 2), and archived history (Tier 3) -- plus three cross-session audit logs (routing_decision_log, attempt_ledger, grader_verdict_ledger) that maintain routing accuracy, iterative loop convergence and completion-claim integrity across sessions
   topics: [memory, context-management, session-persistence, consolidation, skeptical-verification, persistent-knowledge, routing-audit-log, metric-aggregates, attempt-ledger, iterative-convergence]
   contexts: [long-sessions, mode-transitions, context-pressure, state-management, cross-session-knowledge, routing-decision-audit, kf-loop-substrate]
   difficulty: advanced
-  related: [00_Orchestrator, 03_Coordination_Patterns, 04_Specification_Templates, 14_Metacognitive_Monitor, 16_Operational_Bounds, 17_Temporal_Knowledge, 20_Permission_Model, 21_Knowledge_Accretion, 26_KF_LOOP_Substrate]
+  related: [00_Orchestrator, 03_Coordination_Patterns, 04_Specification_Templates, 14_Metacognitive_Monitor, 16_Operational_Bounds, 17_Temporal_Knowledge, 20_Permission_Model, 21_Knowledge_Accretion, 26_KF_LOOP_Substrate, 30_Completion_Gate]
   added_in: "6.1"
   implements: "Directive 2 (Three-Tier Memory Architecture), extended to four tiers in 6.2"
   changelog:
+    7.6.0:
+      date: 2026-11-11
+      driver: knowledgeforge-core-j2c
+      changes:
+        - Added grader_verdict_ledger schema v1.0 alongside attempt_ledger: permanent per-task_id retention of signed Completion Gate verdicts (Module 30) on the grader host, with an Orchestra copy once that integration exists.
     7.5.0:
       date: 2026-08-12
       driver: knowledgeforge-core-31l
@@ -261,11 +266,13 @@ routing_index_schema:
 
 ### Cross-Session Audit Logs (7.2 / 7.5)
 
-Two cross-session audit logs live here. Both follow the same shape: schema-versioned, keyed by context, retained based on operational need, written deterministically by substrate stages (not LLM judgment). Adding a second log to this section does not introduce a new tier -- both logs are cross-session operational state, conceptually adjacent to Tier 0 (knowledge) but distinct from it.
+Three cross-session audit logs live here. All follow the same shape: schema-versioned, keyed by context, retained based on operational need, written deterministically by substrate stages (not LLM judgment). Adding a log to this section does not introduce a new tier -- all logs are cross-session operational state, conceptually adjacent to Tier 0 (knowledge) but distinct from it.
 
 **routing_decision_log** (7.2): Audit trail of routing decisions. Data source for Module 16 metric #10. State and audit trail are kept as separate concerns: state answers "what is the current task?"; the log answers "which mode was selected, by which predicate, was it re-routed?". Resolves ERA F4.
 
 **attempt_ledger** (7.5): Cross-iteration hypothesis log for KF-LOOP instances. Satisfies I2 (cross-iteration memory). Written by the observe stage; read by the recall stage. Partitioned by loop_id. See Module 26 (KF-LOOP Substrate) for stage definitions.
+
+**grader_verdict_ledger** (7.6): Signed verdicts of the Completion Gate (Module 30). Written by the kf-grade runner on the grader host, never by the worker and never by an LLM. Partitioned by task_id; retained permanently because a verdict is the completion condition for its task and is re-verified later by `kf-grade verify`.
 
 ---
 
@@ -550,6 +557,27 @@ attempt_ledger:
       map to attempt_ledger entries. To formally adopt: add loop_id and outcome_label
       as optional fields to routing_decision_log entries written during calibration
       iterations (non-breaking; optional fields).
+```
+
+#### grader_verdict_ledger (NEW 7.6)
+
+```yaml
+grader_verdict_ledger:
+  schema_version: "1.0"
+  location:
+    authoritative: "Grader host: $KF_GRADER_HOME/verdicts/<task_id>/attempt-<n>.json (ed25519-signed)"
+    copy: "Orchestra artifact once that integration exists; informational only. Verification always uses the signature, never the copy."
+  partition_key: task_id
+  retention: "Permanent per task_id. Eviction would let a completed task lose its proof, and the attempt cap counts graded attempts from this ledger."
+  fields: "By reference: tools/kf-grader/schemas/verdict.schema.json (task id, attempt, UTC timestamp, repo, base/head SHA, spec sha256, grader version and lock hash, mode, every Stage 1 check with its literal output capped at 4 KB, tamper result, probe results, Stage 2 scores and evidence, verdict, reason codes, content_sha256, signature)"
+  written_by: "kf-grade runner (deterministic). The worker has no write path to the grader host."
+  integrity: "ed25519 over the canonical JSON of every field except content_sha256 and signature; private key only on the grader host; files that fail verification are ignored by attempt counting and by verify."
+  consumed_by:
+    - "kf-grade verify (hard completion gate)"
+    - "Module 16 metrics 11-13 via ledger/metrics.jsonl on the grader host"
+    - "Weekly digest and spot-check selection (grader host selects, never the worker)"
+  separation: "Not part of any worker's Tier 2 state and not readable as evidence by the worker. The worker-facing view is a redacted projection (no scores, probe catalog or Stage 2 prompt)."
+  schema_evolution: "A reader that meets schema_version != 1.0 treats the verdict as unverifiable (fail closed), never as PASS."
 ```
 
 ### Tier 2: Mode-Specific State (Loaded On Demand)

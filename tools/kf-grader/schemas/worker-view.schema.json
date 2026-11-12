@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "kf-grade worker-facing view (redacted: no scores, probe catalog, Stage 2 prompt or rescore rule)",
+  "type": "object",
+  "required": ["task_id", "attempt", "verdict", "reasons", "failed_acs", "tamper_violations", "observations",
+               "stage2_failed_dimensions", "attempts_remaining", "verdict_ref"],
+  "properties": {
+    "task_id": {"type": "string"}, "attempt": {"type": "integer"}, "verdict": {"enum": ["PASS", "FAIL", "BLOCKED", "PENDING"]},
+    "reasons": {"type": "array", "items": {"type": "string"}},
+    "failed_acs": {"type": "array", "items": {"type": "object", "required": ["id", "output"]}},
+    "tamper_violations": {"type": "array", "items": {"type": "string"}},
+    "observations": {"type": "array", "items": {"type": "string"}},
+    "stage2_failed_dimensions": {"type": "array", "items": {"type": "object", "required": ["dimension", "reason"]}},
+    "attempts_remaining": {"type": "integer"}, "verdict_ref": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}

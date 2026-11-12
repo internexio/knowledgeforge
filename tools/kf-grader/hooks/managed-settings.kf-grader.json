@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "/usr/local/libexec/kf-grade-stop.sh" }
+        ]
+      }
+    ]
+  }
+}

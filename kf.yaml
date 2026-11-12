@@ -1,5 +1,5 @@
 name: KnowledgeForge
-version: 7.36.1
+version: 7.37.0
 description: >
   Multi-platform, multi-model reasoning framework.
   Single source of truth for all KF variants.
@@ -41,6 +41,20 @@ modules:
   source: knowledgeforge-cp (as of 2026-04-14)
 
 changelog:
+  - version: 7.37.0
+    date: 2026-11-11
+    driver: knowledgeforge-core-j2c
+    note: |
+      Completion Gate (independent grader agent). New Module 30_Completion_Gate (1.0.0).
+      Module 03 7.7.0 (Contract F hc-worker-to-grader, registry now 14), Module 04 7.5.0
+      (kf-acceptance AC block template), Module 06 7.4.0 (Completion Gate quick reference),
+      Module 07 7.7.0 (variants[] id: grader, comparison column), Module 16 7.4.0 (metrics
+      11-13: first_attempt_pass_rate, threshold_clustering, grader_false_pass_rate),
+      Module 19 7.6.0 (grader_verdict_ledger v1.0), Module 20 7.2.0 (grader_stage1_runner
+      HIGH tier, grader capability profile), Module 00 7.25.1 (Module Reference row, identity
+      strings). Reference implementation in tools/kf-grader/. Design: docs/recommendations/
+      grader-agent-rec-2026-11-07.md. Enablement on a grader host is a runbook (INSTALL.md),
+      not part of this release.
   - version: 7.36.1
     date: 2026-08-15
     driver: knowledgeforge-core-acu
