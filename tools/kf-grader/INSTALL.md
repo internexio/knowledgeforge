@@ -42,6 +42,8 @@ ls /opt/kf-grader/grader.lock /opt/kf-grader/keys/verdict.pub
 claude setup-token                               # authenticates headless Claude Code for the grader user
 ```
 
+If `docker build` hangs on `load metadata` on macOS, the process to look for is `docker-credential-desktop get` waiting on a Keychain prompt. The base image is public, so build with a throwaway config that has no credential helper: `D=$(mktemp -d); echo '{}' > "$D/config.json"; DOCKER_CONFIG="$D" docker build -t kf-grader-runner /opt/kf-grader-src/tools/kf-grader/runner` (add `DOCKER_HOST=unix://$HOME/.docker/run/docker.sock` if the CLI can't find the socket). Verify the production sandbox once: `cd /opt/kf-grader-src/tools/kf-grader && python3 -m pytest -q tests/test_sandbox_docker.py` (skips if Docker or the image is missing, so check it says `4 passed`).
+
 Install the grader's own Claude settings (deny rules; the agent itself is defined inline by the runner so a graded repo cannot shadow it):
 
 ```bash

@@ -53,10 +53,12 @@ def _docker(src: Path, cmd: str, timeout_s: int, network: str, cfg: dict) -> Res
         "-v", f"{src}:/src:ro", "--tmpfs", "/work:rw,exec,size=512m,mode=1777", "-w", "/work",
         "-e", "HOME=/work",
         cfg.get("runner_image", "kf-grader-runner"),
-        "sh", "-c", 'cp -a /src/. /work/ && exec sh -c "$0"', cmd,
+        # cp -R, not -a: an unprivileged user cannot preserve times/ownership on the tmpfs root. The checkout is
+        # read-only, so restore the owner write bit on the ephemeral copy (the source mount stays read-only).
+        "sh", "-c", 'cp -R /src/. /work/ && find /work -mindepth 1 -exec chmod u+w {} + && exec sh -c "$0"', cmd,
     ]
     try:
-        p = subprocess.run(argv, capture_output=True, timeout=timeout_s + 30, stdin=subprocess.DEVNULL)
+        p = subprocess.run(argv, capture_output=True, timeout=timeout_s + 10, stdin=subprocess.DEVNULL)
         return Result(p.returncode, _cut(p.stdout), _cut(p.stderr))
     except subprocess.TimeoutExpired as e:
         subprocess.run(["docker", "kill", name], capture_output=True, timeout=30)
@@ -69,6 +71,12 @@ def _subprocess(src: Path, cmd: str, timeout_s: int) -> Result:
     work = Path(tempfile.mkdtemp(prefix="kfg-sub-"))
     try:
         shutil.copytree(src, work / "w", symlinks=True)
+        for root, dirs, files in os.walk(work / "w"):  # same as the docker backend: the copy is writable, the source is not
+            os.chmod(root, 0o700)
+            for n in files:
+                fp = os.path.join(root, n)
+                if not os.path.islink(fp):
+                    os.chmod(fp, os.stat(fp).st_mode | 0o200)
         env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HOME": str(work), "LANG": "C.UTF-8"}
         p = subprocess.Popen(["sh", "-c", cmd], cwd=work / "w", env=env, stdin=subprocess.DEVNULL,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
