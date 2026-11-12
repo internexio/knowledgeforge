@@ -39,7 +39,7 @@ but shape how every mode reasons, remembers, and bounds itself (M12–M30).
 | M17 | [Temporal Knowledge](../modules/17_temporal_knowledge.md) | 7.0.2 | Knowledge age, importance-weighted decay, domain half-life table, planning artifact staleness |
 | M18 | [Salience Allocation](../modules/18_salience_allocation.md) | 7.1.0 | Multi-task attention weighting; inhibition-first framing (suppress before amplify) |
 | M19 | [Memory Architecture](../modules/19_memory_architecture.md) | 7.6.0 | Four-tier memory (Tier 0–3), routing index, routing decision log, attempt ledger, grader verdict ledger |
-| M20 | [Permission Model](../modules/20_permission_model.md) | 7.2.0 | Risk tiers (LOW / MEDIUM / HIGH), capability gates, verifier + accretion candidate tier policies, grader runner tier |
+| M20 | [Permission Model](../modules/20_permission_model.md) | 7.2.1 | Risk tiers (LOW / MEDIUM / HIGH), capability gates, verifier + accretion candidate tier policies, grader runner tier |
 | M21 | [Knowledge Accretion](../modules/21_knowledge_accretion.md) | 7.5.0 | Cross-session knowledge persistence: compile-query-enhance loop, native:true gate, KB linter |
 | M22 | [Semantic Wiki Search](../modules/22_semantic_wiki_search.md) | 7.4.0 | Two-phase retrieval (metadata pre-filter + score fusion), MemPalace integration, grep fallback |
 | M23 | [Taxonomy Enforcement](../modules/23_taxonomy_enforcement.md) | 6.10.0 | Controlled vocabulary at write time: 15 domains, ~40 topics, ~55 approved tags |

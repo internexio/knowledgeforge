@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: Permission Model
-  version: 7.2.0
+  version: 7.2.1
   purpose: Layered permission system that classifies action risk, enforces capability restrictions per sub-agent, and gates autonomous behavior with human checkpoints
   topics: [permissions, risk-classification, capability-restriction, autonomous-governance, sub-agent-safety, accretion-permissions, verifier-tool-grants]
   contexts: [autonomous-deployment, sub-agent-architecture, mode-chains, production-safety, separate-agent-verification]
@@ -14,12 +14,17 @@ module:
   added_in: "6.1"
   implements: "Directive 5 (Layered Permission Model), Directive 6 (Fork-Join Capabilities)"
   changelog:
+    7.2.1:
+      date: 2026-11-11
+      driver: knowledgeforge-core-j2c
+      changes:
+        - Corrected the 7.2.0 changelog wording so the Module Metadata block parses as YAML again (an unquoted key and value pair inside a list item broke the compiler's metadata parser). No behavior change.
     7.2.0:
       date: 2026-11-11
       driver: knowledgeforge-core-j2c
       changes:
-        - verifier_tool_tier_policy.tool_tier_table: added grader_stage1_runner (HIGH) with bind-side requirements for the Completion Gate runner that executes worker-authored code in a disposable container.
-        - capability_profiles: added grader (read: registration snapshot, checkout, diff, Stage 1 results; write: nothing; never spawned by the graded agent).
+        - verifier_tool_tier_policy tool_tier_table gained grader_stage1_runner (HIGH) with bind-side requirements for the Completion Gate runner that executes worker-authored code in a disposable container.
+        - capability_profiles gained a grader profile (reads the registration snapshot, checkout, diff and Stage 1 results; writes nothing; never spawned by the graded agent).
     7.1.0:
       date: 2026-06-13
       driver: knowledgeforge-core-f8a
