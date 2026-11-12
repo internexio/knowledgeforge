@@ -247,11 +247,14 @@ See `IMPLEMENTATION_PLAN.md` for the full Phase 0–10 roadmap.
 python3 compiler/kf-compile.py --target claude-code --output ~/Scripts/knowledgeforge-cc
 # 3. Commit CC
 cd ~/Scripts/knowledgeforge-cc && git add -A && git commit -m "chore: compiled from core" && git push
-# 4. Hooks: do NOT run scripts/deploy-hooks.sh and do NOT merge `sync/hooks-*` PRs from CI.
-#    knowledgeforge-cc is authoritative for .claude/hooks/ and this repo's hooks/ lag behind it;
-#    copying them over cc deletes 365 lines of kf-route.py and 180 of kf-session-start.py.
-#    Install from the cc repo instead:
+# 4. Hooks: knowledgeforge-cc is authoritative for .claude/hooks/, and this repo's kf-route.py and
+#    kf-session-start.py are older (copying them over cc deletes 365 and 180 lines of newer code).
+#    This repo owns only kf-loop.py and kf_module_index.txt: scripts/deploy-hooks.sh and the
+#    sync-hooks-cc.yml workflow handle ONLY those. Never add another hook to either without diffing
+#    it against the cc copy first. Install everything else from the cc repo:
 cd ~/Scripts/knowledgeforge-cc && ./install.sh
+# then, only if kf-loop.py or kf_module_index.txt changed:
+cd ~/Scripts/knowledgeforge && ./scripts/deploy-hooks.sh
 ```
 
 <!-- gitnexus:start -->

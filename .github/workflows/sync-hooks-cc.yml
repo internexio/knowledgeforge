@@ -1,7 +1,8 @@
 name: Sync hooks -> knowledgeforge-cc
 
 # Fires when hook scripts change on main.
-# Opens a PR in knowledgeforge-cc with the updated hook files.
+# Opens a PR in knowledgeforge-cc with the updated hook files this repo OWNS (currently only
+# kf_module_index.txt; see the copy step). knowledgeforge-cc is authoritative for the other hook scripts.
 # Requires: CORE_SYNC_TOKEN secret -- GitHub PAT with repo write access to knowledgeforge-cc.
 
 on:
@@ -32,14 +33,13 @@ jobs:
 
       - name: Sync hook files to CC
         run: |
+          # Copy ONLY files where this repo is the source of truth. knowledgeforge-cc has been
+          # authoritative for the hook scripts since 2026-05-19 (platform-bindings/claude-code.yaml),
+          # and this repo's kf-route.py and kf-session-start.py are older. Copying them over cc
+          # deleted 365 and 180 lines of newer code (the closed PRs knowledgeforge-cc#63 and #64).
+          # Before adding a file here, diff it against the cc copy and confirm core is the newer side.
           mkdir -p cc-repo/.claude/hooks/
-          cp hooks/kf-route.py              cc-repo/.claude/hooks/
           cp hooks/kf_module_index.txt      cc-repo/.claude/hooks/
-          cp hooks/kf-stop-validator.py     cc-repo/.claude/hooks/
-          cp hooks/kf-precompact.py         cc-repo/.claude/hooks/
-          cp hooks/kf-postcompact.py        cc-repo/.claude/hooks/
-          cp hooks/kf-edit-nudge.py         cc-repo/.claude/hooks/
-          cp hooks/kf-session-start.py      cc-repo/.claude/hooks/
 
       - name: Detect changes
         id: changes
