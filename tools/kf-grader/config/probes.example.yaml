@@ -1,0 +1,4 @@
+# Hidden probe pool (grader host only). P1-P3 derive from the registration; P4/P5 use registration fields.
+# Add per-repo extras here, keyed by registration agent name.
+sample_size: 2          # P2: number of untouched probe_urls to sample per run
+extra_urls: {}          # e.g. cos-dev: ["https://staging.example.invalid/health"]

@@ -1,0 +1,12 @@
+[project]
+name = "kf-grader"
+version = "0.1.0"
+description = "KnowledgeForge Completion Gate: independent grader runner (reference implementation)"
+requires-python = ">=3.11"
+dependencies = ["PyYAML>=6", "cryptography>=42"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "kf-grade registration (stored on the grader host, immutable per task_id)",
+  "type": "object",
+  "required": ["task_id", "repo", "base_sha", "spec_text", "spec_sha256", "acceptance_criteria", "registered_at"],
+  "properties": {
+    "task_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"},
+    "agent": {"type": ["string", "null"]},
+    "repo": {"type": "string"},
+    "base_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "spec_text": {"type": "string"}, "spec_sha256": {"type": "string"},
+    "acceptance_criteria": {"type": "array"},
+    "target_url": {"type": ["string", "null"]}, "probe_urls": {"type": "array", "items": {"type": "string"}},
+    "test_command": {"type": ["string", "null"]}, "allow_modify": {"type": "array", "items": {"type": "string"}},
+    "spec_repo_path": {"type": ["string", "null"]}, "network": {"enum": ["none", "bridge"]},
+    "deployed_sha_probe": {"type": ["object", "null"], "properties": {"url": {"type": "string"}, "regex": {"type": "string"}}},
+    "registered_at": {"type": "string"}, "registered_via": {"type": "string"}
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "C1": {"verdict": "FAIL", "reasons": ["stage1_fail"], "failed_acs": ["AC1", "AC2"]},
+  "C2": {"verdict": "FAIL", "reasons": ["stage1_fail"], "failed_acs": ["AC1", "AC2"]},
+  "C3": {"verdict": "FAIL", "reasons": ["tamper"], "tamper_paths": ["tests/test_smoke.sh"]},
+  "C4": {"verdict": "FAIL", "reasons": ["tamper"], "tamper_paths": ["package.json"]},
+  "C5": {"verdict": "FAIL", "reasons": ["tamper"], "tamper_paths": [".kf/grader/config.yaml", ".claude/agents/kf-grader.md"], "config_unchanged": true},
+  "C10": {"special": "forged_verdict", "verify_nonzero": true},
+  "C11": {"verdict": "FAIL", "reasons": ["tamper"], "tamper_paths": ["history_rewrite"]}
+}

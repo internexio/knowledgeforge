@@ -1,0 +1,17 @@
+# Grader-host config. Lives on the grader host (KF_GRADER_HOME/config/grader.yaml), never in a graded repo.
+threshold: 8            # minimum Stage 2 dimension score to PASS
+cap: 3                  # graded attempts per task
+stage2_model: opus      # overridden by diversity rule when worker_model is opus and a different model is available
+boundary_rescore: true  # run Stage 2 twice more when min score is 7 or 8
+runner_image: kf-grader-runner
+limits:
+  cpus: 1
+  memory: 1g
+  pids: 256
+  command_timeout_s: 300
+  wall_clock_s: 1800
+agents:
+  cos-dev: {mode: shadow, worker_model: opus}
+  sem-tools: {mode: off, worker_model: opus}
+  semalytics-gtm: {mode: off, worker_model: opus}
+  semalytics-ads: {mode: off, worker_model: opus}

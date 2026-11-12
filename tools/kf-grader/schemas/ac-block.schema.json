@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "kf-acceptance block",
+  "type": "object",
+  "required": ["acceptance_criteria"],
+  "properties": {
+    "acceptance_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "type"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[A-Za-z0-9_-]+$"},
+          "type": {"enum": ["command", "grep_count", "http_status", "dom_check", "judgment"]},
+          "pattern": {"type": "string"}, "regex": {"type": "boolean"}, "paths": {"type": "array", "items": {"type": "string"}},
+          "per_file": {"type": "boolean"}, "op": {"enum": ["==", "!=", ">=", "<=", ">", "<"]}, "value": {"type": "integer"},
+          "run": {"type": "string"}, "expect": {}, "timeout_s": {"type": "integer"},
+          "url": {"type": "string"}, "selector": {"type": "string"}, "text": {"type": "string"}
+        }
+      }
+    }
+  },
+  "x-rules": "At least one non-judgment AC is required. Per-type required fields: command{run}, grep_count{pattern,paths,op,value}, http_status{url,expect}, dom_check{url,selector,op,value}, judgment{text}."
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "kf-grade verdict (ed25519-signed; content_sha256 + signature cover every other field)",
+  "type": "object",
+  "required": ["schema_version", "task_id", "attempt", "seq", "graded", "timestamp", "repo", "base_sha", "head_sha", "spec_sha256",
+               "grader_version", "lock_hash", "mode", "test_mode", "stage1", "tamper", "probes", "stage2", "verdict", "reasons",
+               "content_sha256", "signature"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "task_id": {"type": "string"}, "attempt": {"type": "integer", "minimum": 1}, "seq": {"type": "integer"},
+    "graded": {"type": "boolean"}, "graded_total": {"type": "integer"},
+    "timestamp": {"type": "string"}, "repo": {"type": "string"},
+    "base_sha": {"type": "string"}, "head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "spec_sha256": {"type": "string"},
+    "grader_version": {"type": "string"}, "lock_hash": {"type": "string"},
+    "mode": {"enum": ["off", "shadow", "enforce"]}, "test_mode": {"type": "boolean"}, "sandbox": {"enum": ["docker", "subprocess"]},
+    "stage1": {"type": "array", "items": {"type": "object", "required": ["id", "type", "passed", "output"]}},
+    "tamper": {"type": "object", "required": ["violations"], "properties": {"violations": {"type": "array", "items": {"type": "string"}}}},
+    "probes": {"type": "array", "items": {"type": "object", "required": ["id", "passed", "observation"]}},
+    "stage2": {"type": ["object", "null"]},
+    "verdict": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+    "reasons": {"type": "array", "items": {"enum": ["not_registered", "canary_unhealthy", "grader_error", "cap_reached", "tamper", "stage1_fail",
+                                                     "probe_fail", "stage2_unavailable", "stage2_below_threshold"]}},
+    "notes": {"type": "array", "items": {"type": "string"}},
+    "verdict_ref": {"type": "string"},
+    "content_sha256": {"type": "string"}, "signature": {"type": "string"}
+  }
+}
