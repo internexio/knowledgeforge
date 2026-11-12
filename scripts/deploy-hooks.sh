@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # deploy-hooks.sh — Deploy KF hooks and commands locally or to a remote machine
 #
-# Run this after editing hooks in knowledgeforge-core/hooks/ or commands/.
-# All non-CP variants share the same deployed hooks — global ~/.claude/settings.json
+# Run this after editing kf-loop.py, kf_module_index.txt (in hooks/) or commands/. It deploys ONLY the
+# files this repo owns (see HOOKS below); the rest of the KF hooks come from knowledgeforge-cc/install.sh.
+# All non-CP variants share the same deployed hooks: global ~/.claude/settings.json
 # registers them once and all variants benefit automatically.
 #
 # Usage:
@@ -29,15 +30,15 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# Only files where THIS repo's hooks/ is the source of truth. The other KF hook scripts (kf-route.py,
+# kf-session-start.py, kf-stop-validator.py, kf-precompact.py, kf-postcompact.py, kf-edit-nudge.py,
+# kf-stats.py) are owned by knowledgeforge-cc, which has been authoritative for .claude/hooks/ since
+# 2026-05-19 (see platform-bindings/claude-code.yaml); install those with knowledgeforge-cc/install.sh.
+# This repo's copies of kf-route.py and kf-session-start.py are older: deploying them deleted 365 and 180
+# lines of newer cc code. Before adding a file here, check which side is newer with
+# `git diff --no-index hooks/<f> ../knowledgeforge-cc/.claude/hooks/<f>`.
 HOOKS=(
-  "kf-route.py"
   "kf_module_index.txt"
-  "kf-stop-validator.py"
-  "kf-precompact.py"
-  "kf-postcompact.py"
-  "kf-edit-nudge.py"
-  "kf-session-start.py"
-  "kf-stats.py"
   "kf-loop.py"
 )
 
