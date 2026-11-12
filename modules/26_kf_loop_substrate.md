@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: KF-LOOP Substrate
-  version: 1.2.0
+  version: 1.2.1
   purpose: >
     Shared substrate for iterative self-improvement loops; formalizes evidence
     stratification (I1) and cross-iteration attempt memory (I2) so any KF loop
@@ -16,6 +16,11 @@ module:
   related: [00_orchestrator, 03_coordination_patterns, 07_critic_agent, 14_metacognitive_monitor, 19_memory_architecture, 21_knowledge_accretion, 16_operational_bounds]
   added_in: "7.34"
   changelog:
+    1.2.1:
+      date: 2026-11-12
+      driver: knowledgeforge-core-08h
+      changes:
+        - Reformatted older changelog entries as folded block scalars so the Module Metadata block parses as YAML again. The text of every entry is unchanged and there is no behavior change.
     1.2.0:
       date: 2026-08-13
       driver: knowledgeforge-core-hvj knowledgeforge-core-knw knowledgeforge-core-7x5 knowledgeforge-core-r7y
@@ -44,7 +49,8 @@ module:
       changes:
         - Initial spec. Formalizes KF-LOOP as a named orchestration primitive with shared substrate.
         - Two invariants: I1 (evidence stratification via deterministic GROUP BY) and I2 (cross-iteration attempt ledger with exclusion constraint).
-        - Gate: Wilson-CI class (deterministic). Stratify: rule-based dominant-stratum selection. Recall/Monitor: fixed stages wrapping every loop instance.
+        - >-
+          Gate: Wilson-CI class (deterministic). Stratify: rule-based dominant-stratum selection. Recall/Monitor: fixed stages wrapping every loop instance.
         - Reference instance: mode-selection self-calibration (proof-of-concept for shared contract shape).
         - DECISION-1 (ledger location) held open for operator selection.
 ```

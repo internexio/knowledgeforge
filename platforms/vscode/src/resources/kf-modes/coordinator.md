@@ -5,13 +5,18 @@
 ```yaml
 module:
   title: Agent Coordination Patterns
-  version: 7.6.0
+  version: 7.7.0
   purpose: Design multi-agent workflows by mapping dependencies first, then deriving the coordination pattern from the graph
   topics: [coordination, multi-agent, workflows, handoffs, orchestration, dependency-mapping, verification, capability-restriction, handoff-contract-registry]
   contexts: [complex-tasks, agent-teams, workflow-design, mode-handoff-validation]
   difficulty: advanced
-  related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 14_Metacognitive_Monitor, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model]
+  related: [00_Orchestrator, 01_Navigator_Agent, 02_Builder_Agent, 04_Specification_Templates, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 14_Metacognitive_Monitor, 16_Operational_Bounds, 18_Salience_Allocation, 19_Memory_Architecture, 20_Permission_Model, 30_Completion_Gate]
   changelog:
+    7.7.0:
+      date: 2026-11-11
+      driver: knowledgeforge-core-j2c
+      changes:
+        - Handoff Contract Registry: added Contract F, hc-worker-to-grader (external worker to Completion Gate grader, Module 30). Payload is exactly {task_id, head_sha}; fallback_path escalate_to_user, silent-pass NEVER allowed. Registry now has 14 entries.
     7.6.0:
       date: 2026-08-09
       driver: knowledgeforge-core-e49
@@ -796,7 +801,71 @@ handoff_contract_registry:
         failure_action: route_to_navigator
         failure_severity: Sev1
 
-# Validation: registry must have exactly 13 entries (post-7.5.0 wave: 10 prior + C/D/E added 7.5.0); ids unique; every entry validates against Module 04 handoff_contract entity schema. Contract A (hc-orchestrator-to-verifier) added 7.4.0, Contract B (hc-runtime-to-accretion-gate) added 7.3.0, Contracts C/D/E (hc-expert-to-strategist, hc-expert-research-to-expert-regular, hc-expert-research-to-builder) added 7.5.0.
+  - id: hc-worker-to-grader
+    # Added 7.7.0 (Contract F, Module 30 Completion Gate). External worker -> independent grader.
+    # The worker's submission is exactly two values; there is no field for a self-report, so a
+    # self-report cannot become evidence. The grader runs on a separate host in a fresh process and
+    # is NEVER a subagent of the worker (a subagent's task prompt is written by its parent).
+    # Grader or Stage 2 crash/timeout/unavailable yields BLOCKED, never PASS: silent-pass is NEVER allowed.
+    source_mode: external_worker
+    source_variant: null
+    target_mode: critic
+    target_variant: grader
+    trigger:
+      type: user_initiated
+      condition: "Worker agent claims a registered task is complete and submits via kf-grade submit"
+      chain_pattern_reference: "completion-gate"
+    payload_schema:
+      fields:
+        - {name: task_id, type: string, required: true,
+           validation: "pattern: ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$; must reference a registration made by the dispatcher"}
+        - {name: head_sha, type: string, required: true,
+           validation: "pattern: ^[0-9a-f]{40}$"}
+    response_schema:
+      fields:
+        - {name: task_id, type: string, required: true}
+        - {name: attempt, type: number, required: true}
+        - {name: verdict, type: string, required: true, validation: "enum: [PASS, FAIL, BLOCKED, PENDING]"}
+        - {name: reasons, type: array, required: true,
+           description: "Reason codes per the Module 30 enum"}
+        - {name: failed_acs, type: array, required: true, description: "[{id, output}] literal grader output"}
+        - {name: tamper_violations, type: array, required: true}
+        - {name: observations, type: array, required: true, description: "Probe failures phrased as observations"}
+        - {name: stage2_failed_dimensions, type: array, required: true, description: "[{dimension, reason}]; no numeric scores"}
+        - {name: attempts_remaining, type: number, required: true}
+        - {name: verdict_ref, type: string, required: false,
+           description: "Pointer to the signed verdict file; completion is kf-grade verify, not this field"}
+    fallback_path:
+      type: escalate_to_user
+      rationale: "Grader unavailable, canary unhealthy, grader.lock mismatch, Stage 2 unavailable or cap reached: BLOCKED surfaces to the user. Silent-pass is NEVER allowed."
+    validation_checks:
+      - check_id: task_id_present
+        assertion: "task_id is non-null"  # field-presence
+        check_type: deterministic
+        failure_action: escalate_to_user
+        failure_severity: Sev1
+      - check_id: head_sha_is_full_sha
+        assertion: "head_sha validates against pattern ^[0-9a-f]{40}$"  # schema-conformance
+        check_type: deterministic
+        failure_action: retry_with_repair
+        failure_severity: Sev2
+      - check_id: verdict_in_enum
+        assertion: "verdict matches enum: [PASS, FAIL, BLOCKED, PENDING]"  # enum-membership
+        check_type: deterministic
+        failure_action: escalate_to_user
+        failure_severity: Sev1
+      - check_id: response_schema_conforms
+        assertion: "grader_response validates against response_schema"  # schema-conformance
+        check_type: deterministic
+        failure_action: escalate_to_user
+        failure_severity: Sev1
+      - check_id: completion_requires_verified_verdict
+        assertion: "task marked complete only if kf-grade verify exits 0 for the delivered head_sha"  # cross-field
+        check_type: deterministic
+        failure_action: escalate_to_user
+        failure_severity: Sev1
+
+# Validation: registry must have exactly 14 entries (post-7.7.0: 13 prior + F hc-worker-to-grader added 7.7.0); ids unique; every entry validates against Module 04 handoff_contract entity schema. Contract A (hc-orchestrator-to-verifier) added 7.4.0, Contract B (hc-runtime-to-accretion-gate) added 7.3.0, Contracts C/D/E (hc-expert-to-strategist, hc-expert-research-to-expert-regular, hc-expert-research-to-builder) added 7.5.0.
 ```
 
 ---

@@ -5,12 +5,12 @@
 ```yaml
 module:
   title: Permission Model
-  version: 7.1.0
+  version: 7.2.1
   purpose: Layered permission system that classifies action risk, enforces capability restrictions per sub-agent, and gates autonomous behavior with human checkpoints
   topics: [permissions, risk-classification, capability-restriction, autonomous-governance, sub-agent-safety, accretion-permissions, verifier-tool-grants]
   contexts: [autonomous-deployment, sub-agent-architecture, mode-chains, production-safety, separate-agent-verification]
   difficulty: advanced
-  related: [03_Coordination_Patterns, 04_Specification_Templates, 07_Critic_Agent, 13_Decision_Classification, 14_Metacognitive_Monitor, 16_Operational_Bounds, 19_Memory_Architecture, 21_Knowledge_Accretion]
+  related: [03_Coordination_Patterns, 04_Specification_Templates, 07_Critic_Agent, 13_Decision_Classification, 14_Metacognitive_Monitor, 16_Operational_Bounds, 19_Memory_Architecture, 21_Knowledge_Accretion, 30_Completion_Gate]
   added_in: "6.1"
   implements: "Directive 5 (Layered Permission Model), Directive 6 (Fork-Join Capabilities)"```
 
@@ -134,10 +134,15 @@ risk_escalation:
       staging_http:
         tier: HIGH
         bind_side_requirement: "Network-isolated; explicit host allowlist; no production TLDs reachable"
+      grader_stage1_runner:                      # NEW 7.2.0 (Module 30 Completion Gate)
+        tier: HIGH
+        bind_side_requirement: "Disposable container per command AC: checkout mounted read-only, ephemeral /work, unprivileged user, network none unless the registration opts into bridge (itself HIGH tier), CPU/memory/wall-clock limits. Grader runs as a separate Unix user on a separate host and holds no git push or deploy credentials."
+        note: "Executes worker-authored code from the graded repo (command ACs, test_command). This is the deterministic runner, not the Stage 2 LLM, whose surface is Read/Grep/Glob only."
     enforcement:
       - "Tool grants are declared in Contract A (Module 03 hc-orchestrator-to-verifier) payload"
       - "Tier classification happens at orchestrator dispatch time, before verifier spawn"
       - "Bind-side requirements are [project] responsibility — KF spec declares the contract; downstream runtime enforces sandbox"
+      - "grader_stage1_runner: the kf-grade runner refuses KF_GRADER_SANDBOX=subprocess outside KF_GRADER_TEST_MODE=1, so the HIGH-tier container requirement cannot be skipped in production"
     action: "Tool grant ∈ {test-runner, datastore-read-only, staging-http} → require HIGH-tier human confirmation on first session use; cache confirmation for session scope"
 
   accretion_candidate_tier_policy:               # NEW 7.1.0 — SPEC 4 cross-spec dep
@@ -304,6 +309,16 @@ capability_profiles:
     modify: nothing
     escalate: [novel_compliance_requirement, stack_conflict_unresolvable]
     restriction: "Cannot deploy configurations. Write access only to config output."
+
+  grader:                                        # NEW 7.2.0 (Module 30 Completion Gate)
+    role: Independently grade a worker's submission after deterministic checks pass
+    read: [registration_snapshot, fresh_checkout_at_head_sha, git_diff_base_to_head, stage1_results]
+    write: nothing
+    create: nothing
+    modify: nothing
+    output: "Schema-validated JSON returned to the runner; the runner, not the LLM, writes and signs the verdict"
+    escalate: [canary_unhealthy, grader_error, cap_reached]
+    restriction: "Cannot modify, commit, or deploy. Never spawned by the graded agent. Tool surface Read, Grep, Glob only (allowlist), no MCP, setting sources limited to user."
 ```
 
 ### Inheritance and Escalation Rules

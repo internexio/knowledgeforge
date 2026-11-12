@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: KF-LOOP Substrate
-  version: 1.2.0
+  version: 1.2.1
   purpose: >
     Shared substrate for iterative self-improvement loops; formalizes evidence
     stratification (I1) and cross-iteration attempt memory (I2) so any KF loop

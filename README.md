@@ -33,6 +33,7 @@ Nine modes. Each one handles a distinct class of reasoning problem. The orchestr
 | **Retry loops** | Keeps trying the same failing approach | Circuit breakers: 3 failures → halt, surface pattern, present options |
 | **Missing adversarial thinking** | "Looks good to me" without real challenge | Auto-verification fires on qualifying chains — framed to find what the producing agent missed |
 | **Stateless business execution** | Authority and context reset between sessions; no persistent role identity | Role Layer (M29): business roles with charter, RACI, decision authority, and memory scope |
+| **Unverified completion claims** | "All acceptance criteria met" reported while the code is missing | Completion Gate (M30): an independent grader runs the checks itself, and a signed verdict, not the worker's claim, decides done ([details](tools/kf-grader/README.md)) |
 
 > **"KF modes patch Claude's weaknesses, not scaffold its strengths."**
 >
@@ -61,7 +62,7 @@ Decision Classification (always, silent)
             └── Full expanded reasoning. Human review flagged. Mode activated.
 ```
 
-Routing is handled by [M00 Orchestrator](modules/00_orchestrator.md). Decision types are defined in [M13 Decision Classification](modules/13_decision_classification.md). All 30 modules listed in [docs/modules.md](docs/modules.md).
+Routing is handled by [M00 Orchestrator](modules/00_orchestrator.md). Decision types are defined in [M13 Decision Classification](modules/13_decision_classification.md). All 31 modules listed in [docs/modules.md](docs/modules.md).
 
 ---
 
@@ -87,7 +88,7 @@ I ran a Pareto pass: which modules produced measurable results in daily work, wh
 
 What survived: Builder, Critic, Debugger, Strategist, Expert, Synthesizer, Calibrator, Coordinator, Navigator. Each one addresses a real, recurring failure mode. Nothing in the list exists for completeness.
 
-The 30 underlying modules (M00–M29) implement those nine modes plus the cross-cutting infrastructure they share: memory architecture, decision classification, knowledge accretion, grounding scores, and the Role Agent Layer (M29) for persistent business roles above the mode level.
+The 31 underlying modules (M00–M30) implement those nine modes plus the cross-cutting infrastructure they share: memory architecture, decision classification, knowledge accretion, grounding scores, the Role Agent Layer (M29) for persistent business roles above the mode level, and the Completion Gate (M30) for independent verification of agent work.
 
 ---
 
@@ -124,7 +125,8 @@ See [`docs/install.md`](docs/install.md) for the full guide: `settings.json` con
 
 - [Full install guide](docs/install.md) — CC + CP paths, `settings.json` config, all platforms, add-ons
 - [Add-ons](docs/add-ons.md) — MemPalace, Gemini Routing, Beads, GitNexus, Asta, COS, Orchestra
-- [Modules](docs/modules.md) — all 30 modules with versions and purposes
+- [Modules](docs/modules.md) — all 31 modules with versions and purposes
+- [Completion Gate grader](tools/kf-grader/README.md): reference implementation of M30 with independent grading, signed verdicts and an install runbook
 - [Changelog](CHANGELOG.md) — full version history
 - [Exploration prompts](EXPLORATION_PROMPTS.md) — ready-to-paste prompts that exercise specific KF behaviors
 - [Distribution matrix](docs/dist-matrix.md) — platform capability and module coverage matrix
@@ -144,4 +146,4 @@ See [`SECURITY.md`](SECURITY.md) for the vulnerability reporting process.
 
 Apache-2.0. Copyright 2026 David Pedersen. See [`LICENSE`](LICENSE).
 
-**Version:** 7.36.1 | **Modules:** 30 (M00–M29)
+**Version:** 7.37.0 | **Modules:** 31 (M00–M30)

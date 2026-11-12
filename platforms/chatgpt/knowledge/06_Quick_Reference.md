@@ -5,7 +5,7 @@
 ```yaml
 module:
   title: KnowledgeForge 7.2 Quick Reference
-  version: 7.3.0
+  version: 7.4.0
   purpose: Quick lookup for all patterns, checklists, mode triggers, integration flows, and core concepts across the full KF 7.2 framework
   topics: [quick-reference, cheatsheet, mode-selection, integration-flows, checklists, anti-patterns, variant-taxonomy, routing-audit-log]
   contexts: [all-interactions, lookup, orientation]
@@ -460,6 +460,18 @@ Module 04 template entity for resolving cases where a trigger phrase activates m
 **Predicate types:** `output_type_mismatch` (Navigator activation rule), `domain_specificity` (variant resolution), `keyword_priority` (registered trigger phrases).
 
 **Refinement signal:** `re_routed = true` entries in Module 19 routing_decision_log are training data for tightening predicates.
+
+---
+
+## Completion Gate (7.37, Module 30_Completion_Gate)
+
+- **Trigger:** a worker claims a registered task is done. The worker submits `task_id` and `head_sha` only (`kf-grade submit`); self-reports are not read.
+- **Stage 1 (code):** executable ACs, tamper check, hidden probes. Any failure is FAIL. No score overrides it.
+- **Stage 2 (LLM, only if Stage 1 passes):** four dimensions 0-10; **pass rule: minimum at least 8**.
+- **Cap:** 3 graded attempts; FAIL on the third becomes BLOCKED (`cap_reached`). Same `head_sha` twice is refused.
+- **Completion:** `kf-grade verify --task-id T --head-sha <delivered head>` exits 0. A later commit invalidates it.
+- **Exit codes:** 0 PASS, 1 FAIL, 2 refused, 3 BLOCKED, 4 PENDING. BLOCKED is never PASS.
+- **Modes:** `off` (paste rule), `shadow` (record only), `enforce` (verdict is the gate).
 
 ---
 

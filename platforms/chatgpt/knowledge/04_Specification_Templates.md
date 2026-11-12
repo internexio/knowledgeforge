@@ -5,12 +5,12 @@
 ```yaml
 module:
   title: Specification Templates
-  version: 7.4.0
+  version: 7.5.1
   purpose: Provide complete, reusable templates for agents, processes, and coordination
   topics: [templates, specifications, formats, schemas, capability-profiles, risk-tiers, infrastructure-architecture, hosting-audit, era-specification, handoff-contracts, trigger-disambiguation]
   contexts: [agent-creation, process-design, documentation, infrastructure-planning, entity-modeling, mode-routing, chain-handoffs]
   difficulty: intermediate
-  related: [00_Orchestrator, 02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion]```
+  related: [00_Orchestrator, 02_Builder_Agent, 03_Coordination_Patterns, 05_Expert_Agent_Example, 07_Critic_Agent, 08_Synthesizer_Agent, 09_Debugger_Agent, 10_Strategist_Agent, 11_Calibrator_Agent, 12_Calibration_Layer, 13_Decision_Classification, 14_Metacognitive_Monitor, 15_Grounding_Scores, 16_Operational_Bounds, 17_Temporal_Knowledge, 19_Memory_Architecture, 20_Permission_Model, 21_Knowledge_Accretion, 30_Completion_Gate]```
 
 ---
 
@@ -1777,6 +1777,53 @@ era_specification:
 
 ---
 
+## Acceptance Criteria Block Template (NEW 7.37)
+
+Use when: Any build prompt or task spec whose completion will be graded by the Module 30 Completion Gate. The block is machine-readable: the grader executes every non-`judgment` AC itself against a fresh checkout or the registered target URL. Worker-pasted output is never read.
+Created by: Builder or the dispatcher, at registration time, before work starts (so the worker cannot influence the checks).
+Decision types: AC selection (evaluative), threshold values (evaluative), `judgment` wording (evaluative).
+
+Embed one fenced block per spec, tagged exactly ` ```yaml kf-acceptance `:
+
+```yaml kf-acceptance
+acceptance_criteria:
+  - id: AC1                 # required; unique; [A-Za-z0-9_-]+
+    type: grep_count        # command | grep_count | http_status | dom_check | judgment
+    pattern: "r3-conversion-cta"
+    regex: false            # default false = fixed string; true = regular expression
+    paths: ["tools/*/analyzer.js"]   # globs relative to the repo root; ** recurses
+    per_file: true          # true: every matched file must satisfy op/value; zero matched files = fail
+    op: ">="                # == != >= <= > <   (compares matching-line count, grep -c semantics)
+    value: 1
+  - id: AC2
+    type: command
+    run: "sh tests/test_smoke.sh"       # runs in a disposable container: read-only source, no network by default
+    expect: {exit_code: 0, stdout_regex: null}
+    timeout_s: 300
+  - id: AC3
+    type: http_status
+    url: "/pricing"         # absolute, or relative to the registration's target_url
+    expect: 200
+  - id: AC4
+    type: dom_check         # static HTML only; JS-rendered content needs a command AC with a headless browser
+    url: "/tools/a"
+    selector: "[data-hook='r3-conversion-cta']"   # one compound selector: tag, #id, .class, [attr], [attr=val]
+    op: ">="
+    value: 1
+  - id: AC5
+    type: judgment          # passed to Stage 2 as a spec item under completeness; never executed
+    text: "Copy on the result card reads as a diagnostic, not a generator."
+```
+
+**Rules:**
+- A block with no non-`judgment` AC is rejected at registration. Prose-only prompts must be converted before work starts.
+- Prefer ACs that fail loudly when the work is absent: a presence check plus an absence check for the thing being replaced (the 2026-10-18 pair: `r3-conversion-cta` present, "Try again tomorrow" absent, in every file).
+- Absence ACs (`== 0`) are re-checked repo-wide across files with the same extensions by hidden probe P3. Do not rely on listing every path.
+- A `grep_count` for a feature string can be satisfied by a comment. Pair it with a `command` or `dom_check` AC that exercises the behavior.
+- Thresholds and the attempt cap are grader-host config, not part of the block.
+
+---
+
 ## Usage Notes
 
 **When to use each template:**
@@ -1800,6 +1847,7 @@ era_specification:
 | Infrastructure Architecture | Planning service topology, deployment phases, hardware sizing | Expert → Builder chain (6.3) |
 | Hosting Audit | Inventorying current state, SPOF analysis, decomposition planning | Critic (audit variant) (6.3) |
 | ERA Specification | Mapping entity relationships, auditing module dependencies, modeling agent contracts | Expert (ERA) → Builder chain (6.6) |
+| Acceptance Criteria Block (`kf-acceptance`) | Specifying machine-checkable completion criteria for work graded by the Completion Gate (Module 30_Completion_Gate) (NEW 7.37) | Builder / dispatcher |
 
 **Template modification rules:**
 - Add fields specific to your domain
@@ -1881,6 +1929,14 @@ era_specification:
 | Field | Source Module | Added To | Purpose |
 |-------|-------------|----------|---------|
 | `upstream_invalidation` (optional response field) | 04 (7.4) | Handoff Contract response_schema | Allows a target_mode to signal mid-chain that its source_mode's premise was found invalid; shape: {invalidated_step_id, claim_invalidated, evidence_ref (pointer, not prose), severity ∈ {Sev1\|Sev2\|Sev3}}; Sev2+ triggers deterministic re-entry at invalidated_step_id (Module 00 7.23.0 re-entry rule); Sev1 logs only |
+
+**KF 7.37 field summary:**
+
+| Field | Source Module | Added To | Purpose |
+|-------|-------------|----------|---------|
+| `kf-acceptance` (fenced `yaml kf-acceptance` block) | 04 (7.37), consumed by 30_Completion_Gate | Task specs, build prompts | Machine-readable acceptance criteria; five AC types (command, grep_count, http_status, dom_check, judgment); at least one non-judgment AC required |
+| `acceptance_criteria[].per_file` | 04 (7.37) | grep_count AC | Every matched file must satisfy op/value; zero matched files fails |
+| `hc-worker-to-grader` (contract instance) | 03 (7.7.0) | Handoff Contract Registry | External worker to grader; payload {task_id, head_sha} only |
 
 ---
 

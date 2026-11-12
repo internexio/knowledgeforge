@@ -15,7 +15,7 @@ KnowledgeForge compiles to multiple AI assistant platforms from a single canonic
 
 ## How it works
 
-The 26 module specs in `modules/` are platform-agnostic. The compiler (`compiler/kf-compile.py`) reads platform bindings from `platform-bindings/*.yaml` and produces platform-specific output — skill files and agents for Claude Code, a compiled system prompt for Claude Projects, VSCode extension resources, and so on.
+The 31 module specs in `modules/` are platform-agnostic. The compiler (`compiler/kf-compile.py`) reads platform bindings from `platform-bindings/*.yaml` and produces platform-specific output — skill files and agents for Claude Code, a compiled system prompt for Claude Projects, VSCode extension resources, and so on.
 
 Only the Claude Code and Claude Projects variants are currently considered tested. Every other target is experimental, including targets whose compiler implementation is active.
 

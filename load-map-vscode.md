@@ -1,6 +1,6 @@
 # KnowledgeForge Load Map — `vscode`
 
-**Version:** `7.36.0`
+**Version:** `7.37.0`
 
 Each row shows one compiled output and the exact source section it was extracted from.
 Click the source link to jump directly to that section in the module file.
