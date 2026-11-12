@@ -1,7 +1,10 @@
 # Grader-host config. Lives on the grader host (KF_GRADER_HOME/config/grader.yaml), never in a graded repo.
 threshold: 8            # minimum Stage 2 dimension score to PASS
 cap: 3                  # graded attempts per task
-stage2_model: opus      # overridden by diversity rule when worker_model is opus and a different model is available
+stage2_model: opus      # default Stage 2 model
+alt_model: ""           # e.g. fable. When set and an agent's worker_model equals stage2_model, Stage 2 uses this instead (R6 diversity)
+stage2_timeout_s: 900
+stage2_budget_usd: 3
 boundary_rescore: true  # run Stage 2 twice more when min score is 7 or 8
 runner_image: kf-grader-runner
 limits:

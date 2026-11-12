@@ -4,8 +4,12 @@ from __future__ import annotations
 import contextlib
 import json
 import os
+import socket
 import subprocess
+import sys
 import tempfile
+import time
+import urllib.request
 from pathlib import Path
 
 from . import registry, runner, verdict
@@ -35,6 +39,28 @@ def _sh(args: list[str], cwd: Path | None = None, env: dict | None = None) -> st
     return r.stdout.strip().splitlines()[-1] if r.stdout.strip() else ""
 
 
+@contextlib.contextmanager
+def _site_server(site_dir: Path):
+    """Serve the fixture's site/ directory on a free local port; yields the base URL."""
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0))
+        port = s.getsockname()[1]
+    proc = subprocess.Popen([sys.executable, "-m", "http.server", str(port), "--bind", "127.0.0.1", "--directory", str(site_dir)],
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
+    url = f"http://127.0.0.1:{port}"
+    try:
+        for _ in range(50):
+            try:
+                urllib.request.urlopen(url + "/index.html", timeout=1).close()
+                break
+            except Exception:  # noqa: BLE001
+                time.sleep(0.1)
+        yield url
+    finally:
+        proc.terminate()
+        proc.wait(timeout=10)
+
+
 def _needs_stage2(exp: dict) -> bool:
     return bool(exp.get("needs_stage2"))
 
@@ -50,10 +76,14 @@ def run_one(cid: str, exp: dict, root: Path) -> dict:
         patch = "C1" if exp.get("special") == "forged_verdict" else cid
         _sh(["sh", str(CAN / "patches" / f"{patch}.sh")], cwd=fix, env={"KF_CANARY_LIB": str(CAN / "lib.sh"), "KF_BASE": base})
         head = _sh(["git", "rev-parse", "HEAD"], cwd=fix)
-        with _env(KF_GRADER_HOME=home):
+        if exp.get("probe_sample_size"):  # pre-seed the probe pool so the lock covers it; sampling is exhaustive for canaries
+            (home / "config").mkdir(parents=True, exist_ok=True)
+            (home / "config" / "probes.yaml").write_text(f"sample_size: {exp['probe_sample_size']}\nextra_urls: {{}}\n")
+        with _env(KF_GRADER_HOME=home), contextlib.ExitStack() as stack:
+            server = stack.enter_context(_site_server(fix / "site")) if "registration" in exp else None
             h = registry.ensure_layout()
             reg_kw = dict(task_id=f"canary-{cid}", repo=str(fix), base_sha=base, spec_file=str(CAN / "spec.md"), agent="canary")
-            reg_kw.update(exp.get("registration", {}))
+            reg_kw.update({k: (v.replace("@SERVER@", server) if isinstance(v, str) else v) for k, v in exp.get("registration", {}).items()})
             registry.register(**reg_kw)
             if exp.get("special") == "forged_verdict":
                 d = h / "verdicts" / f"canary-{cid}"
@@ -90,9 +120,17 @@ def run_one(cid: str, exp: dict, root: Path) -> dict:
         problems.append("grader config changed")
     if exp.get("injection_flags") and not (stored.get("stage2") or {}).get("injection_flags"):
         problems.append("injection_flags empty")
+    if exp.get("checkout_unchanged"):
+        s2 = stored.get("stage2") or {}
+        if not s2.get("checkout_sha256_before") or s2.get("checkout_sha256_before") != s2.get("checkout_sha256_after"):
+            problems.append("checkout checksum missing or changed across Stage 2")
     if _needs_stage2(exp) and view["reasons"] == ["stage2_unavailable"]:
         return {"id": cid, "status": "incomplete", "detail": "Stage 2 unavailable on this host"}
-    return {"id": cid, "status": "mismatch" if problems else "match", "detail": "; ".join(problems) or f"{view['verdict']} {view['reasons']}"}
+    s2 = stored.get("stage2") or {}
+    context = (f" | got {view['verdict']} {view['reasons']}; tamper={view['tamper_violations']}; observations={view['observations']}; "
+               f"failed_acs={[a['id'] for a in view['failed_acs']]}; stage2={ {k: (d['score'], d['reason'][:160]) for k, d in (s2.get('dimensions') or {}).items()} }"
+               if problems else "")
+    return {"id": cid, "status": "mismatch" if problems else "match", "detail": ("; ".join(problems) + context) or f"{view['verdict']} {view['reasons']}"}
 
 
 def run_suite(ids: list[str] | None = None) -> tuple[list[dict], int]:

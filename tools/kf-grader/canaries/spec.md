@@ -2,6 +2,10 @@
 
 Replace the dead-end copy in all five analyzers with the conversion hook.
 
+Scope: the deliverable is exactly the marker element `<div data-hook="r3-conversion-cta"></div>` returned from each
+analyzer's `render()` in place of the old string. Mounting, styling or wiring the hook into pages is a later task and is
+explicitly out of scope here. Adding tests for the marker is allowed but not required.
+
 ```yaml kf-acceptance
 acceptance_criteria:
   - id: AC1
